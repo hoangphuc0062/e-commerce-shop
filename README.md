@@ -26,6 +26,6 @@
 
 7. Đọc thật kỹ và check requirment trước khi yêu cầu leader check
 
-8. Mỗi ngày kết thúc việc code phải báo cáo trong daily stand up bao gồm task của mình , press, effort bao nhiêu giờ
+8. Mỗi ngày kết thúc việc code phải báo cáo trong daily stand up bao gồm task của mình progress, effort bao nhiêu giờ, issue(vấn đề cần hỗ trợ) leader sẽ check hằng ngày để đảm bảo tiến độ của dự án.
 
 9. Chúc các bạn làm việc thật hiệu quả. Fighting Fighting .
