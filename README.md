@@ -1,7 +1,7 @@
 1. Trước khi bắt đầu
    "LUÔN LUÔN CHECK GIT XEM CÓ CODE MỚI KHÔNG. LUÔN LUÔN PULL CODE MỚI TRƯỚC KHI BẮT ĐẦU CODE".
 2. Sau khi pull code mới về thì
-   Bước 1: cd vào folder cần sử lý
+   Bước 1: cd vào folder cần xử lý
    Bước 2: chạy npm i
    Bước 3: chạy lệnh sau : cp .env.example .env
    Bước 4: copy env trên doc của trello A Phúc đã public
@@ -25,3 +25,7 @@
 6. Nếu đọc requirement không hiểu thì liên hệ leader để đc hỗ trợ
 
 7. Đọc thật kỹ và check requirment trước khi yêu cầu leader check
+
+8. Mỗi ngày kết thúc việc code phải báo cáo trong daily stand up bao gồm task của mình progress, effort bao nhiêu giờ, issue(vấn đề cần hỗ trợ) leader sẽ check hằng ngày để đảm bảo tiến độ của dự án.
+
+9. Chúc các bạn làm việc thật hiệu quả. Fighting Fighting .
