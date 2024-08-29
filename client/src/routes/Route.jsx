@@ -5,6 +5,7 @@ import DashboardPage from '../pages/admin/home';
 import HomePage from '../pages/web/home';
 import DashboardLayout from '../Layout/DashboardLayout/Index';
 import PublicLayout from '../Layout/PublicLayout/Index';
+import CategoryList from '../pages/admin/category';
 
 export default function RootRouter() {
   const routes = useRoutes([
@@ -20,9 +21,10 @@ export default function RootRouter() {
       element: <DashboardLayout />, 
       children: [
         { path: '', element: <DashboardPage /> }, 
+        { path: 'caterory/list', element: <CategoryList /> }, 
       ],
     },
   ]);
 
-  return routes;
+  return routes;  
 }

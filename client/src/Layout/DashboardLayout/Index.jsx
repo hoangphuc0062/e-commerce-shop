@@ -10,7 +10,6 @@ function DashboardLayout() {
     setDarkMode(!darkMode);
   };
 
-  // Centralize className logic
   const layoutClasses = `flex h-screen ${darkMode ? "dark bg-gray-800" : "bg-background"}`;
 
   return (
