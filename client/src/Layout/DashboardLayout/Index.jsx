@@ -1,29 +1,29 @@
-import { Outlet } from "react-router-dom"
-
+import { Outlet } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import { useState } from "react";
+import Header from "./Header";
 
 function DashboardLayout() {
+  const [darkMode, setDarkMode] = useState(false);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  // Centralize className logic
+  const layoutClasses = `flex h-screen ${darkMode ? "dark bg-gray-800" : "bg-background"}`;
+
   return (
-    <>
-       <header>
-        <h1>Dashboard Header</h1>
-      </header>
-      <div style={{ display: 'flex' }}>
-        <nav style={{ width: '200px' }}>
-          <ul>
-            <li><a href="/">Trang Chủ</a></li>
-            <li><a href="/dashboard">Dashboard</a></li>
-          </ul>
-        </nav>
-        <main style={{ marginLeft: '200px', padding: '20px' }}>
-          {/* The content of dashboard routes will be rendered here */}
+    <div className={layoutClasses}>
+      <Sidebar />
+      <div className="flex-grow flex flex-col">
+        <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+        <main className="flex-grow p-10 dark:bg-gray-800">
           <Outlet />
         </main>
       </div>
-      <footer>
-        <p>Dashboard Footer</p>
-      </footer>
-    </>
-  )
+    </div>
+  );
 }
 
-export default DashboardLayout
+export default DashboardLayout;
