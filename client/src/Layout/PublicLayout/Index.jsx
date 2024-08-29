@@ -1,7 +1,7 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet } from "react-router-dom";
 
-import Header from './header/header';
-import Footer from './footer/footer';
+import Header from "./header/header";
+import Footer from "./footer/footer";
 export default function PublicLayout() {
   return (
     <>
@@ -11,7 +11,7 @@ export default function PublicLayout() {
         <Outlet />
       </main>
 
-        <Footer />
+      <Footer />
     </>
-  )
+  );
 }
