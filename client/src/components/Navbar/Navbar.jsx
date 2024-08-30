@@ -1,5 +1,3 @@
-import React, { useState } from "react";
-import { SearchInput } from "../Input/SearchInput";
 
 import { Contact } from "../Button/Contact";
 import icons from "../../ultils/icon";
@@ -23,7 +21,6 @@ const Navbar = () => {
         </div>
         <div>
           {/* Khu vực tìm kiếm */}
-          <SearchInput />
         </div>
 
         <div className="flex gap-2">
