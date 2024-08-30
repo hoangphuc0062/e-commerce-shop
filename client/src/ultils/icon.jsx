@@ -1,6 +1,7 @@
 import { AiOutlineSearch } from "react-icons/ai";
 import { AiOutlineHeart } from "react-icons/ai";
 import { AiOutlineShoppingCart } from "react-icons/ai";
+
 import { AiOutlineUnorderedList } from "react-icons/ai";
 import { AiOutlinePhone } from "react-icons/ai";
 import { BsGeoAlt } from "react-icons/bs";
@@ -13,6 +14,10 @@ const icons = {
   AiOutlinePhone, // phone
   BsGeoAlt, // vị trí
   BsTruck,
+  FaPen,// icon edit
+  MdDelete,// icon delete
+  IoMdAddCircleOutline,// icon add
+
 };
 
 export default icons;
