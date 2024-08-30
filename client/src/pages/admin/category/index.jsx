@@ -1,68 +1,121 @@
+import { useState } from "react";
+import { Pagination, Table } from "../../../components";
+import icons from "../../../ultils/icon";
+const { FaPen, MdDelete, IoMdAddCircleOutline } = icons;
+
 function CategoryList() {
+  const handleEdit = (id) => {
+    console.log(`Edit category with ID: ${id}`);
+    // Add your edit logic here
+  };
+
+  const handleDelete = (id) => {
+    console.log(`Delete category with ID: ${id}`);
+    // Add your delete logic here
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 2;
+
+  const columns = [
+    { id: 'id', label: 'ID', isFirst: true },
+    { id: 'name', label: 'Tên Danh Mục' },
+    { id: 'actions', label: 'Hành động', isLast: true },
+  ];
+
+  const allData = [
+    {
+      id: 1,
+      name: 'Category 1',
+      actions: (
+        <>
+          <button onClick={() => handleEdit(1)} className="mr-2 text-lg">
+            <FaPen />
+          </button>
+          <button onClick={() => handleDelete(1)} className="text-lg">
+            <MdDelete />
+          </button>
+        </>
+      ),
+    },
+    {
+      id: 2,
+      name: 'Category 2',
+      actions: (
+        <>
+          <button onClick={() => handleEdit(2)} className="mr-2 text-lg">
+            <FaPen />
+          </button>
+          <button onClick={() => handleDelete(2)} className="text-lg">
+            <MdDelete />
+          </button>
+        </>
+      ),
+    },
+    {
+      id: 3,
+      name: 'Category 3',
+      actions: (
+        <>
+          <button onClick={() => handleEdit(3)} className="mr-2 text-lg">
+            <FaPen />
+          </button>
+          <button onClick={() => handleDelete(3)} className="text-lg">
+            <MdDelete />
+          </button>
+        </>
+      ),
+    },
+    {
+      id: 4,
+      name: 'Category 4',
+      actions: (
+        <>
+          <button onClick={() => handleEdit(4)} className="mr-2 text-lg">
+            <FaPen />
+          </button>
+          <button onClick={() => handleDelete(4)} className="text-lg">
+            <MdDelete />
+          </button>
+        </>
+      ),
+    },
+  ];
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = allData.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(allData.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
-   
+    <>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="dark:text-white text-2xl">Danh Sách Danh Mục</h1>
+  
+        <button 
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
+          <IoMdAddCircleOutline className="mr-2 text-2xl" />
+          Thêm Danh Mục
+        </button>
+      </div>
 
-<div className="relative overflow-x-auto">
-    <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-                <th scope="col" className="px-6 py-3 rounded-s-lg">
-                    Product name
-                </th>
-                <th scope="col" className="px-6 py-3">
-                    Qty
-                </th>
-                <th scope="col" className="px-6 py-3 rounded-e-lg">
-                    Price
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr className="bg-white dark:bg-gray-800">
-                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    Apple MacBook Pro 17
-                </th>
-                <td className="px-6 py-4">
-                    1
-                </td>
-                <td className="px-6 py-4">
-                    $2999
-                </td>
-            </tr>
-            <tr className="bg-white dark:bg-gray-800">
-                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    Microsoft Surface Pro
-                </th>
-                <td className="px-6 py-4">
-                    1
-                </td>
-                <td className="px-6 py-4">
-                    $1999
-                </td>
-            </tr>
-            <tr className="bg-white dark:bg-gray-800">
-                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    Magic Mouse 2
-                </th>
-                <td className="px-6 py-4">
-                   1
-                </td>
-                <td className="px-6 py-4">
-                    $99
-                </td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr className="font-semibold text-gray-900 dark:text-white">
-                <th scope="row" className="px-6 py-3 text-base">Total</th>
-                <td className="px-6 py-3">3</td>
-                <td className="px-6 py-3">21,000</td>
-            </tr>
-        </tfoot>
-    </table>
-</div>
-
-  )
+      <div className="mt-4">
+        <Table columns={columns} data={currentData} />
+        <div className="flex justify-end mt-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      </div>
+    </>
+  );
 }
 
-export default CategoryList
+export default CategoryList;
