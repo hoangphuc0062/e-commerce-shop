@@ -1,17 +1,23 @@
 import { AiOutlineSearch } from "react-icons/ai";
 import { AiOutlineHeart } from "react-icons/ai";
 import { AiOutlineShoppingCart } from "react-icons/ai";
-import { FaPen } from "react-icons/fa6";
-import { MdDelete } from "react-icons/md";
-import { IoMdAddCircleOutline } from "react-icons/io";
 
+import { AiOutlineUnorderedList } from "react-icons/ai";
+import { AiOutlinePhone } from "react-icons/ai";
+import { BsGeoAlt } from "react-icons/bs";
+import { BsTruck } from "react-icons/bs";
 const icons = {
-  AiOutlineSearch,
-  AiOutlineHeart,
-  AiOutlineShoppingCart,
+  AiOutlineSearch, // kinh lup
+  AiOutlineHeart, // yeu thich
+  AiOutlineShoppingCart, // cart
+  AiOutlineUnorderedList, // list
+  AiOutlinePhone, // phone
+  BsGeoAlt, // vị trí
+  BsTruck,
   FaPen,// icon edit
   MdDelete,// icon delete
   IoMdAddCircleOutline,// icon add
+
 };
 
 export default icons;
