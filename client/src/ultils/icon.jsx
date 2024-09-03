@@ -9,7 +9,6 @@ import { BsTruck } from "react-icons/bs";
 import { FaPen } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { IoMdAddCircleOutline } from "react-icons/io";
-
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
