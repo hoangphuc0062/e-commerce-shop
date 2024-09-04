@@ -1,4 +1,4 @@
-import React from "react";
+/* eslint-disable react/prop-types */
 
 export const Contact = ({ icon: IconComponent, title = "", content = "" }) => {
   return (
