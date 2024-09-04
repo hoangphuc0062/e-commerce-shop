@@ -26,7 +26,7 @@ function Sidebar() {
     </button>
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full z-40 transition-transform transform lg:translate-x-0 border-r-2 ${
+        className={`fixed top-0 left-0 min-h-screen z-40 transition-transform transform lg:translate-x-0 border-r-2 ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:relative lg:flex lg:w-auto sidebar ${
           expanded ? 'w-64' : 'w-20'
