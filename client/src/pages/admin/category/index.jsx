@@ -1,111 +1,97 @@
 import { useState } from "react";
-import { Pagination, Table } from "../../../components";
-import icons from "../../../ultils/icon";
-const { FaPen, MdDelete, IoMdAddCircleOutline } = icons;
+import {  Pagination, Table } from "../../../components";
+import CategoryAdd from "./CategoryAdd";
+import CategoryEdit from "./CategoryEdit";
 
 function CategoryList() {
-  const handleEdit = (id) => {
-    console.log(`Edit category with ID: ${id}`);
-    // Add your edit logic here
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 7;
+  const [editingCategory, setEditingCategory] = useState(null);
+
+  const handleEdit = (category) => {
+    setEditingCategory(category); 
   };
+
+  const handleUpdateCategory = (updatedCategory) => {
+    if (updatedCategory) {
+      console.log('Danh mục đã được cập nhật:', updatedCategory);
+
+    }
+    setEditingCategory(null); 
+  };
+
 
   const handleDelete = (id) => {
     console.log(`Delete category with ID: ${id}`);
     // Add your delete logic here
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 2;
-
-  const columns = [
-    { id: 'id', label: 'ID', isFirst: true },
-    { id: 'name', label: 'Tên Danh Mục' },
-    { id: 'actions', label: 'Hành động', isLast: true },
-  ];
+  const columns = ['ID', 'Tên Danh Mục'];
 
   const allData = [
-    {
-      id: 1,
-      name: 'Category 1',
-      actions: (
-        <>
-          <button onClick={() => handleEdit(1)} className="mr-2 text-lg">
-            <FaPen />
-          </button>
-          <button onClick={() => handleDelete(1)} className="text-lg">
-            <MdDelete />
-          </button>
-        </>
-      ),
-    },
-    {
-      id: 2,
-      name: 'Category 2',
-      actions: (
-        <>
-          <button onClick={() => handleEdit(2)} className="mr-2 text-lg">
-            <FaPen />
-          </button>
-          <button onClick={() => handleDelete(2)} className="text-lg">
-            <MdDelete />
-          </button>
-        </>
-      ),
-    },
-    {
-      id: 3,
-      name: 'Category 3',
-      actions: (
-        <>
-          <button onClick={() => handleEdit(3)} className="mr-2 text-lg">
-            <FaPen />
-          </button>
-          <button onClick={() => handleDelete(3)} className="text-lg">
-            <MdDelete />
-          </button>
-        </>
-      ),
-    },
-    {
-      id: 4,
-      name: 'Category 4',
-      actions: (
-        <>
-          <button onClick={() => handleEdit(4)} className="mr-2 text-lg">
-            <FaPen />
-          </button>
-          <button onClick={() => handleDelete(4)} className="text-lg">
-            <MdDelete />
-          </button>
-        </>
-      ),
-    },
+    { id: 1, slug:'123' ,name: 'Product 1', img: 'https://scontent.fhan5-3.fna.fbcdn.net/v/t39.30808-6/454935858_1025894225852691_7770544709709728940_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=V81SNGbvHacQ7kNvgEY_qyI&_nc_ht=scontent.fhan5-3.fna&oh=00_AYAe7s4HjzgtAvSWurmnMie90x0UxNSCJXB4EY8E_P24gw&oe=66DB5EF0' },
+    { id: 2, name: 'Product 2', img: 'https://scontent.fhan5-3.fna.fbcdn.net/v/t39.30808-6/454935858_1025894225852691_7770544709709728940_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=V81SNGbvHacQ7kNvgEY_qyI&_nc_ht=scontent.fhan5-3.fna&oh=00_AYAe7s4HjzgtAvSWurmnMie90x0UxNSCJXB4EY8E_P24gw&oe=66DB5EF0' },
+    { id: 3, name: 'Product 3', img: 'https://scontent.fhan5-3.fna.fbcdn.net/v/t39.30808-6/454935858_1025894225852691_7770544709709728940_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=V81SNGbvHacQ7kNvgEY_qyI&_nc_ht=scontent.fhan5-3.fna&oh=00_AYAe7s4HjzgtAvSWurmnMie90x0UxNSCJXB4EY8E_P24gw&oe=66DB5EF0' },
+    { id: 4, name: 'Product 4', img: 'https://scontent.fhan5-3.fna.fbcdn.net/v/t39.30808-6/454935858_1025894225852691_7770544709709728940_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=V81SNGbvHacQ7kNvgEY_qyI&_nc_ht=scontent.fhan5-3.fna&oh=00_AYAe7s4HjzgtAvSWurmnMie90x0UxNSCJXB4EY8E_P24gw&oe=66DB5EF0' },
+    { id: 5, name: 'Product 5', img: 'https://scontent.fhan5-3.fna.fbcdn.net/v/t39.30808-6/454935858_1025894225852691_7770544709709728940_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=V81SNGbvHacQ7kNvgEY_qyI&_nc_ht=scontent.fhan5-3.fna&oh=00_AYAe7s4HjzgtAvSWurmnMie90x0UxNSCJXB4EY8E_P24gw&oe=66DB5EF0' },
+    { id: 6, name: 'Product 6', img: 'https://scontent.fhan5-3.fna.fbcdn.net/v/t39.30808-6/454935858_1025894225852691_7770544709709728940_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=V81SNGbvHacQ7kNvgEY_qyI&_nc_ht=scontent.fhan5-3.fna&oh=00_AYAe7s4HjzgtAvSWurmnMie90x0UxNSCJXB4EY8E_P24gw&oe=66DB5EF0' },
+    { id: 7, name: 'Product 7', img: 'https://scontent.fhan5-3.fna.fbcdn.net/v/t39.30808-6/454935858_1025894225852691_7770544709709728940_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=V81SNGbvHacQ7kNvgEY_qyI&_nc_ht=scontent.fhan5-3.fna&oh=00_AYAe7s4HjzgtAvSWurmnMie90x0UxNSCJXB4EY8E_P24gw&oe=66DB5EF0' },
   ];
+
+  // Hàm tìm kiếm
+  const filteredData = allData.filter(item => {
+    return item.name.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = allData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
-  const totalPages = Math.ceil(allData.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+    setCurrentPage(1);
+  };
+
   return (
     <>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="dark:text-white text-2xl">Danh Sách Danh Mục</h1>
-  
-        <button 
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center">
-          <IoMdAddCircleOutline className="mr-2 text-2xl" />
-          Thêm Danh Mục
-        </button>
+        <h1 className="dark:text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl">
+          Danh Sách Danh Mục
+        </h1>
+        <CategoryAdd/>
+      </div>
+
+      <div className="flex mb-4">
+        <input
+          type="text"
+          placeholder="Tìm kiếm..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="mr-2 p-2 border border-gray-300 rounded bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600"
+        />
       </div>
 
       <div className="mt-4">
-        <Table columns={columns} data={currentData} />
+        <Table 
+          columns={columns} 
+          data={currentData} 
+          handleEdit={handleEdit} 
+          handleDelete={handleDelete} 
+        />
+         {editingCategory && (
+        <CategoryEdit 
+          category={editingCategory} 
+          onUpdate={handleUpdateCategory} 
+          onCancel={() => setEditingCategory(null)}
+        />
+      )}
         <div className="flex justify-end mt-4">
           <Pagination
             currentPage={currentPage}
@@ -114,6 +100,7 @@ function CategoryList() {
           />
         </div>
       </div>
+      
     </>
   );
 }

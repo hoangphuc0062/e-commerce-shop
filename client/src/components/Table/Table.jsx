@@ -4,12 +4,13 @@ import TableBody from "./TableBody";
 import TableHeader from "./TableHead";
 
 
-function Table({ columns, data }) {
+function Table({ columns, data,handleEdit, handleDelete }) {
+   const filteredColumns = columns.filter(column => column.toLowerCase() !== 'img');
   return (
     <div className="relative overflow-x-auto">
       <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <TableHeader columns={columns} />
-        <TableBody columns={columns} data={data} />
+        <TableHeader columns={filteredColumns} />
+        <TableBody columns={filteredColumns} data={data} handleEdit={handleEdit} handleDelete={handleDelete} />
       </table>
     </div>
   );
