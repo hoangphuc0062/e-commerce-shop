@@ -1,8 +1,9 @@
+/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 import { useState, useEffect } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import { useTheme } from './../../theme/ThemeProvider';
-
+const apikey = import.meta.env.VITE_TINY_API_KEY;
 function Dialog({ title, fields, onSubmit, onCancel }) {
   const { isDarkMode } = useTheme();
   const [formData, setFormData] = useState(
@@ -28,6 +29,7 @@ function Dialog({ title, fields, onSubmit, onCancel }) {
       onSubmit(formData);
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto p-4 bg-white dark:bg-gray-800 rounded-md shadow-md">
@@ -40,7 +42,7 @@ function Dialog({ title, fields, onSubmit, onCancel }) {
           </label>
           {field.type === 'textarea' ? (
               <Editor
-                apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+                apiKey={apikey}
                 id={field.name}
                 init={{
                   plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
