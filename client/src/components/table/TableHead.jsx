@@ -1,21 +1,17 @@
 /* eslint-disable react/prop-types */
-
-function TableHeader({ columns }) {
+const TableHead = ({ columns }) => {
   return (
-    <thead className="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+     <thead className="bg-gray-200 dark:bg-gray-700">
       <tr>
-        {columns.map((col) => (
-          <th
-            key={col.id}
-            scope="col"
-            className={`px-6 py-3 ${col.isFirst ? 'rounded-s-lg' : ''} ${col.isLast ? 'rounded-e-lg' : ''}`}
-          >
-            {col.label}
+        {columns.map((column, index) => (
+          <th key={index} className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">
+            {column}
           </th>
         ))}
+        <th className="px-4 py-2 text-left text-gray-600 dark:text-gray-300">Actions</th>
       </tr>
     </thead>
   );
-}
+};
 
-export default TableHeader;
+export default TableHead;

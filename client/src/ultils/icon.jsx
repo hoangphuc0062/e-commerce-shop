@@ -9,6 +9,10 @@ import { BsTruck } from "react-icons/bs";
 import { FaPen } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { IoMdAddCircleOutline } from "react-icons/io";
+
+import { FaAngleDoubleRight } from "react-icons/fa";
+import { FaAngleDoubleLeft } from "react-icons/fa";
+
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
@@ -20,7 +24,8 @@ const icons = {
   FaPen,// icon edit
   MdDelete,// icon delete
   IoMdAddCircleOutline,// icon add
-
+  FaAngleDoubleLeft,// icon back
+  FaAngleDoubleRight,// icon next
 };
 
 export default icons;
