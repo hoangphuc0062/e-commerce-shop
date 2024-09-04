@@ -6,14 +6,20 @@ import { useTheme } from "../../theme/ThemeProvider";
 function DashboardLayout() {
   const { isDarkMode, toggleDarkMode } = useTheme();
 
-  const layoutClasses = `flex h-screen ${isDarkMode ? "dark bg-gray-800" : "bg-background"}`;
+  const layoutClasses = `flex min-h-screen  ${
+    isDarkMode ? "dark bg-gray-800" : "bg-background"
+  }`;
 
   return (
     <div className={layoutClasses}>
       <Sidebar />
       <div className="flex-grow flex flex-col">
         <Header toggleDarkMode={toggleDarkMode} darkMode={isDarkMode} />
-        <main className={`flex-grow p-10 ${isDarkMode ? 'dark:bg-gray-800' : 'bg-background'}`}>
+        <main
+          className={`flex-grow p-10 ${
+            isDarkMode ? "dark:bg-gray-800" : "bg-background"
+          }`}
+        >
           <Outlet />
         </main>
       </div>
