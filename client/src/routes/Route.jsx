@@ -5,24 +5,40 @@ import HomePage from "../pages/web/home";
 import DashboardLayout from "../Layout/DashboardLayout/Index";
 import PublicLayout from "../Layout/PublicLayout/Index";
 import CategoryList from "../pages/admin/category";
+import { NotFound } from "../pages/404/NotFound";
+import PrivateRoute from "./PrivateRoute";
+import { Login } from "../pages/auth/Login";
+import { Register } from "../pages/auth/Register";
+
 export default function RootRouter() {
   const routes = useRoutes([
     {
       path: "/",
       element: <PublicLayout />,
-      children: [{ path: "/", element: <HomePage /> }],
+      children: [
+        { path: "/", element: <HomePage /> },
+        { path: "login", element: <Login /> },
+        { path: "register", element: <Register /> },
+      ],
     },
     {
       path: "/admin",
-      element: <DashboardLayout />,
+      element: (
+        <PrivateRoute>
+          <DashboardLayout />
+        </PrivateRoute>
+      ),
       children: [
         { path: "", element: <DashboardPage /> },
         { path: "category", element: <CategoryList /> },
         { path: "category/create", element: <CategoryList /> },
       ],
     },
+    {
+      path: "*",
+      element: <NotFound />,
+    },
   ]);
 
-  // return routes;
-  return <div>{routes}</div>;
+  return <>{routes}</>;
 }
