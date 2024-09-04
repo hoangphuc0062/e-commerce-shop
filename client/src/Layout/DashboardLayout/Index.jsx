@@ -11,11 +11,20 @@ function DashboardLayout() {
     isDarkMode ? "dark bg-gray-800" : "bg-background"
   }`;
 
+  const user = {
+    name: "duc",
+    email: "duc@gmail.com",
+  };
+
   return (
     <div className={layoutClasses}>
       <Sidebar />
       <div className="flex-grow flex flex-col">
-        <Header toggleDarkMode={toggleDarkMode} darkMode={isDarkMode} />
+        <Header
+          toggleDarkMode={toggleDarkMode}
+          darkMode={isDarkMode}
+          user={user}
+        />
 
         <main
           className={`flex-grow p-10 ${
