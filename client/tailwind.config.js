@@ -16,12 +16,12 @@ export default {
       backgroundColor: {
         main: "#1e40af",
         hv: "#fff3",
-        darkMain: "#0d1b2a"
+        darkMain: "#0d1b2a",
       },
       colors: {
         main: "#1e40af",
         semi: "#FFFFFF",
-        darkText: "#e5e7eb"
+        darkText: "#e5e7eb",
       },
       flex: {
         2: "2 2 0%",
