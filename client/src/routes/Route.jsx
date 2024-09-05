@@ -9,6 +9,7 @@ import { NotFound } from "../pages/404/NotFound";
 import PrivateRoute from "./PrivateRoute";
 import { Login } from "../pages/auth/Login";
 import { Register } from "../pages/auth/Register";
+import TestFileBase from "../pages/testFileBase";
 
 export default function RootRouter() {
   const routes = useRoutes([
@@ -19,6 +20,7 @@ export default function RootRouter() {
         { path: "/", element: <HomePage /> },
         { path: "login", element: <Login /> },
         { path: "register", element: <Register /> },
+        { path: "test", element: <TestFileBase /> },
       ],
     },
     {
