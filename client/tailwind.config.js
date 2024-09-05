@@ -14,13 +14,14 @@ export default {
         main: "1220px",
       },
       backgroundColor: {
-        main: "303030",
+        main: "#1e40af",
+        hv: "#fff3",
+        darkMain: "#0d1b2a"
       },
       colors: {
-        dark: "485fc7",
-        error: "#FF0000",
-        semi: "#F1613F",
-        grayColor: "#F5F5F5",
+        main: "#1e40af",
+        semi: "#FFFFFF",
+        darkText: "#e5e7eb"
       },
       flex: {
         2: "2 2 0%",

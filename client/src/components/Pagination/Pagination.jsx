@@ -14,7 +14,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
         disabled={currentPage === 1}
         className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
       >
-        Previous
+        Trước
       </button>
       {pageNumbers.map((number) => (
         <button
@@ -30,7 +30,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
         disabled={currentPage === totalPages}
         className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r"
       >
-        Next
+        Kế tiếp
       </button>
     </div>
   );
