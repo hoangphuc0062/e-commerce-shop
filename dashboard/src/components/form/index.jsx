@@ -1,7 +1,17 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import { TextField, Button, Grid, Paper, Typography } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Grid,
+  Paper,
+  Typography,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
 
 const ReusableForm = ({
   fields,
@@ -44,16 +54,34 @@ const ReusableForm = ({
               xl={field.xl || 6}
               key={field.name}
             >
-              <TextField
-                fullWidth
-                name={field.name}
-                label={field.label}
-                value={formValues[field.name] || ""}
-                onChange={handleInputChange}
-                required={field.required}
-                type={field.type || "text"}
-                sx={fieldStyles}
-              />
+              {field.type === "select" ? (
+                <FormControl fullWidth sx={fieldStyles}>
+                  <InputLabel>{field.label}</InputLabel>
+                  <Select
+                    name={field.name}
+                    value={formValues[field.name] || ""}
+                    onChange={handleInputChange}
+                    required={field.required}
+                  >
+                    {field.options.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : (
+                <TextField
+                  fullWidth
+                  name={field.name}
+                  label={field.label}
+                  value={formValues[field.name] || ""}
+                  onChange={handleInputChange}
+                  required={field.required}
+                  type={field.type || "text"}
+                  sx={fieldStyles}
+                />
+              )}
             </Grid>
           ))}
           <Grid item xs={12}>
