@@ -1,5 +1,4 @@
 import ReusableForm from "../../../components/form";
-import "./index.css";
 
 function AddStaff() {
   const fields = [
@@ -18,7 +17,11 @@ function AddStaff() {
       label: "Chức vụ",
       required: true,
       type: "select",
-      options: ["Nhân viên", "Quản lý", "Giám đốc"],
+      options: [
+        { value: "Nhân viên", label: "Nhân viên" },
+        { value: "Quản lý", label: "Quản lý" },
+        { value: "Giám đốc", label: "Giám đốc" },
+      ],
       xs: 12,
       sm: 6,
       md: 4,
@@ -63,7 +66,11 @@ function AddStaff() {
       label: "Phòng ban",
       required: false,
       type: "select",
-      options: ["Phòng ban 1", "Phòng ban 2", "Phòng ban 3"],
+      options: [
+        { value: "Phòng ban 1", label: "Phòng ban 1" },
+        { value: "Phòng ban 2", label: "Phòng ban 2" },
+        { value: "Phòng ban 3", label: "Phòng ban 3" },
+      ],
       xs: 12,
       sm: 6,
       md: 4,
@@ -75,7 +82,11 @@ function AddStaff() {
       label: "Cơ sở",
       required: false,
       type: "select",
-      options: ["Cơ sở 1", "Cơ sở 2", "Cơ sở 3"],
+      options: [
+        { value: "Cơ sở 1", label: "Cơ sở 1" },
+        { value: "Cơ sở 2", label: "Cơ sở 2" },
+        { value: "Cơ sở 3", label: "Cơ sở 3" },
+      ],
       xs: 12,
       sm: 6,
       md: 4,
@@ -85,7 +96,7 @@ function AddStaff() {
 
     {
       name: "startDate",
-      label: "........................................Ngày bắt đầu",
+      label: "Ngày bắt đầu",
       required: true,
       type: "date",
       xs: 12,
@@ -96,7 +107,7 @@ function AddStaff() {
     },
     {
       name: "endDate",
-      label: "........................................Ngày kết thúc",
+      label: "Ngày kết thúc",
       required: false,
       type: "date",
       xs: 12,
@@ -165,7 +176,7 @@ function AddStaff() {
         fields={fields}
         onSubmit={handleSubmit}
         initialValues={initialValues}
-        title="Add Staff"
+        title="Thêm nhân viên"
         formStyles={formStyles}
         fieldStyles={fieldStyles}
         buttonStyles={buttonStyles}

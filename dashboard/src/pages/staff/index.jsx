@@ -8,7 +8,7 @@ const handleDelete = (index) => {
 };
 const initialData = [
     {
-        id: 1,
+        id: 111,
         name: "Nguyễn Văn A",
         role: "Manager",
         sdt: "0912345678",
@@ -22,7 +22,7 @@ const initialData = [
         totalSalary: "25,000,000 VND",
     },
     {
-        id: 2,
+        id: 222,
         name: "Trần Thị B",
         role: "Developer",
         sdt: "0987654321",
@@ -36,7 +36,7 @@ const initialData = [
         totalSalary: "17,500,000 VND",
     },
     {
-        id: 3,
+        id: 333,
         name: "Lê Văn C",
         role: "Designer",
         sdt: "0932123456",
@@ -62,7 +62,6 @@ const columns = [
     { label: "Phòng ban", field: "department" },
     { label: "Cơ sở", field: "base" },
     { label: "Lương cố định", field: "fixedSalary" },
-    { label: " Hoa hồng", field: "commission" },
     { label: "Tổng lương", field: "totalSalary" },
 ]
 export default function StaffPage() {
