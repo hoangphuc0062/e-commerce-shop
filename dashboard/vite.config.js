@@ -1,8 +1,16 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+/* eslint-disable no-undef */
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
+import path from "path";
 
 export default defineConfig({
+  base: process.env.VITE_APP_BASE || "dashboard", // Use process.env in vite.config.js
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
   css: {
     preprocessorOptions: {
       scss: {
@@ -11,7 +19,6 @@ export default defineConfig({
     },
   },
   server: {
-    // eslint-disable-next-line no-undef
-    port: parseInt(process.env.VITE_PORT) || 3000, // Fallback to port 3000 if not defined
+    port: parseInt(process.env.VITE_APP_PORT) || 3000, // Use process.env in vite.config.js
   },
-})
+});

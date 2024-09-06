@@ -1,4 +1,4 @@
-import ReusableTable from "../../components/table";
+import ReusableTable from "@/components/table";
 
 function CategoryPage() {
   const handleEdit = (index) => {
