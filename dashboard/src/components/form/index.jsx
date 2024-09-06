@@ -59,6 +59,7 @@ const ReusableForm = ({
                   <InputLabel>{field.label}</InputLabel>
                   <Select
                     name={field.name}
+                    label={field.label}
                     value={formValues[field.name] || ""}
                     onChange={handleInputChange}
                     required={field.required}
@@ -80,6 +81,9 @@ const ReusableForm = ({
                   required={field.required}
                   type={field.type || "text"}
                   sx={fieldStyles}
+                  InputLabelProps={
+                    field.type === "date" ? { shrink: true } : {}
+                  }
                 />
               )}
             </Grid>
