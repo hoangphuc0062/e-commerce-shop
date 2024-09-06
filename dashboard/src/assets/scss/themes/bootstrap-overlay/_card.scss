@@ -1,10 +1,12 @@
 /**  =====================
       Custom css start
 ==========================  **/
+
 /* ==========  card css start  =========== */
 .anim-rotate {
   animation: anim-rotate 1s linear infinite;
 }
+
 @keyframes anim-rotate {
   100% {
     transform: rotate(360deg);
@@ -14,6 +16,7 @@
 .anim-close-card {
   animation: anim-close-card 1.4s linear;
 }
+
 @keyframes anim-close-card {
   100% {
     opacity: 0.3;
@@ -34,7 +37,7 @@
     border-bottom: $card-header-border;
     position: relative;
 
-    + .card-body {
+    +.card-body {
       padding-top: 0;
     }
 
@@ -56,6 +59,7 @@
       float: right;
       padding: 0;
       position: absolute;
+
       @media only screen and (max-width: 575px) {
         display: none;
       }
@@ -92,7 +96,7 @@
           outline: none;
         }
       }
-      // custom toggler
+
       .btn.dropdown-toggle {
         border: none;
         background: transparent;
@@ -132,6 +136,7 @@
     &:not([class*='bg-']) {
       background: transparent;
     }
+
     &[class*='bg-'] {
       border-top: none;
     }
@@ -170,5 +175,43 @@
   &.full-card {
     z-index: 99999;
     border-radius: 0;
+  }
+}
+
+// ============================
+// Dark Mode for Cards
+// ============================
+body.dark-mode {
+  .card {
+    background-color: $dark-card-background;
+    box-shadow: 0 0 15px -5px $dark-border-color;
+
+    &:hover {
+      box-shadow: 0 0 25px -5px darken($dark-border-color, 10%);
+    }
+
+    .card-header {
+      border-bottom: 1px solid $dark-border-color;
+
+      h5 {
+        color: $dark-text-color;
+      }
+
+      .btn.dropdown-toggle i {
+        color: lighten($dark-border-color, 20%);
+      }
+    }
+
+    .card-footer {
+      border-top: 1px solid $dark-border-color;
+    }
+
+    .card-loader {
+      background-color: rgba(18, 18, 18, 0.7);
+
+      i {
+        color: lighten($dark-text-color, 20%);
+      }
+    }
   }
 }
