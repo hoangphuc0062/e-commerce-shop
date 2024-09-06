@@ -17,6 +17,9 @@ import customerChart1 from "./chart/analytics-cuatomer-chart-1";
 // assets
 import OrderCard from "@/components/Widgets/OrderCard";
 import SocialCard from "@/components/Widgets/SocialCard";
+import barChartData from "./chart/barChartData";
+import comboChartData from "./chart/comboChartData";
+import candlestickChartData from "./chart/candlestickChartData";
 
 // ==============================|| DASHBOARD ANALYTICS ||============================== //
 
@@ -307,7 +310,158 @@ const DashAnalytics = () => {
             }}
           />
         </Col>
+        <Col lg={4} md={6}>
+          <SocialCard
+            params={{
+              icon: "fa fa-comment",
+              class: "red",
+              variant: "danger",
+              primaryTitle: "1.25k",
+              primaryText: "Bình luận",
+              secondaryText: "Danh sách chính của bạn đang phát triển",
+              label: "Xem tất cả bình luận",
+            }}
+          />
+          <SocialCard
+            params={{
+              icon: "fa fa-thumbs-up",
+              class: "yellow",
+              variant: "warning",
+              primaryTitle: "1.25k",
+              primaryText: "Thích",
+              secondaryText: "Danh sách chính của bạn đang phát triển",
+              label: "Xem tất cả thích",
+            }}
+          />
+        </Col>
+        <Col lg={4} md={12}>
+          <SocialCard
+            params={{
+              icon: "fa fa-share-alt",
+              class: "blue",
+              variant: "primary",
+              primaryTitle: "1.25k",
+              primaryText: "Chia sẻ",
+              secondaryText: "Danh sách chính của bạn đang phát triển",
+              label: "Xem tất cả chia sẻ",
+            }}
+          />
+          <SocialCard
+            params={{
+              icon: "fa fa-users",
+              class: "green",
+              variant: "success",
+              primaryTitle: "1.25k",
+              primaryText: "Người dùng",
+              secondaryText: "Danh sách chính của bạn đang phát triển",
+              label: "Xem tất cả người dùng",
+            }}
+          />
+        </Col>
+        <Col sm={12}>
+          <Card>
+            <Card.Header>
+              <Card.Title as="h5">Bảng xếp hạng</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              <Table responsive>
+                <thead>
+                  <tr>
+                    <th>STT</th>
+                    <th>Người dùng</th>
+                    <th>Doanh thu</th>
+                    <th>Đơn hàng</th>
+                    <th>Đánh giá</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>
+                      <h6 className="mb-1">John Deo</h6>
+                      <p className="m-0">Người dùng</p>
+                    </td>
+                    <td>$1256</td>
+                    <td>45</td>
+                    <td>23</td>
+                  </tr>
+                  <tr>
+                    <td>2</td>
+                    <td>
+                      <h6 className="mb-1">John Deo</h6>
+                      <p className="m-0">Người dùng</p>
+                    </td>
+                    <td>$1256</td>
+                    <td>45</td>
+                    <td>23</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>
+                      <h6 className="mb-1">John Deo</h6>
+                      <p className="m-0">Người dùng</p>
+                    </td>
+                    <td>$1256</td>
+                    <td>45</td>
+                    <td>23</td>
+                  </tr>
+                  <tr>
+                    <td>4</td>
+                    <td>
+                      <h6 className="mb-1">John Deo</h6>
+                      <p className="m-0">Người dùng</p>
+                    </td>
+                    <td>$1256</td>
+                    <td>45</td>
+                    <td>23</td>
+                  </tr>
+                  <tr>
+                    <td>5</td>
+                    <td>
+                      <h6 className="mb-1">John Deo</h6>
+                      <p className="m-0">Người dùng</p>
+                    </td>
+                    <td>$1256</td>
+                    <td>45</td>
+                    <td>23</td>
+                  </tr>
+                </tbody>
+              </Table>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col md={12} xl={12}>
+          <Card>
+            <Card.Header>
+              <h5>Khách truy cập duy nhất</h5>
+            </Card.Header>
+            <Card.Body className="ps-4 pt-4 pb-0">
+              <Chart {...barChartData} />
+            </Card.Body>
+          </Card>
+        </Col>
       </Row>
+      <Col md={12} xl={12}>
+        <Card>
+          <Card.Header>
+            <h5>Khách truy cập duy nhất</h5>
+          </Card.Header>
+          <Card.Body className="ps-4 pt-4 pb-0">
+            <Chart {...comboChartData} />
+          </Card.Body>
+        </Card>
+      </Col>
+      <Col md={12} xl={12}>
+        <Card>
+          <Card.Header>
+            <h5>Khách truy cập duy nhất</h5>
+          </Card.Header>
+          <Card.Body className="ps-4 pt-4 pb-0">
+            <Chart {...candlestickChartData} />
+          </Card.Body>
+        </Card>
+      </Col>
     </React.Fragment>
   );
 };
