@@ -1,23 +1,38 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import { useState } from "react";
 import Header from "./Header";
+import { useTheme } from "../../theme/ThemeProvider";
+import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 
 function DashboardLayout() {
-  const [darkMode, setDarkMode] = useState(false);
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
+  const layoutClasses = `flex min-h-screen  ${
+    isDarkMode ? "dark bg-gray-800" : "bg-background"
+  }`;
+
+  const user = {
+    name: "duc",
+    email: "duc@gmail.com",
   };
-
-  const layoutClasses = `flex h-screen ${darkMode ? "dark bg-gray-800" : "bg-background"}`;
 
   return (
     <div className={layoutClasses}>
       <Sidebar />
       <div className="flex-grow flex flex-col">
-        <Header toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
-        <main className="flex-grow p-10 dark:bg-gray-800">
+        <Header
+          toggleDarkMode={toggleDarkMode}
+          darkMode={isDarkMode}
+          user={user}
+        />
+
+        <main
+          className={`flex-grow p-10 ${
+            isDarkMode ? "dark:bg-gray-800" : "bg-background"
+          }`}
+        >
+          <Breadcrumbs />
+
           <Outlet />
         </main>
       </div>

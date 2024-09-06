@@ -9,6 +9,17 @@ import { BsTruck } from "react-icons/bs";
 import { FaPen } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { IoMdAddCircleOutline } from "react-icons/io";
+
+import { FaAngleDoubleRight } from "react-icons/fa";
+import { FaAngleDoubleLeft } from "react-icons/fa";
+
+import { IoEyeOffOutline } from "react-icons/io5";
+import { IoEyeOutline } from "react-icons/io5";
+import { FcGoogle } from "react-icons/fc";
+import { FaFacebook } from "react-icons/fa";
+
+import { CiUser } from "react-icons/ci";
+
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
@@ -17,10 +28,21 @@ const icons = {
   AiOutlinePhone, // phone
   BsGeoAlt, // vị trí
   BsTruck,
-  FaPen,// icon edit
-  MdDelete,// icon delete
-  IoMdAddCircleOutline,// icon add
 
+  FaPen, // icon edit
+  MdDelete, // icon delete
+  IoMdAddCircleOutline, // icon add
+  FaAngleDoubleLeft, // icon back
+  FaAngleDoubleRight, // icon next
+
+  FaPen, // icon edit
+  MdDelete, // icon delete
+  IoMdAddCircleOutline, // icon add
+  CiUser,
+  IoEyeOffOutline,
+  IoEyeOutline,
+  FcGoogle,
+  FaFacebook,
 };
 
 export default icons;
