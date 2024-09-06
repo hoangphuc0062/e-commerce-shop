@@ -8,6 +8,7 @@ body {
   font-weight: 400;
   background: $theme-background;
   position: relative;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 * {
@@ -262,3 +263,18 @@ strong {
   }
 }
 /* ================================    Blockquote End  ===================== */
+body.dark-mode {
+  background-color: $dark-background;
+  color: $dark-text-color;
+  transition: background-color 0.3s, color 0.3s;
+
+  .header {
+    background-color: $dark-header-background;
+    color: $dark-header-text-color;
+  }
+
+  .menu {
+    background-color: $dark-menu-background;
+    color: $dark-menu-text-color;
+  }
+}
