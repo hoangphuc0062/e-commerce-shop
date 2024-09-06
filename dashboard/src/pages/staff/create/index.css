@@ -1,0 +1,11 @@
+.label-right-align {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 10px;
+    text-align: right;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+}
