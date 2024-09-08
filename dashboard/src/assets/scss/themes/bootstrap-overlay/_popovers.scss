@@ -3,14 +3,39 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    padding: 10px; // Bạn có thể thêm padding cho tooltip nhỏ
+    background-color: $theme-background; // Màu nền tương ứng với light mode
+    color: $theme-font-color; // Màu chữ tương ứng
   }
+
   .popover-sm {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    padding: 10px; // Thêm padding nếu cần
+    background-color: $theme-background;
+    color: $theme-font-color;
   }
+
   .position-sm {
     left: 275px;
     position: absolute;
+  }
+
+  // Dark Mode Support
+  body.dark-mode {
+    .tooltip-sm {
+      background-color: $dark-background;
+      color: $dark-text-color;
+    }
+
+    .popover-sm {
+      background-color: $dark-background;
+      color: $dark-text-color;
+    }
+
+    .position-sm {
+      left: 275px; // Vị trí giữ nguyên trong dark mode
+    }
   }
 }
