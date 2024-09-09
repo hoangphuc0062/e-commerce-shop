@@ -21,6 +21,10 @@ import { SiZalo } from "react-icons/si";
 import { CiUser } from "react-icons/ci";
 import { FaTiktok } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
+import { CiHeadphones } from "react-icons/ci";
+import { CiHome } from "react-icons/ci";
+import { CiViewList } from "react-icons/ci";
+import { CiHeart } from "react-icons/ci";
 
 const icons = {
   AiOutlineSearch, // kinh lup
@@ -37,9 +41,6 @@ const icons = {
   FaAngleDoubleLeft, // icon back
   FaAngleDoubleRight, // icon next
 
-  FaPen, // icon edit
-  MdDelete, // icon delete
-  IoMdAddCircleOutline, // icon add
   CiUser,
   IoEyeOffOutline,
   IoEyeOutline,
@@ -48,6 +49,10 @@ const icons = {
   SiZalo,
   FaTiktok,
   FaYoutube,
+  CiHeadphones,
+  CiHome,
+  CiViewList,
+  CiHeart,
 };
 
 export default icons;
