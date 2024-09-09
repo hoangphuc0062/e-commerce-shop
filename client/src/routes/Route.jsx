@@ -1,6 +1,7 @@
 import { useRoutes } from "react-router-dom";
 import HomePage from "../pages/web/home";
 import PublicLayout from "../Layout/PublicLayout/Index";
+import ForumLayout from "../Layout/ForumLayout/index";
 import { NotFound } from "../pages/404/NotFound";
 import { Login } from "../pages/auth/Login";
 import { Register } from "../pages/auth/Register";
@@ -19,7 +20,7 @@ export default function RootRouter() {
     {
       path: "/forum",
       element: <ForumLayout />,
-      children: [{ path: "", element: <ForumPage /> }],
+      // children: [{ path: "", element: <ForumPage /> }],
     },
     {
       path: "*",
