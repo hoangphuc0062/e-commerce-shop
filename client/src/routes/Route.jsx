@@ -1,12 +1,8 @@
 import { useRoutes } from "react-router-dom";
 
-import DashboardPage from "../pages/admin/home";
 import HomePage from "../pages/web/home";
-import DashboardLayout from "../Layout/DashboardLayout/Index";
 import PublicLayout from "../Layout/PublicLayout/Index";
-import CategoryList from "../pages/admin/category";
 import { NotFound } from "../pages/404/NotFound";
-import PrivateRoute from "./PrivateRoute";
 import { Login } from "../pages/auth/Login";
 import { Register } from "../pages/auth/Register";
 
