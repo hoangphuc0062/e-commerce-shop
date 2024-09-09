@@ -17,6 +17,11 @@ export default function RootRouter() {
       ],
     },
     {
+      path: "/forum",
+      element: <ForumLayout />,
+      children: [{ path: "", element: <ForumPage /> }],
+    },
+    {
       path: "*",
       element: <NotFound />,
     },
