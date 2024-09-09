@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import icons from "../../../ultils/icon";
 
 const Footer = () => {
@@ -46,26 +47,23 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-
-        <div className="mt-8 text-center text-sm">
-          <p className="mb-2">
-            © Công Ty TNHH Thương Mại Và Dịch Vụ Kỹ Thuật Diệu Phúc - GPĐKKD:
-            0316172372 do sở KH & ĐT TP. HCM cấp ngày 02/03/2020 - Giấy phép
-            thiết lập MXH số 497/GP-BTTTT do Bộ Thông tin và Truyền thông cấp
-            ngày 17/7/2021 - Địa chỉ: 160/2 Y-Moal Êmuol, P.Tân An TP.Buôn Ma
-            Thuật - Điện thoại: 0793.665.088.
+        <hr className="my-10 border-gray-400" />
+        <div className="flex flex-wrap max-md:flex-col gap-4">
+          <ul className="md:flex md:space-x-6 max-md:space-y-2">
+            {["Điều khoản dịch vụ", "Chính sách bảo mật"].map((item) => (
+              <li key={item}>
+                <Link
+                  to="javascript:void(0)"
+                  className="hover:text-white text-gray-300 text-sm"
+                >
+                  {item}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="text-gray-300 text-sm md:ml-auto">
+            © Team Voi Tây Nguyên 2024
           </p>
-          <p className="mb-2">
-            Bản quyền nội dung thuộc về Sforum.vn (hoặc Công Ty TNHH Thương Mại
-            Và Dịch Vụ Kỹ Thuật Voi Tây Nguyên).Không được sao chép khi chưa
-            được chấp thuận bằng văn bản.
-          </p>
-          {/*  Image logo of DMCA here */}
-          {/* <img
-            src="/images/dmca.png"
-            alt="DMCA Protected"
-            className="mx-auto mt-4"
-          /> */}
         </div>
       </div>
     </footer>
