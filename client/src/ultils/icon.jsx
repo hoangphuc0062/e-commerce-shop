@@ -19,7 +19,10 @@ import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
 
 import { CiUser } from "react-icons/ci";
-
+import { CiHeadphones } from "react-icons/ci";
+import { CiHome } from "react-icons/ci";
+import { CiViewList } from "react-icons/ci";
+import { CiHeart } from "react-icons/ci";
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
@@ -43,6 +46,10 @@ const icons = {
   IoEyeOutline,
   FcGoogle,
   FaFacebook,
+  CiHeadphones,
+  CiHome,
+  CiViewList,
+  CiHeart,
 };
 
 export default icons;
