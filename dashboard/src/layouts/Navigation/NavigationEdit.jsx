@@ -3,12 +3,10 @@ import React, { useContext } from "react";
 // project import
 import useWindowSize from "../../hooks/useWindowSize";
 import NavContent from "./NavContent";
-import navigation from "../data-menu/menu-items";
+import navigation from "../data-menu/menu-edit";
 import { ConfigContext } from "../../contexts/ConfigContext";
 
-// ==============================|| NAVIGATION ||============================== //
-
-const Navigation = () => {
+export default function NavigationEdit() {
   const configContext = useContext(ConfigContext);
   const { layoutType, collapseMenu } = configContext.state;
   const windowSize = useWindowSize();
@@ -45,6 +43,4 @@ const Navigation = () => {
       <nav className={navClass.join(" ")}>{navContent}</nav>
     </React.Fragment>
   );
-};
-
-export default Navigation;
+}
