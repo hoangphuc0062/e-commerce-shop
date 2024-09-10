@@ -7,13 +7,6 @@ const menuItems = {
       icon: "icon-navigation",
       children: [
         {
-          id: "dashboard",
-          title: "Quản lý",
-          type: "item",
-          icon: "feather icon-home",
-          url: "/dashboard",
-        },
-        {
           id: "categories",
           title: "Danh mục",
           type: "collapse",

@@ -4,18 +4,15 @@ import * as actionType from "../store/actions";
 import useWindowSize from "./../hooks/useWindowSize";
 import useOutsideClick from "./../hooks/useOutsideClick";
 import Breadcrumb from "./Breadcrumb";
-import Navigation from "./Navigation";
-import NavBar from "./NavBar";
 import { ConfigContext } from "../contexts/ConfigContext";
 import { Outlet } from "react-router-dom";
+import getNavigationByRole from "./role";
 
 const AdminLayout = () => {
   const windowSize = useWindowSize();
   const ref = useRef();
-  const configContext = useContext(ConfigContext);
-
-  const { collapseMenu, layout } = configContext.state;
-  const { dispatch } = configContext;
+  const { state, dispatch } = useContext(ConfigContext);
+  const { collapseMenu, layout } = state;
 
   useOutsideClick(ref, () => {
     if (collapseMenu) {
@@ -39,38 +36,30 @@ const AdminLayout = () => {
     }
   };
 
-  let mainClass = ["pcoded-wrapper"];
+  const role = JSON.parse(localStorage.getItem("role"));
+  const common = getNavigationByRole(role);
 
-  let common = (
-    <React.Fragment>
-      <Navigation />
-      <NavBar />
-    </React.Fragment>
-  );
-
-  if (windowSize.width < 992) {
-    let outSideClass = ["nav-outside"];
-    if (collapseMenu) {
-      outSideClass = [...outSideClass, "mob-backdrop"];
-    }
-    outSideClass = [...outSideClass, "mob-fixed"];
-
-    common = (
-      <div className={outSideClass.join(" ")} ref={ref}>
-        {common}
-      </div>
-    );
+  let outSideClass = ["nav-outside"];
+  if (collapseMenu) {
+    outSideClass = [...outSideClass, "mob-backdrop"];
   }
+  outSideClass = [...outSideClass, "mob-fixed"];
 
   return (
     <React.Fragment>
-      {common}
+      {windowSize.width < 992 ? (
+        <div className={outSideClass.join(" ")} ref={ref}>
+          {common}
+        </div>
+      ) : (
+        common
+      )}
       <div
         className="pcoded-main-container"
-        onClick={() => mobileOutClickHandler}
-        onKeyDown={() => mobileOutClickHandler}
+        onClick={mobileOutClickHandler}
+        onKeyDown={mobileOutClickHandler}
       >
-        <div className={mainClass.join(" ")}>
+        <div className="pcoded-wrapper">
           <div className="pcoded-content">
             <div className="pcoded-inner-content">
               <Breadcrumb />
@@ -82,4 +71,5 @@ const AdminLayout = () => {
     </React.Fragment>
   );
 };
+
 export default AdminLayout;
