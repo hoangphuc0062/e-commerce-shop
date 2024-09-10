@@ -3,24 +3,27 @@ import icons from "../../ultils/icon";
 import { GroupInput } from "../Input/GroupInput";
 import { Account } from "../Button/Account";
 import { Cart } from "../Button/Cart";
+import { BottomNavigation } from "./BottonNavigation";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const { AiOutlinePhone, BsGeoAlt, BsTruck } = icons;
   return (
     <header className="bg-main">
-      <div className="container text-semi p-3">
+      <div className="container text-semi p-3 w-full">
         <nav className="grid grid-flow-col gap-4 items-center">
           <div>
             {/* logo area */}
-            <a
-              href="#"
+            <Link
+              to={"/"}
               className="flex items-center space-x-3 rtl:space-x-reverse"
             >
               <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
                 Logo
               </span>
-            </a>
+            </Link>
           </div>
+          <div></div>
           <div>
             <GroupInput />
           </div>
@@ -37,6 +40,8 @@ const Navbar = () => {
             <Account />
           </div>
         </nav>
+        {/* mobile */}
+        <BottomNavigation />
       </div>
     </header>
   );
