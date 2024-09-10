@@ -10,18 +10,32 @@ const Footer = () => {
           <div>
             <h2 className="text-xl font-bold mb-4">KẾT NỐI VỚI SFORUM</h2>
             <div className="flex space-x-4">
-              <FaFacebook className="text-2xl text-white" />
-              <SiZalo className="text-2xl text-white" />
-              <FaTiktok className="text-2xl text-white" />
-              <FaYoutube className="text-2xl text-white" />
+              <Link to="">
+                <FaFacebook className="text-2xl text-white" />
+              </Link>
+              <Link to="">
+                <SiZalo className="text-2xl text-white" />
+              </Link>
+              <Link to="">
+                <FaTiktok className="text-2xl text-white" />
+              </Link>
+              <Link to="">
+                <FaYoutube className="text-2xl text-white" />
+              </Link>
             </div>
           </div>
 
           <div>
             <ul>
-              <li className="mb-2">Giới Thiệu Sforum</li>
-              <li className="mb-2">Chính sách bảo mật thông tin người dùng</li>
-              <li className="mb-2">Liên hệ</li>
+              <li className="mb-2">
+                <Link to="">Giới Thiệu Sforum</Link>
+              </li>
+              <li className="mb-2">
+                <Link to="">Chính sách bảo mật thông tin người dùng</Link>
+              </li>
+              <li className="mb-2">
+                <Link to="">Liên hệ</Link>
+              </li>
             </ul>
           </div>
 
@@ -30,19 +44,27 @@ const Footer = () => {
             <ul>
               <li className="mb-2">
                 Hệ thống bán lẻ di động toàn quốc:{" "}
-                <span className="text-red-500">Voi Tay Nguyen</span>
+                <span className="text-red-500">
+                  <Link to="">Voi Tay Nguyen</Link>
+                </span>
               </li>
               <li className="mb-2">
                 Kênh thông tin giải trí công nghệ cho giới trẻ:{" "}
-                <span className="text-red-500">Voi Tay Nguyen</span>
+                <span className="text-red-500">
+                  <Link to="">Voi Tay Nguyen</Link>
+                </span>
               </li>
               <li className="mb-2">
                 Hệ thống bảo hành sửa chữa Điện thoại - Máy tính:{" "}
-                <span className="text-red-500">Voi Tay Nguyen</span>
+                <span className="text-red-500">
+                  <Link to="">Voi Tay Nguyen</Link>
+                </span>
               </li>
               <li className="mb-2">
                 Trung tâm bảo hành ủy quyền Apple:{" "}
-                <span className="text-blue-500">Voi Tay Nguyen</span>
+                <span className="text-blue-500">
+                  <Link to="">Voi Tay Nguyen</Link>
+                </span>
               </li>
             </ul>
           </div>
