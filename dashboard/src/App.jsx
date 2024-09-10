@@ -1,9 +1,12 @@
+import { AuthProvider } from "./contexts/AuthContext";
 import "./index.scss";
 import RootRouter from "./routes";
 function App() {
   return (
     <>
-      <RootRouter />
+      <AuthProvider>
+        <RootRouter />
+      </AuthProvider>
     </>
   );
 }
