@@ -1,33 +1,31 @@
-import { useRoutes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import AdminLayout from "../layouts";
-import HomePage from "../pages/home";
-import CategoryPage from "../pages/category";
-import AddCategory from "../pages/category/create";
-
-import StaffPage from "../pages/staff";
-import AddStaff from "../pages/staff/create";
-
-import UploadImage from "../pages/TestFilebase";
-import { NotFound } from "../pages/404";
-
+import AdminRoute from "./AdminRoute";
+import ErrorRoute from "./ErrorRoute";
+import EditorRoute from "./EditorRoute";
+import PrivateRoute from "./PrivateRoute";
 export default function RootRouter() {
-  const routes = useRoutes([
-    {
-      path: "/dashboard",
-      element: <AdminLayout />,
-      children: [
-        { index: true, element: <HomePage /> }, //
-        { path: "category", element: <CategoryPage /> },
-        { path: "category/create", element: <AddCategory /> },
+  return (
+    <Routes>
+      {/* Admin layout wrapper */}
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute
+            element={<AdminLayout />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      >
+        {/* superadmin routes */}
+        {AdminRoute()}
 
-        { path: "staff", element: <StaffPage /> },
-        { path: "staff/create", element: <AddStaff /> },
+        {/* admin routes */}
+        {EditorRoute()}
+      </Route>
 
-        { path: "test", element: <UploadImage /> },
-      ],
-    },
-    { path: "*", element: <NotFound /> },
-  ]);
-
-  return routes;
+      {/* Error routes */}
+      {ErrorRoute()}
+    </Routes>
+  );
 }
