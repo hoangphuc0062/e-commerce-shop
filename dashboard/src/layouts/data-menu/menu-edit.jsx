@@ -7,13 +7,6 @@ const menuItems = {
       icon: "icon-navigation",
       children: [
         {
-          id: "dashboard",
-          title: "Quản lý",
-          type: "item",
-          icon: "feather icon-home",
-          url: "/dashboard",
-        },
-        {
           id: "categories",
           title: "Danh mục",
           type: "collapse",
@@ -89,13 +82,14 @@ const menuItems = {
               id: "add-personnel",
               title: "Thêm nhân viên",
               type: "item",
-              url: "/dashboard/personnel/create",
+              // url: "dashboard/staff/create",
+              url: "/dashboard/staff/create",
             },
             {
               id: "personnel-list",
               title: "Danh sách nhân viên",
               type: "item",
-              url: "/dashboard/personnel",
+              url: "/dashboard/staff",
             },
           ],
         },

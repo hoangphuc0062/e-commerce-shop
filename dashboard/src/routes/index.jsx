@@ -1,21 +1,31 @@
-import { useRoutes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import AdminLayout from "../layouts";
-import HomePage from "../pages/home";
-import CategoryPage from "../pages/category";
-import AddCategory from "../pages/category/create";
-
+import AdminRoute from "./AdminRoute";
+import ErrorRoute from "./ErrorRoute";
+import EditorRoute from "./EditorRoute";
+import PrivateRoute from "./PrivateRoute";
 export default function RootRouter() {
-  const routes = useRoutes([
-    {
-      path: "/dashboard",
-      element: <AdminLayout />,
-      children: [
-        { index: true, element: <HomePage /> }, //
-        { path: "category", element: <CategoryPage /> },
-        { path: "category/create", element: <AddCategory /> },
-      ],
-    },
-  ]);
+  return (
+    <Routes>
+      {/* Admin layout wrapper */}
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute
+            element={<AdminLayout />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      >
+        {/* superadmin routes */}
+        {AdminRoute()}
 
-  return routes;
+        {/* admin routes */}
+        {EditorRoute()}
+      </Route>
+
+      {/* Error routes */}
+      {ErrorRoute()}
+    </Routes>
+  );
 }

@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 // project import
 import useWindowSize from "../../hooks/useWindowSize";
 import NavContent from "./NavContent";
-import navigation from "../menu-items";
+import navigation from "../data-menu/menu-items";
 import { ConfigContext } from "../../contexts/ConfigContext";
 
 // ==============================|| NAVIGATION ||============================== //

@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
 // react-bootstrap
-import { ListGroup } from 'react-bootstrap';
+import { ListGroup } from "react-bootstrap";
 
 // project import
-import NavSearch from './NavSearch';
+import NavSearch from "./NavSearch";
 
 // ==============================|| NAV LEFT ||============================== //
 
@@ -15,6 +15,11 @@ const NavLeft = () => {
         <ListGroup.Item as="li" bsPrefix=" " className="nav-item">
           <NavSearch />
         </ListGroup.Item>
+        <ListGroup.Item
+          as="li"
+          bsPrefix=" "
+          className="nav-item"
+        ></ListGroup.Item>
       </ListGroup>
     </React.Fragment>
   );

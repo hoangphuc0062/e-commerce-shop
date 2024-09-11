@@ -10,9 +10,9 @@ const Footer = () => {
   return (
     <section className="bg-main font-sans">
       <footer className="font-sans tracking-wide px-8 py-12 container">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-10">
-          <div>
-            <Link to="javascript:void(0)">
+        <div className="grid grid-cols-1  lg:grid-cols-5 gap-x-6 gap-y-10">
+          <div className="md:col-span-1">
+            <Link to="/">
               <img
                 src="https://readymadeui.com/readymadeui-white.svg"
                 alt="logo"
@@ -32,7 +32,7 @@ const Footer = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   width="16px"
                   height="16px"
-                  className={`absolute right-0 top-1 fill-[#d6d6d6] sm:hidden transition-transform transform ${
+                  className={`absolute right-0 top-1 fill-[#d6d6d6] lg:hidden transition-transform transform ${
                     expandedSection === title ? "rotate-180" : ""
                   }`}
                   viewBox="0 0 24 24"
@@ -42,14 +42,14 @@ const Footer = () => {
               </h4>
 
               <ul
-                className={`mt-6 space-y-5 sm:block ${
+                className={`mt-6 space-y-5 lg:block ${
                   expandedSection === title ? "block" : "hidden"
                 }`}
               >
                 {links.map((link) => (
                   <li key={link}>
                     <Link
-                      to="javascript:void(0)"
+                      to="/"
                       className="hover:text-white text-gray-300 text-sm"
                     >
                       {link}
@@ -67,10 +67,7 @@ const Footer = () => {
           <ul className="md:flex md:space-x-6 max-md:space-y-2">
             {["Điều khoản dịch vụ", "Chính sách bảo mật"].map((item) => (
               <li key={item}>
-                <Link
-                  to="javascript:void(0)"
-                  className="hover:text-white text-gray-300 text-sm"
-                >
+                <Link to="/" className="hover:text-white text-gray-300 text-sm">
                   {item}
                 </Link>
               </li>
