@@ -36,6 +36,16 @@ import { BiLike } from "react-icons/bi";
 import { PiChatsCircleLight } from "react-icons/pi";
 import { CiDiscount1 } from "react-icons/ci";
 import { MdOutlinePersonSearch } from "react-icons/md";
+
+import { IoPhonePortraitOutline } from "react-icons/io5";
+import { IoIosLaptop } from "react-icons/io";
+import { BsSmartwatch } from "react-icons/bs";
+import { CiUsb } from "react-icons/ci";
+import { MdOutlineScreenshotMonitor } from "react-icons/md";
+import { PiSpeakerHifiLight } from "react-icons/pi";
+import { BsNewspaper } from "react-icons/bs";
+
+
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
@@ -76,6 +86,15 @@ const icons = {
   PiChatsCircleLight,
   CiDiscount1,
   MdOutlinePersonSearch,
+
+  IoPhonePortraitOutline,
+  IoIosLaptop,
+  BsSmartwatch,
+  CiUsb,
+  MdOutlineScreenshotMonitor,
+  PiSpeakerHifiLight,
+  BsNewspaper,
+
 };
 
 export default icons;
