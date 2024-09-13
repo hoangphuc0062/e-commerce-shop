@@ -27,6 +27,16 @@ import { CiHeadphones } from "react-icons/ci";
 import { CiHome } from "react-icons/ci";
 import { CiViewList } from "react-icons/ci";
 
+import { PiNotepadBold } from "react-icons/pi";
+import { TbWorldSearch } from "react-icons/tb";
+import { IoGameControllerOutline, IoTrendingUp } from "react-icons/io5";
+import { MdOutlineSignpost } from "react-icons/md";
+import { FaComputer } from "react-icons/fa6";
+import { BiLike } from "react-icons/bi";
+import { PiChatsCircleLight } from "react-icons/pi";
+import { CiDiscount1 } from "react-icons/ci";
+import { MdOutlinePersonSearch } from "react-icons/md";
+
 import { IoPhonePortraitOutline } from "react-icons/io5";
 import { IoIosLaptop } from "react-icons/io";
 import { BsSmartwatch } from "react-icons/bs";
@@ -34,6 +44,7 @@ import { CiUsb } from "react-icons/ci";
 import { MdOutlineScreenshotMonitor } from "react-icons/md";
 import { PiSpeakerHifiLight } from "react-icons/pi";
 import { BsNewspaper } from "react-icons/bs";
+
 
 const icons = {
   AiOutlineSearch, // kinh lup
@@ -65,6 +76,17 @@ const icons = {
   CiViewList,
   CiHeart,
 
+  PiNotepadBold,
+  TbWorldSearch,
+  IoGameControllerOutline,
+  MdOutlineSignpost,
+  FaComputer,
+  BiLike,
+  IoTrendingUp,
+  PiChatsCircleLight,
+  CiDiscount1,
+  MdOutlinePersonSearch,
+
   IoPhonePortraitOutline,
   IoIosLaptop,
   BsSmartwatch,
@@ -72,6 +94,7 @@ const icons = {
   MdOutlineScreenshotMonitor,
   PiSpeakerHifiLight,
   BsNewspaper,
+
 };
 
 export default icons;
