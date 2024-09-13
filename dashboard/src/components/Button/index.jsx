@@ -1,5 +1,6 @@
 import Button from "@mui/material/Button";
-import propTypes from "prop-types";
+import PropTypes from "prop-types";
+
 const CustomButton = ({
   label,
   onClick,
@@ -22,13 +23,23 @@ const CustomButton = ({
     </Button>
   );
 };
+
 CustomButton.propTypes = {
-  label: propTypes.string.isRequired,
-  onClick: propTypes.func.isRequired,
-  variant: propTypes.string,
-  color: propTypes.string,
-  size: propTypes.string,
-  icons: propTypes.element,
-  style: propTypes.object,
+  label: PropTypes.string.isRequired,
+  onClick: PropTypes.func,
+  variant: PropTypes.oneOf(["text", "outlined", "contained"]), // Restrict variant values
+  color: PropTypes.oneOf([
+    "inherit",
+    "primary",
+    "secondary",
+    "success",
+    "error",
+    "info",
+    "warning",
+  ]), // Restrict color values
+  size: PropTypes.oneOf(["small", "medium", "large"]),
+  icons: PropTypes.element,
+  style: PropTypes.object,
 };
+
 export default CustomButton;
