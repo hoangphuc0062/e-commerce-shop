@@ -6,6 +6,7 @@ import SliderPost from "../../../components/Forum/SliderPost";
 import Sidebar from "../../../components/Forum/Sidebar";
 import PostScroll from "../../../components/Forum/PostScroll";
 import PostList from "../../../components/Forum/PostList";
+import SmallPost from "../../../components/Forum/SmallPost"; // Added SmallPost import
 import { Link } from "react-router-dom";
 
 function ForumPage() {
@@ -24,28 +25,26 @@ function ForumPage() {
         <Sidebar />
       </div>
 
-      {/* Phần nội dung chính */}
       <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col">
         <section className="flex-grow px-4">
-          {/* Chủ đề hot */}
           <section className="mb-8">
             <HeadingSection title="Chủ Đề hot" />
             <TopicCard />
           </section>
 
-          {/* Nổi bật nhất */}
           <section className="mb-8">
             <HeadingSection title="Nổi bật nhất" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="w-full">
                 <FeaturedPost />
               </div>
-              <div className="space-y-4">{/* <SmallPost /> */}</div>
+              <div className="space-y-4">
+                <SmallPost />
+              </div>
             </div>
           </section>
         </section>
 
-        {/* Slider xem nhiều tuần qua */}
         <div>
           <section className="mb-8 p-4">
             <HeadingSection title="xem nhiều tuần qua" />
@@ -53,7 +52,6 @@ function ForumPage() {
           </section>
         </div>
 
-        {/* Tin tức mới nhất và trending */}
         <section className="mb-8 p-4">
           <div className="md:flex md:space-x-8">
             <div className="md:w-1/2">
@@ -75,7 +73,6 @@ function ForumPage() {
           </div>
         </section>
 
-        {/* Phần S-GAMES */}
         <section className="mb-8 px-4 bg-gray-200 border-2 w-full rounded-lg">
           <HeadingSection title="S-GAMES" />
           <SliderPost />
