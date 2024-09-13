@@ -4,6 +4,8 @@ import AdminRoute from "./AdminRoute";
 import ErrorRoute from "./ErrorRoute";
 import EditorRoute from "./EditorRoute";
 import PrivateRoute from "./PrivateRoute";
+import Testform from "../pages/testform";
+import UploadImage from "../pages/TestFilebase";
 export default function RootRouter() {
   return (
     <Routes>
@@ -26,6 +28,9 @@ export default function RootRouter() {
 
       {/* Error routes */}
       {ErrorRoute()}
+
+      <Route path="/dashboard/test" element={<Testform />} />
+      <Route path="/dashboard/uploadImage" element={<UploadImage />} />
     </Routes>
   );
 }

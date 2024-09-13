@@ -1,12 +1,36 @@
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import {
+  getDownloadURL,
+  ref,
+  uploadBytesResumable,
+  deleteObject,
+} from "firebase/storage";
 import { useState } from "react";
 import { imageDb } from "../config/firebase";
 import { v4 as uuidv4 } from "uuid";
+import {
+  Box,
+  IconButton,
+  Typography,
+  LinearProgress,
+  Avatar,
+  Button,
+} from "@mui/material";
+import UploadIcon from "@mui/icons-material/PhotoCamera";
+import DeleteIcon from "@mui/icons-material/Delete";
+import propTypes from "prop-types";
 
-const UploadImage = () => {
+const ImageUploader = ({
+  onUploadComplete,
+  onDelete,
+  buttonComponent: CustomButton,
+  avatarSize = 120,
+  error,
+  helperText,
+}) => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [downloadURL, setDownloadURL] = useState(null);
+  const [imageRef, setImageRef] = useState(null);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -17,7 +41,6 @@ const UploadImage = () => {
 
     setUploading(true);
 
-    // Monitor the upload progress
     uploadTask.on(
       "state_changed",
       (snapshot) => {
@@ -30,69 +53,112 @@ const UploadImage = () => {
         setUploading(false);
       },
       () => {
-        // Get the download URL when the upload is complete
         getDownloadURL(uploadTask.snapshot.ref).then((url) => {
           setDownloadURL(url);
+          setImageRef(storageRef);
           setUploading(false);
-          console.log("File available at", url);
+          if (onUploadComplete) onUploadComplete(url);
         });
       }
     );
   };
 
+  const handleDelete = () => {
+    if (!imageRef) return;
+
+    deleteObject(imageRef)
+      .then(() => {
+        console.log("File deleted successfully");
+        setDownloadURL(null);
+        setImageRef(null);
+        if (onDelete) onDelete();
+      })
+      .catch((error) => {
+        console.error("Error deleting file:", error);
+      });
+  };
+
   return (
-    <div className="text-center">
-      <label
-        htmlFor="uploadFile1"
-        className="bg-white text-secondary font-weight-semibold text-base rounded d-flex flex-column justify-content-center align-items-center cursor-pointer border border-secondary border-dashed mx-auto"
-        style={{ maxWidth: "24rem", height: "13rem", fontFamily: "sans-serif" }}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-25 mb-2"
-          viewBox="0 0 32 32"
-          style={{ fill: "#6c757d" }} // Bootstrap secondary color
+    <Box textAlign="center" p={3}>
+      <input
+        type="file"
+        id="uploadFile"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={handleFileUpload}
+      />
+      <label htmlFor="uploadFile">
+        <Box
+          sx={{
+            width: avatarSize + 30,
+            height: avatarSize + 30,
+            borderRadius: "50%",
+            backgroundColor: "#f0f0f0",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            cursor: "pointer",
+            margin: "0 auto",
+          }}
         >
-          <path
-            d="M23.75 11.044a7.99 7.99 0 0 0-15.5-.009A8 8 0 0 0 9 27h3a1 1 0 0 0 0-2H9a6 6 0 0 1-.035-12 1.038 1.038 0 0 0 1.1-.854 5.991 5.991 0 0 1 11.862 0A1.08 1.08 0 0 0 23 13a6 6 0 0 1 0 12h-3a1 1 0 0 0 0 2h3a8 8 0 0 0 .75-15.956z"
-            fill="#000000"
-          />
-          <path
-            d="M20.293 19.707a1 1 0 0 0 1.414-1.414l-5-5a1 1 0 0 0-1.414 0l-5 5a1 1 0 0 0 1.414 1.414L15 16.414V29a1 1 0 0 0 2 0V16.414z"
-            fill="#000000"
-          />
-        </svg>
-        Upload file
-        <input
-          type="file"
-          id="uploadFile1"
-          className="d-none"
-          onChange={handleFileUpload}
-        />
-        <p className="text-xs font-weight-medium text-muted mt-2">
-          PNG, JPG, SVG, WEBP, and GIF are allowed.
-        </p>
+          <IconButton component="span">
+            <Avatar
+              sx={{
+                width: avatarSize,
+                height: avatarSize,
+                backgroundColor: "#d3d3d3",
+                color: "#6c757d",
+              }}
+              src={downloadURL || ""}
+            >
+              {!downloadURL && <UploadIcon fontSize="large" />}{" "}
+            </Avatar>
+          </IconButton>
+        </Box>
       </label>
+      <Typography variant="body2" color="textSecondary" mt={2}>
+        Cho phép PNG, JPG, SVG, WEBP và GIF.
+      </Typography>
 
-      {/* Progress bar */}
-      {uploading && <p>Uploading: {progress}%</p>}
-
-      {/* Display the download URL */}
-      {downloadURL && (
-        <div className="mt-4">
-          <p>File uploaded successfully!</p>
-          <a
-            href={downloadURL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary"
-          >
-            View Uploaded File
-          </a>
-        </div>
+      {uploading && (
+        <Box mt={2} width="100%" maxWidth={300} mx="auto">
+          <LinearProgress variant="determinate" value={progress} />
+          <Typography variant="body2" mt={1}>
+            Đang tải lên: {progress.toFixed(0)}%
+          </Typography>
+        </Box>
       )}
-    </div>
+      {error && (
+        <Typography variant="body2" color="error" mt={1}>
+          {helperText}
+        </Typography>
+      )}
+      {downloadURL && (
+        <Box mt={4}>
+          {CustomButton ? (
+            <CustomButton onClick={handleDelete} />
+          ) : (
+            <Button
+              variant="contained"
+              color="error"
+              startIcon={<DeleteIcon />}
+              onClick={handleDelete}
+            >
+              Xóa ảnh
+            </Button>
+          )}
+        </Box>
+      )}
+    </Box>
   );
 };
 
-export default UploadImage;
+ImageUploader.propTypes = {
+  onUploadComplete: propTypes.func,
+  onDelete: propTypes.func,
+  buttonComponent: propTypes.elementType,
+  avatarSize: propTypes.number,
+  error: propTypes.bool,
+  helperText: propTypes.string,
+};
+export default ImageUploader;
