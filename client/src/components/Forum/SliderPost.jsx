@@ -55,7 +55,7 @@ const SliderPost = () => {
               <img
                 src={post.imageUrl}
                 alt={post.title}
-                className="w-full h-36 object-cover"
+                className="w-full h-36 object-cover md:h-48 lg:h-60"
               />
               <div className="p-3">
                 <h3 className="text-base font-semibold mb-1 line-clamp-2">
@@ -73,16 +73,38 @@ const SliderPost = () => {
         onClick={goToPrev}
         className="absolute top-1/2 left-1 transform -translate-y-1/2 bg-red-500 text-white w-8 h-8 rounded-full shadow-md flex items-center justify-center"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          className="w-4 h-4"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
       </button>
       <button
         onClick={goToNext}
         className="absolute top-1/2 right-1 transform -translate-y-1/2 bg-red-500 text-white w-8 h-8 rounded-full shadow-md flex items-center justify-center"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          className="w-4 h-4"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 5l7 7-7 7"
+          />
         </svg>
       </button>
     </div>
