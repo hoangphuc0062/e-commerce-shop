@@ -27,6 +27,15 @@ import { CiHeadphones } from "react-icons/ci";
 import { CiHome } from "react-icons/ci";
 import { CiViewList } from "react-icons/ci";
 
+import { PiNotepadBold } from "react-icons/pi";
+import { TbWorldSearch } from "react-icons/tb";
+import { IoGameControllerOutline, IoTrendingUp } from "react-icons/io5";
+import { MdOutlineSignpost } from "react-icons/md";
+import { FaComputer } from "react-icons/fa6";
+import { BiLike } from "react-icons/bi";
+import { PiChatsCircleLight } from "react-icons/pi";
+import { CiDiscount1 } from "react-icons/ci";
+import { MdOutlinePersonSearch } from "react-icons/md";
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
@@ -56,6 +65,17 @@ const icons = {
   CiHome,
   CiViewList,
   CiHeart,
+
+  PiNotepadBold,
+  TbWorldSearch,
+  IoGameControllerOutline,
+  MdOutlineSignpost,
+  FaComputer,
+  BiLike,
+  IoTrendingUp,
+  PiChatsCircleLight,
+  CiDiscount1,
+  MdOutlinePersonSearch,
 };
 
 export default icons;
