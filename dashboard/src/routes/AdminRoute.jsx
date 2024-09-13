@@ -7,6 +7,7 @@ import StaffPage from "../pages/staff";
 import AddStaff from "../pages/staff/create";
 import PrivateRoute from "./PrivateRoute";
 import History from "../pages/history";
+import UserPage from "../pages/user";
 
 const AdminRoute = () => {
   return (
@@ -61,6 +62,26 @@ const AdminRoute = () => {
           <PrivateRoute
             element={<AddStaff />}
             roles={["admin", "superadmin"]}
+          />
+        }
+      />
+      {/** route user */}
+
+      <Route
+        path="customer"
+        element={
+          <PrivateRoute
+            element={<UserPage />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="customer/create"
+        element={
+          <PrivateRoute
+            element={<UserPage />}
+            roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
       />

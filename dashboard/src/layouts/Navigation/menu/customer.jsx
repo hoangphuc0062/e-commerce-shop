@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 
 // project import
-import useWindowSize from "../../hooks/useWindowSize";
-import NavContent from "./NavContent";
-import navigation from "../data-menu/menu-edit";
-import { ConfigContext } from "../../contexts/ConfigContext";
+import useWindowSize from "../../../hooks/useWindowSize";
+import NavContent from "../NavContent";
+import navigation from "../../data-menu/customer";
+import { ConfigContext } from "../../../contexts/ConfigContext";
 
-export default function NavigationEdit() {
+export default function Customer() {
   const configContext = useContext(ConfigContext);
   const { layoutType, collapseMenu } = configContext.state;
   const windowSize = useWindowSize();
