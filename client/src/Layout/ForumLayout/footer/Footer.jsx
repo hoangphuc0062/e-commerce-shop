@@ -38,7 +38,9 @@ const Footer = () => {
           </div>
 
           <div>
-            <h2 className="text-xl font-bold mb-4">WEBSITE THÀNH VIÊN</h2>
+            <h2 className="text-xl font-bold mb-4 text-white">
+              WEBSITE THÀNH VIÊN
+            </h2>
             {Section.map((item) => (
               <ul key={item.title} className="flex flex-col space-y-2">
                 <li className="text-gray-300 py-2">

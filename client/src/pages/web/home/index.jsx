@@ -1,7 +1,11 @@
+import { MainSection } from "../../../components/HomeSections/MainSection";
+
 function HomePage() {
   return (
-    <div>
-      <h1 className="text-3xl font-bold underline text-blue-600">Body here</h1>
+    <div className="container w-full p-3">
+      <div className="main-banner">
+        <MainSection />
+      </div>
     </div>
   );
 }
