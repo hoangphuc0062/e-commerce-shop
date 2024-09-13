@@ -1,6 +1,8 @@
+import NavigationEdit from "../Navigation/menu/admin";
+import Navigation from "../Navigation/menu/superadmin";
 import NavBar from "../NavBar";
-import Navigation from "../Navigation";
-import NavigationEdit from "../Navigation/NavigationEdit";
+import Customer from "../Navigation/menu/customer";
+import Staff from "../Navigation/menu/staff";
 
 const getNavigationByRole = (role) => {
   switch (role) {
@@ -19,9 +21,19 @@ const getNavigationByRole = (role) => {
         </>
       );
     case "customer":
-      return <Navigation />;
+      return (
+        <>
+          <Customer />
+          <NavBar />
+        </>
+      );
     case "staff":
-      return <Navigation />;
+      return (
+        <>
+          <Staff />
+          <NavBar />
+        </>
+      );
     default:
       return null;
   }

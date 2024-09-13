@@ -1,106 +1,68 @@
-import ReusableForm from "../../../components/form";
+import { Box, Card } from "@mui/material";
+import { Col, Row } from "react-bootstrap";
+import CustomInputField from "../../../components/InputField";
+import { useState } from "react";
 
 function AddCategory() {
-  const fields = [
-    {
-      name: "name",
-      label: "Name",
-      required: true,
-      xs: 12,
-      sm: 6,
-      md: 4,
-      lg: 3,
-      xl: 3,
-    },
-    {
-      name: "email",
-      label: "Email",
-      required: true,
-      type: "email",
-      xs: 12,
-      sm: 6,
-      md: 4,
-      lg: 3,
-      xl: 3,
-    },
-    {
-      name: "age",
-      label: "Age",
-      required: false,
-      type: "number",
-      xs: 12,
-      sm: 6,
-      md: 4,
-      lg: 3,
-      xl: 3,
-    },
-    {
-      name: "address",
-      label: "Address",
-      required: false,
-      xs: 12,
-      sm: 6,
-      md: 4,
-      lg: 3,
-      xl: 3,
-    },
-    {
-      name: "city",
-      label: "City",
-      required: false,
-      xs: 12,
-      sm: 6,
-      md: 6,
-      lg: 6,
-      xl: 6,
-    },
-  ];
-
-  const initialValues = {
+  const [category, setCategory] = useState({
     name: "",
-    email: "",
-    age: "",
-    address: "",
-    city: "",
-  };
+    description: "",
+  });
+  const [errors, setErrors] = useState({
+    name: false,
+    description: false,
+  });
 
-  const handleSubmit = (formData) => {
-    console.log("Form submitted with values:", formData);
-  };
-
-  const formStyles = {
-    backgroundColor: "#f0f0f0",
-    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-    margin: "auto",
-  };
-
-  const fieldStyles = {
-    backgroundColor: "#fff",
-    borderRadius: 2,
-  };
-
-  const buttonStyles = {
-    backgroundColor: "#1976d2",
-    "&:hover": {
-      backgroundColor: "#115293",
-    },
-    padding: "10px 20px",
-    fontSize: "16px",
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newErrors = {
+      name: !category.name,
+      description: !category.description,
+    };
+    setErrors(newErrors);
+    if (!newErrors.name && !newErrors.description) {
+      console.log("Category Name:", category.name);
+      console.log("Category Description:", category.description);
+    } else {
+      console.error("Form has errors");
+    }
   };
 
   return (
-    <div>
-      <ReusableForm
-        fields={fields}
-        onSubmit={handleSubmit}
-        initialValues={initialValues}
-        title="Custom Form"
-        formStyles={formStyles}
-        fieldStyles={fieldStyles}
-        buttonStyles={buttonStyles}
-      />
-    </div>
+    <>
+      <Box>
+        <h1>Add Category</h1>
+        <Card>
+          <form>
+            <Row>
+              <Col md={6}>
+                <CustomInputField
+                  label="Category Name"
+                  value={category.name}
+                  onChange={(e) =>
+                    setCategory({ ...category, name: e.target.value })
+                  }
+                  helperText={errors.name ? "Please enter a name" : ""}
+                  error={errors.name}
+                />
+              </Col>
+              <Col md={6}>
+                <CustomInputField
+                  label="Category Description"
+                  value={category.description}
+                  onChange={(e) =>
+                    setCategory({ ...category, description: e.target.value })
+                  }
+                  helperText={
+                    errors.description ? "Please enter a description" : ""
+                  }
+                />
+              </Col>
+            </Row>
+          </form>
+        </Card>
+      </Box>
+    </>
   );
 }
-
 export default AddCategory;
