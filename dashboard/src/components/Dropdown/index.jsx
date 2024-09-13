@@ -9,21 +9,30 @@ import {
 
 const CustomDropdown = ({
   label,
-  options,
-  value,
+  name,
+  options = [], // Default to empty array if not provided
+  value = "", // Default to empty string for controlled input
   onChange,
   error = false,
   helperText = "",
 }) => {
+  const handleSelectChange = (event) => {
+    onChange({ target: { name, value: event.target.value } });
+  };
+
   return (
     <FormControl fullWidth error={error}>
       <InputLabel>{label}</InputLabel>
-      <Select value={value || ""} onChange={onChange} label={label}>
-        {options.map((option) => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
+      <Select value={value} onChange={handleSelectChange} label={label}>
+        {options.length > 0 ? (
+          options.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))
+        ) : (
+          <MenuItem disabled>No options available</MenuItem>
+        )}
       </Select>
       {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
@@ -32,6 +41,7 @@ const CustomDropdown = ({
 
 CustomDropdown.propTypes = {
   label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
@@ -39,7 +49,11 @@ CustomDropdown.propTypes = {
         .isRequired,
     })
   ).isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.oneOf([null]),
+  ]).isRequired, // Handle string, number, and null
   onChange: PropTypes.func.isRequired,
   error: PropTypes.bool,
   helperText: PropTypes.string,
