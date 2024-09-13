@@ -2,15 +2,13 @@ import { useState, useEffect } from "react";
 import HeadingSection from "../../../components/Forum/HeadingSection";
 import TopicCard from "../../../components/Forum/TopicCard";
 import FeaturedPost from "../../../components/Forum/FeaturedPost";
-import SmallPost from "../../../components/Forum/SmallPost";
-import icons from "../../../ultils/icon";
 import SliderPost from "../../../components/Forum/SliderPost";
-import SideBar from "../../../components/Forum/SideBar";
+import Sidebar from "../../../components/Forum/Sidebar";
 import PostScroll from "../../../components/Forum/PostScroll";
 import PostList from "../../../components/Forum/PostList";
+import { Link } from "react-router-dom";
 
 function ForumPage() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -19,81 +17,80 @@ function ForumPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-
   return (
-    <div className="flex flex-col md:flex-row w-full">
-      <div
-        className={`md:w-1/4 ${isMobileMenuOpen ? "block" : "hidden"} md:block`}
-      >
-        <SideBar />
+    <div className="flex flex-col md:flex-row w-full pt-16">
+      {/* Sidebar luôn hiển thị ở phía bên trái màn hình */}
+      <div className="md:w-1/4 lg:w-1/5 xl:w-1/6">
+        <Sidebar />
       </div>
 
-      <div className="md:w-3/4 w-full">
-        {windowWidth < 768 && (
-          <button
-            onClick={toggleMobileMenu}
-            className="md:hidden w-full bg-gray-200 p-2 mb-4 flex items-center justify-center"
-          >
-            <icons.AiOutlineUnorderedList className="mr-2" />
-            {isMobileMenuOpen ? "Đóng danh mục" : "Mở danh mục"}
-          </button>
-        )}
+      {/* Phần nội dung chính */}
+      <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col">
         <section className="flex-grow px-4">
+          {/* Chủ đề hot */}
           <section className="mb-8">
-            <HeadingSection title="CHỦ ĐỀ HOT" />
+            <HeadingSection title="Chủ Đề hot" />
             <TopicCard />
           </section>
+
+          {/* Nổi bật nhất */}
           <section className="mb-8">
-            <HeadingSection title="NỔI BẬT NHẤT" />
+            <HeadingSection title="Nổi bật nhất" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="w-full">
                 <FeaturedPost />
               </div>
-              <div className="space-y-4">
-                <SmallPost />
-              </div>
+              <div className="space-y-4">{/* <SmallPost /> */}</div>
             </div>
           </section>
         </section>
+
+        {/* Slider xem nhiều tuần qua */}
         <div>
           <section className="mb-8 p-4">
-            <HeadingSection title="XEM NHIỀU TUẦN QUA" />
+            <HeadingSection title="xem nhiều tuần qua" />
             <SliderPost />
           </section>
         </div>
+
+        {/* Tin tức mới nhất và trending */}
         <section className="mb-8 p-4">
-          <div className="flex space-x-8">
-            <div className="w-1/2">
-              <HeadingSection title="TIN TỨC MỚI NHẤT" />
+          <div className="md:flex md:space-x-8">
+            <div className="md:w-1/2">
+              <HeadingSection title="tin tức mới nhất" />
               <div className="space-y-4">
                 <PostList />
               </div>
-             
             </div>
-            <div className="w-1/2 space-y-8">
+            <div className="md:w-1/2 space-y-8">
               <div>
-                <HeadingSection title="S-NEWS CUỐI TUẦN" />
+                <HeadingSection title="S-NEWS cuối tuần" />
                 <PostScroll />
               </div>
               <div>
-                <HeadingSection title="KHÁM PHÁ - TRENDING" />
+                <HeadingSection title="khám phá - TRENDING" />
                 <PostScroll />
               </div>
             </div>
           </div>
         </section>
+
+        {/* Phần S-GAMES */}
         <section className="mb-8 px-4 bg-gray-200 border-2 w-full rounded-lg">
           <HeadingSection title="S-GAMES" />
           <SliderPost />
           <div className="mt-4 text-right">
-            <a href="#" className="text-red-500 text-sm font-semibold hover:underline">
+            <Link
+              to=""
+              className="text-red-500 text-sm font-semibold hover:underline"
+            >
               Xem thêm
-            </a>
-          </div>  
+            </Link>
+          </div>
         </section>
       </div>
     </div>
   );
 }
+
 export default ForumPage;
