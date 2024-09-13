@@ -7,13 +7,6 @@ const menuItems = {
       icon: "icon-navigation",
       children: [
         {
-          id: "dashboard",
-          title: "Quản lý",
-          type: "item",
-          icon: "feather icon-home",
-          url: "/dashboard",
-        },
-        {
           id: "categories",
           title: "Danh mục",
           type: "collapse",
@@ -50,79 +43,6 @@ const menuItems = {
               title: "Danh sách sản phẩm",
               type: "item",
               url: "/dashboard/product",
-            },
-          ],
-        },
-        {
-          id: "orders",
-          title: "Đơn hàng",
-          type: "collapse",
-          icon: "feather icon-server",
-          children: [
-            {
-              id: "all-orders",
-              title: "Tất cả đơn hàng",
-              type: "item",
-              url: "/dashboard/order",
-            },
-            {
-              id: "pending-orders",
-              title: "Đơn hàng chờ xử lý",
-              type: "item",
-              url: "/dashboard/order/pending",
-            },
-            {
-              id: "processed-orders",
-              title: "Đơn hàng đã xử lý",
-              type: "item",
-              url: "/dashboard/order/processed",
-            },
-          ],
-        },
-        {
-          id: "personnel",
-          title: "Nhân viên",
-          type: "collapse",
-          icon: "feather icon-user",
-          children: [
-            {
-              id: "add-personnel",
-              title: "Thêm nhân viên",
-              type: "item",
-              // url: "dashboard/staff/create",
-              url: "/dashboard/staff/create",
-            },
-            {
-              id: "personnel-list",
-              title: "Danh sách nhân viên",
-              type: "item",
-              url: "/dashboard/staff",
-            },
-          ],
-        },
-        {
-          id: "customers",
-          title: "Khách hàng",
-          type: "collapse",
-          icon: "feather icon-users",
-          children: [
-            {
-              id: "all-customers",
-              title: "Tất cả khách hàng",
-              type: "item",
-              url: "/dashboard/customer",
-            },
-            {
-              id: "new-customers",
-              title: "Khách hàng mới",
-              type: "item",
-              url: "/dashboard/customer/new",
-            },
-            {
-              id: "contacted-customers",
-              title: "Khách hàng đã liên hệ",
-              type: "item",
-              url: "/dashboard/customer/contacted",
             },
           ],
         },
@@ -216,13 +136,6 @@ const menuItems = {
               url: "dashboard/blog",
             },
           ],
-        },
-        {
-          id: "history",
-          title: "Lịch sử Thao tác",
-          type: "item",
-          icon: "feather icon-clock",
-          url: "/dashboard/history",
         },
       ],
     },

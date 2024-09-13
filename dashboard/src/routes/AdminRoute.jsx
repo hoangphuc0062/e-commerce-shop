@@ -7,6 +7,9 @@ import StaffPage from "../pages/staff";
 import AddStaff from "../pages/staff/create";
 import PrivateRoute from "./PrivateRoute";
 import History from "../pages/history";
+import UserPage from "../pages/user";
+import WarehousePage from "../pages/warehouse";
+import AddWarehouse from "../pages/warehouse/create";
 
 const AdminRoute = () => {
   return (
@@ -61,6 +64,46 @@ const AdminRoute = () => {
           <PrivateRoute
             element={<AddStaff />}
             roles={["admin", "superadmin"]}
+          />
+        }
+      />
+      {/** route user */}
+
+      <Route
+        path="customer"
+        element={
+          <PrivateRoute
+            element={<UserPage />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="customer/create"
+        element={
+          <PrivateRoute
+            element={<UserPage />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      {/* kho hàng */}
+      <Route
+        path="warehouse"
+        element={
+          <PrivateRoute
+            element={<WarehousePage />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      {/* Nhập sản phẩm vào kho */}
+      <Route
+        path="warehouse/create"
+        element={
+          <PrivateRoute
+            element={<AddWarehouse />}
+            roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
       />
