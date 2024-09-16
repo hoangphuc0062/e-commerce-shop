@@ -25,6 +25,9 @@ export default {
         grayColor: "#efefef",
         whiteColor: "#fff",
       },
+      dropShadow: {
+        main: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      },
       colors: {
         main: "#1e40af",
         semi: "#FFFFFF",
@@ -38,7 +41,7 @@ export default {
         3: "3 3 0%",
         4: "4 4 0%",
         5: "5 5 0%",
-      },
+      }
     },
   },
   plugins: [],

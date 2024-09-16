@@ -9,7 +9,7 @@ import History from "../pages/history";
 import UserPage from "../pages/user";
 import WarehousePage from "../pages/warehouse";
 import AddWarehouse from "../pages/warehouse/create";
-import CreateCaterory from "../pages/category/create";
+// import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
   return (
     <>
@@ -35,7 +35,7 @@ const AdminRoute = () => {
       />
 
       {/* Add Category Page route */}
-      <Route
+      {/* <Route
         path="category/create"
         element={
           <PrivateRoute
@@ -43,7 +43,7 @@ const AdminRoute = () => {
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
-      />
+      /> */}
 
       {/* Staff Page route */}
       <Route

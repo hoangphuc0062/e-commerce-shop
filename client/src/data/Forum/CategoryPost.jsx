@@ -5,7 +5,7 @@ const CategoryPost = [
     id: 1,
     name: "Trang chủ",
     icon: icons.CiHome,
-    link: "/",
+    link: "/forum",
   },
   {
     id: 2,

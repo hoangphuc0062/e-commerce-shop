@@ -7,7 +7,7 @@ export default function PublicLayout() {
     <>
       <Header />
       <></>
-      <main className="font-roboto bg-grayColor">
+      <main className="font-roboto ">
         <Outlet />
       </main>
 

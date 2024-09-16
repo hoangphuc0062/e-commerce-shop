@@ -11,7 +11,7 @@ const PostScroll = () => {
               className="w-1/3 h-32 object-cover"
             />
             <div className="p-4 w-2/3">
-              <h3 className="text-sm font-semibold mb-2 line-clamp-2">
+              <h3 className="text-sm font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">
                 {post.title}
               </h3>
               <p className="text-xs text-gray-600">
