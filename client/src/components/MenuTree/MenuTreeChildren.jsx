@@ -1,19 +1,41 @@
 import { Link } from "react-router-dom";
-import "./style.css";
+import PropTypes from "prop-types";
+import "./MenuTree.css";
 
 export const MenuTreeChildren = ({ children }) => {
   return (
-    <div>
-      {children.map((child, index) => (
-        <div key={index} className="menu-tree-child-cols__item">
-          <div className="menu-tree-child-cols__item__title">{child.title}</div>
-          {child.queries.map((query, queryIndex) => (
-            <div key={queryIndex} className="menu-tree-child-cols__item__link">
-              <Link to={query.url}>{query.name}</Link>
+    <div className="menu-tree-child-cols__item grid grid-cols-6 gap-4">
+      {children &&
+        children.map((child, index) => (
+          <div key={index}>
+            <div className="menu-tree-child-cols__item__title">
+              {child.title}
             </div>
-          ))}
-        </div>
-      ))}
+            {child.queries.map((query, queryIndex) => (
+              <Link
+                to={query.url}
+                key={queryIndex}
+                className="menu-tree-child-cols__item__link"
+              >
+                {query.name}
+              </Link>
+            ))}
+          </div>
+        ))}
     </div>
   );
+};
+
+MenuTreeChildren.propTypes = {
+  children: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      queries: PropTypes.arrayOf(
+        PropTypes.shape({
+          url: PropTypes.string.isRequired,
+          name: PropTypes.string.isRequired,
+        })
+      ).isRequired,
+    })
+  ),
 };

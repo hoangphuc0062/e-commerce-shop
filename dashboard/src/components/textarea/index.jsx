@@ -27,7 +27,7 @@ export default function Textarea({
       >
         <Editor
           apiKey={apiKey}
-          value={value} // Use value to keep it controlled
+          value={value} // Controlled value
           init={{
             height,
             plugins:
@@ -38,10 +38,9 @@ export default function Textarea({
               ? "body { background-color: #ffe6e6; }"
               : "body { background-color: white; }",
           }}
-          onEditorChange={(content) =>
-            onChange({ target: { name, value: content } })
-          } // Pass name and value
-          id="editor"
+          onEditorChange={
+            (content) => onChange({ target: { name, value: content } }) // Pass the content as the value
+          }
         />
       </div>
 

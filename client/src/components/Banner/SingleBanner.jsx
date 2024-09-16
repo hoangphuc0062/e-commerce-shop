@@ -22,9 +22,9 @@ export const SingleBanner = () => {
     },
   ];
   return (
-    <div className=" grid grid-rows-3 w-full h-full gap-3 ">
+    <div className=" grid grid-rows-3 w-full h-full gap-3 bg-whiteColor">
       {banners.map((banner, index) => (
-        <div className="w-full" key={index}>
+        <div className="w-full drop-shadow-main" key={index}>
           <Link to={banner.ref}>
             <img
               key={banner.id}

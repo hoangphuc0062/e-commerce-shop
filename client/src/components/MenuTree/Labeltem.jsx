@@ -2,7 +2,7 @@ import { Icon } from "@iconify-icon/react/dist/iconify.js";
 
 import { Link } from "react-router-dom";
 
-import "./style.css";
+import "./MenuTree.css";
 import propTypes from "prop-types";
 
 export const Labeltem = ({ icon, links }) => {
