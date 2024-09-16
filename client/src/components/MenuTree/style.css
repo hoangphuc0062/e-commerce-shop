@@ -1,3 +1,6 @@
+:root {
+  --main-color: #1e40af;
+}
 #menu-tree__parent {
   position: relative;
   display: flex;
@@ -5,7 +8,7 @@
 }
 
 .menu-tree-child-cols {
-  /* display: none; */
+  display: none;
   background-color: #fff;
   border-radius: 0 10px 10px 10px;
   position: absolute;
@@ -55,16 +58,23 @@
   min-width: 200px;
 }
 .label--item__link:hover {
-  color: #1e40af;
+  color: var(--main-color);
 }
 .label__icon {
   color: #000;
 }
 .menu-tree-child-cols__item__title {
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 500;
+  margin-bottom: 8px;
 }
 .menu-tree-child-cols__item__link {
-  font-size: 14px;
+  font-size: 16px;
   color: #505050;
+  font-weight: 500;
+  padding: 8px 8px 8px 0px;
+  display: block;
+}
+.menu-tree-child-cols__item__link:hover {
+  color: var(--main-color);
 }
