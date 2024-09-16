@@ -1,10 +1,9 @@
-import React from "react";
 import icons from "../../ultils/icon";
 
-export const Account = ({ name = "" }) => {
+export const Account = ({ name }) => {
   const { CiUser } = icons;
   return (
-    <button className="text-xs text-center hover:bg-hv word-break p-2 rounded">
+    <button className=" hidden lg:block text-xs text-center hover:bg-hv word-break p-2 rounded">
       <div className="flex flex-col items-center ml-2 ">
         <div className="text-2xl">
           <CiUser />

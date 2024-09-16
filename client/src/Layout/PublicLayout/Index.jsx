@@ -6,8 +6,8 @@ export default function PublicLayout() {
   return (
     <>
       <Header />
-
-      <main>
+      <></>
+      <main className="font-roboto ">
         <Outlet />
       </main>
 

@@ -11,13 +11,6 @@ const messagingSenderId = import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID;
 const appId = import.meta.env.VITE_FIREBASE_APP_ID;
 const measurementId = import.meta.env.VITE_FIREBASE_MEASUREMENT_ID;
 
-console.log("API Key:", apiKey);
-console.log("Auth Domain:", authDomain);
-console.log("Project ID:", projectId);
-console.log("Storage Bucket:", storageBucket);
-console.log("Messaging Sender ID:", messagingSenderId);
-console.log("App ID:", appId);
-console.log("Measurement ID:", measurementId);
 const firebaseConfig = {
   apiKey,
   authDomain,

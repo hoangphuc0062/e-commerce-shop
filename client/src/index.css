@@ -1,3 +1,45 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
+
+button.slick-next,
+button.slick-prev {
+  position: absolute;
+  z-index: 1;
+  border-radius: 50%;
+}
+
+button.slick-next {
+  right: 20px;
+}
+button.slick-next::before {
+  color: #fff;
+  content: "\276F";
+  background-color: red;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+}
+
+button.slick-prev {
+  left: 6px;
+}
+button.slick-prev::before {
+  color: #fff;
+  content: "\276E";
+  background-color: red;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+}

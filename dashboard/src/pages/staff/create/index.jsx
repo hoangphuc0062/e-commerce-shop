@@ -1,179 +1,219 @@
-import { styled } from "@mui/material";
-import ReusableForm from "../../../components/form";
-import "./index.css";
+import { Grid, Box, Typography, Paper, Button } from "@mui/material";
+import { useFormik } from "formik";
+import CustomInputField from "../../../components/InputField";
+import CustomDropdown from "../../../components/Dropdown";
+import Textarea from "../../../components/textarea";
+import { StaffSchema } from "../validade/create";
+import { useNavigate } from "react-router-dom";
+import { handleToast } from "../../../utils/toast";
+import ImageUploader from "../../../components/upload";
+
+const roleOptions = [
+  { value: "admin", label: "Admin" },
+  { value: "editor", label: "Editor" },
+  { value: "user", label: "User" },
+];
+
+const departmentOptions = [
+  { value: "admin", label: "Admin" },
+  { value: "editor", label: "Editor" },
+  { value: "user", label: "User" },
+];
+
+const baseOptions = [
+  { value: "admin", label: "Admin" },
+  { value: "editor", label: "Editor" },
+  { value: "user", label: "User" },
+];
 
 function AddStaff() {
-    const fields = [
-        {
-            name: "name",
-            label: "Họ và tên",
-            required: true,
-            xs: 12,
-            sm: 6,
-            md: 4,
-            lg: 3,
-            xl: 3,
-        },
-        {
-            name: "role",
-            label: "Chức vụ",
-            required: true,
-            type: "select",
-            options: ["Nhân viên", "Quản lý", "Giám đốc"],
-            xs: 12,
-            sm: 6,
-            md: 4,
-            lg: 3,
-            xl: 3,
-        },
-        {
-            name: "address",
-            label: "Địa chỉ",
-            required: false,
-            xs: 12,
-            sm: 6,
-            md: 4,
-            lg: 3,
-            xl: 3,
-        },
-        {
-            name: "email",
-            label: "Email",
-            required: true,
-            type: "email",
-            xs: 12,
-            sm: 6,
-            md: 4,
-            lg: 3,
-            xl: 3,
-        },
-        {
-            name: "SDT",
-            label: "Số điện thoại",
-            required: true,
-            type: "tel",
-            xs: 12,
-            sm: 6,
-            md: 4,
-            lg: 3,
-            xl: 3,
-        },
+  const navigate = useNavigate();
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      role: "",
+      department: "",
+      base: "",
+      salary: "",
+      description: "",
+      avatar: "",
+    },
+    validationSchema: StaffSchema, // Import from validate/create.js
+    validateOnChange: true,
+    validateOnBlur: true,
+    onSubmit: (values) => {
+      console.log("Form submitted", values);
+      handleToast("success", "Nhân viên đã được thêm", "top-right");
+    },
+  });
 
+  const handleUploadComplete = (url) => {
+    console.log("Image uploaded:", url);
+    formik.setFieldValue("avatar", url);
+  };
 
-        {
-            name: "department",
-            label: "Phòng ban",
-            required: false,
-            type: "select",
-            options: ["Phòng ban 1", "Phòng ban 2", "Phòng ban 3"],
-            xs: 12,
-            sm: 6,
-            md: 4,
-            lg: 3,
-            xl: 3,
-        },
-        {
-            name: "base",
-            label: "Cơ sở",
-            required: false,
-            type: "select",
-            options: ["Cơ sở 1", "Cơ sở 2", "Cơ sở 3"],
-            xs: 12,
-            sm: 6,
-            md: 4,
-            lg: 3,
-            xl: 3,
-        },
+  const handleDelete = () => {
+    console.log("Image deleted");
+    formik.setFieldValue("avatar", "");
+  };
 
-        {
-            name: "startDate",
-            label: "........................................Ngày bắt đầu",
-            required: true,
-            type: "date",
-            xs: 12,
-            sm: 6,
-            md: 4,
-            lg: 3,
-            xl: 3,
-        },
-        {
-            name: "endDate",
-            label: "........................................Ngày kết thúc",
-            required: false,
-            type: "date",
-            xs: 12,
-            sm: 6,
-            md: 4,
-            lg: 3,
-            xl: 3,
-        },
-        {
-            name: "salary",
-            label: "Lương",
-            required: true,
-            type: "number",
-            min: 0,
-            xs: 12,
-            sm: 6,
-            md: 4,
-            lg: 3,
-            xl: 3,
-        },
-    ];
-    const initialValues = {
-        name: "",
-        role: "",
-        address: "",
-        email: "",
-        SDT: "",
-        department: "",
-        base: "",
-        startDate: "",
-        endDate: "",
-        salary: "",
-    };
+  return (
+    <form onSubmit={formik.handleSubmit}>
+      <Box p={3}>
+        <Grid container spacing={3}>
+          {/* Profile Upload Section */}
+          <Grid item xs={12} md={4}>
+            <Paper elevation={3} sx={{ padding: 2 }}>
+              <Box textAlign="center" mb={2}>
+                <Typography variant="h6">Ảnh hồ sơ</Typography>
+                <Box>
+                  <ImageUploader
+                    onUploadComplete={handleUploadComplete}
+                    onDelete={handleDelete}
+                    avatarSize={100}
+                    error={
+                      formik.touched.avatar && Boolean(formik.errors.avatar)
+                    }
+                    helperText={formik.touched.avatar && formik.errors.avatar}
+                    onBlur={formik.handleBlur}
+                    fooder="staff" // phải thay đổi fooder thành staff hoặc user,.....
+                  />
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
 
-    const handleSubmit = (formData) => {
-        if (formData.salary < 0) {
-            alert("Lương không thể là số âm!");
-            return;
-        }
-        console.log("Form submitted with values:", formData);
-    };
+          {/* User Information Section */}
+          <Grid item xs={12} md={8}>
+            <Paper elevation={3} sx={{ padding: 2 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <CustomInputField
+                    label="Họ và tên"
+                    name="name"
+                    value={formik.values.name}
+                    onChange={formik.handleChange}
+                    error={formik.touched.name && Boolean(formik.errors.name)}
+                    helperText={formik.touched.name && formik.errors.name}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <CustomInputField
+                    label="Email"
+                    name="email"
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    error={formik.touched.email && !!formik.errors.email}
+                    helperText={formik.touched.email && formik.errors.email}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <CustomInputField
+                    label="Số điện thoại"
+                    name="phone"
+                    value={formik.values.phone}
+                    onChange={formik.handleChange}
+                    error={formik.touched.phone && !!formik.errors.phone}
+                    helperText={formik.touched.phone && formik.errors.phone}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <CustomInputField
+                    label="Địa chỉ"
+                    name="address"
+                    value={formik.values.address}
+                    onChange={formik.handleChange}
+                    error={formik.touched.address && !!formik.errors.address}
+                    helperText={formik.touched.address && formik.errors.address}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <CustomDropdown
+                    label="Chức vụ"
+                    name="role"
+                    options={roleOptions}
+                    value={formik.values.role}
+                    onChange={formik.handleChange}
+                    error={formik.touched.role && !!formik.errors.role}
+                    helperText={formik.touched.role && formik.errors.role}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <CustomDropdown
+                    label="Phòng ban"
+                    name="department"
+                    options={departmentOptions}
+                    value={formik.values.department}
+                    onChange={formik.handleChange}
+                    error={
+                      formik.touched.department && !!formik.errors.department
+                    }
+                    helperText={
+                      formik.touched.department && formik.errors.department
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <CustomDropdown
+                    label="Cơ sở làm việc"
+                    name="base"
+                    options={baseOptions}
+                    value={formik.values.base}
+                    onChange={formik.handleChange}
+                    error={formik.touched.base && !!formik.errors.base}
+                    helperText={formik.touched.base && formik.errors.base}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <CustomInputField
+                    label="Lương cơ bản"
+                    name="salary"
+                    value={formik.values.salary}
+                    onChange={formik.handleChange}
+                    error={formik.touched.salary && !!formik.errors.salary}
+                    helperText={formik.touched.salary && formik.errors.salary}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Textarea
+                    label="Mô tả"
+                    name="description"
+                    value={formik.values.description}
+                    onChange={formik.handleChange}
+                    error={
+                      formik.touched.description && !!formik.errors.description
+                    }
+                    helperText={
+                      formik.touched.description && formik.errors.description
+                    }
+                    height={300}
+                  />
+                </Grid>
+              </Grid>
 
-    const formStyles = {
-        backgroundColor: "#f0f0f0",
-        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-        margin: "auto",
-    };
-
-    const fieldStyles = {
-        backgroundColor: "#fff",
-        borderRadius: 2,
-        margin: "auto",
-    };
-
-    const buttonStyles = {
-        backgroundColor: "#1976d2",
-        "&:hover": {
-            backgroundColor: "#115293",
-        },
-        padding: "10px 20px",
-        fontSize: "16px",
-    };
-    return (
-        <div>
-            <ReusableForm
-                fields={fields}
-                onSubmit={handleSubmit}
-                initialValues={initialValues}
-                title="Add Staff"
-                formStyles={formStyles}
-                fieldStyles={fieldStyles}
-                buttonStyles={buttonStyles}
-            />
-        </div>
-    );
+              {/* Submit Button */}
+              <Box mt={3} textAlign="right">
+                <Button variant="contained" type="submit" color="success">
+                  Thêm nhân viên
+                </Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={() => navigate("/dashboard/staff")}
+                  style={{ marginLeft: 10 }}
+                >
+                  Hủy
+                </Button>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+    </form>
+  );
 }
 
 export default AddStaff;
