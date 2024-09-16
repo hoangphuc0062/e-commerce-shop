@@ -13,4 +13,14 @@ export const StaffSchema = Yup.object({
   description: Yup.string().required("Vui lòng nhập mô tả"),
   avatar: Yup.string().required("Vui lòng chọn ảnh"),
   banned: Yup.boolean(),
+  fixedSalary: Yup.string().required("Vui lòng nhập lương cố định"),
+  commission: Yup.string().required("Vui lòng nhập tỉ lệ hoa hồng"),
+  status: Yup.string().required("Vui lòng chọn trạng thái"),
+  totalSalary: Yup.string().required("Vui lòng nhập tổng lương"),
+  password: Yup.string().required("Vui lòng nhập mật khẩu"),
+  confirmPassword: Yup.string().oneOf(
+    [Yup.ref("password"), null],
+    "Mật khẩu không khớp"
+  ),
+  dob: Yup.string().required("Vui lòng nhập ngày sinh"),
 });
