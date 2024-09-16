@@ -44,7 +44,7 @@ import { CiUsb } from "react-icons/ci";
 import { MdOutlineScreenshotMonitor } from "react-icons/md";
 import { PiSpeakerHifiLight } from "react-icons/pi";
 import { BsNewspaper } from "react-icons/bs";
-
+import { BsChevronRight } from "react-icons/bs";
 
 const icons = {
   AiOutlineSearch, // kinh lup
@@ -95,6 +95,7 @@ const icons = {
   PiSpeakerHifiLight,
   BsNewspaper,
 
+  BsChevronRight,
 };
 
 export default icons;
