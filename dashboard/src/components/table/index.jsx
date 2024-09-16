@@ -48,26 +48,28 @@ const ReusableTable = ({
         <SearchInput search={search} setSearch={setSearch} />
 
         {/* Right side: Button */}
-        <Link to={navigate}>
-          <Button
-            variant="contained"
-            sx={{
-              margin: 2,
-              display: "flex",
-              alignItems: "center",
-              backgroundColor: "#3498db",
-              color: "white",
-              width: "fit-content",
+        {navigate && (
+          <Link to={navigate}>
+            <Button
+              variant="contained"
+              sx={{
+                margin: 2,
+                display: "flex",
+                alignItems: "center",
+                backgroundColor: "#3498db",
+                color: "white",
+                width: "fit-content",
 
-              "&:hover": {
-                backgroundColor: "#2980b9",
-              },
-            }} // Optional for centering the icon with the text
-          >
-            <ControlPointIcon sx={{ marginRight: 1 }} />
-            Thêm mới
-          </Button>
-        </Link>
+                "&:hover": {
+                  backgroundColor: "#2980b9",
+                },
+              }} // Optional for centering the icon with the text
+            >
+              <ControlPointIcon sx={{ marginRight: 1 }} />
+              Thêm mới
+            </Button>
+          </Link>
+        )}
       </div>
 
       <TableContainer>

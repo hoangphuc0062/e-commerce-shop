@@ -8,10 +8,10 @@ const PostList = () => {
           <img
             src={post.imageUrl}
             alt={post.title}
-            className="w-1/3 h-32 object-cover"
+            className="w-1/3 h-32 object-cover hover:scale-105 transition duration-300"
           />
           <div className="p-4 w-2/3">
-            <h3 className="text-lg font-semibold mb-2 line-clamp-2">
+            <h3 className="text-lg font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">
               {post.title}
             </h3>
             <p className="text-sm text-gray-600">

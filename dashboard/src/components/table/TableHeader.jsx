@@ -7,12 +7,7 @@ const TableHeader = ({ columns }) => (
   <TableHead>
     <TableRow>
       {columns.map((column, index) => (
-        <TableCell
-          key={index}
-          sx={column.label === "Trạng thái" ? { textAlign: "center" } : {}}
-        >
-          {column.label}
-        </TableCell>
+        <TableCell key={index}>{column.label}</TableCell>
       ))}
       <TableCell>Hoạt Động</TableCell>
     </TableRow>

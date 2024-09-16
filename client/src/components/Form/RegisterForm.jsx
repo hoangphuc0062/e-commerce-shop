@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import icons from "../../ultils/icon";
 import { SSOButton } from "../Button/SSOButton";
-import { Link } from "react-router-dom";
 
 export const RegisterForm = () => {
   const { IoEyeOffOutline, IoEyeOutline, FcGoogle, FaFacebook } = icons;

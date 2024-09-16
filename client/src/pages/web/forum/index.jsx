@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import HeadingSection from "../../../components/Forum/HeadingSection";
 import TopicCard from "../../../components/Forum/TopicCard";
 import FeaturedPost from "../../../components/Forum/FeaturedPost";
@@ -6,21 +5,13 @@ import SliderPost from "../../../components/Forum/SliderPost";
 import Sidebar from "../../../components/Forum/Sidebar";
 import PostScroll from "../../../components/Forum/PostScroll";
 import PostList from "../../../components/Forum/PostList";
-import SmallPost from "../../../components/Forum/SmallPost"; // Added SmallPost import
+import SmallPost from "../../../components/Forum/SmallPost";
+import PostTag from "../../../components/Forum/PostTag";
 import { Link } from "react-router-dom";
 
 function ForumPage() {
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   return (
     <div className="flex flex-col md:flex-row w-full pt-16">
-      {/* Sidebar luôn hiển thị ở phía bên trái màn hình */}
       <div className="md:w-1/4 lg:w-1/5 xl:w-1/6">
         <Sidebar />
       </div>
@@ -45,12 +36,10 @@ function ForumPage() {
           </section>
         </section>
 
-        <div>
-          <section className="mb-8 p-4">
-            <HeadingSection title="xem nhiều tuần qua" />
-            <SliderPost />
-          </section>
-        </div>
+        <section className="mb-8 p-4">
+          <HeadingSection title="xem nhiều tuần qua" />
+          <SliderPost category="S-Games" />
+        </section>
 
         <section className="mb-8 p-4">
           <div className="md:flex md:space-x-8">
@@ -75,7 +64,7 @@ function ForumPage() {
 
         <section className="mb-8 px-4 bg-gray-200 border-2 w-full rounded-lg">
           <HeadingSection title="S-GAMES" />
-          <SliderPost />
+          <SliderPost category="S-Games" />
           <div className="mt-4 text-right">
             <Link
               to=""
@@ -84,6 +73,23 @@ function ForumPage() {
               Xem thêm
             </Link>
           </div>
+        </section>
+        <section className="mb-8 p-4">
+          <div className="flex overflow-x-auto space-x-4">
+            <PostTag category="Trên Tay" />
+            <PostTag category="Tin Công Nghệ" />
+            <PostTag category="Đánh Giá" />
+          </div>
+        </section>
+
+        <section className="mb-8 p-4">
+          <HeadingSection title="thủ thuật - mẹo hay" />
+          <SliderPost category="Thủ Thuật - Mẹo Hay" />
+        </section>
+
+        <section className="mb-8 p-4">
+          <HeadingSection title="Sự kiện" />
+          <SliderPost category="Sự Kiện" />
         </section>
       </div>
     </div>
