@@ -22,11 +22,19 @@ export default {
         main: "#1e40af",
         hv: "#fff3",
         darkMain: "#0d1b2a",
+        grayColor: "#efefef",
+        whiteColor: "#fff",
+      },
+      dropShadow: {
+        main: "0 4px 6px rgba(0, 0, 0, 0.1)",
       },
       colors: {
         main: "#1e40af",
         semi: "#FFFFFF",
         darkText: "#e5e7eb",
+      },
+      fontFamily: {
+        roboto: ["Roboto", "sans-serif"],
       },
       flex: {
         2: "2 2 0%",

@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState } from "react";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,10 +9,10 @@ import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
 
-import "./style.css";
+import "./SliderBanner.css";
 
 // import required modules
-import { FreeMode, Navigation, Thumbs } from "swiper/modules";
+import { Autoplay, FreeMode, Navigation, Thumbs } from "swiper/modules";
 
 export default function SliderBanner() {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -53,10 +54,14 @@ export default function SliderBanner() {
       <Swiper
         spaceBetween={10}
         navigation={true}
+        autoplay={{
+          delay: 2500,
+          disableOnInteraction: false,
+        }}
         thumbs={{
           swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
         }}
-        modules={[FreeMode, Navigation, Thumbs]}
+        modules={[FreeMode, Navigation, Thumbs, Autoplay]}
         className="mySwiper2"
       >
         {imgs.map((img, index) => (
@@ -71,12 +76,16 @@ export default function SliderBanner() {
         slidesPerView={4}
         freeMode={true}
         watchSlidesProgress={true}
-        modules={[FreeMode, Navigation, Thumbs]}
+        modules={[FreeMode, Navigation, Thumbs, Autoplay]}
+        autoplay={{
+          delay: 2500,
+          disableOnInteraction: false,
+        }}
         className="mySwiper"
       >
         {imgs.map((img, index) => (
           <SwiperSlide key={index}>
-            <button className="p-2">
+            <button className="p-2 ">
               <h1>{img.title}</h1>
               <h6>{img.descrtiption}</h6>
             </button>

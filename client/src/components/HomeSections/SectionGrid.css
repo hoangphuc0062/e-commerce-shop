@@ -1,0 +1,10 @@
+.block__featured--product {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.product__list--title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}

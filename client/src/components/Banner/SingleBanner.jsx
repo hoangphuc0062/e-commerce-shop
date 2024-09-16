@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 export const SingleBanner = () => {
@@ -23,9 +22,9 @@ export const SingleBanner = () => {
     },
   ];
   return (
-    <div className=" grid grid-rows-3 w-full h-full gap-3">
-      {banners.map((banner) => (
-        <div className="w-full">
+    <div className=" grid grid-rows-3 w-full h-full gap-3 bg-whiteColor">
+      {banners.map((banner, index) => (
+        <div className="w-full drop-shadow-main" key={index}>
           <Link to={banner.ref}>
             <img
               key={banner.id}

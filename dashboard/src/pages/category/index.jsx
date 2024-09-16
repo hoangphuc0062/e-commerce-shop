@@ -1,40 +1,108 @@
-import ReusableTable from "@/components/table";
+// import ReusableTable from "./../../components/table/index";
+// import { useState } from "react";
+
+import { useState } from "react";
+import CategoryForm from "./CategoryForm";
+import CategoryList from "./CategoryList";
+import { Grid, Paper, Typography } from "@mui/material";
 
 function CategoryPage() {
-  const handleEdit = (index) => {
-    console.log("Edit", index);
-  };
-  const handleDelete = (index) => {
-    console.log("Delete", index);
-  };
-  const initialData = [
-    { id: 1, name: "John Doe", age: 28, email: "john@example.com" },
-    { id: 2, name: "Jane Smith", age: 34, email: "jane@example.com" },
-    { id: 3, name: "Mike Johnson", age: 45, email: "mike@example.com" },
-    { id: 4, name: "Kate James", age: 25, email: "kate@gmail.com" },
-    { id: 5, name: "Laura Croft", age: 30, email: "laura@gmail.com" },
-    { id: 6, name: "Tom Cruise", age: 50, email: "Tom@gmail.com" },
-    { id: 7, name: "Brad Pitt", age: 55, email: "Barad.com" },
-    { id: 8, name: "Angelina Jolie", age: 45, email: "Angelina.com" },
-    { id: 9, name: "John Doe", age: 28, email: "qqqqqqqq@gmail.com" },
-    { id: 10, name: "John Doe", age: 28, email: "kfnkkese@gmail.com" },
-    { id: 11, name: "John Doe", age: 28, email: "afwfwa", afsa: "afsa" },
+  const initialCategories = [
+    {
+      id: 1,
+      name: "Parent Category",
+      parentId: null,
+      image: "https://via.placeholder.com/50",
+      description: "This is a parent category",
+    },
+    {
+      id: 2,
+      name: "Child 1",
+      parentId: 1,
+      image: "https://via.placeholder.com/50",
+      description: "This is a child category",
+    },
+    {
+      id: 3,
+      name: "Child 2",
+      parentId: 1,
+      image: "https://via.placeholder.com/50",
+      description: "This is a child category",
+    },
+    {
+      id: 4,
+      name: "Second Category",
+      parentId: null,
+      image: "https://via.placeholder.com/50",
+      description: "This is a second parent category",
+    },
+    {
+      id: 5,
+      name: "Third Category",
+      parentId: null,
+      image: "https://via.placeholder.com/50",
+      description: "This is a third parent category",
+    },
+    {
+      id: 6,
+      name: "Child 1",
+      parentId: 5,
+      image: "https://via.placeholder.com/50",
+      description: "This is a child category",
+    },
   ];
-  const columns = [
-    { label: "Name", field: "name" },
-    { label: "Age", field: "age" },
-    { label: "Email", field: "email" },
-    { label: "Teen adnh muc", field: "afsa" }, // Bạn có thể thêm hoặc giảm trường tại đây
-  ];
+
+  const [categories, setCategories] = useState(initialCategories);
+
+  const addCategory = (newCategory) => {
+    const newId = categories.length + 1;
+    const categoryToAdd = {
+      id: newId,
+      name: newCategory.name,
+      parentId: newCategory.parentId ? Number(newCategory.parentId) : null,
+    };
+    setCategories([...categories, categoryToAdd]);
+    console.log("New category added: ", categoryToAdd);
+  };
+
+  const editCategory = (id, newName) => {
+    const updatedCategories = categories.map((cat) =>
+      cat.id === id ? { ...cat, name: newName } : cat
+    );
+    setCategories(updatedCategories);
+  };
+
+  const deleteCategory = (id) => {
+    const updatedCategories = categories.filter((cat) => cat.id !== id);
+    setCategories(updatedCategories);
+  };
+
   return (
-    <>
-      <ReusableTable
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
-        data={initialData}
-        columns={columns}
-      />
-    </>
+    <Grid container spacing={3}>
+      {/* Left: Category List */}
+      <Grid item xs={12} md={8}>
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            Danh mục
+          </Typography>
+          <CategoryList
+            categories={categories}
+            onEdit={editCategory}
+            onDelete={deleteCategory}
+          />
+        </Paper>
+      </Grid>
+
+      {/* Right: Create Category Form */}
+      <Grid item xs={12} md={4}>
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            Tạo danh mục
+          </Typography>
+          <CategoryForm categories={categories} onAddCategory={addCategory} />
+        </Paper>
+      </Grid>
+    </Grid>
   );
 }
 

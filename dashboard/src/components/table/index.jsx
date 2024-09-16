@@ -1,13 +1,21 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
-import { Table, TableContainer, TableBody, Paper } from "@mui/material";
+import { Table, TableContainer, TableBody, Paper, Button } from "@mui/material";
 import TableHeader from "./TableHeader";
 import TableRowComponent from "./TableRowComponent";
 import SearchInput from "./SearchInput";
 import TablePaginationComponent from "./TablePaginationComponent";
-
-// eslint-disable-next-line react/prop-types
-const ReusableTable = ({ handleDelete, handleEdit, data, columns }) => {
+import propTypes from "prop-types";
+import { Link, useNavigate } from "react-router-dom";
+import ControlPointIcon from "@mui/icons-material/ControlPoint";
+const ReusableTable = ({
+  handleDelete,
+  handleEdit,
+  data,
+  columns,
+  handleEye,
+  navigate,
+}) => {
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -35,7 +43,35 @@ const ReusableTable = ({ handleDelete, handleEdit, data, columns }) => {
 
   return (
     <Paper>
-      <SearchInput search={search} setSearch={setSearch} />
+      <div className="d-flex justify-content-between align-items-center">
+        {/* Left side: Search Input */}
+        <SearchInput search={search} setSearch={setSearch} />
+
+        {/* Right side: Button */}
+        {navigate && (
+          <Link to={navigate}>
+            <Button
+              variant="contained"
+              sx={{
+                margin: 2,
+                display: "flex",
+                alignItems: "center",
+                backgroundColor: "#3498db",
+                color: "white",
+                width: "fit-content",
+
+                "&:hover": {
+                  backgroundColor: "#2980b9",
+                },
+              }} // Optional for centering the icon with the text
+            >
+              <ControlPointIcon sx={{ marginRight: 1 }} />
+              Thêm mới
+            </Button>
+          </Link>
+        )}
+      </div>
+
       <TableContainer>
         <Table>
           <TableHeader columns={columns} />
@@ -50,6 +86,7 @@ const ReusableTable = ({ handleDelete, handleEdit, data, columns }) => {
                   handleEdit={handleEdit}
                   handleDelete={handleDelete}
                   columns={columns}
+                  handleEye={handleEye}
                 />
               ))}
           </TableBody>
@@ -64,6 +101,14 @@ const ReusableTable = ({ handleDelete, handleEdit, data, columns }) => {
       />
     </Paper>
   );
+};
+ReusableTable.propTypes = {
+  handleDelete: propTypes.func.isRequired,
+  handleEdit: propTypes.func.isRequired,
+  data: propTypes.array.isRequired,
+  columns: propTypes.array.isRequired,
+  handleEye: propTypes.func,
+  navigate: propTypes.string,
 };
 
 export default ReusableTable;
