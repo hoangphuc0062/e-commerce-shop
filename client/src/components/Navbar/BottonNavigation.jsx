@@ -1,4 +1,3 @@
-import React from "react";
 import icons from "../../ultils/icon";
 import { BottomButton } from "../Button/BottomButton";
 export const BottomNavigation = () => {
