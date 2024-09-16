@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Labeltem } from "./Labeltem"; // Assuming Labeltem is in the same folder
 import { MenuTreeChildren } from "./MenuTreeChildren"; // Import the child component
-import "./style.css"; // Your custom styles
+import "./MenuTree.css"; // Your custom styles
 
 const data = [
   {
@@ -261,7 +261,9 @@ const MenuTree = () => {
             {data.map(
               (item, index) =>
                 activeCategory === item.id && (
-                  <MenuTreeChildren key={index} children={item.children} />
+                  <MenuTreeChildren key={index}>
+                    {item.children}
+                  </MenuTreeChildren>
                 )
             )}
           </div>
