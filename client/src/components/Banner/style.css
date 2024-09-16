@@ -6,12 +6,13 @@
 .swiper-slide {
     text-align: center;
     font-size: 18px;
-    background: #fff;
+    
 
     /* Center slide text vertically */
     display: flex;
     justify-content: center;
     align-items: center;
+    
 }
 .swiper-slide:hover {
    background-color: #F3F4F6;
@@ -53,7 +54,6 @@
 .mySwiper {
     height: 20%;
     box-sizing: border-box;
-    padding: 10px 0;
 }
 
 .mySwiper .swiper-slide {
@@ -64,6 +64,7 @@
 .mySwiper .swiper-slide-thumb-active {
     opacity: 1;
     border-bottom: 3px solid #1e40af;
+    font-weight: 700;
 }
 
 .mySwiper2 {
@@ -81,3 +82,4 @@
    color: #1e40af;
     opacity: 1;
 }
+
