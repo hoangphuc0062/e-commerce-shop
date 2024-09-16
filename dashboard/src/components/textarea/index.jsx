@@ -5,11 +5,12 @@ const apiKey = import.meta.env.VITE_TINY_API_KEY;
 
 export default function Textarea({
   label,
+  name,
   value,
   onChange,
-  error,
-  errorMessage,
-  height,
+  error = false,
+  errorMessage = "",
+  height = 500,
 }) {
   return (
     <div>
@@ -26,31 +27,24 @@ export default function Textarea({
       >
         <Editor
           apiKey={apiKey}
-          initialValue={value}
+          value={value} // Use value to keep it controlled
           init={{
-            height: height,
-            menubar: false,
-            plugins: [
-              "advlist autolink lists link image charmap print preview anchor",
-              "searchreplace visualblocks code fullscreen",
-              "insertdatetime media table paste code help wordcount",
-            ],
+            height,
+            plugins:
+              "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount",
             toolbar:
-              "undo redo | formatselect | " +
-              "bold italic backcolor | alignleft aligncenter " +
-              "alignright alignjustify | bullist numlist outdent indent | " +
-              "removeformat | help",
+              "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat",
             content_style: error
               ? "body { background-color: #ffe6e6; }"
               : "body { background-color: white; }",
           }}
-          onEditorChange={onChange}
-          textareaName="content"
+          onEditorChange={(content) =>
+            onChange({ target: { name, value: content } })
+          } // Pass name and value
           id="editor"
         />
       </div>
 
-      {/* Display error message */}
       {error && (
         <p style={{ color: "red", marginTop: "8px", fontSize: "12px" }}>
           {errorMessage}
@@ -63,15 +57,10 @@ export default function Textarea({
 // Prop types validation
 Textarea.propTypes = {
   label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   error: PropTypes.bool,
   errorMessage: PropTypes.string,
   height: PropTypes.number,
-};
-
-Textarea.defaultProps = {
-  error: false,
-  errorMessage: "",
-  height: 500,
 };
