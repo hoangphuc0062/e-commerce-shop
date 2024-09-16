@@ -3,8 +3,10 @@ import { PostDB } from "../../data/Forum/PostDB";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useRef } from "react";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
-const SliderPost = () => {
+const SliderPost = ({ category }) => {
   const sliderRef = useRef(null);
 
   const settings = {
@@ -38,77 +40,44 @@ const SliderPost = () => {
     ],
   };
 
-  const goToPrev = () => {
-    sliderRef.current.slickPrev();
-  };
-
-  const goToNext = () => {
-    sliderRef.current.slickNext();
-  };
+  const filteredPosts = PostDB.filter((post) => post.category === category);
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <Slider ref={sliderRef} {...settings}>
-        {PostDB.map((post) => (
+        {filteredPosts.map((post) => (
           <div key={post.id} className="px-1">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <img
                 src={post.imageUrl}
                 alt={post.title}
-                className="w-full h-36 object-cover md:h-48 lg:h-60"
+                className="w-full h-36 object-cover md:h-48 lg:h-60 cursor-pointer"
               />
               <div className="p-3">
-                <h3 className="text-base font-semibold mb-1 line-clamp-2">
-                  {post.title}
-                </h3>
-                <p className="text-xs text-gray-600">
-                  {post.author} - {post.date}
+                <Link to="">
+                  <h3 className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main">
+                    {post.title}
+                  </h3>
+                </Link>
+                <Link to="">
+                  <p className="text-xs text-blue-500 pb-1 cursor-pointer">
+                    {post.author}
+                  </p>
+                </Link>
+                <p className="text-xs text-gray-600 cursor-pointer">
+                  {post.date}
                 </p>
               </div>
             </div>
           </div>
         ))}
       </Slider>
-      <button
-        onClick={goToPrev}
-        className="absolute top-1/2 left-1 transform -translate-y-1/2 bg-red-500 text-white w-8 h-8 rounded-full shadow-md flex items-center justify-center"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          className="w-4 h-4"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-      </button>
-      <button
-        onClick={goToNext}
-        className="absolute top-1/2 right-1 transform -translate-y-1/2 bg-red-500 text-white w-8 h-8 rounded-full shadow-md flex items-center justify-center"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          className="w-4 h-4"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
-      </button>
     </div>
   );
+};
+
+SliderPost.propTypes = {
+  category: PropTypes.string.isRequired,
 };
 
 export default SliderPost;

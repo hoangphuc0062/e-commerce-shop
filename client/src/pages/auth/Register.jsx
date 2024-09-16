@@ -1,10 +1,9 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { RegisterForm } from "../../components/Form/RegisterForm";
 
 export const Register = () => {
   return (
-    <section className="my-5 mx-2">
+    <section className="mx-2">
       <div className="container flex justify-center">
         <div className="flex-1">
           <div>

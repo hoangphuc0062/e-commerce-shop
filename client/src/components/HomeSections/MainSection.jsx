@@ -8,10 +8,10 @@ export const MainSection = () => {
       <div className="hidden w-1/6 lg:block">
         <MenuTree />
       </div>
-      <div className="w-full lg:w-4/6 bg-whiteColor">
+      <div className="w-full lg:w-4/6 bg-whiteColor drop-shadow-main">
         <SliderBanner />
       </div>
-      <div className="w-full lg:w-1/6">
+      <div className="w-full lg:w-1/6 ">
         <SingleBanner />
       </div>
     </div>
