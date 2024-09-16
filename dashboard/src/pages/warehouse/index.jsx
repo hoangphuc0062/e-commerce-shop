@@ -105,6 +105,7 @@ export default function WarehousePage() {
                         bgcolor: 'background.paper',
                         boxShadow: 24,
                         p: 4,
+                        borderRadius: '4px',
                     }}
                 >
                     <Paper elevation={3} sx={{ padding: 2 }}>
