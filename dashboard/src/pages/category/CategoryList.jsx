@@ -178,7 +178,7 @@ const CategoryList = ({ categories, onEdit, onDelete }) => {
       <DeleteCategoryDialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
-        Name={currentCategory?.name}
+        Namedelete={currentCategory?.name}
         onDelete={handleDeleteSubmit}
       />
     </>

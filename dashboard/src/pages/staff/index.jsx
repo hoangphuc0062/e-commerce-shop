@@ -1,4 +1,4 @@
-import ReusableTable from "../../components/table";
+import ReusableTable from "../../components/Table";
 import EyeStaff from "./details";
 import { useState } from "react";
 import EyeStaffEdit from "./edit";
