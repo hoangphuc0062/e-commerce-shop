@@ -1,8 +1,17 @@
 import { useState } from "react";
-import ReusableTableUser from "./../../components/table/ReusableTableUser";
-
+import ReusableTable from "../../components/Table";
+import CartDialog from "./details";
+import EditStatusDialog from "./edit";
 export default function UserPage() {
-  const [selectedData, setSelectedData] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [status, setStatus] = useState("");
+  const [statusOptions, setStatusOptions] = useState([]);
+  const handleSubmit = (status) => {
+    console.log("Submit", status);
+    setOpen(false);
+  };
 
   const initialData = [
     {
@@ -13,20 +22,24 @@ export default function UserPage() {
       sdt: "0987654321",
       sex: "Nam",
       membership: "Student - Member",
-      totalAmount: "2.000.000 vnd",
+      totalAmount: 2000000,
       status: "Active",
       cart: [
         {
           productName: "Watch XYZ",
           quantity: 2,
-          price: "1.000.000 VND",
+          price: 1000000,
           image: "https://via.placeholder.com/100",
+          color: "Black",
+          size: "M",
         },
         {
           productName: "Bracelet ABC",
           quantity: 1,
-          price: "500.000 VND",
+          price: 500000,
           image: "https://via.placeholder.com/100",
+          color: "Silver",
+          size: "S",
         },
       ],
     },
@@ -38,20 +51,24 @@ export default function UserPage() {
       sdt: "0912345678",
       sex: "Nữ",
       membership: "VIP - Member",
-      totalAmount: "5.500.000 VND",
+      totalAmount: 5500000,
       status: "Active",
       cart: [
         {
           productName: "Necklace DEF",
           quantity: 1,
-          price: "3.000.000 VND",
+          price: 3000000,
           image: "https://via.placeholder.com/100",
+          color: "Gold",
+          size: "L",
         },
         {
           productName: "Earrings GHI",
           quantity: 1,
-          price: "2.500.000 VND",
+          price: 2500000,
           image: "https://via.placeholder.com/100",
+          color: "Rose Gold",
+          size: "S",
         },
       ],
     },
@@ -63,14 +80,16 @@ export default function UserPage() {
       sdt: "0923456789",
       sex: "Nam",
       membership: "Regular - Member",
-      totalAmount: "1.500.000 VND",
+      totalAmount: 1500000,
       status: "Inactive",
       cart: [
         {
           productName: "Sunglasses JKL",
           quantity: 1,
-          price: "1.500.000 VND",
+          price: 1500000,
           image: "https://via.placeholder.com/100",
+          color: "Brown",
+          size: "M",
         },
       ],
     },
@@ -82,20 +101,24 @@ export default function UserPage() {
       sdt: "0934567890",
       sex: "Nữ",
       membership: "Premium - Member",
-      totalAmount: "4.000.000 VND",
+      totalAmount: 4000000,
       status: "Active",
       cart: [
         {
           productName: "Handbag MNO",
           quantity: 1,
-          price: "2.000.000 VND",
+          price: "2.000.000",
           image: "https://via.placeholder.com/100",
+          color: "Red",
+          size: "S",
         },
         {
           productName: "Watch PQR",
           quantity: 1,
-          price: "2.000.000 VND",
+          price: 2000000,
           image: "https://via.placeholder.com/100",
+          color: "Blue",
+          size: "M",
         },
       ],
     },
@@ -107,21 +130,22 @@ export default function UserPage() {
       sdt: "0945678901",
       sex: "Nam",
       membership: "Student - Member",
-      totalAmount: "1.000.000 VND",
+      totalAmount: 1000000,
       status: "Inactive",
       cart: [
         {
           productName: "Belt STU",
           quantity: 2,
-          price: "500.000 VND",
+          price: 500000,
           image: "https://via.placeholder.com/100",
+          color: "Black",
+          size: "L",
         },
       ],
     },
   ];
 
   const columns = [
-    { label: "Id", field: "id" },
     { label: "Họ và tên", field: "name" },
     { label: "Địa chỉ", field: "address" },
     { label: "Email", field: "email" },
@@ -130,87 +154,51 @@ export default function UserPage() {
     { label: "Loại thành viên", field: "membership" },
     { label: "Tổng tiền", field: "totalAmount" },
     { label: "Trạng thái", field: "status" },
-    {
-      label: "Hành động",
-      field: "actions",
-      render: (user) => (
-        <button
-          className="btn btn-primary"
-          onClick={() => setSelectedData(user)}
-        >
-          Xem giỏ hàng
-        </button>
-      ),
-    },
   ];
 
   const handleDelete = (id) => {
     console.log("Delete", id);
   };
 
-  const handleEdit = (id) => {
-    console.log("Edit", id);
+  const handleEdit = (index) => {
+    setDialogOpen(true);
+    setStatus(index.status);
+    console.log("Edit", index);
+    console.log("Status", index.status);
+    setStatusOptions([
+      { value: "Active", label: "Active" },
+      { value: "Inactive", label: "Inactive" },
+    ]);
   };
-  const handleCloseCart = () => {
-    setSelectedData(null); // Đặt lại selectedData về null để tắt giỏ hàng
+
+  const handleEye = (index) => {
+    setOpen(true);
+    setData(index);
   };
   return (
     <>
-      <ReusableTableUser
+      <ReusableTable
         handleEdit={handleEdit}
         handleDelete={handleDelete}
         data={initialData}
         columns={columns}
+        handleEye={handleEye}
       />
 
-      {selectedData && (
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '60%',
-          maxWidth: '600px',
-          border: '1px solid #ccc',
-          padding: '40px',
-          backgroundColor: 'white',
-          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-          zIndex: 1000,
-          overflowY: 'auto',
-          borderRadius: '4px',
-        }}>
-          <div>
-            <h5 style={{ textAlign: 'center', margin: '20px' }}>Thông tin giỏ hàng của {selectedData.name}</h5>
-            {selectedData.cart && selectedData.cart.length > 0 ? (
-              <ul style={{ listStyleType: 'none', padding: 0 }}>
-                {selectedData.cart.map((item, index) => (
-                  <li key={index} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-                    <img
-                      src={item.image}
-                      alt={item.productName}
-                      style={{ width: '50px', height: '50px', marginRight: '10px' }}
-                    />
-                    <span>{item.productName}</span> -
-                    <span> Số lượng: {item.quantity}</span> -
-                    <span> Giá: {item.price}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>Không có sản phẩm trong giỏ hàng.</p>
-            )}
-            <div style={{ textAlign: 'center' }}>
-              <button className="btn btn-secondary" onClick={handleCloseCart}>
-                Ẩn giỏ hàng
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <CartDialog
+        open={open}
+        handleClose={() => setOpen(false)}
+        items={data}
+        onRemove={() => {}}
+      />
 
+      <EditStatusDialog
+        open={dialogOpen}
+        handleClose={() => setDialogOpen(false)}
+        currentStatus={status}
+        onSubmit={handleSubmit}
+        statusOptions={statusOptions}
+      />
     </>
   );
 }
