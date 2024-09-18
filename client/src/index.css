@@ -8,38 +8,45 @@
 button.slick-next,
 button.slick-prev {
   position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 1;
+  font-size: 0;
+  width: 35px;
+  height: 35px;
+  border: none;
+  background-color: red;
   border-radius: 50%;
+  cursor: pointer;
 }
 
 button.slick-next {
-  right: 20px;
+  right: 10px;
 }
+
 button.slick-next::before {
-  color: #fff;
   content: "\276F";
-  background-color: red;
-  font-size: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 35px;
-  width: 35px;
-  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
 }
 
 button.slick-prev {
-  left: 6px;
+  left: 10px;
 }
+
 button.slick-prev::before {
-  color: #fff;
   content: "\276E";
-  background-color: red;
-  font-size: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 35px;
-  width: 35px;
-  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+}
+
+button.slick-next:hover,
+button.slick-prev:hover {
+  background-color: red; 
 }

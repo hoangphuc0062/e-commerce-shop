@@ -12,7 +12,7 @@ const SideBar = () => {
               <li key={category.id}>
                 <Link
                   to={category.link}
-                  className="flex text-lg items-center gap-2 p-[5px] text-gray-700 hover:bg-gray-100 rounded hover:text-main"
+                  className="flex text-sm items-center gap-2 p-2 text-gray-700 hover:bg-gray-100 rounded hover:text-main"
                 >
                   {category.icon && <category.icon className="w-6 h-6" />}
                   {category.name}
