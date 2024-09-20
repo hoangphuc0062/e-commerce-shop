@@ -9,7 +9,7 @@ const PostTag = ({ category }) => {
   const postsToDisplay = filteredPosts.slice(0, 3);
 
   return (
-    <div className="flex-shrink-0 bg-white dark:bg-card rounded-lg shadow-md overflow-hidden w-full md:w-[380px]">
+    <div className="flex-shrink-0 bg-white dark:bg-card rounded-lg shadow-md overflow-hidden w-full md:w-[370px]">
       {postsToDisplay.length > 0 ? (
         postsToDisplay.map((post, index) => (
           <div

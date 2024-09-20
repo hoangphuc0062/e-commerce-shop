@@ -2,7 +2,7 @@ import { PostDB } from "../../data/Forum/PostDB";
 function FeaturedPost() {
   const post = PostDB[1];
   return (
-    <div className="relative rounded-lg overflow-hidden cursor-pointer">
+    <div className="relative rounded-lg overflow-hidden cursor-pointer h-full">
       <img
         src={post.imageUrl}
         alt={post.title}
