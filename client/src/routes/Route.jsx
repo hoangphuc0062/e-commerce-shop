@@ -6,7 +6,7 @@ import { NotFound } from "../pages/404/NotFound";
 import { Login } from "../pages/auth/Login";
 import { Register } from "../pages/auth/Register";
 import ForumPage from "../pages/web/forum";
-
+import DetailBlog from "../pages/web/forum/DetailBlog";
 export default function RootRouter() {
   const routes = useRoutes([
     {
@@ -21,7 +21,7 @@ export default function RootRouter() {
     {
       path: "/forum",
       element: <ForumLayout />,
-      children: [{ path: "", element: <ForumPage /> }],
+      children: [{ path: "", element: <ForumPage /> }, { path: "blog/:id", element: <DetailBlog /> }],
     },
     {
       path: "*",
