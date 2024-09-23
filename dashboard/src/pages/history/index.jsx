@@ -9,7 +9,6 @@ export default function History() {
       data: "Categoryágsrhgsahg",
       date: "28/10/2021",
       time: "10:00",
-      status: "Đã giao",
     },
   ];
   const columns = [
@@ -18,7 +17,6 @@ export default function History() {
     { label: "Dữ liệu", field: "data" },
     { label: "Ngày", field: "date" },
     { label: "Thời gian", field: "time" },
-    { label: "Trạng thái", field: "status" },
   ];
   const handleEdit = (index) => {
     console.log("Edit", index);

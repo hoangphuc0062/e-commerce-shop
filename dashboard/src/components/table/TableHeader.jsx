@@ -6,6 +6,7 @@ import { TableHead, TableRow, TableCell } from "@mui/material";
 const TableHeader = ({ columns }) => (
   <TableHead>
     <TableRow>
+      <TableCell></TableCell>
       {columns.map((column, index) => (
         <TableCell key={index}>{column.label}</TableCell>
       ))}
