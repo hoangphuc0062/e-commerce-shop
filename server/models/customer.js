@@ -26,7 +26,7 @@ var customerSchema = new mongoose.Schema(
       default: 0,
     },
     code: {
-      type: Number,
+      type: String,
       default: null,
     },
     cart: [
@@ -46,7 +46,7 @@ var customerSchema = new mongoose.Schema(
     wishlist: [{ type: mongoose.Types.ObjectId, ref: "Product" }],
     isBlocked: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     refreshToken: {
       type: String,
