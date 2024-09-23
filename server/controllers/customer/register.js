@@ -1,6 +1,7 @@
 const Customer = require("../../models/customer");
 const asyncHandler = require("express-async-handler");
 const sendSMS = require("../../ultils/sendPhone");
+const e = require("express");
 
 const registerCustomer = asyncHandler(async (req, res) => {
   const { phone, password, name } = req.body;
@@ -32,6 +33,7 @@ const registerCustomer = asyncHandler(async (req, res) => {
     res.status(500).json({ message: "Error sending OTP" });
     return;
   }
+
   // Return the response to the client
   res.status(201).json({
     mes: "Customer created successfully",
