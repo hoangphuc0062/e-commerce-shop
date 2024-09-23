@@ -1,32 +1,48 @@
 import { Chip } from "@mui/material";
 import PropTypes from "prop-types";
-
-const statusColors = {
-  pending: { label: "Chưa giải quyết", color: "warning" },
-  rejected: { label: "Từ chối", color: "error" },
-  completed: { label: "Hoàn thành", color: "success" },
-  canceled: { label: "Hủy bỏ", color: "error" },
-  processing: { label: "Đang xử lý", color: "primary" },
-  shipped: { label: "Đã gửi", color: "info" },
-  delivered: { label: "Đã giao", color: "success" },
-  returned: { label: "Đã trả lại", color: "error" },
-  refunded: { label: "Hoàn tiền", color: "success" },
-  failed: { label: "Thất bại", color: "error" },
-  paid: { label: "Đã thanh toán", color: "success" },
-  unpaid: { label: "Chưa thanh toán", color: "error" },
-  partial: { label: "Thanh toán một phần", color: "warning" },
-  active: { label: "Hoạt động", color: "success" },
-  inactive: { label: "Không hoạt động", color: "error" },
-};
-
+import { statusColors } from "../../utils/statusConfig";
+import { statusOrder } from "../../utils/statusConfig";
 export const StatusChip = ({ status }) => {
   const { label, color } = statusColors[status?.toLowerCase()] || {
     label: "N/A",
     color: "default",
   };
-  return <Chip label={label} color={color} />;
+  return (
+    <Chip
+      label={label}
+      color={color}
+      sx={{
+        textTransform: "capitalize",
+        fontWeight: "bold",
+        width: "10rem",
+        height: "2rem",
+      }}
+    />
+  );
 };
 
 StatusChip.propTypes = {
+  status: PropTypes.string.isRequired,
+};
+
+export const StatusOrderChip = ({ status }) => {
+  const { label, color } = statusOrder[status?.toLowerCase()] || {
+    label: "N/A",
+    color: "default",
+  };
+  return (
+    <Chip
+      label={label}
+      color={color}
+      sx={{
+        textTransform: "capitalize",
+        fontWeight: "bold",
+        width: "10rem",
+        height: "2rem",
+      }}
+    />
+  );
+};
+StatusOrderChip.propTypes = {
   status: PropTypes.string.isRequired,
 };

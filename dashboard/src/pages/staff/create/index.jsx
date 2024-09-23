@@ -8,26 +8,27 @@ import { useNavigate } from "react-router-dom";
 import { handleToast } from "../../../utils/toast";
 import ImageUploader from "../../../components/upload";
 
-const roleOptions = [
-  { value: "admin", label: "Admin" },
-  { value: "editor", label: "Editor" },
-  { value: "user", label: "User" },
-];
-
-const departmentOptions = [
-  { value: "admin", label: "Admin" },
-  { value: "editor", label: "Editor" },
-  { value: "user", label: "User" },
-];
-
-const baseOptions = [
-  { value: "admin", label: "Admin" },
-  { value: "editor", label: "Editor" },
-  { value: "user", label: "User" },
-];
+const options = {
+  roles: [
+    { value: "admin", label: "Admin" },
+    { value: "editor", label: "Editor" },
+    { value: "user", label: "User" },
+  ],
+  departments: [
+    { value: "admin", label: "Admin" },
+    { value: "editor", label: "Editor" },
+    { value: "user", label: "User" },
+  ],
+  bases: [
+    { value: "admin", label: "Admin" },
+    { value: "editor", label: "Editor" },
+    { value: "user", label: "User" },
+  ],
+};
 
 function AddStaff() {
   const navigate = useNavigate();
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -40,13 +41,22 @@ function AddStaff() {
       salary: "",
       description: "",
       avatar: "",
+      password: "",
+      confirmPassword: "",
     },
-    validationSchema: StaffSchema, // Import from validate/create.js
+    validationSchema: StaffSchema,
     validateOnChange: true,
     validateOnBlur: true,
-    onSubmit: (values) => {
-      console.log("Form submitted", values);
-      handleToast("success", "Nhân viên đã được thêm", "top-right");
+    onSubmit: (values, { resetForm }) => {
+      console.log("Before validation and submission", values);
+      try {
+        // Perform your actual submission logic here
+        handleToast("success", "Nhân viên đã được thêm", "top-right");
+        console.log("Form submitted", values);
+        resetForm(); // Reset form fields after submission
+      } catch (error) {
+        console.error("Error during form submission", error);
+      }
     },
   });
 
@@ -60,8 +70,15 @@ function AddStaff() {
     formik.setFieldValue("avatar", "");
   };
 
+  const getErrorProps = (name) => ({
+    error: formik.touched[name] && Boolean(formik.errors[name]),
+    helperText: formik.touched[name] && formik.errors[name],
+  });
+
   return (
     <form onSubmit={formik.handleSubmit}>
+      {" "}
+      {/* Sử dụng handleSubmit của Formik */}
       <Box p={3}>
         <Grid container spacing={3}>
           {/* Profile Upload Section */}
@@ -74,12 +91,9 @@ function AddStaff() {
                     onUploadComplete={handleUploadComplete}
                     onDelete={handleDelete}
                     avatarSize={100}
-                    error={
-                      formik.touched.avatar && Boolean(formik.errors.avatar)
-                    }
-                    helperText={formik.touched.avatar && formik.errors.avatar}
+                    {...getErrorProps("avatar")}
                     onBlur={formik.handleBlur}
-                    fooder="staff" // phải thay đổi fooder thành staff hoặc user,.....
+                    fooder="staff" // thay đổi dynamic nếu cần
                   />
                 </Box>
               </Box>
@@ -96,8 +110,7 @@ function AddStaff() {
                     name="name"
                     value={formik.values.name}
                     onChange={formik.handleChange}
-                    error={formik.touched.name && Boolean(formik.errors.name)}
-                    helperText={formik.touched.name && formik.errors.name}
+                    {...getErrorProps("name")}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -106,8 +119,7 @@ function AddStaff() {
                     name="email"
                     value={formik.values.email}
                     onChange={formik.handleChange}
-                    error={formik.touched.email && !!formik.errors.email}
-                    helperText={formik.touched.email && formik.errors.email}
+                    {...getErrorProps("email")}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -116,8 +128,7 @@ function AddStaff() {
                     name="phone"
                     value={formik.values.phone}
                     onChange={formik.handleChange}
-                    error={formik.touched.phone && !!formik.errors.phone}
-                    helperText={formik.touched.phone && formik.errors.phone}
+                    {...getErrorProps("phone")}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -126,45 +137,37 @@ function AddStaff() {
                     name="address"
                     value={formik.values.address}
                     onChange={formik.handleChange}
-                    error={formik.touched.address && !!formik.errors.address}
-                    helperText={formik.touched.address && formik.errors.address}
+                    {...getErrorProps("address")}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <CustomDropdown
                     label="Chức vụ"
                     name="role"
-                    options={roleOptions}
+                    options={options.roles}
                     value={formik.values.role}
                     onChange={formik.handleChange}
-                    error={formik.touched.role && !!formik.errors.role}
-                    helperText={formik.touched.role && formik.errors.role}
+                    {...getErrorProps("role")}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <CustomDropdown
                     label="Phòng ban"
                     name="department"
-                    options={departmentOptions}
+                    options={options.departments}
                     value={formik.values.department}
                     onChange={formik.handleChange}
-                    error={
-                      formik.touched.department && !!formik.errors.department
-                    }
-                    helperText={
-                      formik.touched.department && formik.errors.department
-                    }
+                    {...getErrorProps("department")}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <CustomDropdown
                     label="Cơ sở làm việc"
                     name="base"
-                    options={baseOptions}
+                    options={options.bases}
                     value={formik.values.base}
                     onChange={formik.handleChange}
-                    error={formik.touched.base && !!formik.errors.base}
-                    helperText={formik.touched.base && formik.errors.base}
+                    {...getErrorProps("base")}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -173,8 +176,25 @@ function AddStaff() {
                     name="salary"
                     value={formik.values.salary}
                     onChange={formik.handleChange}
-                    error={formik.touched.salary && !!formik.errors.salary}
-                    helperText={formik.touched.salary && formik.errors.salary}
+                    {...getErrorProps("salary")}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <CustomInputField
+                    label="Mật khẩu"
+                    name="password"
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                    {...getErrorProps("password")}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <CustomInputField
+                    label="Xác nhận mật khẩu"
+                    name="confirmPassword"
+                    value={formik.values.confirmPassword}
+                    onChange={formik.handleChange}
+                    {...getErrorProps("confirmPassword")}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -183,12 +203,7 @@ function AddStaff() {
                     name="description"
                     value={formik.values.description}
                     onChange={formik.handleChange}
-                    error={
-                      formik.touched.description && !!formik.errors.description
-                    }
-                    helperText={
-                      formik.touched.description && formik.errors.description
-                    }
+                    {...getErrorProps("description")}
                     height={300}
                   />
                 </Grid>
@@ -196,7 +211,12 @@ function AddStaff() {
 
               {/* Submit Button */}
               <Box mt={3} textAlign="right">
-                <Button variant="contained" type="submit" color="success">
+                <Button
+                  variant="contained"
+                  type="submit"
+                  color="success"
+                  aria-label="Add Staff"
+                >
                   Thêm nhân viên
                 </Button>
                 <Button
@@ -204,6 +224,7 @@ function AddStaff() {
                   color="error"
                   onClick={() => navigate("/dashboard/staff")}
                   style={{ marginLeft: 10 }}
+                  aria-label="Cancel"
                 >
                   Hủy
                 </Button>

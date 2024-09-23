@@ -1,8 +1,8 @@
-/* eslint-disable react/prop-types */
 import { TableRow, TableCell, IconButton, Tooltip } from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
+import { Edit, Delete } from "@mui/icons-material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import { StatusChip } from "../StatusColor";
+import { StatusChip, StatusOrderChip } from "../StatusColor";
+import propTypes from "prop-types";
 
 const TableRowComponent = ({
   row,
@@ -10,49 +10,81 @@ const TableRowComponent = ({
   columns,
   handleEdit,
   handleEye,
-}) => (
-  <TableRow>
-    {columns.map((column, index) => (
-      <TableCell
-        key={index}
-        sx={
-          column.field === "status"
-            ? {
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: "0.75rem",
-              }
-            : {}
-        }
-      >
-        {column.field === "status" ? (
-          <StatusChip status={row[column.field]} />
-        ) : (
-          row[column.field] || "N/A"
+}) => {
+  return (
+    <TableRow
+      sx={{
+        "&:hover": {
+          backgroundColor: "#f0f0f0",
+        },
+      }}
+    >
+      <TableCell></TableCell>
+      {columns.map((column) => (
+        <TableCell
+          key={column.field}
+          sx={{
+            verticalAlign: "middle",
+            padding: "4px 8px", // Reduced padding
+            whiteSpace: "nowrap",
+          }}
+        >
+          {column.field === "orderStatus" ? (
+            <StatusOrderChip status={row[column.field]} />
+          ) : column.field === "status" ? (
+            <StatusChip status={row[column.field]} />
+          ) : (
+            row[column.field]
+          )}
+        </TableCell>
+      ))}
+
+      <TableCell>
+        {handleEye && (
+          <Tooltip title="View">
+            <IconButton
+              color="primary"
+              onClick={() => handleEye(row)}
+              sx={{ padding: "4px" }} // Reduced padding for action buttons
+            >
+              <RemoveRedEyeIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+
+        {handleEdit && (
+          <Tooltip title="Edit">
+            <IconButton
+              color="primary"
+              onClick={() => handleEdit(row)}
+              sx={{ padding: "4px" }} // Reduced padding for action buttons
+            >
+              <Edit />
+            </IconButton>
+          </Tooltip>
+        )}
+
+        {handleDelete && (
+          <Tooltip title="Delete">
+            <IconButton
+              sx={{ color: "red", padding: "4px" }} // Reduced padding for action buttons
+              onClick={() => handleDelete(row)}
+            >
+              <Delete />
+            </IconButton>
+          </Tooltip>
         )}
       </TableCell>
-    ))}
-    <TableCell>
-      {handleEye && (
-        <Tooltip title="Xem">
-          <IconButton color="primary" onClick={() => handleEye(row)}>
-            <RemoveRedEyeIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-      <Tooltip title="Chỉnh Sửa">
-        <IconButton color="primary" onClick={() => handleEdit(row)}>
-          <Edit />
-        </IconButton>
-      </Tooltip>
-      <Tooltip title="Xóa">
-        <IconButton sx={{ color: "red" }} onClick={() => handleDelete(row)}>
-          <Delete />
-        </IconButton>
-      </Tooltip>
-    </TableCell>
-  </TableRow>
-);
+    </TableRow>
+  );
+};
+
+TableRowComponent.propTypes = {
+  row: propTypes.object.isRequired,
+  columns: propTypes.array.isRequired,
+  handleDelete: propTypes.func,
+  handleEdit: propTypes.func,
+  handleEye: propTypes.func,
+};
 
 export default TableRowComponent;
