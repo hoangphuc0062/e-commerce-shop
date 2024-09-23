@@ -1,17 +1,18 @@
 import ReusableTable from "../../components/Table";
 import EyeStaff from "./details";
 import { useState } from "react";
-import EyeStaffEdit from "./edit";
+import { useNavigate } from "react-router-dom";
 
 export default function StaffPage() {
   const [open, setOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
+  const navigate = useNavigate();
   const initialData = [
     {
       id: 111,
       name: "Nguyễn Văn A",
       role: "Manager",
-      sdt: "0912345678",
+      phone: "0912345678",
       email: "nguyenvana@example.com",
       startDate: "2022-01-15",
       endDate: "2024-01-15",
@@ -26,7 +27,7 @@ export default function StaffPage() {
       id: 222,
       name: "Trần Thị B",
       role: "Developer",
-      sdt: "0987654321",
+      phone: "0987654321",
       email: "tranthib@example.com",
       startDate: "2021-03-10",
       endDate: "2023-03-10",
@@ -41,7 +42,7 @@ export default function StaffPage() {
       id: 333,
       name: "Lê Văn C",
       role: "Designer",
-      sdt: "0932123456",
+      phone: "0932123456",
       email: "levanc@example.com",
       startDate: "2020-06-20",
       endDate: "2022-06-20",
@@ -56,7 +57,7 @@ export default function StaffPage() {
       id: 444,
       name: "Phạm Thị D",
       role: "Tester",
-      sdt: "0912345678",
+      phone: "0912345678",
       email: "",
       startDate: "2022-01-15",
       endDate: "2024-01-15",
@@ -72,18 +73,19 @@ export default function StaffPage() {
   const columns = [
     { label: "Họ tên", field: "name" },
     { label: "Chức Vụ", field: "role" },
-    { label: "SDT", field: "sdt" },
+    { label: "SDT", field: "phone" },
     { label: "Email", field: "email" },
     { label: "Tỉ lệ hoa hồng", field: "commission" },
     { label: "Cơ sở", field: "base" },
     { label: "Lương cố định", field: "fixedSalary" },
     { label: "Trạng thái", field: "status" },
   ];
+
   const handleEdit = (index) => {
-    setSelectedStaff(index);
-    setIsEditOpen(true);
     console.log("Edit", index);
+    navigate(`/dashboard/staff/edit/${index.id}`);
   };
+
   const handleDelete = (index) => {
     console.log("Delete", index);
   };
@@ -92,23 +94,9 @@ export default function StaffPage() {
     setSelectedData(index);
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
-  };
-
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [selectedStaff, setSelectedStaff] = useState(null);
-  const handleEditClose = () => {
-    setIsEditOpen(false);
-  };
-  const handleFieldChange = (field, value) => {
-    setSelectedStaff({ ...selectedStaff, [field]: value });
-  };
-  const handleStaffDelete = (index) => {
-    console.log("Delete", index);
-  };
-  const handleStaffSave = (index) => {
-    console.log("Save", index);
   };
 
   return (
@@ -128,15 +116,6 @@ export default function StaffPage() {
         selectedData={selectedData}
         handleDelete={handleDelete}
         handleEdit={handleEdit}
-      />
-      {/* edit */}
-      <EyeStaffEdit
-        open={isEditOpen}
-        handleClose={handleEditClose}
-        selectedData={selectedStaff}
-        handleDelete={handleStaffDelete}
-        handleSave={handleStaffSave}
-        handleChange={handleFieldChange}
       />
     </>
   );

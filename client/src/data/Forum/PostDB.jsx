@@ -1,6 +1,7 @@
 export const PostDB = [
   {
     id: 1,
+    imageAuthor:"https://afamilycdn.com/150157425591193600/2020/9/1/base64-1598971056090594982301.png",
     title:
       "Đánh giá MSI Raider 18 HX: 1 năm trôi qua, vẫn đánh bại mọi tựa game max setting 4K, Ngộ Không không ngoại lệ!",
     imageUrl:
@@ -20,8 +21,10 @@ export const PostDB = [
     author: "Trường An",
     date: "11/09/2024 18:00",
     category: "Tin Công Nghệ",
-    summary:
+    summary: 
       "Black Shark GS3 mang lại trải nghiệm đồng hồ thông minh tuyệt vời với mức giá không tưởng.",
+    description:
+      "Black Shark GS3 là một trong những đồng hồ thông minh giá rẻ nhất trên thị trường hiện nay, với nhiều tính năng ưu việt và thiết kế độc đáo.x",
   },
   {
     id: 3,
