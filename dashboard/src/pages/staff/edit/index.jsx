@@ -1,251 +1,256 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogActions,
-  Button,
-  Avatar,
-  Box,
-  IconButton,
-  Grid,
-  MenuItem,
-} from "@mui/material";
-import { Formik, Form } from "formik";
-import CakeIcon from "@mui/icons-material/Cake";
-import BusinessIcon from "@mui/icons-material/Business";
-import EmailIcon from "@mui/icons-material/Email";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import RateReviewIcon from "@mui/icons-material/RateReview";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import { Delete } from "@mui/icons-material";
-import PropTypes from "prop-types";
-import PriceCheckIcon from "@mui/icons-material/PriceCheck";
-import { StatusChip } from "../../../components/StatusColor";
-import { StaffSchema } from "../validade/create";
+import { Grid, Box, Typography, Paper, Button } from "@mui/material";
+import { useFormik } from "formik";
 import CustomInputField from "../../../components/InputField";
+import CustomDropdown from "../../../components/Dropdown";
+import Textarea from "../../../components/textarea";
+import { StaffSchema } from "../validade/create";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { handleToast } from "../../../utils/toast";
+import ImageUploader from "../../../components/upload";
+import { useEffect, useState } from "react";
 
-// Mock Avatar image (replace with the actual image or icon as needed)
-const avatarUrl = "https://i.pravatar.cc/150?img=3";
+// Assume options are coming from an external source or can be passed as props
+const options = {
+  roles: [
+    { value: "admin", label: "Admin" },
+    { value: "editor", label: "Editor" },
+    { value: "user", label: "User" },
+  ],
+  departments: [
+    { value: "admin", label: "Admin" },
+    { value: "editor", label: "Editor" },
+    { value: "user", label: "User" },
+  ],
+  bases: [
+    { value: "admin", label: "Admin" },
+    { value: "editor", label: "Editor" },
+    { value: "user", label: "User" },
+  ],
+};
 
-export default function EyeStaffEdit({
-  open,
-  handleClose,
-  selectedData,
-  handleDelete,
-  handleSave,
-}) {
-  const statusColors = {
-    active: { label: "Active", color: "success" },
-    inactive: { label: "Inactive", color: "error" },
+function EditStaff() {
+  const { id } = useParams(); // Get the staff ID from the route
+  const location = useLocation(); // Get the staff data passed via state
+  const navigate = useNavigate();
+  const [staffData, setStaffData] = useState(null);
+
+  // Fetch staff data or use data passed from location state
+  useEffect(() => {
+    if (location.state && location.state.staff) {
+      setStaffData(location.state.staff); // Set data from state if available
+    } else {
+      // Example: Replace this with an actual API call to fetch staff data by ID
+      fetchStaffDataById(id);
+    }
+  }, [id, location.state]);
+
+  const fetchStaffDataById = (staffId) => {
+    // Simulate an API call to fetch staff data by ID
+    const fetchedData = {
+      id: staffId,
+      name: "Nguyễn Văn A",
+      email: "nguyenvana@example.com",
+      phone: "0912345678",
+      address: "123 Street Name",
+      role: "Manager",
+      department: "Sales",
+      base: "Hà Nội",
+      salary: "20000000",
+      description: "This is a description.",
+      avatar: "https://i.pravatar.cc/150?img=1",
+    };
+    setStaffData(fetchedData); // Set the fetched data
   };
 
+  const formik = useFormik({
+    initialValues: {
+      name: staffData?.name || "",
+      email: staffData?.email || "",
+      phone: staffData?.phone || "",
+      address: staffData?.address || "",
+      role: staffData?.role || "",
+      department: staffData?.department || "",
+      base: staffData?.base || "",
+      salary: staffData?.salary || "",
+      description: staffData?.description || "",
+      avatar: staffData?.avatar || "",
+    },
+    validationSchema: StaffSchema,
+    enableReinitialize: true, // Allow Formik to reinitialize the form when staffData changes
+    validateOnChange: true,
+    validateOnBlur: true,
+    onSubmit: (values) => {
+      console.log("Submitting edit form", values);
+      try {
+        // handleSave(values); // Pass updated data through handleSave function
+        handleToast("success", "Nhân viên đã được cập nhật", "top-right");
+        navigate("/dashboard/staff"); // Navigate back to staff list after save
+      } catch (error) {
+        console.error("Error during form submission", error);
+      }
+    },
+  });
+
+  const handleUploadComplete = (url) => {
+    console.log("Image uploaded:", url);
+    formik.setFieldValue("avatar", url);
+  };
+
+  const handleDelete = () => {
+    console.log("Image deleted");
+    formik.setFieldValue("avatar", "");
+  };
+
+  const getErrorProps = (name) => ({
+    error: formik.touched[name] && Boolean(formik.errors[name]),
+    helperText: formik.touched[name] && formik.errors[name],
+  });
+
+  // Don't render the form until the data is loaded
+  if (!staffData) {
+    return <p>Loading staff data...</p>;
+  }
+
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-      <Formik
-        initialValues={selectedData || {}}
-        validationSchema={StaffSchema}
-        onSubmit={(values) => {
-          handleSave(values);
-        }}
-      >
-        {({
-          values,
-          handleChange,
-          handleSubmit,
-          touched,
-          errors,
-          handleBlur,
-        }) => (
-          <Form onSubmit={handleSubmit}>
-            <DialogContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  mb: 2,
-                }}
-              >
-                {/* Delete Icon */}
-                <IconButton
-                  aria-label="delete"
-                  onClick={() => handleDelete(selectedData.id)}
-                >
-                  <Delete color="error" />
-                </IconButton>
+    <form onSubmit={formik.handleSubmit}>
+      <Box p={3}>
+        <Grid container spacing={3}>
+          {/* Profile Upload Section */}
+          <Grid item xs={12} md={4}>
+            <Paper elevation={3} sx={{ padding: 2 }}>
+              <Box textAlign="center" mb={2}>
+                <Typography variant="h6">Ảnh hồ sơ</Typography>
+                <Box>
+                  <ImageUploader
+                    onUploadComplete={handleUploadComplete}
+                    onDelete={handleDelete}
+                    avatarSize={100}
+                    {...getErrorProps("avatar")}
+                    onBlur={formik.handleBlur}
+                    folder="staff" // Change dynamically if needed
+                  />
+                </Box>
               </Box>
+            </Paper>
+          </Grid>
 
-              <Box sx={{ textAlign: "center", mb: 2 }}>
-                {/* Avatar */}
-                <Avatar
-                  src={avatarUrl}
-                  alt="Profile Image"
-                  sx={{
-                    width: { xs: 80, md: 100 },
-                    height: { xs: 80, md: 100 },
-                    margin: "0 auto",
-                    mb: 2,
-                  }}
-                />
-                {/* <CustomInputField
-                  name="avatar"
-                  type="file"
-                  label="Avatar"
-                  accept="image/*"
-                  sx={{ display: "block", margin: "0 auto" }}
-                /> */}
-                <CustomInputField
-                  name="name"
-                  label="Họ và tên"
-                  fullWidth
-                  value={values.name}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  helperText={touched.name && errors.name}
-                  error={touched.name && Boolean(errors.name)}
-                />
-              </Box>
-
+          {/* User Information Section */}
+          <Grid item xs={12} md={8}>
+            <Paper elevation={3} sx={{ padding: 2 }}>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                  <CakeIcon sx={{ marginRight: 1 }} />
+                <Grid item xs={12} md={6}>
                   <CustomInputField
-                    fullWidth
-                    name="startDate"
-                    label="Ngày bắt đầu"
-                    type="date"
-                    variant="outlined"
-                    value={values.startDate}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    InputLabelProps={{ shrink: true }}
-                    helperText={touched.startDate && errors.startDate}
-                    error={touched.startDate && Boolean(errors.startDate)}
+                    label="Họ và tên"
+                    name="name"
+                    value={formik.values.name}
+                    onChange={formik.handleChange}
+                    {...getErrorProps("name")}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                  <RateReviewIcon sx={{ marginRight: 1 }} />
+                <Grid item xs={12} md={6}>
                   <CustomInputField
-                    fullWidth
-                    name="commission"
-                    label="Tỉ lệ hoa hồng"
-                    variant="outlined"
-                    value={values.commission}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={touched.commission && errors.commission}
-                    error={touched.commission && Boolean(errors.commission)}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                  <BusinessIcon sx={{ marginRight: 1 }} />
-                  <CustomInputField
-                    fullWidth
-                    name="department"
-                    label="Phòng ban"
-                    variant="outlined"
-                    value={values.department}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={touched.department && errors.department}
-                    error={touched.department && Boolean(errors.department)}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                  <EmailIcon sx={{ marginRight: 1 }} />
-                  <CustomInputField
-                    fullWidth
-                    name="email"
                     label="Email"
-                    variant="outlined"
-                    value={values.email}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={touched.email && errors.email}
-                    error={touched.email && Boolean(errors.email)}
+                    name="email"
+                    value={formik.values.email}
+                    onChange={formik.handleChange}
+                    {...getErrorProps("email")}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                  <LocationOnIcon sx={{ marginRight: 1 }} />
+                <Grid item xs={12} md={6}>
                   <CustomInputField
-                    fullWidth
+                    label="Số điện thoại"
+                    name="phone"
+                    value={formik.values.phone}
+                    onChange={formik.handleChange}
+                    {...getErrorProps("phone")}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <CustomInputField
+                    label="Địa chỉ"
+                    name="address"
+                    value={formik.values.address}
+                    onChange={formik.handleChange}
+                    {...getErrorProps("address")}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <CustomDropdown
+                    label="Chức vụ"
+                    name="role"
+                    options={options.roles}
+                    value={formik.values.role}
+                    onChange={formik.handleChange}
+                    {...getErrorProps("role")}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <CustomDropdown
+                    label="Phòng ban"
+                    name="department"
+                    options={options.departments}
+                    value={formik.values.department}
+                    onChange={formik.handleChange}
+                    {...getErrorProps("department")}
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <CustomDropdown
+                    label="Cơ sở làm việc"
                     name="base"
-                    label="Cơ sở"
-                    variant="outlined"
-                    value={values.base}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={touched.base && errors.base}
-                    error={touched.base && Boolean(errors.base)}
+                    options={options.bases}
+                    value={formik.values.base}
+                    onChange={formik.handleChange}
+                    {...getErrorProps("base")}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                  <PriceCheckIcon sx={{ marginRight: 1 }} />
+                <Grid item xs={12} md={6}>
                   <CustomInputField
-                    fullWidth
-                    name="fixedSalary"
-                    label="Lương cố định"
-                    variant="outlined"
-                    value={values.fixedSalary}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={touched.fixedSalary && errors.fixedSalary}
-                    error={touched.fixedSalary && Boolean(errors.fixedSalary)}
+                    label="Lương cơ bản"
+                    name="salary"
+                    value={formik.values.salary}
+                    onChange={formik.handleChange}
+                    {...getErrorProps("salary")}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                  <AttachMoneyIcon sx={{ marginRight: 1 }} />
-                  <CustomInputField
-                    fullWidth
-                    name="totalSalary"
-                    label="Tổng lương"
-                    variant="outlined"
-                    value={values.totalSalary}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={touched.totalSalary && errors.totalSalary}
-                    error={touched.totalSalary && Boolean(errors.totalSalary)}
+                <Grid item xs={12}>
+                  <Textarea
+                    label="Mô tả"
+                    name="description"
+                    value={formik.values.description}
+                    onChange={formik.handleChange}
+                    {...getErrorProps("description")}
+                    height={300}
                   />
-                </Grid>
-                <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                  <CustomInputField
-                    select
-                    fullWidth
-                    name="status"
-                    label="Trạng thái"
-                    variant="outlined"
-                    value={values.status}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={touched.status && errors.status}
-                    error={touched.status && Boolean(errors.status)}
-                  >
-                    {Object.keys(statusColors).map((status) => (
-                      <MenuItem key={status} value={status}>
-                        <StatusChip status={status} />
-                      </MenuItem>
-                    ))}
-                  </CustomInputField>
                 </Grid>
               </Grid>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                Hủy bỏ
-              </Button>
-              <Button type="submit" color="primary">
-                Lưu
-              </Button>
-            </DialogActions>
-          </Form>
-        )}
-      </Formik>
-    </Dialog>
+
+              {/* Submit Button */}
+              <Box mt={3} textAlign="right">
+                <Button
+                  variant="contained"
+                  type="submit"
+                  color="success"
+                  aria-label="Save Staff"
+                >
+                  Lưu thay đổi
+                </Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={() => navigate("/dashboard/staff")}
+                  style={{ marginLeft: 10 }}
+                  aria-label="Cancel"
+                >
+                  Hủy
+                </Button>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+    </form>
   );
 }
 
-EyeStaffEdit.propTypes = {
-  open: PropTypes.bool,
-  handleClose: PropTypes.func,
-  selectedData: PropTypes.object,
-  handleDelete: PropTypes.func,
-  handleSave: PropTypes.func,
-};
+export default EditStaff;
