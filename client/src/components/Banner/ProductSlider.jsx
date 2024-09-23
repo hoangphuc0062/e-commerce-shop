@@ -17,11 +17,11 @@ const ProductSlider = () => {
       }}
       modules={[Autoplay, Navigation]}
       breakpoints={{
-        640: { // For mobile screens
+        640: {
           slidesPerView: 1,
         },
-        1024: { // For desktop screens
-          slidesPerView: 2,
+        1024: {
+          slidesPerView: 1,
         },
       }}
       className="mySwiper2"
