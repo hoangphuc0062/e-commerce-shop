@@ -1,165 +1,75 @@
-import { useState } from "react";
-import {
-  TableRow,
-  TableCell,
-  IconButton,
-  Tooltip,
-  Button,
-  Box,
-} from "@mui/material";
+import { TableRow, TableCell, IconButton, Tooltip } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import { StatusChip } from "../StatusColor";
+import { StatusChip, StatusOrderChip } from "../StatusColor";
 import propTypes from "prop-types";
 
 const TableRowComponent = ({
   row,
-  handleDelete = () => {},
+  handleDelete,
   columns,
-  handleEdit = () => {},
-  handleEye = () => {},
+  handleEdit,
+  handleEye,
 }) => {
-  const maxSubcategories = 3;
-  const [showAll, setShowAll] = useState(false);
-
   return (
     <TableRow
       sx={{
         "&:hover": {
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "#f0f0f0",
         },
       }}
     >
-      {columns.map((column, index) => (
+      <TableCell></TableCell>
+      {columns.map((column) => (
         <TableCell
-          key={index}
+          key={column.field}
           sx={{
             verticalAlign: "middle",
-            padding: "8px",
+            padding: "4px 8px", // Reduced padding
+            whiteSpace: "nowrap",
           }}
         >
-          {column.field === "status" && row[column.field] ? (
+          {column.field === "orderStatus" ? (
+            <StatusOrderChip status={row[column.field]} />
+          ) : column.field === "status" ? (
             <StatusChip status={row[column.field]} />
-          ) : column.field === "subcategoryName" ? (
-            row.subcategories && row.subcategories.length > 0 ? (
-              <Box sx={{ maxWidth: "300px", transition: "all 0.3s ease" }}>
-                <Box
-                  sx={{
-                    maxHeight: showAll ? "none" : "60px",
-                    overflow: "hidden",
-                    transition: "max-height 0.3s ease",
-                  }}
-                >
-                  <ul
-                    style={{
-                      listStyleType: "none",
-                      padding: 0,
-                      margin: 0,
-                    }}
-                  >
-                    {(showAll
-                      ? row.subcategories
-                      : row.subcategories.slice(0, maxSubcategories)
-                    ).map((sub) => (
-                      <li
-                        key={sub.subcategoryId}
-                        style={{ paddingBottom: "4px" }}
-                      >
-                        {sub.name}
-                      </li>
-                    ))}
-                  </ul>
-                </Box>
-                {row.subcategories.length > maxSubcategories && (
-                  <Button
-                    variant="text"
-                    color="primary"
-                    onClick={() => setShowAll(!showAll)}
-                    sx={{
-                      textTransform: "none",
-                      padding: 0,
-                      fontSize: "0.8rem",
-                    }}
-                  >
-                    {showAll
-                      ? "Xem ít hơn"
-                      : `Xem thêm (${
-                          row.subcategories.length - maxSubcategories
-                        } danh mục)`}
-                  </Button>
-                )}
-              </Box>
-            ) : (
-              "No Subcategories"
-            )
-          ) : column.field === "subcategoryStatus" ? (
-            row.subcategories && row.subcategories.length > 0 ? (
-              <Box
-                sx={{
-                  maxWidth: "300px",
-                  transition: "all 0.3s ease",
-                }}
-              >
-                <Box
-                  sx={{
-                    maxHeight: showAll ? "none" : "60px",
-                    overflow: "hidden",
-                    transition: "max-height 0.3s ease",
-                    padding: "20px 0",
-                  }}
-                >
-                  <ul
-                    style={{
-                      listStyleType: "none",
-                      padding: 0,
-                      margin: 0,
-                    }}
-                  >
-                    {(showAll
-                      ? row.subcategories
-                      : row.subcategories.slice(0, maxSubcategories)
-                    ).map((sub) => (
-                      <li
-                        key={sub.subcategoryId}
-                        style={{ paddingBottom: "10px" }}
-                      >
-                        <StatusChip status={sub.status} />
-                      </li>
-                    ))}
-                  </ul>
-                </Box>
-              </Box>
-            ) : (
-              "No Subcategory Status"
-            )
-          ) : typeof row[column.field] === "object" ? (
-            "" // Do not render JSON string
           ) : (
-            row[column.field] || "N/A"
+            row[column.field]
           )}
         </TableCell>
       ))}
 
       <TableCell>
         {handleEye && (
-          <Tooltip title="Xem">
-            <IconButton color="primary" onClick={() => handleEye(row)}>
+          <Tooltip title="View">
+            <IconButton
+              color="primary"
+              onClick={() => handleEye(row)}
+              sx={{ padding: "4px" }} // Reduced padding for action buttons
+            >
               <RemoveRedEyeIcon />
             </IconButton>
           </Tooltip>
         )}
 
         {handleEdit && (
-          <Tooltip title="Chỉnh Sửa">
-            <IconButton color="primary" onClick={() => handleEdit(row)}>
+          <Tooltip title="Edit">
+            <IconButton
+              color="primary"
+              onClick={() => handleEdit(row)}
+              sx={{ padding: "4px" }} // Reduced padding for action buttons
+            >
               <Edit />
             </IconButton>
           </Tooltip>
         )}
 
         {handleDelete && (
-          <Tooltip title="Xóa">
-            <IconButton sx={{ color: "red" }} onClick={() => handleDelete(row)}>
+          <Tooltip title="Delete">
+            <IconButton
+              sx={{ color: "red", padding: "4px" }} // Reduced padding for action buttons
+              onClick={() => handleDelete(row)}
+            >
               <Delete />
             </IconButton>
           </Tooltip>
