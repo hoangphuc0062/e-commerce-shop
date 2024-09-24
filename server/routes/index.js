@@ -12,8 +12,8 @@ const initRoutes = (app) => {
   app.use("/api/categories", categoryRouter);
   app.use("/api/coupon", couponRouter);
   app.use("/api/orders", orderRouter);
-  app.use("/api/customer", customerRouter);
-  app.use("/api/staff", staffRouter);
+  app.use("/api/customers", customerRouter);
+  app.use("/api/staffs", staffRouter);
 
   app.use(notFound);
   app.use(errHandler);
