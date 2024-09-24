@@ -4,6 +4,7 @@ import AdminRoute from "./AdminRoute";
 import ErrorRoute from "./ErrorRoute";
 import EditorRoute from "./EditorRoute";
 import PrivateRoute from "./PrivateRoute";
+import LoginPage from "../pages/auth/login";
 export default function RootRouter() {
   return (
     <Routes>
@@ -26,6 +27,9 @@ export default function RootRouter() {
 
       {/* Error routes */}
       {ErrorRoute()}
+      {/* auth */}
+
+      <Route path="dashboard/login" element={<LoginPage />} />
     </Routes>
   );
 }

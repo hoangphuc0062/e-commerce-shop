@@ -213,6 +213,26 @@ const menuItems = {
           icon: "feather icon-clock",
           url: "/dashboard/history",
         },
+        {
+          id: "auth",
+          title: "Tài khoản",
+          type: "collapse",
+          icon: "feather icon-lock",
+          children: [
+            {
+              id: "login",
+              title: "Đăng nhập",
+              type: "item",
+              url: "/dashboard/login",
+            },
+            {
+              id: "register",
+              title: "Đăng ký",
+              type: "item",
+              url: "/dashboard/register",
+            },
+          ],
+        },
       ],
     },
   ],

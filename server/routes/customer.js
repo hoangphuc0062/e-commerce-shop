@@ -1,31 +1,19 @@
 const router = require("express").Router();
 
-const {
-  registerCustomer,
-  loginCustomer,
-  checkOTP,
-  logout,
-  forgotPassword,
-  resetPassword,
-  getCustomer,
-  deleteCustomer,
-  updateCustomer,
-  updateCustomerBYAdmin,
-  refreshAccessToken,
-} = require("../controllers/customer");
+const ctrl = require("../controllers/customer");
 const { verifyAccessToken, isAdmin } = require("../middlewares/vertifyToken");
 
-router.post("/register", registerCustomer);
-router.post("/login", loginCustomer);
-router.post("/checkOTP", checkOTP);
-router.get("/logout", logout);
-router.post("/forgotpassword", forgotPassword);
-router.put("/resetpassword", resetPassword);
-router.post("/refreshtoken", refreshAccessToken);
+router.post("/register", ctrl.registerCustomer);
+router.post("/login", ctrl.loginCustomer);
+router.post("/checkOTP", ctrl.checkOTP);
+router.get("/logout", ctrl.logout);
+router.post("/forgotpassword", ctrl.forgotPassword);
+router.put("/resetpassword", ctrl.resetPassword);
+router.post("/refreshtoken", ctrl.refreshAccessToken);
 
-router.get("/", getCustomer);
-router.delete("/:_id", deleteCustomer);
-router.put("/:_id", verifyAccessToken, updateCustomer);
-router.put("/:_id", updateCustomerBYAdmin);
+router.get("/", ctrl.getCustomer);
+router.delete("/:_id", ctrl.deleteCustomer);
+router.put("/:_id", verifyAccessToken, ctrl.updateCustomer);
+router.put("/:_id", ctrl.updateCustomerBYAdmin);
 
 module.exports = router;
