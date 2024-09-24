@@ -1,6 +1,5 @@
 const Customer = require("../../models/customer");
 const asyncHandler = require("express-async-handler");
-const sendSMS = require("../../ultils/sendPhone");
 
 const {
   generateAccessToken,
@@ -16,28 +15,31 @@ const loginCustomer = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Phone number not found");
   }
+
   // Check if the password is correct
   if (!(await customer.isCorrectPassword(password))) {
     res.status(400);
     throw new Error("Password is incorrect");
   }
-  // Generate access token and refresh token
-  const accessToken = generateAccessToken(customer._id);
-  const refreshToken = generateRefreshToken(customer._id);
+
+  // Extract required details and create tokens
+  const { _id, role } = customer;
+  const accessToken = generateAccessToken(_id, role);
+  const refreshToken = generateRefreshToken(_id);
+
   // Save the refresh token to the database
-  customer.refreshToken = refreshToken;
-  await customer.save();
-  // Return the response to the client
-  res.status(200).json({
-    mes: "Login successfully",
-    success: true,
-    data: {
-      customer,
-      accessToken,
-      refreshToken,
-    },
+  await Customer.findByIdAndUpdate(_id, { refreshToken }, { new: true });
+
+  // Set the refresh token as a cookie
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
   });
+
+  // Return the response to the client
+  res.status(200).json(customer);
 });
+
 module.exports = {
   loginCustomer,
 };

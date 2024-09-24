@@ -1,9 +1,8 @@
 const mongoose = require("mongoose"); // Erase if already required
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-
 // Declare the Schema of the Mongo model
-var customerSchema = new mongoose.Schema(
+var staffSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -11,11 +10,11 @@ var customerSchema = new mongoose.Schema(
     },
     email: {
       type: String,
+      required: true,
+      unique: true,
     },
     phone: {
       type: String,
-      required: true,
-      unique: true,
     },
     password: {
       type: String,
@@ -23,12 +22,8 @@ var customerSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: [0, 1, 2],
-      default: 0,
-    },
-    code: {
-      type: String,
-      default: null,
+      enum: [0, 1, 2, 3],
+      default: 1,
     },
     cart: [
       {
@@ -36,8 +31,12 @@ var customerSchema = new mongoose.Schema(
           type: mongoose.Types.ObjectId,
           ref: "Product",
         },
+        color: String,
         quantity: Number,
         price: Number,
+        size: Number,
+        name: String,
+        image: String,
       },
     ],
     address: {
@@ -47,7 +46,7 @@ var customerSchema = new mongoose.Schema(
     wishlist: [{ type: mongoose.Types.ObjectId, ref: "Product" }],
     isBlocked: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     refreshToken: {
       type: String,
@@ -75,8 +74,7 @@ var customerSchema = new mongoose.Schema(
   }
 );
 
-// Hash password before saving
-customerSchema.pre("save", async function (next) {
+staffSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     return next();
   }
@@ -84,15 +82,10 @@ customerSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
-
-// Methods for customerSchema
-customerSchema.methods = {
-  // Check if the entered password matches the hashed password
+staffSchema.methods = {
   isCorrectPassword: async function (password) {
-    return await bcrypt.compare(password, this.password);
+    return await bcrypt.compare(password, this.password); // password : cua ng dun nhap vao, this.password : cua trong mongodb da hash
   },
-
-  // Create a token for password reset
   createPasswordChangeToken: function () {
     const resetToken = crypto.randomBytes(32).toString("hex");
     this.passwordResetToken = crypto
@@ -102,13 +95,7 @@ customerSchema.methods = {
     this.passwordResetExprires = Date.now() + 15 * 60 * 1000;
     return resetToken;
   },
-
-  // Update code method
-  updateCode: function (newCode) {
-    this.code = newCode;
-    return this.save(); // Save the customer document with the updated code
-  },
 };
 
-// Export the model
-module.exports = mongoose.model("Customer", customerSchema);
+//Export the model
+module.exports = mongoose.model("Staff", staffSchema);
