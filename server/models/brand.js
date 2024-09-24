@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
 
-const categorySchema = new mongoose.Schema(
+const brandSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -9,34 +9,34 @@ const categorySchema = new mongoose.Schema(
     },
     slug: {
       type: String,
-      require: true,
+      required: true,
       unique: true,
     },
-    icon: {
+    image: {
       type: String,
     },
-    type: {
-      type: String,
-    },
-    description: {
-      type: String,
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
     },
   },
   {
     timestamps: true,
   }
 );
-categorySchema.pre("validate", function (next) {
-  if (this.name) {
-    this.slug = slugify(this.name, { lower: true, strict: true });
-  }
-  next();
-});
-categorySchema.pre("save", function (next) {
+
+brandSchema.pre("validate", function (next) {
   if (this.isModified("name")) {
     this.slug = slugify(this.name, { lower: true, strict: true });
   }
   next();
 });
 
-module.exports = mongoose.model("Category", categorySchema);
+brandSchema.pre("save", function (next) {
+  if (this.isModified("name")) {
+    this.slug = slugify(this.name, { lower: true, strict: true });
+  }
+  next();
+});
+
+module.exports = mongoose.model("Brand", brandSchema);

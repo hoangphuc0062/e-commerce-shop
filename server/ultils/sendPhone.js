@@ -35,7 +35,7 @@ const sendSMS = async (phone, messages) => {
     messages: [
       {
         destinations: [{ to: "84" + phone }],
-        from: "Shop",
+        from: "Shop Điện máy",
         text: messages,
       },
     ],
