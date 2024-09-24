@@ -3,36 +3,39 @@ const Category = require("../models/category");
 const asyncHandler = require("express-async-handler");
 
 const getAllCategory = asyncHandler(async (req, res) => {
-  const categories = await Category.find();
-  return res.status(200).json({
-    success: true,
-    categories,
-  });
+  const { litmit = 10, offset = 0 } = req.query;
+  const categories = await Category.find()
+    .limit(parseInt(litmit))
+    .skip(parseInt(offset));
+
+  return res.status(200).json(categories);
 });
 const addCategory = asyncHandler(async (req, res) => {
-  const { name, parent } = req.body;
-  if (!name) {
+  const { name, type } = req.body;
+  if (!name || !type) {
     return res.status(400).json({
       success: false,
       mes: "Missing inputs",
     });
   }
-  const category = await Category.create(req.body);
+
+  const category = new Category(req.body);
+  await category.save();
+
   return res.status(200).json({
-    success: category ? true : false,
-    mes: category ? "Create category is succesful" : "Some thing went wrong",
+    success: true,
+    mes: "Add category is succesful",
+    category,
   });
 });
 const deleteCategory = asyncHandler(async (req, res) => {
   const { _id } = req.params;
-
   if (!_id) {
     return res.status(400).json({
       success: false,
       mes: "Missing inputs",
     });
   }
-
   const category = await Category.findByIdAndDelete(_id);
   return res.status(200).json({
     success: category ? true : false,
@@ -41,14 +44,12 @@ const deleteCategory = asyncHandler(async (req, res) => {
 });
 const updateCategory = asyncHandler(async (req, res) => {
   const { _id } = req.params;
-
   if (!_id || Object.keys(req.body).length === 0) {
     return res.status(400).json({
       success: false,
       mes: "Missing inputs",
     });
   }
-
   const category = await Category.findByIdAndUpdate(_id, req.body, {
     new: true,
   });

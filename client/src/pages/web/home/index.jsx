@@ -2,7 +2,7 @@ import { HorizonBanner } from "@/components/Banner/HorizonBanner";
 import { MainSection } from "@/components/HomeSections/MainSection";
 
 import { Helmet } from "react-helmet-async";
-import Section from "@/components/HomeSections/Section";
+
 function HomePage() {
   <Helmet>
     <title> Trang chủ </title>
@@ -13,9 +13,7 @@ function HomePage() {
         <MainSection />
         <HorizonBanner />
       </div>
-      <div>
-        <Section />
-      </div>
+      <div></div>
     </div>
   );
 }
