@@ -14,6 +14,7 @@ import CreateProductForm from "../pages/product/create";
 import VariantForm from "../pages/product/variant/create";
 import VariantPage from "../pages/product/variant";
 import OrderPage from "../pages/order";
+import SiteConfig from "../pages/webconfig";
 // import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
   return (
@@ -167,6 +168,15 @@ const AdminRoute = () => {
           <PrivateRoute
             element={<OrderPage />}
             roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="webconfig"
+        element={
+          <PrivateRoute
+            element={<SiteConfig />}
+            roles={["admin", "superadmin"]}
           />
         }
       />

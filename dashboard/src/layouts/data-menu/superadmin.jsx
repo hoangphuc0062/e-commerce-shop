@@ -132,7 +132,7 @@ const menuItems = {
               id: "site-config",
               title: "Cấu hình trang web",
               type: "item",
-              url: "/dashboard/config/site-config",
+              url: "/dashboard/webconfig",
             },
             {
               id: "email-config",
