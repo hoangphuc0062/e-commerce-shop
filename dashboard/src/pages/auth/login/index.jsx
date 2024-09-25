@@ -2,9 +2,11 @@ import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { Button, TextField, Container, Box, Typography } from "@mui/material";
-import { login } from "../../../redux/slices/staff";
+import { login as loginAction } from "../../../redux/slices/staff";
 import { useEffect } from "react";
 import { handleToast } from "../../../utils/toast";
+import { useAuth } from "../../../contexts/AuthContext";
+import { Navigate } from "react-router-dom";
 
 // Validation schema using Yup
 const loginSchema = yup.object().shape({
@@ -17,6 +19,7 @@ const loginSchema = yup.object().shape({
 
 export default function LoginPage() {
   const dispatch = useDispatch();
+  const { islogin, login } = useAuth();
 
   // Initialize useFormik hook
   const formik = useFormik({
@@ -27,7 +30,7 @@ export default function LoginPage() {
     validationSchema: loginSchema,
     onSubmit: (values) => {
       // Dispatch login action with form values
-      dispatch(login(values));
+      dispatch(loginAction(values));
     },
   });
 
@@ -44,8 +47,13 @@ export default function LoginPage() {
   useEffect(() => {
     if (status === "success") {
       handleToast("success", "Login successful", "top-right");
+      login();
     }
-  }, [status]);
+  }, [status, login]);
+
+  if (islogin) {
+    return <Navigate to="/dashboard" />;
+  }
 
   return (
     <Container maxWidth="xs">
