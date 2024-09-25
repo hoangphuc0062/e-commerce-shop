@@ -82,7 +82,7 @@ export const criteriaData = [
     text: "Kiểu màn hình",
     options: [
       { value: "taiThui", text: "Tai thỏ" },
-      { value: "tranVien", text: "Tràn viền (Không khuyết)" },
+      { value: "tranVien", text: "Tràn viền" },
     ],
   },
   {
