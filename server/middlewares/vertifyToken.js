@@ -25,6 +25,7 @@ const verifyAccessToken = asyncHandler(async (req, res, next) => {
 const checkRole = (requiredRole, roleName) => {
   return asyncHandler(async (req, res, next) => {
     const { role } = req.user;
+    console.log(role);
     if (+role !== requiredRole) {
       return res.status(401).json({
         success: false,
