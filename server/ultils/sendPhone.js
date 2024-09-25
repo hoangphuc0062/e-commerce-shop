@@ -34,15 +34,15 @@ const sendSMS = async (phone, messages) => {
   var postData = JSON.stringify({
     messages: [
       {
-        destinations: [{ to: "84" + phone }], // Removing unnecessary spaces
-        from: "Shop",
+        destinations: [{ to: "84" + phone }],
+        from: "Shop Điện máy",
         text: messages,
       },
     ],
   });
 
   req.write(postData);
-  req.end(); // Finalize the request
+  req.end();
 };
 
 module.exports = sendSMS;

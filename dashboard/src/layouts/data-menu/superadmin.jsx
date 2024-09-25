@@ -132,7 +132,7 @@ const menuItems = {
               id: "site-config",
               title: "Cấu hình trang web",
               type: "item",
-              url: "/dashboard/config/site-config",
+              url: "/dashboard/webconfig",
             },
             {
               id: "email-config",
@@ -212,6 +212,26 @@ const menuItems = {
           type: "item",
           icon: "feather icon-clock",
           url: "/dashboard/history",
+        },
+        {
+          id: "auth",
+          title: "Tài khoản",
+          type: "collapse",
+          icon: "feather icon-lock",
+          children: [
+            {
+              id: "login",
+              title: "Đăng nhập",
+              type: "item",
+              url: "/dashboard/login",
+            },
+            {
+              id: "register",
+              title: "Đăng ký",
+              type: "item",
+              url: "/dashboard/register",
+            },
+          ],
         },
       ],
     },
