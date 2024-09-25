@@ -1,24 +1,42 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-// AuthContext.js
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import Cookies from "js-cookie";
+import ROLE from "../config/role";
 
 // Tạo Context
 const AuthContext = createContext();
 
 // Provider để bọc ứng dụng của bạn
 export const AuthProvider = ({ children }) => {
-  const [userRole, setUserRole] = useState(
-    JSON.parse(localStorage.getItem("role"))
-  ); // Vai trò người dùng được lưu trong localStorage
+  const [islogin, setIslogin] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const role = Cookies.get("role");
+    if (role !== undefined) {
+      setUserRole(ROLE[role]);
+      setIslogin(true);
+    }
+  }, []);
 
   const setRole = (role) => {
-    localStorage.setItem("role", role);
-    setUserRole(role);
+    Cookies.set("role", role, { expires: 7 }); // Cookie sẽ hết hạn sau 7 ngày
+    setUserRole(ROLE[role]);
+  };
+
+  const login = () => {
+    setIslogin(true);
+  };
+
+  const logout = () => {
+    setIslogin(false);
+    Cookies.remove("role");
+    setUserRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ userRole, setRole }}>
+    <AuthContext.Provider value={{ islogin, userRole, setRole, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

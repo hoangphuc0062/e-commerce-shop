@@ -24,7 +24,6 @@ const checkOTP = asyncHandler(async (req, res) => {
   await customer.save();
   res.status(200).json({
     mes: "OTP is correct",
-    success: true,
   });
 });
 
@@ -34,12 +33,10 @@ const deleteCustomer = asyncHandler(async (req, res) => {
   const customer = await Customer.findByIdAndDelete(_id);
   if (!customer) {
     return res.status(404).json({
-      success: false,
       message: "Customer not found",
     });
   }
   return res.status(200).json({
-    success: true,
     message: "Customer deleted successfully",
   });
 });
@@ -47,14 +44,12 @@ const deleteCustomer = asyncHandler(async (req, res) => {
 const forgotPassword = asyncHandler(async (req, res) => {
   const { phone } = req.body;
 
-  // Check if the phone number exists
   const customer = await Customer.findOne({ phone });
   if (!customer) {
     res.status(400);
     throw new Error("Phone number not found");
   }
 
-  // Create a password reset token
   const resetToken = customer.createPasswordChangeToken();
   await customer.save(); // Save the customer with the token
 
@@ -137,7 +132,6 @@ const logout = asyncHandler(async (req, res) => {
     secure: true,
   });
   return res.status(200).json({
-    success: true,
     mes: "Logout is done",
   });
 });
@@ -247,7 +241,6 @@ const resetPassword = asyncHandler(async (req, res) => {
 
   // Send response
   return res.status(200).json({
-    success: true,
     message: "Password updated successfully",
   });
 });
@@ -256,7 +249,6 @@ const updateCustomer = asyncHandler(async (req, res) => {
   const { _id } = req.params;
   if (!_id || Object.keys(req.body).length === 0) {
     return res.status(400).json({
-      success: false,
       message: "Missing required fields",
     });
   }
@@ -270,7 +262,6 @@ const updateCustomerBYAdmin = asyncHandler(async (req, res) => {
   const { _id } = req.params;
   if (!_id || Object.keys(req.body).length === 0) {
     return res.status(400).json({
-      success: false,
       message: "Missing required fields",
     });
   }
