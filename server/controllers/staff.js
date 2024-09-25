@@ -55,7 +55,9 @@ const login = asyncHandler(async (req, res) => {
       httpOnly: true, // Bảo mật hơn, không cho phép truy cập từ JS
       maxAge: 7 * 24 * 60 * 60 * 1000, // Refresh token tồn tại 7 ngày
     });
-
+    res.cookie("role", role, {
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
     // Gửi accessToken qua JSON
     return res.status(200).json({
       success: true,
