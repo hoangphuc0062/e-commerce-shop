@@ -25,6 +25,7 @@ const verifyAccessToken = asyncHandler(async (req, res, next) => {
 const checkRole = (requiredRole, roleName) => {
   return asyncHandler(async (req, res, next) => {
     const { role } = req.user;
+
     // Nếu người dùng là superadmin (vai trò 0), cho phép truy cập
     if (+role === 0) {
       return next();

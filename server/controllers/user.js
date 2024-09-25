@@ -71,27 +71,25 @@ const register = asyncHandler(async (req, res) => {
 // });
 
 const finalRegister = asyncHandler(async (req, res) => {
-  const cookie = req.cookies;
-  const { token } = req.params;
-
-  if (!cookie || !cookie.dataregister || cookie.dataregister.token !== token) {
-    res.clearCookie("dataregister");
-    return res.redirect(`${process.env.CLIENT_URL}/finalregister/failed`);
-  }
-
-  const newUser = await User.create({
-    email: cookie.dataregister.email,
-    password: cookie.dataregister.password,
-    firstname: cookie.dataregister.firstname,
-    lastname: cookie.dataregister.lastname,
-    mobile: cookie.dataregister.mobile,
-  });
-  res.clearCookie("dataregister");
-  if (newUser) {
-    return res.redirect(`${process.env.CLIENT_URL}/finalregister/success`);
-  } else {
-    return res.redirect(`${process.env.CLIENT_URL}/finalregister/failed`);
-  }
+  // const cookie = req.cookies;
+  // const { token } = req.params;
+  // if (!cookie || !cookie.dataregister || cookie.dataregister.token !== token) {
+  //   res.clearCookie("dataregister");
+  //   return res.redirect(`${process.env.CLIENT_URL}/finalregister/failed`);
+  // }
+  // const newUser = await User.create({
+  //   email: cookie.dataregister.email,
+  //   password: cookie.dataregister.password,
+  //   firstname: cookie.dataregister.firstname,
+  //   lastname: cookie.dataregister.lastname,
+  //   mobile: cookie.dataregister.mobile,
+  // });
+  // res.clearCookie("dataregister");
+  // if (newUser) {
+  //   return res.redirect(`${process.env.CLIENT_URL}/finalregister/success`);
+  // } else {
+  //   return res.redirect(`${process.env.CLIENT_URL}/finalregister/failed`);
+  // }
 });
 
 const login = asyncHandler(async (req, res) => {
