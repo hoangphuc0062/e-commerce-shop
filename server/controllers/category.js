@@ -3,13 +3,11 @@ const Category = require("../models/category");
 const asyncHandler = require("express-async-handler");
 
 const getAllCategory = asyncHandler(async (req, res) => {
-  const { litmit = 10, offset = 0 } = req.query;
-  const categories = await Category.find()
-    .limit(parseInt(litmit))
-    .skip(parseInt(offset));
+  const categories = await Category.find();
 
   return res.status(200).json(categories);
 });
+
 const addCategory = asyncHandler(async (req, res) => {
   const { name, type } = req.body;
   if (!name || !type) {
@@ -28,6 +26,7 @@ const addCategory = asyncHandler(async (req, res) => {
     category,
   });
 });
+
 const deleteCategory = asyncHandler(async (req, res) => {
   const { _id } = req.params;
   if (!_id) {
@@ -42,6 +41,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
     mes: category ? "Delete category is succesful" : "Some thing went wrong",
   });
 });
+
 const updateCategory = asyncHandler(async (req, res) => {
   const { _id } = req.params;
   if (!_id || Object.keys(req.body).length === 0) {
