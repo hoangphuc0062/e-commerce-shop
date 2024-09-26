@@ -12,86 +12,84 @@ const sendMail = require("../ultils/sendMail");
 const crypto = require("crypto");
 const makeToken = require("uniquid");
 
-// const register = asyncHandler(async (req, res) => {
-//   const { email, password, firstname, lastname } = req.body;
-//   if (!email || !password || !firstname || !lastname) {
-//     return res.status(400).json({
-//       success: false,
-//       mes: "Missing inputs",
-//     });
-//   }
-//   const user = await User.findOne({ email: email });
-//   if (user) throw new Error("User has already existed");
-//   else {
-//     const newUser = await User.create(req.body);
-//     return res.status(200).json({
-//       success: newUser ? true : false,
-//       mes: newUser
-//         ? "Register is succesful. Please login"
-//         : "Some thing went wrong",
-//     });
-//   }
-// });
-
 const register = asyncHandler(async (req, res) => {
-  const { email, password, firstname, lastname, mobile } = req.body;
-  if (!email || !password || !firstname || !lastname || !mobile) {
+  const { email, password, firstname, lastname } = req.body;
+  if (!email || !password || !firstname || !lastname) {
     return res.status(400).json({
       success: false,
       mes: "Missing inputs",
     });
   }
-
   const user = await User.findOne({ email: email });
   if (user) throw new Error("User has already existed");
   else {
-    const token = makeToken();
-    // rest of your code...
-    res.cookie(
-      "dataregister",
-      { ...req.body, token },
-      {
-        httpOnly: true,
-        maxAge: 15 * 60 * 1000,
-      }
-    );
-
-    const html = `Xin vui lòng click vào link dưới đây để hoàn tất quá trình đăng ký của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ.
-      <a href=${process.env.URL_SERVER}/api/users/finalregister/${token}>Click here</a>`;
-    const subject = `Hoàn tất đăng ký Hoàng Phúc Store Account`;
-
-    const rs = await sendMail(email, html, subject);
-
+    const newUser = await User.create(req.body);
     return res.status(200).json({
-      success: true,
-      mes: "Please check your email to active account",
-      rs,
+      success: newUser ? true : false,
+      mes: newUser
+        ? "Register is succesful. Please login"
+        : "Some thing went wrong",
     });
   }
 });
 
+// const register = asyncHandler(async (req, res) => {
+//   const { email, password, firstname, lastname, mobile } = req.body;
+//   if (!email || !password || !firstname || !lastname || !mobile) {
+//     return res.status(400).json({
+//       success: false,
+//       mes: "Missing inputs",
+//     });
+//   }
+
+//   const user = await User.findOne({ email: email });
+//   if (user) throw new Error("User has already existed");
+//   else {
+//     const token = makeToken();
+//     // rest of your code...
+//     res.cookie(
+//       "dataregister",
+//       { ...req.body, token },
+//       {
+//         httpOnly: true,
+//         maxAge: 15 * 60 * 1000,
+//       }
+//     );
+
+//     const html = `Xin vui lòng click vào link dưới đây để hoàn tất quá trình đăng ký của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ.
+//       <a href=${process.env.URL_SERVER}/api/users/finalregister/${token}>Click here</a>`;
+//     const subject = `Hoàn tất đăng ký Hoàng Phúc Store Account`;
+
+//     const rs = await sendMail(email, html, subject);
+
+//     return res.status(200).json({
+//       success: true,
+//       mes: "Please check your email to active account",
+//       rs,
+//     });
+//   }
+// });
+
 const finalRegister = asyncHandler(async (req, res) => {
-  const cookie = req.cookies;
-  const { token } = req.params;
-
-  if (!cookie || !cookie.dataregister || cookie.dataregister.token !== token) {
-    res.clearCookie("dataregister");
-    return res.redirect(`${process.env.CLIENT_URL}/finalregister/failed`);
-  }
-
-  const newUser = await User.create({
-    email: cookie.dataregister.email,
-    password: cookie.dataregister.password,
-    firstname: cookie.dataregister.firstname,
-    lastname: cookie.dataregister.lastname,
-    mobile: cookie.dataregister.mobile,
-  });
-  res.clearCookie("dataregister");
-  if (newUser) {
-    return res.redirect(`${process.env.CLIENT_URL}/finalregister/success`);
-  } else {
-    return res.redirect(`${process.env.CLIENT_URL}/finalregister/failed`);
-  }
+  // const cookie = req.cookies;
+  // const { token } = req.params;
+  // if (!cookie || !cookie.dataregister || cookie.dataregister.token !== token) {
+  //   res.clearCookie("dataregister");
+  //   return res.redirect(`${process.env.CLIENT_URL}/finalregister/failed`);
+  // }
+  // const newUser = await User.create({
+  //   email: cookie.dataregister.email,
+  //   password: cookie.dataregister.password,
+  //   firstname: cookie.dataregister.firstname,
+  //   lastname: cookie.dataregister.lastname,
+  //   mobile: cookie.dataregister.mobile,
+  // });
+  // res.clearCookie("dataregister");
+  // if (newUser) {
+  //   return res.redirect(`${process.env.CLIENT_URL}/finalregister/success`);
+  // } else {
+  //   return res.redirect(`${process.env.CLIENT_URL}/finalregister/failed`);
+  // }
 });
 
 const login = asyncHandler(async (req, res) => {

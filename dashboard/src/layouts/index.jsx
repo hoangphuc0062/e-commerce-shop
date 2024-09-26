@@ -7,6 +7,8 @@ import Breadcrumb from "./Breadcrumb";
 import { ConfigContext } from "../contexts/ConfigContext";
 import { Outlet } from "react-router-dom";
 import getNavigationByRole from "./role";
+import Cookies from "js-cookie";
+import ROLE from "../config/role";
 
 const AdminLayout = () => {
   const windowSize = useWindowSize();
@@ -36,8 +38,10 @@ const AdminLayout = () => {
     }
   };
 
-  const role = JSON.parse(localStorage.getItem("role"));
-  const common = getNavigationByRole(role);
+  // const role = JSON.parse(localStorage.getItem("role"));
+  const role = Cookies.get("role");
+  const a = ROLE[role];
+  const common = getNavigationByRole(a);
 
   let outSideClass = ["nav-outside"];
   if (collapseMenu) {
