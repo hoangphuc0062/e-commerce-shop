@@ -1,14 +1,11 @@
 /* eslint-disable react/prop-types */
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import Cookies from "js-cookie";
+import ROLE from "../config/role";
 
 const PrivateRoute = ({ roles, element }) => {
-  const { userRole } = useAuth();
-
-  if (!userRole) {
-    return <Navigate to="/unauthorized" />;
-  }
-
+  const role = Cookies.get("role");
+  const userRole = ROLE[role];
   if (
     !roles
       .map((role) => role.trim().toLowerCase())

@@ -109,7 +109,23 @@ const updateStaff = asyncHandler(async (req, res) => {
 
 const deleteStaff = asyncHandler(async (req, res) => {
   const { sid } = req.params;
-  if (!sid) throw new Error("Missing inputs");
+  const currentUserId = req.user._id; // Assuming the logged-in user's ID is stored in req.user
+
+  if (!sid) {
+    throw new Error("Missing inputs");
+  }
+
+  // Prevent deleting yourself
+  if (sid.toString() === currentUserId.toString()) {
+    return res.status(400).json({ mes: "You cannot delete yourself" });
+  }
+
+  const staff = await Staff.findById(sid);
+  if (!staff) {
+    res.status(404);
+    throw new Error("Staff not found");
+  }
+
   const response = await Staff.findByIdAndDelete(sid);
   return res.status(200).json({
     mes: "Delete success",
