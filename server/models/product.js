@@ -82,7 +82,6 @@ var ProductSchema = new mongoose.Schema(
     status: {
       type: String,
     },
-
     specifications: [
       {
         title: String,
@@ -122,6 +121,18 @@ var ProductSchema = new mongoose.Schema(
         typeOfValue: String,
       },
     ],
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+    },
+    brand: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brand",
+    },
+    sery: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Collection",
+    },
   },
   {
     timestamps: true,
