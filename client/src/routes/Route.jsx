@@ -7,8 +7,9 @@ import { Login } from "../pages/auth/Login";
 import { Register } from "../pages/auth/Register";
 import ForumPage from "../pages/web/forum";
 import DetailBlog from "../pages/web/forum/DetailBlog";
-import ProductList from "../pages/web/home/ProductList";
+import ProductList from "../pages/web/product/ProductList";
 import CartProduct from "../pages/web/home/CartProduct";
+
 export default function RootRouter() {
   const routes = useRoutes([
     {

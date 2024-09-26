@@ -1,5 +1,10 @@
 export const statusColors = {
-  pending: { label: "Chưa giải quyết", color: "warning" },
+  active: { label: "Hoạt động", color: "success" },
+  inactive: { label: "Không hoạt động", color: "error" },
+  instock: { label: "Còn hàng", color: "success" },
+  outofstock: { label: "Hết hàng", color: "error" },
+  abouttosell: { label: "Sắp hết hàng", color: "warning" },
+  pending: { label: "Chờ xử lý", color: "warning" },
   rejected: { label: "Từ chối", color: "error" },
   completed: { label: "Hoàn thành", color: "success" },
   canceled: { label: "Hủy bỏ", color: "error" },
@@ -12,6 +17,21 @@ export const statusColors = {
   paid: { label: "Đã thanh toán", color: "success" },
   unpaid: { label: "Chưa thanh toán", color: "error" },
   partial: { label: "Thanh toán một phần", color: "warning" },
-  active: { label: "Hoạt động", color: "success" },
-  inactive: { label: "Không hoạt động", color: "error" },
+  waiting: { label: "Chờ đợi", color: "warning" },
+};
+
+export const statusOrder = {
+  pending: { label: "Chờ xử lý", color: "warning" },
+  rejected: { label: "Từ chối", color: "error" },
+  completed: { label: "Hoàn thành", color: "success" },
+  canceled: { label: "Hủy bỏ", color: "error" },
+  processing: { label: "Đang xử lý", color: "primary" },
+  shipped: { label: "Đã gửi", color: "info" },
+  delivered: { label: "Đã giao", color: "success" },
+  returned: { label: "Đã trả lại", color: "error" },
+  refunded: { label: "Hoàn tiền", color: "success" },
+  failed: { label: "Thất bại", color: "error" },
+  paid: { label: "Đã thanh toán", color: "success" },
+  unpaid: { label: "Chưa thanh toán", color: "error" },
+  partial: { label: "Thanh toán một phần", color: "warning" },
 };

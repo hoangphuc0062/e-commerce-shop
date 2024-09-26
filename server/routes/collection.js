@@ -1,0 +1,17 @@
+const router = require("express").Router();
+
+const ctrl = require("../controllers/collection");
+
+const {
+  verifyAccessToken,
+  isAdmin,
+  isSuperAdmin,
+} = require("../middlewares/vertifyToken");
+
+//api for client
+router.get("/", ctrl.getAllCollection);
+// apis for admin
+router.use([verifyAccessToken, isAdmin]);
+router.post("/create", ctrl.addCollection);
+
+module.exports = router;

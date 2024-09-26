@@ -10,6 +10,7 @@ const SearchInput = ({ search, setSearch }) => (
     value={search}
     onChange={(e) => setSearch(e.target.value)}
     style={{ margin: 16 }}
+    fullWidth
   />
 );
 
