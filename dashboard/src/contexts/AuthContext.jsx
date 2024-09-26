@@ -10,7 +10,8 @@ const AuthContext = createContext();
 // Provider để bọc ứng dụng của bạn
 export const AuthProvider = ({ children }) => {
   const [islogin, setIslogin] = useState(false);
-  const [userRole, setUserRole] = useState(null);
+  const [userRole, setUserRole] = useState("");
+  const [profile, setProfile] = useState([]);
 
   useEffect(() => {
     const role = Cookies.get("role");
@@ -36,7 +37,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ islogin, userRole, setRole, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        islogin,
+        userRole,
+        setRole,
+        login,
+        logout,
+        setUserRole,
+        profile,
+        setProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

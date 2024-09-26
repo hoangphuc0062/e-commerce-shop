@@ -25,14 +25,9 @@ const staffSlice = createSlice({
     statusPassword: "idle",
   },
   reducers: {
-    logout: (state) => {
-      state.me = null;
-    },
-    updateMe: (state, action) => {
-      state.me = action.payload;
-    },
-    updatePassword: (state, action) => {
-      state.me = action.payload;
+    resetState: (state) => {
+      state.status = "idle";
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -51,6 +46,6 @@ const staffSlice = createSlice({
   },
 });
 
-export const { logout, updateMe, updatePassword } = staffSlice.actions;
+export const { resetState } = staffSlice.actions;
 
 export default staffSlice.reducer;
