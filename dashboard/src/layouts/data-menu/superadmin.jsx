@@ -20,12 +20,6 @@ const menuItems = {
           icon: "feather icon-list",
           children: [
             {
-              id: "add-category",
-              title: "Thêm danh mục",
-              type: "item",
-              url: "/dashboard/category/create",
-            },
-            {
               id: "category-list",
               title: "Danh sách danh mục",
               type: "item",
@@ -40,16 +34,23 @@ const menuItems = {
           icon: "feather icon-box",
           children: [
             {
+              id: "product-list",
+              title: "Danh sách sản phẩm",
+              type: "item",
+              url: "/dashboard/product",
+            },
+            {
               id: "add-product",
               title: "Thêm sản phẩm",
               type: "item",
               url: "/dashboard/product/create",
             },
+
             {
-              id: "product-list",
-              title: "Danh sách sản phẩm",
+              id: "variant",
+              title: "Danh sách biến thể",
               type: "item",
-              url: "/dashboard/product",
+              url: "/dashboard/product/variant",
             },
           ],
         },
@@ -64,18 +65,6 @@ const menuItems = {
               title: "Tất cả đơn hàng",
               type: "item",
               url: "/dashboard/order",
-            },
-            {
-              id: "pending-orders",
-              title: "Đơn hàng chờ xử lý",
-              type: "item",
-              url: "/dashboard/order/pending",
-            },
-            {
-              id: "processed-orders",
-              title: "Đơn hàng đã xử lý",
-              type: "item",
-              url: "/dashboard/order/processed",
             },
           ],
         },
@@ -143,7 +132,7 @@ const menuItems = {
               id: "site-config",
               title: "Cấu hình trang web",
               type: "item",
-              url: "/dashboard/config/site-config",
+              url: "/dashboard/webconfig",
             },
             {
               id: "email-config",
@@ -223,6 +212,26 @@ const menuItems = {
           type: "item",
           icon: "feather icon-clock",
           url: "/dashboard/history",
+        },
+        {
+          id: "auth",
+          title: "Tài khoản",
+          type: "collapse",
+          icon: "feather icon-lock",
+          children: [
+            {
+              id: "login",
+              title: "Đăng nhập",
+              type: "item",
+              url: "/dashboard/login",
+            },
+            {
+              id: "register",
+              title: "Đăng ký",
+              type: "item",
+              url: "/dashboard/register",
+            },
+          ],
         },
       ],
     },

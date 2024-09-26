@@ -1,26 +1,18 @@
 import * as Yup from "yup";
+
 export const StaffSchema = Yup.object({
-  name: Yup.string().required("Vui lòng nhập họ và tên"),
+  name: Yup.string().required("Tên không được để trống"),
   email: Yup.string()
     .email("Email không hợp lệ")
-    .required("Vui lòng nhập email"),
-  phone: Yup.string().required("Vui lòng nhập số điện thoại"),
-  address: Yup.string().required("Vui lòng nhập địa chỉ"),
-  role: Yup.string().required("Vui lòng chọn chức vụ"),
-  department: Yup.string().required("Vui lòng chọn phòng ban"),
-  base: Yup.string().required("Vui lòng chọn cơ sở làm việc"),
-  salary: Yup.string().required("Vui lòng nhập lương cơ bản"),
-  description: Yup.string().required("Vui lòng nhập mô tả"),
-  avatar: Yup.string().required("Vui lòng chọn ảnh"),
-  banned: Yup.boolean(),
-  fixedSalary: Yup.string().required("Vui lòng nhập lương cố định"),
-  commission: Yup.string().required("Vui lòng nhập tỉ lệ hoa hồng"),
-  status: Yup.string().required("Vui lòng chọn trạng thái"),
-  totalSalary: Yup.string().required("Vui lòng nhập tổng lương"),
-  password: Yup.string().required("Vui lòng nhập mật khẩu"),
-  confirmPassword: Yup.string().oneOf(
-    [Yup.ref("password"), null],
-    "Mật khẩu không khớp"
-  ),
-  dob: Yup.string().required("Vui lòng nhập ngày sinh"),
+    .required("Email không được để trống"),
+  phone: Yup.string().required("Số điện thoại không được để trống"),
+  address: Yup.string().required("Địa chỉ không được để trống"),
+  role: Yup.string().required("Chức vụ không được để trống"),
+  department: Yup.string().required("Phòng ban không được để trống"),
+  base: Yup.string().required("Cơ sở làm việc không được để trống"),
+  salary: Yup.number().required("Lương cơ bản không được để trống"),
+  password: Yup.string().required("Mật khẩu không được để trống"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password"), null], "Mật khẩu không khớp")
+    .required("Nhập lại mật khẩu không được để trống"),
 });

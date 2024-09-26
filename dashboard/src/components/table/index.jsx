@@ -6,8 +6,10 @@ import TableRowComponent from "./TableRowComponent";
 import SearchInput from "./SearchInput";
 import TablePaginationComponent from "./TablePaginationComponent";
 import propTypes from "prop-types";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
+import SelectStatus from "./Select";
+
 const ReusableTable = ({
   handleDelete,
   handleEdit,
@@ -15,10 +17,16 @@ const ReusableTable = ({
   columns,
   handleEye,
   navigate,
+  buttonAdd,
+  optionStatus,
+  StatusOrder,
 }) => {
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState(""); // State for filtering by `status`
+  const [orderStatusFilter, setOrderStatusFilter] = useState(""); // State for filtering by `orderStatus`
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -28,10 +36,24 @@ const ReusableTable = ({
     setPage(0);
   };
 
-  // Lọc dữ liệu theo từ khóa tìm kiếm
-  // eslint-disable-next-line react/prop-types
-  const filteredData = data.filter((row) =>
-    row.name.toLowerCase().includes(search.toLowerCase())
+  // Separate handler for status filter
+  const handleStatusChange = (event) => {
+    setStatusFilter(event.target.value);
+  };
+
+  // Separate handler for order status filter
+  const handleOrderStatusChange = (event) => {
+    setOrderStatusFilter(event.target.value);
+  };
+
+  // Lọc dữ liệu theo từ khóa tìm kiếm, status, và order status
+  const filteredData = data.filter(
+    (row) =>
+      row.name.toLowerCase().includes(search.toLowerCase()) &&
+      (statusFilter === "" ||
+        row.status?.toLowerCase() === statusFilter.toLowerCase()) &&
+      (orderStatusFilter === "" ||
+        row.orderStatus?.toLowerCase() === orderStatusFilter.toLowerCase())
   );
 
   // Đảm bảo chỉ số `page` không vượt quá số trang tối đa có sẵn
@@ -44,8 +66,28 @@ const ReusableTable = ({
   return (
     <Paper>
       <div className="d-flex justify-content-between align-items-center">
-        {/* Left side: Search Input */}
-        <SearchInput search={search} setSearch={setSearch} />
+        {/* Left side: Search Input and Filters */}
+        <div className="d-flex">
+          <SearchInput search={search} setSearch={setSearch} />
+
+          {/* Conditionally render status filter */}
+          {optionStatus && optionStatus.length > 0 && (
+            <SelectStatus
+              valua={statusFilter}
+              onChange={handleStatusChange}
+              options={optionStatus}
+            />
+          )}
+
+          {/* Order Status Filter (this can be customized as needed) */}
+          {StatusOrder && StatusOrder.length > 0 && (
+            <SelectStatus
+              valua={orderStatusFilter}
+              onChange={handleOrderStatusChange}
+              options={StatusOrder}
+            />
+          )}
+        </div>
 
         {/* Right side: Button */}
         {navigate && (
@@ -63,12 +105,33 @@ const ReusableTable = ({
                 "&:hover": {
                   backgroundColor: "#2980b9",
                 },
-              }} // Optional for centering the icon with the text
+              }}
             >
               <ControlPointIcon sx={{ marginRight: 1 }} />
               Thêm mới
             </Button>
           </Link>
+        )}
+        {buttonAdd && (
+          <Button
+            variant="contained"
+            sx={{
+              margin: 2,
+              display: "flex",
+              alignItems: "center",
+              backgroundColor: "#3498db",
+              color: "white",
+              width: "fit-content",
+
+              "&:hover": {
+                backgroundColor: "#2980b9",
+              },
+            }}
+            onClick={buttonAdd}
+          >
+            <ControlPointIcon sx={{ marginRight: 1 }} />
+            Thêm mới
+          </Button>
         )}
       </div>
 
@@ -102,6 +165,7 @@ const ReusableTable = ({
     </Paper>
   );
 };
+
 ReusableTable.propTypes = {
   handleDelete: propTypes.func.isRequired,
   handleEdit: propTypes.func.isRequired,
@@ -109,6 +173,9 @@ ReusableTable.propTypes = {
   columns: propTypes.array.isRequired,
   handleEye: propTypes.func,
   navigate: propTypes.string,
+  buttonAdd: propTypes.func,
+  optionStatus: propTypes.array,
+  StatusOrder: propTypes.array,
 };
 
 export default ReusableTable;

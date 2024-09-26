@@ -7,7 +7,8 @@ const uploader = require("../config/cloudinary.config");
 const { verifyAccessToken, isAdmin } = require("../middlewares/vertifyToken");
 
 router.get("/:pid", ctrl.getProduct);
-// router.use([verifyAccessToken, isAdmin]);
+
+router.use([verifyAccessToken, isAdmin]);
 router.get("/", ctrl.getAllProduct);
 router.post("/create", ctrl.addProduct);
 

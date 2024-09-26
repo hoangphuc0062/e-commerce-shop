@@ -12,16 +12,15 @@ const categorySchema = new mongoose.Schema(
       require: true,
       unique: true,
     },
-    parent: {
-      type: mongoose.Types.ObjectId,
-      ref: "Category",
+    icon: {
+      type: String,
     },
-    children: [
-      {
-        type: mongoose.Types.ObjectId,
-        ref: "Category",
-      },
-    ],
+    type: {
+      type: String,
+    },
+    description: {
+      type: String,
+    },
   },
   {
     timestamps: true,
@@ -39,4 +38,5 @@ categorySchema.pre("save", function (next) {
   }
   next();
 });
+
 module.exports = mongoose.model("Category", categorySchema);
