@@ -30,6 +30,7 @@ export default function LoginPage() {
     validationSchema: loginSchema,
     onSubmit: (values) => {
       // Dispatch login action with form values
+      console.log(values);
       dispatch(loginAction(values));
     },
   });

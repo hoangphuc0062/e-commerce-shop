@@ -4,6 +4,7 @@ const {
   generateAccessToken,
   generateRefreshToken,
 } = require("../middlewares/jwt");
+const jwt = require("jsonwebtoken");
 
 const registerStaff = asyncHandler(async (req, res) => {
   const { email, password, name } = req.body;
@@ -79,4 +80,71 @@ const logout = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { login, logout, registerStaff };
+const getStaff = asyncHandler(async (req, res) => {
+  const staff = await Staff.find({});
+  res.json(staff);
+});
+
+const getStaffById = asyncHandler(async (req, res) => {
+  const { sid } = req.params;
+  if (!sid) throw new Error("Missing inputs");
+  const staff = await Staff.findById(sid);
+  if (staff) {
+    res.json(staff);
+  } else {
+    res.status(404);
+    throw new Error("Staff not found");
+  }
+});
+
+const updateStaff = asyncHandler(async (req, res) => {
+  const { sid } = req.params;
+  if (!sid) throw new Error("Missing inputs");
+  const response = await Staff.findByIdAndUpdate(sid, req.body, { new: true });
+  return res.status(200).json({
+    mes: "Update success",
+    response,
+  });
+});
+
+const deleteStaff = asyncHandler(async (req, res) => {
+  const { sid } = req.params;
+  if (!sid) throw new Error("Missing inputs");
+  const response = await Staff.findByIdAndDelete(sid);
+  return res.status(200).json({
+    mes: "Delete success",
+    response,
+  });
+});
+
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  // Lấy token từ cookie
+  const cookie = req.cookies;
+
+  // Check xem nó có tồn tại hay không
+  if (!cookie && !cookie.refreshToken)
+    throw new Error("No Refresh Access Token");
+  // Check token có hợp lệ hay không
+  // rs = result
+  const rs = await jwt.verify(cookie.refreshToken, process.env.JWT_SECRET);
+  const response = await Staff.findOne({
+    _id: rs._id,
+    refreshToken: cookie.refreshToken,
+  });
+  return res.status(200).json({
+    newAccessToken: response
+      ? generateAccessToken(response._id, response.role)
+      : "Refresh token is not matched ",
+  });
+});
+
+module.exports = {
+  login,
+  logout,
+  registerStaff,
+  getStaff,
+  getStaffById,
+  updateStaff,
+  deleteStaff,
+  refreshAccessToken,
+};
