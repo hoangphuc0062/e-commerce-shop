@@ -8,6 +8,7 @@ import { Register } from "../pages/auth/Register";
 import ForumPage from "../pages/web/forum";
 import DetailBlog from "../pages/web/forum/DetailBlog";
 import ProductList from "../pages/web/home/ProductList";
+import CartProduct from "../pages/web/home/CartProduct";
 export default function RootRouter() {
   const routes = useRoutes([
     {
@@ -18,6 +19,7 @@ export default function RootRouter() {
         { path: "login", element: <Login /> },
         { path: "register", element: <Register /> },
         { path: "/phone", element: <ProductList /> },
+        { path: "/cart", element: <CartProduct /> },
       ],
     },
     {
