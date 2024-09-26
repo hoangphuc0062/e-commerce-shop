@@ -144,7 +144,7 @@ const menuItems = {
               id: "payment-config",
               title: "Cấu hình thanh toán",
               type: "item",
-              url: "/dashboard/config/payment-config",
+              url: "/dashboard/paymentconfig",
             },
             {
               id: "shipping-config",
