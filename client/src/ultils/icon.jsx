@@ -15,6 +15,7 @@ import { FaAngleDoubleLeft } from "react-icons/fa";
 
 import { IoEyeOffOutline } from "react-icons/io5";
 import { IoEyeOutline } from "react-icons/io5";
+import { IoEye } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
 import { SiZalo } from "react-icons/si";
@@ -45,6 +46,11 @@ import { MdOutlineScreenshotMonitor } from "react-icons/md";
 import { PiSpeakerHifiLight } from "react-icons/pi";
 import { BsNewspaper } from "react-icons/bs";
 import { BsChevronRight } from "react-icons/bs";
+import {
+  FaSortAmountDownAlt,
+  FaSortAmountDown,
+  FaPercent,
+} from "react-icons/fa";
 
 const icons = {
   AiOutlineSearch, // kinh lup
@@ -96,6 +102,10 @@ const icons = {
   BsNewspaper,
 
   BsChevronRight,
+  FaSortAmountDownAlt,
+  FaSortAmountDown,
+  IoEye,
+  FaPercent,
 };
 
 export default icons;
