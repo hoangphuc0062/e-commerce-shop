@@ -39,9 +39,9 @@ const AdminLayout = () => {
   };
 
   // const role = JSON.parse(localStorage.getItem("role"));
+
   const role = Cookies.get("role");
-  const a = ROLE[role];
-  const common = getNavigationByRole(a);
+  const common = getNavigationByRole(ROLE[role]);
 
   let outSideClass = ["nav-outside"];
   if (collapseMenu) {

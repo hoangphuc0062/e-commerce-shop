@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
 
-const collectionSchema = new mongoose.Schema({
+const seriSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -26,17 +26,17 @@ const collectionSchema = new mongoose.Schema({
   },
 });
 
-collectionSchema.pre("validate", function (next) {
+seriSchema.pre("validate", function (next) {
   if (this.name) {
     this.slug = slugify(this.name, { lower: true, strict: true });
   }
   next();
 });
-collectionSchema.pre("save", function (next) {
+seriSchema.pre("save", function (next) {
   if (this.isModified("name")) {
     this.slug = slugify(this.name, { lower: true, strict: true });
   }
   next();
 });
 
-module.exports = mongoose.model("Collection", collectionSchema);
+module.exports = mongoose.model("Seri", seriSchema);
