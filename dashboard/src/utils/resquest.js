@@ -7,7 +7,7 @@ const request = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true, // Để gửi cookie tự động với request
+  withCredentials: true,
 });
 
 // Interceptor để thêm access token vào Authorization header
@@ -59,9 +59,9 @@ request.interceptors.response.use(
 );
 
 // Hàm gửi request với method động
+
 const sendRequest = async (method, path, options = {}) => {
   const response = await request[method](path, options);
   return response.data;
 };
-
 export default sendRequest;
