@@ -6,7 +6,7 @@ const orderRouter = require("./order");
 const customerRouter = require("./customer");
 const brandRouter = require("./brand");
 const staffRouter = require("./staff");
-const collectRouter = require("./collection");
+const seryRouter = require("./seri");
 const { notFound, errHandler } = require("../middlewares/errHandler");
 const initRoutes = (app) => {
   app.use("/api/users", userRouter);
@@ -18,7 +18,7 @@ const initRoutes = (app) => {
   app.use("/api/brands", brandRouter);
   app.use("/api/customers", customerRouter);
   app.use("/api/staffs", staffRouter);
-  app.use("/api/collections", collectRouter);
+  app.use("/api/series", seryRouter);
 
   app.use(notFound);
   app.use(errHandler);
