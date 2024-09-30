@@ -7,7 +7,7 @@ const QnASection = () => {
       id: 1,
       user: "Pham Vinh Quang",
       question: "Bên mình trả góp như thế nào a?",
-      adminResponse: "Voi Tay Nguyen xin chào Anh <br /> Dạ. Bên em có hỗ trợ trả góp qua công ty tài chính, thẻ tín dụng và Kredivo, Fundiin, Home Paylater ạ. Không biết anh đang quan tâm cụ thể dòng sản phẩm nào để em tiện kiểm tra giúp mình ạ. <br /> Xin thông tin đến Anh.",
+      adminResponse: "Voi Tay Nguyen xin chào Anh Dạ. Bên em có hỗ trợ trả góp qua công ty tài chính, thẻ tín dụng và Kredivo, Fundiin, Home Paylater ạ. Không biết anh đang quan tâm cụ thể dòng sản phẩm nào để em tiện kiểm tra giúp mình ạ. Xin thông tin đến Anh.",
       date: "2022-01-01"
     }
   ]);
