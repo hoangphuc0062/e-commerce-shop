@@ -1,0 +1,45 @@
+button.slick-next,
+button.slick-prev {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  font-size: 0;
+  width: 35px;
+  height: 35px;
+  border: none;
+  background-color: red;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+button.slick-next {
+  right: 10px;
+}
+
+button.slick-next::before {
+  content: "\276F";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+}
+
+button.slick-prev {
+  left: 10px;
+}
+
+button.slick-prev::before {
+  content: "\276E";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+}
+
+button.slick-next:hover,
+button.slick-prev:hover {
+  background-color: red; 
+}
