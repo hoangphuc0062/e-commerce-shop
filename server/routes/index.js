@@ -7,6 +7,7 @@ const customerRouter = require("./customer");
 const brandRouter = require("./brand");
 const staffRouter = require("./staff");
 const seryRouter = require("./seri");
+const webConfigRouter = require("./webConfig");
 const { notFound, errHandler } = require("../middlewares/errHandler");
 const initRoutes = (app) => {
   app.use("/api/users", userRouter);
@@ -20,6 +21,7 @@ const initRoutes = (app) => {
   app.use("/api/staffs", staffRouter);
   app.use("/api/series", seryRouter);
 
+  app.use("/api/webConfig", webConfigRouter);
   app.use(notFound);
   app.use(errHandler);
 };
