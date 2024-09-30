@@ -5,7 +5,10 @@ const asyncHandler = require("express-async-handler");
 const getProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
   if (!pid) throw new Error("Missing inputs");
-  const product = await Product.findById(pid);
+  const product = await Product.findById(pid)
+    .populate("category", "name")
+    .populate("brand", "name")
+    .populate("sery", "name");
   return res.status(200).json({
     success: product ? true : false,
     product,
@@ -17,10 +20,11 @@ const getAllProduct = asyncHandler(async (req, res) => {
   const { limit = 10, offset = 0 } = req.query;
   const products = await Product.find({})
     .populate("category", "name")
+    .populate("brand", "name")
+    .populate("sery", "name")
     .skip(parseInt(offset))
     .limit(parseInt(limit));
   return res.status(200).json({
-    success: products ? true : false,
     products,
   });
 });
@@ -28,35 +32,51 @@ const getAllProduct = asyncHandler(async (req, res) => {
 const addProduct = asyncHandler(async (req, res) => {
   const {
     name,
+    SKU,
+    historicalPrice,
+    priceInMarket,
     priceInStore,
     priceOnline,
-    category,
-    brand,
-    collection,
+    sery,
+    onStock,
+    unit,
     description,
     images,
+    weight,
+    specifications,
   } = req.body;
   if (
     !name ||
+    !historicalPrice ||
     !priceInStore ||
-    priceOnline ||
-    !category ||
+    !priceOnline ||
+    !sery ||
     !description ||
-    !images
+    !images ||
+    !weight ||
+    !SKU ||
+    !priceInMarket ||
+    !onStock ||
+    specifications.length === 0 ||
+    !unit
   )
     throw new Error("Missing inputs");
-  const product = new Product({
+
+  const product = await Product.create({
     name,
-    price,
-    category,
+    SKU,
+    historicalPrice,
+    priceInMarket,
+    priceInStore,
+    priceOnline,
+    sery,
+    onStock,
+    unit,
     description,
     images,
-  });
-  await product.save();
-  return res.status(200).json({
-    success: true,
-    product,
-  });
+    weight,
+    specifications,
+  }).save();
 });
 
 module.exports = {
