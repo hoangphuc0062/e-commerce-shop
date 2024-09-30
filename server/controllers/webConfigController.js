@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 
-const WebConfig = require("../models/webConfig");
+const WebConfig = require("../models/webConfigModel");
 
 const getWebConfig = asyncHandler(async (req, res) => {
   const webConfig = await WebConfig.findOne();
