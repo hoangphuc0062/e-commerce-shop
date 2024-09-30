@@ -52,6 +52,10 @@ import {
   FaPercent,
 } from "react-icons/fa";
 
+import { CiLogout } from "react-icons/ci";
+import { FiUser } from "react-icons/fi";
+import { MdManageAccounts } from "react-icons/md";
+
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
@@ -106,6 +110,10 @@ const icons = {
   FaSortAmountDown,
   IoEye,
   FaPercent,
+
+  CiLogout, // logout
+  FiUser, // user
+  MdManageAccounts, // quản lý user
 };
 
 export default icons;
