@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const ctrl = require("../controllers/staff");
+const ctrl = require("../controllers/staffController");
 const {
   verifyAccessToken,
   isSuperAdmin,

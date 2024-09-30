@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const ctrl = require("../controllers/order");
+const ctrl = require("../controllers/orderController");
 
 const { verifyAccessToken, isAdmin } = require("../middlewares/vertifyToken");
 

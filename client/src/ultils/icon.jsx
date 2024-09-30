@@ -51,8 +51,6 @@ import {
   FaSortAmountDown,
   FaPercent,
 } from "react-icons/fa";
-import { IoIosArrowBack } from "react-icons/io";
-import { IoIosArrowForward, IoIosStar } from "react-icons/io";
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
@@ -107,10 +105,6 @@ const icons = {
   FaSortAmountDown,
   IoEye,
   FaPercent,
-  IoIosArrowBack,
-  IoIosArrowForward,
-  IoIosStar,
-  FaPlus,
 };
 
 export default icons;
