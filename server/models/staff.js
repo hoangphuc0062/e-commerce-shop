@@ -25,25 +25,41 @@ var staffSchema = new mongoose.Schema(
       enum: [0, 1, 2, 3],
       default: 1,
     },
-    cart: [
-      {
-        pid: {
-          type: mongoose.Types.ObjectId,
-          ref: "Product",
-        },
-        color: String,
-        quantity: Number,
-        price: Number,
-        size: Number,
-        name: String,
-        image: String,
-      },
-    ],
     address: {
       type: Array,
       default: [],
     },
-    wishlist: [{ type: mongoose.Types.ObjectId, ref: "Product" }],
+    location: {
+      type: String,
+      enum: [0, 1, 2, 3],
+      default: 1,
+    },
+    CCCD: {
+      type: String,
+    },
+    startDate: {
+      type: Date,
+      default: Date.now,
+    },
+    endDate: {
+      type: Date,
+    },
+    commissionRate: {
+      type: Number,
+      default: 0,
+    },
+    department: {
+      type: String,
+      enum: ["Sale", "Support", "Warehouse", "Accounting"],
+      default: "Sale",
+    },
+    base: {
+      type: String,
+    },
+    fixedSalary: {
+      type: Number,
+      default: 0,
+    },
     isBlocked: {
       type: Boolean,
       default: false,

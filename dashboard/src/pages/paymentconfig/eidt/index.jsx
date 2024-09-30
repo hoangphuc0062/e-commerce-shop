@@ -67,14 +67,20 @@ const EditPaymentDialog = ({ open, onClose, initialValues, onSave }) => {
                         fullWidth
                         margin="dense"
                     />
-                    <TextField
-                        label="Chi nhánh"
-                        name="bankBranch"
-                        value={formData.bankBranch || ''}
-                        onChange={handleChange}
-                        fullWidth
-                        margin="dense"
-                    />
+                    <FormControl fullWidth margin="dense">
+                        <InputLabel id="bankBranch-label">Chi nhánh</InputLabel>
+                        <Select
+                            labelId="bankBranch-label"
+                            name="bankBranch"
+                            value={formData.bankBranch || ''}
+                            onChange={handleChange}
+                        >
+                            <MenuItem value="Hà Nội">Hà Nội</MenuItem>
+                            <MenuItem value="Hồ Chí Minh">Hồ Chí Minh</MenuItem>
+                            <MenuItem value="Đà Nẵng">Đà Nẵng</MenuItem>
+                            <MenuItem value="Khác">Khác</MenuItem>
+                        </Select>
+                    </FormControl>
                     <TextField
                         label="Chủ tài khoản"
                         name="accountOwner"

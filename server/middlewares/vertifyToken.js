@@ -29,7 +29,7 @@ const checkRole = (requiredRole, roleName) => {
     if (+role === 0) {
       return next();
     }
-    if (+role === requiredRole) {
+    if (+role !== requiredRole) {
       return res.status(401).json({
         mes: `Yêu cầu ${roleName} vai trò!`,
       });
