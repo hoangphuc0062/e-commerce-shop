@@ -22,7 +22,7 @@ import { SiZalo } from "react-icons/si";
 import { CiHeart, CiUser } from "react-icons/ci";
 
 import { FaTiktok } from "react-icons/fa";
-import { FaYoutube } from "react-icons/fa";
+import { FaYoutube, FaPlus } from "react-icons/fa";
 
 import { CiHeadphones } from "react-icons/ci";
 import { CiHome } from "react-icons/ci";
@@ -51,11 +51,6 @@ import {
   FaSortAmountDown,
   FaPercent,
 } from "react-icons/fa";
-
-import { CiLogout } from "react-icons/ci";
-import { FiUser } from "react-icons/fi";
-import { MdManageAccounts } from "react-icons/md";
-
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
@@ -110,10 +105,6 @@ const icons = {
   FaSortAmountDown,
   IoEye,
   FaPercent,
-
-  CiLogout, // logout
-  FiUser, // user
-  MdManageAccounts, // quản lý user
 };
 
 export default icons;
