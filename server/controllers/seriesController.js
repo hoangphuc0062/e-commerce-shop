@@ -1,4 +1,4 @@
-const Series = require("../models/seri");
+const Series = require("../models/seriesModel");
 
 const asyncHandler = require("express-async-handler");
 

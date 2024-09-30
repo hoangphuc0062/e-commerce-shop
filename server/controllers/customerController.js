@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
-const Customer = require("../models/customer");
+const Customer = require("../models/customerModel");
+
 const crypto = require("crypto");
 const {
   generateAccessToken,

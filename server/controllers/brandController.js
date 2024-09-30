@@ -1,4 +1,4 @@
-const Brand = require("../models/Brand");
+const Brand = require("../models/brandModel");
 const asyncHandler = require("express-async-handler");
 
 const getAllBrand = asyncHandler(async (req, res) => {
