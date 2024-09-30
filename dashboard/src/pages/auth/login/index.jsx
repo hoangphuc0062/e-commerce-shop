@@ -2,12 +2,11 @@ import { useDispatch, useSelector } from "react-redux";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { Button, TextField, Container, Box, Typography } from "@mui/material";
-import { login as loginAction } from "../../../redux/slices/staff";
+import { login as loginAction, resetState } from "../../../redux/slices/staff";
 import { useEffect } from "react";
 import { handleToast } from "../../../utils/toast";
 import { useAuth } from "../../../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
-
 // Validation schema using Yup
 const loginSchema = yup.object().shape({
   email: yup
@@ -19,8 +18,26 @@ const loginSchema = yup.object().shape({
 
 export default function LoginPage() {
   const dispatch = useDispatch();
-  const { islogin, login } = useAuth();
 
+  const { islogin, login, setProfile } = useAuth();
+
+  const error = useSelector((state) => state.staff.error);
+  const staff = useSelector((state) => state.staff.me?.data);
+  const status = useSelector((state) => state.staff.status);
+  useEffect(() => {
+    if (error) {
+      handleToast("error", "Thông tin đăng nhập không hợp lệ!", "top-right");
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (status === "success") {
+      handleToast("success", "Login successful", "top-right");
+      login();
+      setProfile(staff);
+      dispatch(resetState());
+    }
+  }, [status, login, setProfile, staff, dispatch]);
   // Initialize useFormik hook
   const formik = useFormik({
     initialValues: {
@@ -34,23 +51,6 @@ export default function LoginPage() {
       dispatch(loginAction(values));
     },
   });
-
-  const error = useSelector((state) => state.staff.error);
-  const staff = useSelector((state) => state.staff.me?.data);
-  console.log(staff);
-  const status = useSelector((state) => state.staff.status);
-  useEffect(() => {
-    if (error) {
-      handleToast("error", error.mes, "top-right");
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (status === "success") {
-      handleToast("success", "Login successful", "top-right");
-      login();
-    }
-  }, [status, login]);
 
   if (islogin) {
     return <Navigate to="/dashboard" />;

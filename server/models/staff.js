@@ -25,25 +25,10 @@ var staffSchema = new mongoose.Schema(
       enum: [0, 1, 2, 3],
       default: 1,
     },
-    cart: [
-      {
-        pid: {
-          type: mongoose.Types.ObjectId,
-          ref: "Product",
-        },
-        color: String,
-        quantity: Number,
-        price: Number,
-        size: Number,
-        name: String,
-        image: String,
-      },
-    ],
     address: {
       type: Array,
       default: [],
     },
-    wishlist: [{ type: mongoose.Types.ObjectId, ref: "Product" }],
     isBlocked: {
       type: Boolean,
       default: false,
