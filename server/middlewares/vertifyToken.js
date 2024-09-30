@@ -10,7 +10,7 @@ const verifyAccessToken = asyncHandler(async (req, res, next) => {
       if (err)
         return res.status(401).json({
           success: false,
-          mes: "Invalid access token",
+          mes: "Token không hợp lệ",
         });
       req.user = decode;
       next();
@@ -18,34 +18,31 @@ const verifyAccessToken = asyncHandler(async (req, res, next) => {
   } else {
     return res.status(401).json({
       success: false,
-      mes: "Require authencation !",
+      mes: "Token không hợp lệ",
     });
   }
 });
+
 const checkRole = (requiredRole, roleName) => {
   return asyncHandler(async (req, res, next) => {
     const { role } = req.user;
-
-    // Nếu người dùng là superadmin (vai trò 0), cho phép truy cập
     if (+role === 0) {
       return next();
     }
-    // Kiểm tra vai trò yêu cầu
-    if (+role !== requiredRole) {
+    if (+role === requiredRole) {
       return res.status(401).json({
-        success: false,
-        mes: `Require ${roleName} role!`,
+        mes: `Yêu cầu ${roleName} vai trò!`,
       });
     }
     next();
   });
 };
 // Quản lý các quyền cụ thể
-const isSuperAdmin = checkRole(0, "superadmin"); // Super Admin chỉ có quyền khi role >= 2
-const isAdmin = checkRole(1, "admin"); // Admin chỉ có quyền khi role >= 0
-const isEditor = checkRole(2, "editor"); // Editor chỉ có quyền khi role >= 1
-const isSales = checkRole(3, "sales"); // Sales chỉ có quyền khi role >= 3
-const isCustomer = checkRole(4, "customer"); // Customer chỉ có quyền khi role >= 4
+const isSuperAdmin = checkRole(0, "superadmin");
+const isAdmin = checkRole(1, "admin");
+const isEditor = checkRole(2, "editor");
+const isSales = checkRole(3, "sales");
+const isCustomer = checkRole(4, "customer");
 
 module.exports = {
   verifyAccessToken,
