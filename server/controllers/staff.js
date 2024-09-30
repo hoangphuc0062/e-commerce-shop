@@ -5,6 +5,7 @@ const {
   generateRefreshToken,
 } = require("../middlewares/jwt");
 const jwt = require("jsonwebtoken");
+const { sendMail } = require("../ultils/sendMail");
 
 const registerStaff = asyncHandler(async (req, res) => {
   const { email, password, name } = req.body;
@@ -154,6 +155,47 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   });
 });
 
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) throw new Error("Missing email");
+  const staff = await Staff.findOne({ email });
+  if (!staff) throw new Error("User not found");
+  const resetToken = staff.createPasswordChangeToken();
+  await staff.save();
+
+  const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ. 
+  <a href=${process.env.DASHBOARD_URL}/dashboard/reset-password/${resetToken}>Click here</a>`;
+  const subject = `Forgot password`;
+  const rs = await sendMail(email, html, subject);
+  return res.status(200).json({
+    success: true,
+    rs,
+  });
+});
+const resetPassword = asyncHandler(async (req, res) => {
+  const { password, token } = req.body;
+  if (!password || !token) throw new Error("Missing inputs");
+  const passwordResetToken = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+  const staff = await Staff.findOne({
+    passwordResetToken,
+    passwordResetExprires: { $gt: Date.now() },
+  });
+  // lưu vào db
+  if (!staff) throw new Error("Invalid reset token");
+  staff.password = password;
+  staff.passwordResetToken = undefined;
+  staff.passwordChangedAt = Date.now();
+  staff.passwordResetExprires = undefined;
+  await staff.save();
+  return res.status(200).json({
+    success: staff ? true : false,
+    mes: staff ? " Update password" : "Something went wrong",
+  });
+});
+
 module.exports = {
   login,
   logout,
@@ -163,4 +205,6 @@ module.exports = {
   updateStaff,
   deleteStaff,
   refreshAccessToken,
+  forgotPassword,
+  resetPassword,
 };
