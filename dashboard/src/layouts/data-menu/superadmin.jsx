@@ -136,9 +136,9 @@ const menuItems = {
             },
             {
               id: "email-config",
-              title: "Cấu hình email",
+              title: "Cấu hình banner",
               type: "item",
-              url: "/dashboard/config/email-config",
+              url: "/dashboard/bannercollection",
             },
             {
               id: "payment-config",
