@@ -19,6 +19,7 @@ export default function RootRouter() {
         { path: "login", element: <Login /> },
         { path: "register", element: <Register /> },
         { path: "/phone", element: <ProductList /> },
+        { path: "/phone/:slug", element: <ProductDetail /> },
       ],
     },
     {

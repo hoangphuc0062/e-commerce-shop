@@ -13,6 +13,7 @@ var ProductSchema = new mongoose.Schema(
     },
     SKU: {
       type: String,
+      required: true,
     },
     historicalPrice: {
       type: Number,
@@ -73,9 +74,11 @@ var ProductSchema = new mongoose.Schema(
     thumbnail: {
       type: String,
     },
-    images: {
-      type: String,
-    },
+    images: [
+      {
+        type: String,
+      },
+    ],
     videos: {
       type: String,
     },
@@ -107,31 +110,24 @@ var ProductSchema = new mongoose.Schema(
         },
       },
     ],
-    attribute: [
+    attributes: [
       {
         name: String,
         value: String,
         typeOfValue: String,
       },
     ],
-    gift: [
+    gifts: [
       {
         name: String,
         value: String,
         typeOfValue: String,
       },
     ],
-    category: {
+
+    series: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-    },
-    brand: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Brand",
-    },
-    sery: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Collection",
+      ref: "Series",
     },
   },
   {

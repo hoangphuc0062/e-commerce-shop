@@ -22,7 +22,7 @@ import { SiZalo } from "react-icons/si";
 import { CiHeart, CiUser } from "react-icons/ci";
 
 import { FaTiktok } from "react-icons/fa";
-import { FaYoutube } from "react-icons/fa";
+import { FaYoutube, FaPlus } from "react-icons/fa";
 
 import { CiHeadphones } from "react-icons/ci";
 import { CiHome } from "react-icons/ci";
@@ -51,7 +51,6 @@ import {
   FaSortAmountDown,
   FaPercent,
 } from "react-icons/fa";
-
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich

@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const ctrl = require("../controllers/category");
+const ctrl = require("../controllers/categoryController");
 const { verifyAccessToken, isAdmin } = require("../middlewares/vertifyToken");
 
 router.get("/", ctrl.getAllCategory);

@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const ctrl = require("../controllers/staff");
+const ctrl = require("../controllers/staffController");
 const {
   verifyAccessToken,
   isSuperAdmin,
@@ -13,6 +13,8 @@ router.post("/register", verifyAccessToken, isSuperAdmin, ctrl.registerStaff);
 router.post("/login", ctrl.login);
 router.post("/logout", ctrl.logout);
 router.post("/refreshtoken", ctrl.refreshAccessToken);
+router.post("/forgotpassword", ctrl.forgotPassword);
+router.post("/resetpassword", ctrl.resetPassword);
 
 router.get("/", verifyAccessToken, isAdmin, ctrl.getStaff);
 router.get("/:sid", verifyAccessToken, isAdmin, ctrl.getStaffById);

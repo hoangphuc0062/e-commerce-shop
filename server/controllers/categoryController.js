@@ -1,4 +1,4 @@
-const Category = require("../models/category");
+const Category = require("../models/categoryModel");
 
 const asyncHandler = require("express-async-handler");
 
@@ -12,7 +12,6 @@ const addCategory = asyncHandler(async (req, res) => {
   const { name, type } = req.body;
   if (!name || !type) {
     return res.status(400).json({
-      success: false,
       mes: "Missing inputs",
     });
   }
@@ -21,7 +20,6 @@ const addCategory = asyncHandler(async (req, res) => {
   await category.save();
 
   return res.status(200).json({
-    success: true,
     mes: "Add category is succesful",
     category,
   });
@@ -31,13 +29,11 @@ const deleteCategory = asyncHandler(async (req, res) => {
   const { _id } = req.params;
   if (!_id) {
     return res.status(400).json({
-      success: false,
       mes: "Missing inputs",
     });
   }
   const category = await Category.findByIdAndDelete(_id);
   return res.status(200).json({
-    success: category ? true : false,
     mes: category ? "Delete category is succesful" : "Some thing went wrong",
   });
 });
@@ -46,7 +42,6 @@ const updateCategory = asyncHandler(async (req, res) => {
   const { _id } = req.params;
   if (!_id || Object.keys(req.body).length === 0) {
     return res.status(400).json({
-      success: false,
       mes: "Missing inputs",
     });
   }
@@ -54,7 +49,6 @@ const updateCategory = asyncHandler(async (req, res) => {
     new: true,
   });
   return res.status(200).json({
-    success: category ? true : false,
     mes: category ? "Update category is succesful" : "Some thing went wrong",
     category,
   });

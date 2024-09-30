@@ -11,6 +11,7 @@ var customerSchema = new mongoose.Schema(
     },
     email: {
       type: String,
+      unique: true,
     },
     phone: {
       type: String,
@@ -37,7 +38,6 @@ var customerSchema = new mongoose.Schema(
           ref: "Product",
         },
         quantity: Number,
-        price: Number,
       },
     ],
     address: {
@@ -45,6 +45,43 @@ var customerSchema = new mongoose.Schema(
       default: [],
     },
     wishlist: [{ type: mongoose.Types.ObjectId, ref: "Product" }],
+
+    sex: {
+      type: String,
+      enum: ["Nam", "Nữ", "Khác"],
+      default: "Nam",
+    },
+    MembershipType: {
+      type: String,
+      enum: ["Basic", "Member", "VIP Member"],
+      default: "Basic",
+    },
+    stackMoney: {
+      type: Number,
+      default: 0,
+    },
+    totalPurchasePrice: {
+      type: Number,
+      default: 0,
+    },
+    purchaseHistory: [
+      {
+        pid: {
+          type: mongoose.Types.ObjectId,
+          ref: "Product",
+        },
+        quantity: Number,
+        date: Date,
+      },
+    ],
+    paymentHistory: [
+      {
+        date: Date,
+        total: Number,
+        paymentMethod: String,
+        status: String,
+      },
+    ],
     isBlocked: {
       type: Boolean,
       default: true,
