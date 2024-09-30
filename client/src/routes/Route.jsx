@@ -8,6 +8,10 @@ import { Register } from "../pages/auth/Register";
 import ForumPage from "../pages/web/forum";
 import DetailBlog from "../pages/web/forum/DetailBlog";
 import ProductList from "../pages/web/product/ProductList";
+import CartProduct from "../pages/web/home/CartProduct";
+import Checkout_info from "../pages/web/checkout/checkout_info";
+import Checkout from "../pages/web/checkout/Checkout";
+import Profile from "../pages/web/profile/Profile";
 
 export default function RootRouter() {
   const routes = useRoutes([
@@ -19,7 +23,11 @@ export default function RootRouter() {
         { path: "login", element: <Login /> },
         { path: "register", element: <Register /> },
         { path: "/phone", element: <ProductList /> },
-        { path: "/phone/:slug", element: <ProductDetail /> },
+        // { path: "/phone/:slug", element: <ProductDetail /> },
+        { path: "/cart", element: <CartProduct /> },
+        { path: "/check_info", element: <Checkout_info /> },
+        { path: "/checkout", element: <Checkout /> },
+        { path: "/profile", element: <Profile /> },
       ],
     },
     {
