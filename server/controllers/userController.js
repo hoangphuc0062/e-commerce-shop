@@ -1,6 +1,6 @@
-const User = require("../models/user");
+const User = require("../models/userModel");
 
-const Product = require("../models/product");
+const Product = require("../models/productModel");
 const asyncHandler = require("express-async-handler");
 const {
   generateAccessToken,

@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const Staff = require("../models/staff");
+const Staff = require("../models/staffModel");
 const {
   generateAccessToken,
   generateRefreshToken,

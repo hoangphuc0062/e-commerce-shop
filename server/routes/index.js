@@ -1,13 +1,13 @@
-const userRouter = require("./user");
-const productRouter = require("./product");
-const categoryRouter = require("./catogory");
-const couponRouter = require("./coupon");
-const orderRouter = require("./order");
-const customerRouter = require("./customer");
-const brandRouter = require("./brand");
-const staffRouter = require("./staff");
-const seryRouter = require("./seri");
-const webConfigRouter = require("./webConfig");
+const userRouter = require("./userRoute");
+const productRouter = require("./productRoute");
+const categoryRouter = require("./catogoryRoute");
+const couponRouter = require("./couponRoute");
+const orderRouter = require("./orderRoute");
+const customerRouter = require("./customerRoute");
+const brandRouter = require("./brandRoute");
+const staffRouter = require("./staffRoute");
+const seryRouter = require("./seriesRoute");
+const webConfigRouter = require("./webConfigRoute");
 const { notFound, errHandler } = require("../middlewares/errHandler");
 const initRoutes = (app) => {
   app.use("/api/users", userRouter);
