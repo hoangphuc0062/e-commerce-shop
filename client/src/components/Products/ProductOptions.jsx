@@ -33,7 +33,7 @@ ProductOptions.propTypes = {
     })
   ).isRequired,
   handleOptionClick: PropTypes.func.isRequired,
-  selectedOption: PropTypes.object.isRequired,
+  selectedOption: PropTypes.object,
 };
 
 export default ProductOptions;

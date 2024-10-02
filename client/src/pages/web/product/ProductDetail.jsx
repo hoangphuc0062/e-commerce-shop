@@ -5,11 +5,15 @@ import icons from "../../../ultils/icon";
 import { Compare } from "../../../components/Button/Compare";
 import ProductOptions from "../../../components/Products/ProductOptions";
 import ProductColors from "../../../components/Products/ProductColors";
+import LeftArrow from "../../../components/Button/LeftArrow";
+import RightArrow from "../../../components/Button/RightArrow";
+
 const ProductDetail = () => {
-  const { IoIosArrowBack, IoIosArrowForward, IoIosStar } = icons;
+  const { IoIosStar } = icons;
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null); // Changed to a single object
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
   const { slug } = useParams();
 
   useEffect(() => {
@@ -67,25 +71,17 @@ const ProductDetail = () => {
                   alt="Product"
                   className="w-[280px] h-[280px] object-cover"
                 />
-                {/* Left Arrow */}
-                <button
-                  onClick={handlePrevImage}
-                  className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-e-full p-4"
+                <LeftArrow
+                  handleOnClick={handlePrevImage}
                   disabled={selectedImage === 0}
-                >
-                  <IoIosArrowBack />
-                </button>
-                {/* Right Arrow */}
-                <button
-                  onClick={handleNextImage}
-                  className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-s-full p-4"
+                />
+                <RightArrow
+                  handleOnClick={handleNextImage}
                   disabled={selectedImage === product.images.length - 1}
-                >
-                  <IoIosArrowForward />
-                </button>
+                />
               </div>
               {/* Thumbnail List */}
-              <div className="flex overflow-x-auto mt-4">
+              <div className="flex overflow-x-auto mt-4 gap-2">
                 {product.images.map((image, index) => (
                   <button
                     key={index}
@@ -106,14 +102,20 @@ const ProductDetail = () => {
               </div>
             </div>
           </div>
-          {/* Product Options */}
-          <div className="w-full pl-4">
-            <ProductOptions
-              options={product.options}
-              handleOptionClick={(option) => setSelectedOption(option)}
-              selectedOption={selectedOption}
-            />
-            <ProductColors />
+          {/* Product Options and Price */}
+          <div className="w-full p-6">
+            <div className="flex flex-col mb-4">
+              <ProductOptions
+                options={product.options}
+                handleOptionClick={(option) => setSelectedOption(option)}
+                selectedOption={selectedOption}
+              />
+              <ProductColors
+                handleOptionClick={(color) => setSelectedColor(color)}
+                selectedOption={selectedColor}
+                productId={product.id}
+              />
+            </div>
           </div>
         </div>
       )}
