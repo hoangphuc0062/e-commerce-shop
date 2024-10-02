@@ -27,6 +27,10 @@ import { FaYoutube, FaPlus } from "react-icons/fa";
 import { CiHeadphones } from "react-icons/ci";
 import { CiHome } from "react-icons/ci";
 import { CiViewList } from "react-icons/ci";
+import { FiUser } from "react-icons/fi";
+import { MdManageAccounts } from "react-icons/md";
+import { CiLogout } from "react-icons/ci";
+
 
 import { PiNotepadBold } from "react-icons/pi";
 import { TbWorldSearch } from "react-icons/tb";
@@ -110,6 +114,10 @@ const icons = {
   FaSortAmountDown,
   IoEye,
   FaPercent,
+  
+  FiUser,
+  MdManageAccounts,
+  CiLogout,
   FaPlus,
   IoIosArrowBack,
   IoIosArrowForward,
