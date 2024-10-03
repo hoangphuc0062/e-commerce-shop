@@ -1,16 +1,15 @@
 import { Link } from "react-router-dom";
 import { products } from "../../data/Product/Products";
-import icons from "../../ultils/icon";
+import Ratings from "../Products/Ratings";
+import Favorites from "../Button/Favorites";
 
 export const ProductCard = () => {
-  const { AiOutlineHeart } = icons;
-
   return (
-    <div className="flex flex-wrap p-4 gap-2">
+    <div className="flex flex-wrap p-2 gap-2">
       {products.map((product) => (
         <div
           key={product.id}
-          className="relative w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 rounded-lg shadow-md overflow-hidden"
+          className="relative w-[250px] md:w-[250px] lg:w-[250px] rounded-lg shadow-md overflow-hidden"
         >
           {/* Product Link */}
           <Link to={`/phone/${product.slug}`} className="block">
@@ -36,7 +35,7 @@ export const ProductCard = () => {
             )}
 
             {/* Installment Label */}
-            <span className="absolute top-0 right-2 border-2 bg-main text-white text-xs font-bold px-2 py-1 rounded">
+            <span className="absolute top-0 right-0 bg-main text-white text-xs font-bold px-2 py-1 rounded">
               Trả góp {product.installmentRate || "0%"}
             </span>
 
@@ -49,14 +48,20 @@ export const ProductCard = () => {
                 <p className="text-sm text-muted-foreground border rounded-md p-1">
                   {product.screen}
                 </p>
+                <p className="text-sm text-muted-foreground border rounded-md p-1">
+                  {product.options[0].ram}
+                </p>
+                <p className="text-sm text-muted-foreground border rounded-md p-1">
+                  {product.options[0].rom}
+                </p>
               </div>
               <p className="text-[16px] font-bold text-primary pt-2">
-                {product.salePrice > 0
-                  ? `${product.salePrice.toLocaleString()}đ `
-                  : "Liên hệ"}
-                {product.salePrice > 0 && (
+                {product.options[0].salePrice > 0
+                  ? `${product.options[0].salePrice.toLocaleString()}đ `
+                  : "Giá liên hệ"}
+                {product.options[0].salePrice > 0 && (
                   <span className="line-through text-muted">
-                    {product.price.toLocaleString()}đ
+                    {product.options[0].price.toLocaleString()}đ
                   </span>
                 )}
               </p>
@@ -65,23 +70,8 @@ export const ProductCard = () => {
 
           {/* Rating and Favorite Icon */}
           <div className="flex items-center justify-between p-2">
-            <div className="flex text-[18px] text-yellow-500">
-              {[...Array(5)].map((_, index) => (
-                <span
-                  key={index}
-                  className={
-                    index < product.rating ? "text-yellow-500" : "text-gray-300"
-                  }
-                  aria-hidden="true"
-                >
-                  ★
-                </span>
-              ))}
-            </div>
-            <span className="text-gray-600 flex items-center">
-              Yêu thích
-              <AiOutlineHeart className="text-red-500 ml-1" />
-            </span>
+            <Ratings />
+            <Favorites />
           </div>
         </div>
       ))}

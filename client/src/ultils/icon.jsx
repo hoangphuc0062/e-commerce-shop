@@ -55,6 +55,7 @@ import {
   FaSortAmountDown,
   FaPercent,
   FaCheck,
+  FaCartPlus,
 } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoIosArrowForward } from "react-icons/io";
@@ -123,6 +124,7 @@ const icons = {
   IoIosArrowForward,
   IoIosStar,
   FaCheck,
+  FaCartPlus,
 };
 
 export default icons;

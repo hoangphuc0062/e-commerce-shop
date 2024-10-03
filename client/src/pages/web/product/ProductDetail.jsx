@@ -7,6 +7,8 @@ import ProductOptions from "../../../components/Products/ProductOptions";
 import ProductColors from "../../../components/Products/ProductColors";
 import LeftArrow from "../../../components/Button/LeftArrow";
 import RightArrow from "../../../components/Button/RightArrow";
+import { Button } from "../../../components/Button/Button";
+import AddToCart from "../../../components/Button/AddToCart";
 
 const ProductDetail = () => {
   const { IoIosStar } = icons;
@@ -115,6 +117,14 @@ const ProductDetail = () => {
                 selectedOption={selectedColor}
                 productId={product.id}
               />
+              {/* New Buttons */}
+              <div className="flex gap-4 mt-4">
+                <Button
+                  content="(Giao nhanh từ 2 giờ hoặc nhận tại cửa hàng)"
+                  subContent="MUA NGAY"
+                />
+                <AddToCart />
+              </div>
             </div>
           </div>
         </div>
