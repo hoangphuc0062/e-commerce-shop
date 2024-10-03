@@ -11,7 +11,7 @@ const CategoryProfile = [
     id: 2,
     name: "Tài khoản của bạn",
     icon: icons.FiUser,
-    link: "",
+    link: "/profile/accountuser",
   },
   
   {
