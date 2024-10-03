@@ -18,7 +18,7 @@ const CategoryProfile = [
     id: 3,
     name: "Lịch sử mua hàng",
     icon: icons.PiNotepadBold,
-    link: "",
+    link: "/profile/orderuser",
   },
   {
     id: 4,

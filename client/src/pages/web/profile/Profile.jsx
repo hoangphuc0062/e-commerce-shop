@@ -73,31 +73,31 @@ const Profile = () => {
 
           <div className="border border-gray-300 p-4 rounded-lg mt-4">
             <div className="grid grid-cols-3 gap-4 md:grid-cols-5">
-              <a href="#" className="flex flex-col items-center space-y-2">
+              <a href="" className="flex flex-col items-center space-y-2">
                 <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
                   <SiGoogleclassroom className="text-blue-500 w-6 h-6" />
                 </div>
                 <p className="text-sm">Hạng thành viên</p>
               </a>
-              <a href="#" className="flex flex-col items-center space-y-2">
+              <a href="" className="flex flex-col items-center space-y-2">
                 <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
                   <BiSolidDiscount className="text-blue-500 w-6 h-6" />
                 </div>
                 <p className="text-sm">Mã giảm giá</p>
               </a>
-              <a href="#" className="flex flex-col items-center space-y-2">
+              <a href="" className="flex flex-col items-center space-y-2">
                 <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
                   <PiNotepadBold className="text-blue-500 w-6 h-6" />
                 </div>
                 <p className="text-sm">Lịch sử mua hàng</p>
               </a>
-              <a href="#" className="flex flex-col items-center space-y-2">
+              <a href="" className="flex flex-col items-center space-y-2">
                 <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
                   <PiStudentDuotone className="text-blue-500 w-6 h-6" />
                 </div>
                 <p className="text-sm">S-Student</p>
               </a>
-              <a href="#" className="flex flex-col items-center space-y-2">
+              <a href="" className="flex flex-col items-center space-y-2">
                 <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
                   <MdOutlineWhereToVote className="text-blue-500 w-6 h-6" />
                 </div>
@@ -109,7 +109,7 @@ const Profile = () => {
           <div className="border border-gray-300 p-4 rounded-lg mt-4 bg-[#FFF5E5]">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-main font-semibold">Chương trình nổi bật</h2>
-              <a href="#" className="text-red-500 text-sm hover:underline hover:text-main">Xem tất cả</a>
+              <a href="" className="text-red-500 text-sm hover:underline hover:text-main">Xem tất cả</a>
             </div>
             <BannerSlider />
           </div>

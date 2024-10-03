@@ -95,8 +95,8 @@ const AccountUser = () => {
           <div className="border-b border-gray-300 pb-2 cursor-pointer">
             <p className="text-gray-600 font-light">Đổi mật khẩu</p>
           </div>
-        <div className="flex justify-center mt-4 max-w-[600px] mx-auto">
-          <button className="bg-red-600 text-white font-semibold py-2 px-4 rounded hover:bg-red-700">
+        <div className="flex justify-center mt-4 max-w-[600px] mx-auto ">
+          <button className="bg-main text-white font-semibold py-2 px-4 rounded hover:bg-main">
             Cập nhật thông tin
           </button>
         </div>
