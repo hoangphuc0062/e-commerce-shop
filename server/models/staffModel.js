@@ -23,7 +23,7 @@ var staffSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: [0, 1, 2, 3],
-      default: 1,
+      default: 3,
     },
     address: {
       type: Array,

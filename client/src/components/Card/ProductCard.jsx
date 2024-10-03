@@ -49,12 +49,6 @@ export const ProductCard = () => {
                 <p className="text-sm text-muted-foreground border rounded-md p-1">
                   {product.screen}
                 </p>
-                <p className="text-sm text-muted-foreground border rounded-md p-1">
-                  {product.ram}
-                </p>
-                <p className="text-sm text-muted-foreground border rounded-md p-1">
-                  {product.rom}
-                </p>
               </div>
               <p className="text-[16px] font-bold text-primary pt-2">
                 {product.salePrice > 0
