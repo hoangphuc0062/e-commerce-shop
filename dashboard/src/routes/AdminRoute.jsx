@@ -17,6 +17,7 @@ import OrderPage from "../pages/order";
 import SiteConfig from "../pages/webconfig";
 import PaymentConfig from "../pages/paymentconfig";
 import BannerCollection from "../pages/bannercollection";
+import PostList from "../pages/post";
 // import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
   return (
@@ -196,6 +197,15 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<BannerCollection />}
+            roles={["admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="post"
+        element={
+          <PrivateRoute
+            element={<PostList />}
             roles={["admin", "superadmin"]}
           />
         }
