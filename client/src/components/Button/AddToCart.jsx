@@ -2,8 +2,16 @@ import icons from "../../ultils/icon";
 
 const AddToCart = () => {
   const { FaCartPlus } = icons;
+
+  const handleAddToCart = () => {
+    console.log("Item added to cart");
+  };
+
   return (
-    <button className="flex flex-col items-center justify-center border border-main text-main rounded-lg p-2">
+    <button 
+      className="flex flex-col items-center justify-center border border-main text-main rounded-lg p-2"
+      onClick={handleAddToCart}
+    >
       <span className="mr-2">
         <FaCartPlus className="text-2xl" />
       </span>

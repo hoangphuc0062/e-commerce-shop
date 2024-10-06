@@ -56,11 +56,12 @@ import {
   FaPercent,
   FaCheck,
   FaCartPlus,
+  FaPhoneAlt,
 } from "react-icons/fa";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoIosArrowForward } from "react-icons/io";
 import { IoIosStar } from "react-icons/io";
-
+import { FaLocationDot } from "react-icons/fa6";
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
@@ -125,6 +126,8 @@ const icons = {
   IoIosStar,
   FaCheck,
   FaCartPlus,
+  FaPhoneAlt,
+  FaLocationDot,
 };
 
 export default icons;
