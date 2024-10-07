@@ -34,7 +34,7 @@ const ProductList = () => {
         <Heading title="Sắp Xếp Theo" />
         <SortOptions />
       </section>
-      <section className="w-full p-2">
+      <section className="w-full">
         <ProductCard />
       </section>
       <section className="w-full p-2">

@@ -5,10 +5,9 @@ button.slick-prev {
   transform: translateY(-50%);
   z-index: 1;
   font-size: 0;
-  width: 35px;
-  height: 35px;
-  border: none;
-  background-color: red;
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -18,12 +17,12 @@ button.slick-next {
 }
 
 button.slick-next::before {
-  content: "\276F";
+  content: "\276F"; /* Right arrow */
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #fff;
+  color: #000;
 }
 
 button.slick-prev {
@@ -36,10 +35,10 @@ button.slick-prev::before {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #fff;
+  color: #000;
 }
 
 button.slick-next:hover,
 button.slick-prev:hover {
-  background-color: red; 
+  background-color: #fff;
 }
