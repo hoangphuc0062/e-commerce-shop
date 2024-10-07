@@ -1,7 +1,7 @@
 import { TableRow, TableCell, IconButton, Tooltip } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import { StatusChip, StatusOrderChip } from "../StatusColor";
+import { StatusChip, StatusOrderChip, StatustPostChip } from "../StatusColor";
 import propTypes from "prop-types";
 
 const TableRowComponent = ({
@@ -33,6 +33,8 @@ const TableRowComponent = ({
             <StatusOrderChip status={row[column.field]} />
           ) : column.field === "status" ? (
             <StatusChip status={row[column.field]} />
+          ) : column.field === "statustPost" ? (
+            <StatustPostChip status={row[column.field]} />
           ) : (
             row[column.field]
           )}

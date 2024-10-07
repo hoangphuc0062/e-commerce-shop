@@ -1,8 +1,8 @@
 const ROLE = {
-  0: "superadmin",
-  1: "admin",
-  2: "editor",
-  3: "staff",
+  "010101": "superadmin",
+  101010: "admin",
+  202020: "editor",
+  303030: "staff",
 };
 
 export default ROLE;

@@ -18,6 +18,7 @@ export const statusColors = {
   unpaid: { label: "Chưa thanh toán", color: "error" },
   partial: { label: "Thanh toán một phần", color: "warning" },
   waiting: { label: "Chờ đợi", color: "warning" },
+  blocked: { label: "Bị chặn", color: "error" },
 };
 
 export const statusOrder = {
@@ -34,4 +35,13 @@ export const statusOrder = {
   paid: { label: "Đã thanh toán", color: "success" },
   unpaid: { label: "Chưa thanh toán", color: "error" },
   partial: { label: "Thanh toán một phần", color: "warning" },
+};
+
+export const statustPost = {
+  draft: { label: "Chưa xuất bản", color: "warning" },
+  published: { label: "Đã xuất bản", color: "success" },
+  archived: { label: "Lưu trữ", color: "error" },
+  pendingReview: { label: "Chờ xét duyệt", color: "warning" },
+  scheduled: { label: "Đã lên lịch", color: "primary" },
+  rejected: { label: "Bị từ chối", color: "error" }
 };

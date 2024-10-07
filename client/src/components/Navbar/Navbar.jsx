@@ -36,8 +36,13 @@ const Navbar = () => {
             />
             <Contact icon={BsGeoAlt} content="Cửa hàng gần bạn" />
             <Contact icon={BsTruck} content="Tra cứu đơn hàng" />
-            <Cart />
+            <Link to={'/cart'}>
+              <Cart />
+            </Link>
+           <Link to={'/login'}>
             <Account />
+           </Link>
+           
           </div>
         </nav>
         {/* mobile */}

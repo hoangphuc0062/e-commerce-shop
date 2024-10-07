@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useContext, useEffect, useRef } from "react";
 import * as actionType from "../store/actions";
 import useWindowSize from "./../hooks/useWindowSize";

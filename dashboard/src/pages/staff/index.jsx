@@ -1,79 +1,37 @@
+import { useDispatch, useSelector } from "react-redux";
 import ReusableTable from "../../components/Table";
 import EyeStaff from "./details";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { deleteStaff, getStaff, resetState } from "../../redux/slices/staff";
+import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
+import LoadingWrapper from "../../components/loading/LoadingWrapper";
 
 export default function StaffPage() {
   const [open, setOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
   const navigate = useNavigate();
-  const initialData = [
-    {
-      id: 111,
-      name: "Nguyễn Văn A",
-      role: "Manager",
-      phone: "0912345678",
-      email: "nguyenvana@example.com",
-      startDate: "2022-01-15",
-      endDate: "2024-01-15",
-      commission: "10%",
-      department: "Sales",
-      base: "Hà Nội",
-      fixedSalary: "20,000,000 VND",
-      totalSalary: "25,000,000 VND",
-      status: "pending",
-    },
-    {
-      id: 222,
-      name: "Trần Thị B",
-      role: "Developer",
-      phone: "0987654321",
-      email: "tranthib@example.com",
-      startDate: "2021-03-10",
-      endDate: "2023-03-10",
-      commission: "5%",
-      department: "IT",
-      base: "Hồ Chí Minh",
-      fixedSalary: "15,000,000 VND",
-      totalSalary: "17,500,000 VND",
-      status: "processing",
-    },
-    {
-      id: 333,
-      name: "Lê Văn C",
-      role: "Designer",
-      phone: "0932123456",
-      email: "levanc@example.com",
-      startDate: "2020-06-20",
-      endDate: "2022-06-20",
-      commission: "8%",
-      department: "Marketing",
-      base: "Đà Nẵng",
-      fixedSalary: "12,000,000 VND",
-      totalSalary: "14,500,000 VND",
-      status: "active",
-    },
-    {
-      id: 444,
-      name: "Phạm Thị D",
-      role: "Tester",
-      phone: "0912345678",
-      email: "",
-      startDate: "2022-01-15",
-      endDate: "2024-01-15",
-      commission: "10%",
-      department: "Sales",
-      base: "Hà Nội",
-      fixedSalary: "20,000,000 VND",
-      totalSalary: "25,000,000 VND",
-      status: "shipped",
-    },
-  ];
+  const dispatch = useDispatch();
+  const [items, setItems] = useState([]);
+
+  const { error, data: staff, status } = useSelector((state) => state.staff);
+  const statusDelete = useSelector((state) => state.staff.deleteStatus);
+  useEffect(() => {
+    if (error) {
+      handleToast("error", "Thông tin đăng nhập không hợp lệ!", "top-right");
+    }
+    if (status === "success") {
+      handleToast("success", "Login successful", "top-right");
+    }
+    dispatch(resetState());
+  }, [error, status, dispatch]);
+
+  useEffect(() => {
+    dispatch(getStaff());
+  }, [dispatch]);
 
   const columns = [
     { label: "Họ tên", field: "name" },
-    { label: "Chức Vụ", field: "role" },
-    { label: "SDT", field: "phone" },
     { label: "Email", field: "email" },
     { label: "Tỉ lệ hoa hồng", field: "commission" },
     { label: "Cơ sở", field: "base" },
@@ -82,13 +40,36 @@ export default function StaffPage() {
   ];
 
   const handleEdit = (index) => {
-    console.log("Edit", index);
-    navigate(`/dashboard/staff/edit/${index.id}`);
+    if (index && index.id) {
+      const id = index.id;
+      navigate(`/dashboard/staff/edit/${id}`);
+    }
   };
 
   const handleDelete = (index) => {
-    console.log("Delete", index);
+    DeleteConfirmationModal({
+      title: "Xác nhận xóa nhân viên",
+      content: "Bạn có chắc chắn muốn xóa nhân viên này?",
+      okText: "Xóa",
+      cancelText: "Hủy",
+      icon: "warning",
+      confirmButtonText: "Xóa",
+      onConfirm: () => dispatch(deleteStaff(index.id)),
+      titledeleted: "Đã xóa!",
+      contentdeleted: "Nhân viên đã được xóa.",
+      icondeleted: "success",
+      titlecanceled: "Đã hủy!",
+      contentcanceled: "Nhân viên không bị xóa.",
+      iconcanceled: "error",
+    });
   };
+  useEffect(() => {
+    if (statusDelete === "success") {
+      handleToast("success", "Xóa nhân viên thành công", "top-right");
+      dispatch(getStaff());
+      dispatch(resetState());
+    }
+  }, [statusDelete, dispatch]);
 
   const handleEye = (index) => {
     setSelectedData(index);
@@ -99,17 +80,41 @@ export default function StaffPage() {
     setOpen(false);
   };
 
+  useEffect(() => {
+    const mappedItems = Array.isArray(staff)
+      ? staff.map((item) => ({
+          id: item._id || "",
+          name: item.name || "",
+          role: item.role || "",
+          phone: item.phone || "",
+          email: item.email || "",
+          commission: item.commissionRate || "",
+          base: item.base || "",
+          fixedSalary: item.fixedSalary || "",
+          status: item.isBlocked === true ? "blocked" : "active",
+          avatar: item.avatar || "",
+          startDate: item.startDate || "",
+          department: item.department || "",
+          totalSalary: (item.commissionRate || 0) + (item.fixedSalary || 0),
+        }))
+      : [];
+    if (mappedItems.length > 0) {
+      setItems(mappedItems);
+    }
+  }, [staff]);
+
   return (
     <>
-      <ReusableTable
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
-        data={initialData}
-        columns={columns}
-        handleEye={handleEye}
-        navigate={"/dashboard/staff/create"}
-      />
-      {/* Dialog chi tiec */}
+      <LoadingWrapper>
+        <ReusableTable
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+          data={items}
+          columns={columns}
+          handleEye={handleEye}
+          navigate={"/dashboard/staff/create"}
+        />
+      </LoadingWrapper>
       <EyeStaff
         open={open}
         handleClose={handleClose}

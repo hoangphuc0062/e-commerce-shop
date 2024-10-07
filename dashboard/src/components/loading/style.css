@@ -1,16 +1,29 @@
-/* From Uiverse.io by jeremyssocial */
+/* Full-screen wrapper to center the loader */
+.loader-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.8); /* Optional background overlay */
+  z-index: 9999; /* Keep it above other elements */
+}
+
 .cube-loader {
   position: relative;
   width: 40px;
   height: 40px;
-  margin: auto;
 }
 
 .cube {
   position: absolute;
   width: 50%;
   height: 50%;
-  background-color: #333;
+  background-color: #66adff;
   border: 2px solid #fff;
   animation: foldCube 2.4s infinite linear;
 }
