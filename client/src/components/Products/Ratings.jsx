@@ -3,7 +3,7 @@ import { products } from "../../data/Product/Products";
 const Ratings = () => {
   return (
     <div>
-      <div className="flex text-[18px] text-yellow-500">
+      <div className="flex text-base text-yellow-500 sm:text-sm md:text-base lg:text-lg xl:text-xl">
         {[...Array(5)].map((_, index) => (
           <span
             key={index}

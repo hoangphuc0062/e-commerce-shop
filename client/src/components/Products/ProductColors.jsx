@@ -18,8 +18,8 @@ const ProductColors = ({ productId, selectedOption, handleOptionClick }) => {
             }`}
             onClick={() => handleOptionClick(option.colors)}
           >
-            <p className="text-[14px] font-bold">{option.colors}</p>
-            <p className="text-[10px]">{option.price.toLocaleString()} đ</p>
+            <p className="text-sm font-bold">{option.colors}</p>
+            <p className="text-xs">{option.price.toLocaleString()} đ</p>
           </div>
         ))}
       </div>

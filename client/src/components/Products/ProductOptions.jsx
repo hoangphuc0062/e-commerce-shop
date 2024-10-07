@@ -11,10 +11,10 @@ const ProductOptions = ({ options, handleOptionClick, selectedOption }) => {
           }`}
           onClick={() => handleOptionClick(option)}
         >
-          <p className="text-[14px] font-bold">
+          <p className="text-sm font-bold">
             {option.ram} {option.rom}
           </p>
-          <p className="text-[10px]">{option.price.toLocaleString()} đ</p>
+          <p className="text-xs">{option.price.toLocaleString()} đ</p>
         </div>
       ))}
     </div>
