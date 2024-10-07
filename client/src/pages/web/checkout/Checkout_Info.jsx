@@ -153,7 +153,7 @@ export const CheckoutInfo = () => {
                     <span className="text-red-600 text-xl font-bold">4.890.000đ</span>
                 </div>
                 <p className="text-gray-500 text-sm mb-6">Chưa gồm chiết khấu SMember</p>
-                <button className="w-full bg-red-600 text-white py-3 rounded-md text-center text-lg font-semibold hover:bg-red-700 transition duration-300"  onClick={() => window.location.href = '/checkout'}>
+                <button className="w-full bg-main text-white py-3 rounded-md text-center text-lg font-semibold hover:bg-main transition duration-300 "  onClick={() => window.location.href = '/checkout'}>
                     Tiếp tục
                 </button>
             </div>
