@@ -58,7 +58,7 @@ export default function EyePost({ open, handleClose, selectedData, handleDelete,
                         <Typography variant="body1"><strong>Nội dung bài viết:</strong> {truncateContent(selectedData?.articleContent, 300)}</Typography>
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography variant="body1"><strong>Nhân sự:</strong> {selectedData?.personnel.join(', ')}</Typography>
+                        <Typography variant="body1"><strong>Nhân sự:</strong> {selectedData?.staff.join(', ')}</Typography>
                     </Grid>
                     <Grid item xs={12}>
                         <Typography variant="body1"><strong>Danh mục:</strong> {selectedData?.category.join(', ')}</Typography>
