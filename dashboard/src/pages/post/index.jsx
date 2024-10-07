@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReusableTable from '../../components/Table';
 import EyePost from './details';
 // import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 const columns = [
     { label: "ID", field: "id" },
@@ -49,11 +49,11 @@ const initialData = [
 export default function PostList() {
     const [open, setOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
+    const navigate = useNavigate(); // Initialize navigate here inside the component
 
     const handleEdit = (id) => {
-        console.log("Edit", id);
+        navigate(`/dashboard/post/edit/${id}`); // Navigate to EditPost with post ID
     };
-
     const handleDelete = (id) => {
         console.log("Delete", id);
     };
