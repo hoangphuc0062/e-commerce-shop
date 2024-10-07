@@ -196,7 +196,7 @@ const menuItems = {
               id: "add-blog",
               title: "Thêm bài viết",
               type: "item",
-              url: "dashboard/blog/create",
+              url: "/dashboard/post/create",
             },
             {
               id: "post-list",

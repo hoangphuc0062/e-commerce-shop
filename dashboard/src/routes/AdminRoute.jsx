@@ -18,6 +18,8 @@ import SiteConfig from "../pages/webconfig";
 import PaymentConfig from "../pages/paymentconfig";
 import BannerCollection from "../pages/bannercollection";
 import PostList from "../pages/post";
+import AddPost from "../pages/post/create";
+import EditPost from "../pages/post/edit";
 // import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
   return (
@@ -207,6 +209,24 @@ const AdminRoute = () => {
           <PrivateRoute
             element={<PostList />}
             roles={["admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="post/create"
+        element={
+          <PrivateRoute
+            element={<AddPost />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="post/edit/:id"
+        element={
+          <PrivateRoute
+            element={<EditPost />}
+            roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
       />
