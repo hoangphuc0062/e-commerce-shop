@@ -17,9 +17,13 @@ import OrderPage from "../pages/order";
 import SiteConfig from "../pages/webconfig";
 import PaymentConfig from "../pages/paymentconfig";
 import BannerCollection from "../pages/bannercollection";
+
 import PostList from "../pages/post";
 import AddPost from "../pages/post/create";
 import EditPost from "../pages/post/edit";
+
+import EditStaff from "../pages/staff/edit";
+
 // import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
   return (
@@ -72,7 +76,7 @@ const AdminRoute = () => {
         path="staff/edit/:id"
         element={
           <PrivateRoute
-            element={<AddStaff />}
+            element={<EditStaff />}
             roles={["admin", "superadmin"]}
           />
         }
