@@ -11,7 +11,6 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [islogin, setIslogin] = useState(false);
   const [userRole, setUserRole] = useState("");
-  const [profile, setProfile] = useState([]);
 
   useEffect(() => {
     const role = Cookies.get("role");
@@ -45,8 +44,6 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         setUserRole,
-        profile,
-        setProfile,
       }}
     >
       {children}
