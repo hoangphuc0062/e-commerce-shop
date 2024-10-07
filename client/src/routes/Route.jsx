@@ -12,9 +12,13 @@ import CartProduct from "../pages/web/home/CartProduct";
 import Checkout_info from "../pages/web/checkout/checkout_info";
 import Checkout from "../pages/web/checkout/Checkout";
 import Profile from "../pages/web/profile/Profile";
+import AccountUser from "../pages/web/profile/AccountUser";
 import ProductDetail from "../pages/web/product/ProductDetail";
+import UserOrder from "../pages/web/profile/UserOrder";
+
 export default function RootRouter() {
   const routes = useRoutes([
+    
     {
       path: "/",
       element: <PublicLayout />,
@@ -28,6 +32,8 @@ export default function RootRouter() {
         { path: "/check_info", element: <Checkout_info /> },
         { path: "/checkout", element: <Checkout /> },
         { path: "/profile", element: <Profile /> },
+        { path: "profile/accountuser", element: <AccountUser /> },
+        { path: "profile/orderuser", element: <UserOrder /> },
       ],
     },
     {
