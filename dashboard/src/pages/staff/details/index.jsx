@@ -6,7 +6,6 @@ import {
   Avatar,
   Box,
   Typography,
-  IconButton,
   Grid,
 } from "@mui/material";
 import CakeIcon from "@mui/icons-material/Cake";
@@ -15,51 +14,22 @@ import EmailIcon from "@mui/icons-material/Email";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import EditIcon from "@mui/icons-material/Edit";
-import { Delete } from "@mui/icons-material";
+
 import propTypes from "prop-types";
 import PriceCheckIcon from "@mui/icons-material/PriceCheck";
 import { StatusChip } from "../../../components/StatusColor";
+import { fDateVN } from "../../../utils/format-time";
 
 // Mock Avatar image (replace with the actual image or icon as needed)
-const avatarUrl = "https://i.pravatar.cc/150?img=3";
 
-export default function EyeStaff({
-  open,
-  handleClose,
-  selectedData,
-  handleDelete,
-  handleEdit,
-}) {
+export default function EyeStaff({ open, handleClose, selectedData }) {
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
       <DialogContent>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            mb: 2,
-          }}
-        >
-          {/* Edit and Options Icons */}
-          <IconButton
-            aria-label="edit"
-            onClick={() => handleEdit(selectedData.id)}
-          >
-            <EditIcon />
-          </IconButton>
-          <IconButton
-            aria-label="more options"
-            onClick={() => handleDelete(selectedData.id)}
-          >
-            <Delete color="error" />
-          </IconButton>
-        </Box>
-
         <Box sx={{ textAlign: "center", mb: 2 }}>
           {/* Avatar */}
           <Avatar
-            src={avatarUrl}
+            src={selectedData?.avatar || "/static/images/avatar/1.jpg"}
             alt="Profile Image"
             sx={{
               width: { xs: 80, md: 100 },
@@ -79,7 +49,9 @@ export default function EyeStaff({
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6} display="flex" alignItems="center">
             <CakeIcon sx={{ marginRight: 1 }} />
-            <Typography>{selectedData?.startDate}</Typography>
+            <Typography>
+              {fDateVN(selectedData?.startDate, "dd MMM yyyy")}
+            </Typography>
           </Grid>
           <Grid item xs={12} sm={6} display="flex" alignItems="center">
             <RateReviewIcon sx={{ marginRight: 1 }} />

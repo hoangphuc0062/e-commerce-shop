@@ -4,63 +4,62 @@ import CustomInputField from "../../../components/InputField";
 import CustomDropdown from "../../../components/Dropdown";
 import Textarea from "../../../components/textarea";
 import { StaffSchema } from "../validade/create";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { handleToast } from "../../../utils/toast";
 import ImageUploader from "../../../components/upload";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getStaffById } from "../../../redux/slices/staff";
 
 // Assume options are coming from an external source or can be passed as props
 const options = {
   roles: [
-    { value: "admin", label: "Admin" },
-    { value: "editor", label: "Editor" },
-    { value: "user", label: "User" },
+    { value: "1", label: "Quản trị viên" },
+    { value: "2", label: "Biên tập viên" },
+    { value: "3", label: "Nhân viên" },
   ],
   departments: [
-    { value: "admin", label: "Admin" },
-    { value: "editor", label: "Editor" },
-    { value: "user", label: "User" },
+    { value: "Sale", label: "Marketing" },
+    { value: "Support", label: "Hỗ trợ viên" },
+    { value: "Warehouse", label: "Kho" },
+    { value: "Accounting", label: "Kế toán" },
   ],
   bases: [
-    { value: "admin", label: "Admin" },
-    { value: "editor", label: "Editor" },
-    { value: "user", label: "User" },
+    { value: "cơ sở 1", label: "cơ sở 1" },
+    { value: "cơ sở 2", label: "cơ sở 2" },
   ],
 };
-
 function EditStaff() {
-  const { id } = useParams(); // Get the staff ID from the route
-  const location = useLocation(); // Get the staff data passed via state
+  const dispatch = useDispatch();
+  const [staffData, setStaffData] = useState();
+  const { id } = useParams();
+  console.log("id", id);
   const navigate = useNavigate();
-  const [staffData, setStaffData] = useState(null);
-
-  // Fetch staff data or use data passed from location state
+  const status = useSelector((state) => state.staff.getStaffByIdStatus);
+  const Data = useSelector((state) => state.staff.data);
+  console.log("staffData", Data);
   useEffect(() => {
-    if (location.state && location.state.staff) {
-      setStaffData(location.state.staff); // Set data from state if available
-    } else {
-      // Example: Replace this with an actual API call to fetch staff data by ID
-      fetchStaffDataById(id);
+    if (id) {
+      dispatch(getStaffById(id));
     }
-  }, [id, location.state]);
+  }, [id, dispatch]);
 
-  const fetchStaffDataById = (staffId) => {
-    // Simulate an API call to fetch staff data by ID
-    const fetchedData = {
-      id: staffId,
-      name: "Nguyễn Văn A",
-      email: "nguyenvana@example.com",
-      phone: "0912345678",
-      address: "123 Street Name",
-      role: "Manager",
-      department: "Sales",
-      base: "Hà Nội",
-      salary: "20000000",
-      description: "This is a description.",
-      avatar: "https://i.pravatar.cc/150?img=1",
-    };
-    setStaffData(fetchedData); // Set the fetched data
-  };
+  useEffect(() => {
+    if (status === "success") {
+      setStaffData({
+        name: Data.name,
+        email: Data.email,
+        phone: Data.phone,
+        address: Data.address,
+        role: Data.role,
+        department: Data.department,
+        base: Data.base,
+        salary: Data.salary,
+        description: Data.description,
+        avatar: Data.avatar,
+      });
+    }
+  }, [status, Data]);
 
   const formik = useFormik({
     initialValues: {
@@ -76,15 +75,14 @@ function EditStaff() {
       avatar: staffData?.avatar || "",
     },
     validationSchema: StaffSchema,
-    enableReinitialize: true, // Allow Formik to reinitialize the form when staffData changes
+    enableReinitialize: true,
     validateOnChange: true,
     validateOnBlur: true,
     onSubmit: (values) => {
       console.log("Submitting edit form", values);
       try {
-        // handleSave(values); // Pass updated data through handleSave function
         handleToast("success", "Nhân viên đã được cập nhật", "top-right");
-        navigate("/dashboard/staff"); // Navigate back to staff list after save
+        navigate("/dashboard/staff");
       } catch (error) {
         console.error("Error during form submission", error);
       }
@@ -105,11 +103,6 @@ function EditStaff() {
     error: formik.touched[name] && Boolean(formik.errors[name]),
     helperText: formik.touched[name] && formik.errors[name],
   });
-
-  // Don't render the form until the data is loaded
-  if (!staffData) {
-    return <p>Loading staff data...</p>;
-  }
 
   return (
     <form onSubmit={formik.handleSubmit}>

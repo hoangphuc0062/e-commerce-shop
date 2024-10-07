@@ -7,28 +7,33 @@ import { StaffSchema } from "../validade/create";
 import { useNavigate } from "react-router-dom";
 import { handleToast } from "../../../utils/toast";
 import ImageUploader from "../../../components/upload";
+import { useDispatch, useSelector } from "react-redux";
+import { createStaff, resetState } from "../../../redux/slices/staff";
+import { useEffect } from "react";
 
 const options = {
   roles: [
-    { value: "admin", label: "Admin" },
-    { value: "editor", label: "Editor" },
-    { value: "user", label: "User" },
+    { value: "1", label: "Quản trị viên" },
+    { value: "2", label: "Biên tập viên" },
+    { value: "3", label: "Nhân viên" },
   ],
   departments: [
-    { value: "admin", label: "Admin" },
-    { value: "editor", label: "Editor" },
-    { value: "user", label: "User" },
+    { value: "Sale", label: "Marketing" },
+    { value: "Support", label: "Hỗ trợ viên" },
+    { value: "Warehouse", label: "Kho" },
+    { value: "Accounting", label: "Kế toán" },
   ],
   bases: [
-    { value: "admin", label: "Admin" },
-    { value: "editor", label: "Editor" },
-    { value: "user", label: "User" },
+    { value: "cơ sở 1", label: "cơ sở 1" },
+    { value: "cơ sở 2", label: "cơ sở 2" },
   ],
 };
 
 function AddStaff() {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  const error = useSelector((state) => state.staff.statusCreate);
+  const status = useSelector((state) => state.staff.statusCreate);
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -38,27 +43,29 @@ function AddStaff() {
       role: "",
       department: "",
       base: "",
-      salary: "",
+      fixedSalary: "",
       description: "",
       avatar: "",
       password: "",
       confirmPassword: "",
     },
     validationSchema: StaffSchema,
-    validateOnChange: true,
-    validateOnBlur: true,
-    onSubmit: (values, { resetForm }) => {
-      console.log("Before validation and submission", values);
-      try {
-        // Perform your actual submission logic here
-        handleToast("success", "Nhân viên đã được thêm", "top-right");
-        console.log("Form submitted", values);
-        resetForm(); // Reset form fields after submission
-      } catch (error) {
-        console.error("Error during form submission", error);
-      }
+    onSubmit: async (values) => {
+      console.log("Submitting form", values);
+      await dispatch(createStaff(values));
     },
   });
+
+  useEffect(() => {
+    if (status === "success") {
+      formik.resetForm();
+      dispatch(resetState());
+      handleToast("success", "Thêm nhân viên thành công", "top-right");
+    }
+    if (error) {
+      handleToast("error", error.mes, "top-right");
+    }
+  }, [status, error, dispatch]);
 
   const handleUploadComplete = (url) => {
     console.log("Image uploaded:", url);
@@ -173,10 +180,10 @@ function AddStaff() {
                 <Grid item xs={12} md={6}>
                   <CustomInputField
                     label="Lương cơ bản"
-                    name="salary"
-                    value={formik.values.salary}
+                    name="fixedSalary"
+                    value={formik.values.fixedSalary}
                     onChange={formik.handleChange}
-                    {...getErrorProps("salary")}
+                    {...getErrorProps("fixedSalary")}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
