@@ -8,56 +8,80 @@ const jwt = require("jsonwebtoken");
 const { sendMail } = require("../ultils/sendMail");
 
 const registerStaff = asyncHandler(async (req, res) => {
-  const { email, password, name } = req.body;
+  if (Object.keys(req.body).length === 0) throw new Error("Missing inputs");
+  const { email } = req.body;
 
   const existingStaff = await Staff.findOne({ email });
   if (existingStaff) {
-    res.status(400);
-    throw new Error("Email already exists");
+    return res.status(400).json({ mes: "Staff already exists" });
   }
 
-  const newStaff = new Staff({ email, password, name });
+  const newStaff = new Staff(req.body);
   await newStaff.save();
   res.status(201).json(newStaff);
 });
 
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+
+  // Check for missing inputs
   if (!email || !password) {
-    return res.status(400).json({
-      mes: "Missing inputs",
-    });
+    return res.status(400).json({ mes: "Missing inputs" });
   }
 
-  const response = await Staff.findOne({ email });
-  if (response && (await response.isCorrectPassword(password))) {
-    const { password, role, refreshToken, ...staffData } = response.toObject();
+  const staff = await Staff.findOne({ email });
 
-    const accessToken = generateAccessToken(response._id, role);
+  // Check if staff exists and the password is correct
+  if (staff && (await staff.isCorrectPassword(password))) {
+    const { password, role, refreshToken, ...staffData } = staff.toObject();
 
-    const newRefreshToken = generateRefreshToken(response._id);
+    // Generate new tokens
+    const accessToken = generateAccessToken(staff._id, role);
+    const newRefreshToken = generateRefreshToken(staff._id);
 
+    // Update the refresh token in the database
     await Staff.findByIdAndUpdate(
-      response._id,
+      staff._id,
       { refreshToken: newRefreshToken },
       { new: true }
     );
 
-    res.cookie("refreshToken", newRefreshToken, {
+    // Set cookies
+    const cookieOptions = {
       httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    };
+    res.cookie("refreshToken", newRefreshToken, cookieOptions);
+
+    // If the access token should only be used server-side, set httpOnly to true
+    res.cookie("accessToken", accessToken, {
+      ...cookieOptions,
+      httpOnly: false, // or true if used server-side only
     });
-    res.cookie("role", role, {
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-    // Gửi accessToken qua JSON
+
+    // Role-based cookie settings
+    const roleMapping = {
+      0: "010101",
+      1: "101010",
+      2: "202020",
+      3: "303030",
+    };
+
+    if (role in roleMapping) {
+      res.cookie("role", roleMapping[role], {
+        ...cookieOptions,
+        httpOnly: false, // role cookies are accessible by client
+      });
+    }
+
+    // Return success response
     return res.status(200).json({
       mes: "Login success",
       accessToken,
       staffData,
     });
   } else {
-    throw new Error("Invalid credentials!");
+    return res.status(401).json({ mes: "Invalid credentials!" });
   }
 });
 
@@ -83,7 +107,7 @@ const logout = asyncHandler(async (req, res) => {
 
 const getStaff = asyncHandler(async (req, res) => {
   const staff = await Staff.find({});
-  res.json(staff);
+  return res.status(200).json(staff);
 });
 
 const getStaffById = asyncHandler(async (req, res) => {
@@ -128,10 +152,7 @@ const deleteStaff = asyncHandler(async (req, res) => {
   }
 
   const response = await Staff.findByIdAndDelete(sid);
-  return res.status(200).json({
-    mes: "Delete success",
-    response,
-  });
+  return res.status(200).json({ mes: "Delete success" });
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {

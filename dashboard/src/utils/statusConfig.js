@@ -18,6 +18,7 @@ export const statusColors = {
   unpaid: { label: "Chưa thanh toán", color: "error" },
   partial: { label: "Thanh toán một phần", color: "warning" },
   waiting: { label: "Chờ đợi", color: "warning" },
+  blocked: { label: "Bị chặn", color: "error" },
 };
 
 export const statusOrder = {

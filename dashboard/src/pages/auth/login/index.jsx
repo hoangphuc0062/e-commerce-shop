@@ -19,7 +19,7 @@ const loginSchema = yup.object().shape({
 export default function LoginPage() {
   const dispatch = useDispatch();
 
-  const { islogin, login, setProfile } = useAuth();
+  const { islogin, login } = useAuth();
 
   const error = useSelector((state) => state.staff.error);
   const staff = useSelector((state) => state.staff.me?.data);
@@ -34,10 +34,9 @@ export default function LoginPage() {
     if (status === "success") {
       handleToast("success", "Login successful", "top-right");
       login();
-      setProfile(staff);
       dispatch(resetState());
     }
-  }, [status, login, setProfile, staff, dispatch]);
+  }, [status, login, staff, dispatch]);
   // Initialize useFormik hook
   const formik = useFormik({
     initialValues: {
