@@ -10,7 +10,7 @@ export const StaffSchema = Yup.object({
   role: Yup.string().required("Chức vụ không được để trống"),
   department: Yup.string().required("Phòng ban không được để trống"),
   base: Yup.string().required("Cơ sở làm việc không được để trống"),
-  salary: Yup.number().required("Lương cơ bản không được để trống"),
+  fixedSalary: Yup.number().required("Lương cơ bản không được để trống"),
   password: Yup.string().required("Mật khẩu không được để trống"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password"), null], "Mật khẩu không khớp")

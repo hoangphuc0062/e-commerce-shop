@@ -6,11 +6,11 @@ var staffSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "Name is required"],
     },
     email: {
       type: String,
-      required: true,
+      required: [true, "Email is required"],
       unique: true,
     },
     phone: {
@@ -18,7 +18,7 @@ var staffSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: [true, "Password is required"],
     },
     role: {
       type: String,
@@ -98,6 +98,7 @@ staffSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
+
 staffSchema.methods = {
   isCorrectPassword: async function (password) {
     return await bcrypt.compare(password, this.password); // password : cua ng dun nhap vao, this.password : cua trong mongodb da hash
