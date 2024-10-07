@@ -187,8 +187,8 @@ const menuItems = {
           ],
         },
         {
-          id: "Blogs",
-          title: "Bài viết",
+          id: "Post",
+          title: "Bài đăng",
           type: "collapse",
           icon: "feather icon-file-text",
           children: [
@@ -196,13 +196,13 @@ const menuItems = {
               id: "add-blog",
               title: "Thêm bài viết",
               type: "item",
-              url: "dashboard/blog/create",
+              url: "/dashboard/post/create",
             },
             {
-              id: "blog-list",
-              title: "Danh sách bài viết",
+              id: "post-list",
+              title: "Danh sách bài đăng",
               type: "item",
-              url: "dashboard/blog",
+              url: "/dashboard/post",
             },
           ],
         },
