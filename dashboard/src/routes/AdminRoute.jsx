@@ -222,7 +222,7 @@ const AdminRoute = () => {
         }
       />
       <Route
-        path="post/edit:id"
+        path="post/edit/:id"
         element={
           <PrivateRoute
             element={<EditPost />}
