@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import StaffService from "../../services/staff.service";
 
 const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
@@ -46,6 +46,22 @@ export const getStaffById = createAsyncThunk(
   (id, thunkAPI) => handleAsyncThunk(StaffService.getStaffById, [id], thunkAPI)
 );
 
+// getStaffByToken
+
+export const getStaffByToken = createAsyncThunk(
+  "auth/getStaffByToken",
+  (data, thunkAPI) => handleAsyncThunk(StaffService.fetchMe, [data], thunkAPI)
+);
+export const resetState = createAsyncThunk(
+  "state/resetState",
+  async (payload, thunkAPI) => {
+    return payload;
+  }
+);
+
+export const logout = createAsyncThunk("staff/logout", (_, thunkAPI) =>
+  handleAsyncThunk(StaffService.logout, [null], thunkAPI)
+);
 const staffSlice = createSlice({
   name: "staff",
   initialState: {
@@ -60,19 +76,8 @@ const staffSlice = createSlice({
     deleteStatus: "idle",
     updateStatus: "idle",
     getStaffByIdStatus: "idle",
-  },
-  reducers: {
-    resetState: (state) => {
-      state.status = "idle";
-      state.error = null;
-      state.statusMe = "idle";
-      state.statusUpdate = "idle";
-      state.statusPassword = "idle";
-      state.statusCreate = "idle";
-      state.deleteStatus = "idle";
-      state.updateStatus = "idle";
-      state.getStaffByIdStatus = "idle";
-    },
+    getStaffByTokenStatus: "idle",
+    logoutStatus: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -138,10 +143,37 @@ const staffSlice = createSlice({
       .addCase(getStaffById.rejected, (state, action) => {
         state.getStaffByIdStatus = "failed";
         state.error = action.payload;
+      })
+      .addCase(getStaffByToken.pending, (state) => {
+        state.getStaffByTokenStatus = "loading";
+      })
+      .addCase(getStaffByToken.fulfilled, (state, action) => {
+        state.getStaffByTokenStatus = "success";
+        state.me = action.payload;
+      })
+      .addCase(getStaffByToken.rejected, (state, action) => {
+        state.getStaffByTokenStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(logout.pending, (state) => {
+        state.logoutStatus = "loading";
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.logoutStatus = "success";
+        state.me = null;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.logoutStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(resetState.fulfilled, (state, action) => {
+        const { key, value } = action.payload; // Destructure the action payload
+        if (key && value !== undefined) {
+          // Ensure key and value exist
+          state[key] = value; // Update the state based on the key
+        }
       });
   },
 });
-
-export const { resetState } = staffSlice.actions;
 
 export default staffSlice.reducer;

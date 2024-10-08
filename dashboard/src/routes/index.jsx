@@ -9,7 +9,6 @@ import { useAuth } from "../contexts/AuthContext";
 
 export default function RootRouter() {
   const { islogin } = useAuth();
-
   return (
     <Routes>
       {/* Admin layout wrapper */}
@@ -22,22 +21,19 @@ export default function RootRouter() {
               roles={["customer", "staff", "admin", "superadmin"]}
             />
           ) : (
-            <Navigate to="/dashboard/login" />
+            <Navigate to="/login" />
           )
         }
       >
-        {/* superadmin routes */}
-        {AdminRoute()}
-
-        {/* admin routes */}
-        {EditorRoute()}
+        {islogin && AdminRoute()}
+        {islogin && EditorRoute()}
       </Route>
 
       {/* Error routes */}
       {ErrorRoute()}
 
       {/* auth */}
-      <Route path="/dashboard/login" element={<LoginPage />} />
+      <Route path="/login" element={<LoginPage />} />
     </Routes>
   );
 }

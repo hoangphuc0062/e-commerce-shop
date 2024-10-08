@@ -3,19 +3,29 @@ import { Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import ROLE from "../config/role";
 
-const PrivateRoute = ({ roles, element }) => {
-  const role = Cookies.get("role");
-  const userRole = ROLE[role];
-  if (
-    !roles
-      .map((role) => role.trim().toLowerCase())
-      .includes(userRole.trim().toLowerCase())
-  ) {
-    // console.log("Unauthorized access for role:", userRole);
+const PrivateRoute = ({ roles = [], element }) => {
+  const roleFromCookie = Cookies.get("role");
+  const userRole = roleFromCookie
+    ? ROLE[roleFromCookie]?.trim().toLowerCase()
+    : null;
+
+  // If no user role exists, redirect to login
+  if (!userRole) {
+    return <Navigate to="/login" />;
+  }
+
+  // Convert the roles array to lowercase once for comparison
+  const allowedRoles = roles.map((role) => role?.trim().toLowerCase());
+
+  // Check if the user has one of the required roles
+  const isAuthorized = allowedRoles.includes(userRole);
+
+  // If the user isn't authorized, redirect them to the unauthorized page
+  if (!isAuthorized) {
     return <Navigate to="/unauthorized" />;
   }
 
-  // Render component được truyền qua prop `element`
+  // If authorized, render the element
   return element;
 };
 
