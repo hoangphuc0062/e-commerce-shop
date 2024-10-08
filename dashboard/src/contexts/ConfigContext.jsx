@@ -8,8 +8,8 @@ import { CONFIG } from "../config/constant";
 
 const initialState = {
   ...CONFIG,
-  isOpen: [],
-  isTrigger: [],
+  isOpen: [], //for active default menu
+  isTrigger: [], //for active default menu, set blank for horizontal
 };
 const ConfigContext = createContext(initialState);
 const { Provider } = ConfigContext;

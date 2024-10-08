@@ -84,6 +84,9 @@ var staffSchema = new mongoose.Schema(
       default:
         "https://asset.cloudinary.com/dgthe0zuj/426512c1702396bd962a4de573a60b15",
     },
+    // token: {
+    //   type: String,
+    // },
   },
   {
     timestamps: true,
@@ -112,6 +115,11 @@ staffSchema.methods = {
     this.passwordResetExprires = Date.now() + 15 * 60 * 1000;
     return resetToken;
   },
+};
+staffSchema.statics.getStaffByToken = async function (refreshToken) {
+  return this.findOne({
+    refreshToken,
+  });
 };
 
 //Export the model

@@ -7,6 +7,8 @@ const StaffService = {
   deleteStaff: (id) => sendRequest("delete", `/staffs/${id}`),
   updateStaff: (id, data) => sendRequest("put", `/staffs/${id}`, data),
   getStaffById: (id) => sendRequest("get", `/staffs/${id}`),
+  fetchMe: (data) => sendRequest("post", "/staffs/getstaffbytoken", data),
+  logout: () => sendRequest("post", "/staffs/logout"),
 };
 
 export default StaffService;
