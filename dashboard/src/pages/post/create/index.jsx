@@ -203,19 +203,6 @@ function AddPost() {
                                         helperText={formik.touched.metaDescription && formik.errors.metaDescription}
                                     />
                                 </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <CustomInputField
-                                        label="Mô tả SEO ngắn"
-                                        name="shortSeoDescription"
-                                        value={formik.values.shortSeoDescription}
-                                        onChange={formik.handleChange}
-                                        {...getErrorProps("shortSeoDescription")}
-                                        error={
-                                            formik.touched.shortSeoDescription && Boolean(formik.errors.shortSeoDescription)
-                                        }
-                                        helperText={formik.touched.shortSeoDescription && formik.errors.shortSeoDescription}
-                                    />
-                                </Grid>
                                 <Grid item xs={12}>
                                     <Textarea
                                         label="Mô tả ngắn"
