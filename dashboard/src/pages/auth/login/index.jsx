@@ -34,7 +34,7 @@ export default function LoginPage() {
     if (status === "success") {
       handleToast("success", "Login successful", "top-right");
       login();
-      dispatch(resetState());
+      dispatch(resetState({ key: "status", value: "idle" }));
     }
   }, [status, login, staff, dispatch]);
   // Initialize useFormik hook
@@ -45,7 +45,6 @@ export default function LoginPage() {
     },
     validationSchema: loginSchema,
     onSubmit: (values) => {
-      // Dispatch login action with form values
       console.log(values);
       dispatch(loginAction(values));
     },
@@ -78,6 +77,7 @@ export default function LoginPage() {
             name="email"
             value={formik.values.email}
             onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             error={formik.touched.email && Boolean(formik.errors.email)}
             helperText={formik.touched.email && formik.errors.email}
           />
@@ -90,6 +90,7 @@ export default function LoginPage() {
             name="password"
             value={formik.values.password}
             onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             error={formik.touched.password && Boolean(formik.errors.password)}
             helperText={formik.touched.password && formik.errors.password}
           />
