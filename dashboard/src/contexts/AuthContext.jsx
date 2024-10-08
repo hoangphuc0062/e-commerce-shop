@@ -10,7 +10,7 @@ const AuthContext = createContext();
 // Provider để bọc ứng dụng của bạn
 export const AuthProvider = ({ children }) => {
   const [islogin, setIslogin] = useState(false);
-  const [userRole, setUserRole] = useState("");
+  const [userRole, setUserRole] = useState();
 
   useEffect(() => {
     const role = Cookies.get("role");
@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const setRole = (role) => {
-    Cookies.set("role", role, { expires: 7 }); // Cookie sẽ hết hạn sau 7 ngày
+    Cookies.set("role", role, { expires: 7 });
     setUserRole(ROLE[role]);
   };
 
