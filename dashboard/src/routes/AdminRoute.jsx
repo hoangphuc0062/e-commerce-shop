@@ -48,18 +48,6 @@ const AdminRoute = () => {
           />
         }
       />
-
-      {/* Add Category Page route */}
-      {/* <Route
-        path="category/create"
-        element={
-          <PrivateRoute
-            element={<CreateCaterory />}
-            roles={["customer", "staff", "admin", "superadmin"]}
-          />
-        }
-      /> */}
-
       {/* Staff Page route */}
       <Route
         path="staff"
