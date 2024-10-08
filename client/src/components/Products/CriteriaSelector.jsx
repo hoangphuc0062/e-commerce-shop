@@ -3,7 +3,7 @@ import { criteriaData } from "../../data/Product/Criteria";
 
 const CriteriaSelector = () => {
   const [openIndex, setOpenIndex] = useState(null);
-  const dropdownRefs = useRef([]); // Store refs for each dropdown
+  const dropdownRefs = useRef([]);
 
   const toggleDropdown = (index) => {
     setOpenIndex(openIndex === index ? null : index);
