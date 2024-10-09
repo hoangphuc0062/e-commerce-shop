@@ -1,12 +1,7 @@
 import * as Yup from 'yup';
 
 export const PostSchema = Yup.object().shape({
-    // post_title: Yup.string().required("Tiêu đề bài viết là bắt buộc"),
     slug: Yup.string().required("Slug là bắt buộc"),
-    // shortDescription: Yup.string().required("Mô tả ngắn là bắt buộc"),
-    // seoKeywords: Yup.string(),
-    // metaDescription: Yup.string(),
-    // shortSeoDescription: Yup.string(),
     articleContent: Yup.string().required("Nội dung bài viết là bắt buộc"),
     post_title: Yup.string()
         .required("Tiêu đề bài viết là bắt buộc")
@@ -19,7 +14,7 @@ export const PostSchema = Yup.object().shape({
     thumbnail: Yup.string()
         .required("Ảnh bìa là bắt buộc"), // Assuming thumbnail is required
 
-    shortDescription: Yup.string()
+    postShortDescription: Yup.string()
         .required("Mô tả ngắn là bắt buộc")
         .max(150, "Mô tả ngắn không được vượt quá 150 ký tự"), // Example: Maximum length validation
 
