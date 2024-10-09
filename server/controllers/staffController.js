@@ -143,7 +143,9 @@ const getStaffById = asyncHandler(async (req, res) => {
 const updateStaff = asyncHandler(async (req, res) => {
   const { sid } = req.params;
   if (!sid) throw new Error("Missing inputs");
-  const response = await Staff.findByIdAndUpdate(sid, req.body, { new: true });
+  const response = await Staff.findByIdAndUpdate(sid, req.body, {
+    new: true,
+  });
   return res.status(200).json({
     mes: "Update success",
     response,
