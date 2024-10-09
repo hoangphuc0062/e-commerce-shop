@@ -6,12 +6,12 @@ const BrandIndex = () => {
       {Brand.slice(0, 10).map((brand, index) => (
         <div
           key={index}
-          className="flex-shrink-0 bg-gray-200 text-gray-800 px-3 py-1 rounded cursor-pointer text-sm sm:text-base"
+          className="flex-shrink-0 bg-gray-200 text-gray-800 px-3 py-1 rounded cursor-pointer text-sm sm:text-base hover:bg-main hover:text-white"
         >
           {brand.name}
         </div>
       ))}
-      <div className="flex-shrink-0 bg-gray-200 text-gray-800 px-3 py-1 rounded cursor-pointer text-sm sm:text-base">
+      <div className="flex-shrink-0 bg-gray-200 text-gray-800 px-3 py-1 rounded cursor-pointer text-sm sm:text-base hover:bg-main hover:text-white">
         Xem tất cả
       </div>
     </div>

@@ -8,18 +8,12 @@ export const products = [
     screen: "7.6 inches",
     options: [
       {
-        ram: "6GB",
-        rom: "128GB",
-        price: 5000000,
-        salePrice: 5990000,
-        colors: "Đen",
-      },
-      {
         ram: "8GB",
         rom: "256GB",
         price: 5500000,
         salePrice: 6200000,
-        colors: "Bạc",
+        colors: "Đen",
+        icon: "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/b/_/b_c_1_9.png",
       },
       {
         ram: "12GB",
@@ -27,6 +21,7 @@ export const products = [
         price: 6000000,
         salePrice: 6500000,
         colors: "Vàng",
+        icon: "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/v/_/v_ng_18.png",
       },
       {
         ram: "16GB",
@@ -34,6 +29,7 @@ export const products = [
         price: 7000000,
         salePrice: 7500000,
         colors: "Trắng",
+        icon: "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/b/_/b_c_1_9.png",
       },
     ],
     description: "Latest iPhone with A16 chip and Pro camera system",
@@ -44,6 +40,7 @@ export const products = [
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/b/_/b_c_1_9.png",
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/_/x_m_24.png",
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/v/_/v_ng_18.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/b/_/b_c_1_9.png",
     ],
     slug: "iphone-14-pro-max",
   },
