@@ -27,9 +27,9 @@ const SocialCard = ({ params }) => {
           {params.primaryText}
         </h4>
         <p className="m-b-20">{params.secondaryText}</p>
-        <Button variant={params.variant} className="btn-primary btn-sm">
+        {/* <Button variant={params.variant} className="btn-primary btn-sm">
           {params.label}
-        </Button>
+        </Button> */}
       </Card.Body>
     </Card>
   );

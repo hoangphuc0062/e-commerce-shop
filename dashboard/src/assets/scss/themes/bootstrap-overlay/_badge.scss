@@ -7,8 +7,6 @@
   padding: 0.35em 0.6em;
   font-weight: 600;
 }
-
-// Áp dụng cho light mode
 @each $color, $value in $theme-colors {
   .badge-light-#{$color} {
     background: transparentize($value, 0.8);
@@ -17,7 +15,6 @@
   }
 
   a.badge-light-#{$color} {
-
     &.active,
     &:active,
     &:focus,
@@ -28,28 +25,4 @@
     }
   }
 }
-
-// Áp dụng cho dark mode
-body.dark-mode {
-  @each $color, $value in $theme-colors {
-    .badge-light-#{$color} {
-      background: transparentize($dark-text-color, 0.9); // Màu nền trong suốt với chữ tối hơn
-      border-color: color-level($dark-border-color, $alert-border-level);
-      color: $dark-text-color;
-    }
-
-    a.badge-light-#{$color} {
-
-      &.active,
-      &:active,
-      &:focus,
-      &:hover {
-        background: $dark-background; // Nền tối khi hover
-        border-color: $dark-border-color;
-        color: $dark-text-color;
-      }
-    }
-  }
-}
-
 /**====== Badges css end ======**/

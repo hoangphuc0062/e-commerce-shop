@@ -14,26 +14,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        charset: false,
         additionalData: `@import "node_modules/bootstrap/scss/functions";`,
-      },
-      less: {
-        charset: false,
-      },
-      charset: false,
-      postcss: {
-        plugins: [
-          {
-            postcssPlugin: "internal:charset-removal",
-            AtRule: {
-              charset: (atRule) => {
-                if (atRule.name === "charset") {
-                  atRule.remove();
-                }
-              },
-            },
-          },
-        ],
       },
     },
   },

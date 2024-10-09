@@ -3,8 +3,13 @@ import ReusableTable from "../../components/Table";
 import CartDialog from "./details";
 import EditStatusDialog from "./edit";
 import { useDispatch, useSelector } from "react-redux";
-import { getCustomer } from "../../redux/slices/customer";
+import {
+  getCustomer,
+  resetState,
+  updateCustomer,
+} from "../../redux/slices/customer";
 import { handleToast } from "../../utils/toast";
+import LoadingWrapper from "../../components/loading/LoadingWrapper";
 export default function UserPage() {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -12,52 +17,72 @@ export default function UserPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [status, setStatus] = useState("");
   const [statusOptions, setStatusOptions] = useState([]);
-  const handleSubmit = (status) => {
-    console.log("Submit", status);
+  const [items, setItems] = useState([]);
+  const [index, setIndex] = useState(null);
+  const handleSubmit = (status, data) => {
+    const updatedStatus = status === "blocked" ? true : false;
+    dispatch(
+      updateCustomer({
+        customerId: data.id,
+        data: { isBlocked: updatedStatus },
+      })
+    );
     setOpen(false);
   };
+
   const statusGetCustomer = useSelector((state) => state.customer.status);
   const dataCustomer = useSelector((state) => state.customer.data);
-  useEffect(() => {
-    dispatch(getCustomer());
-  }, [dispatch]);
+  const statusUpdateCustomer = useSelector(
+    (state) => state.customer.statusUpdate
+  );
+  const getCustomers = () => dispatch(getCustomer());
 
   useEffect(() => {
-    if (statusGetCustomer === "success") {
-      handleToast("success", "Get customer successful", "top-right");
+    if (items.length === 0) {
+      getCustomers();
     }
-  }, [statusGetCustomer]);
-  const initialData = [
-    {
-      id: 1011,
-      name: "John Doe",
-      address: "28 ywang",
-      email: "thainn@gamil.com",
-      sdt: "0987654321",
-      sex: "Nam",
-      membership: "Student - Member",
-      totalAmount: 2000000,
-      status: "Active",
-      cart: [
-        {
-          productName: "Watch XYZ",
-          quantity: 2,
-          price: 1000000,
-          image: "https://via.placeholder.com/100",
-          color: "Black",
-          size: "M",
-        },
-        {
-          productName: "Bracelet ABC",
-          quantity: 1,
-          price: 500000,
-          image: "https://via.placeholder.com/100",
-          color: "Silver",
-          size: "S",
-        },
-      ],
-    },
-  ];
+  }, [items, getCustomers, statusGetCustomer]);
+  useEffect(() => {
+    if (statusGetCustomer === "success") {
+      dispatch(resetState({ key: "status", value: "idle" }));
+    }
+    if (statusGetCustomer === "failed") {
+      handleToast("error", "Get customer failed", "top-right");
+    }
+  }, [statusGetCustomer, dispatch]);
+  useEffect(() => {
+    if (statusUpdateCustomer === "success") {
+      getCustomers();
+      // handleToast("success", "Update customer success", "top-right");
+      dispatch(resetState({ key: "statusUpdate", value: "idle" }));
+    }
+  }, [statusUpdateCustomer, dispatch, getCustomers]);
+
+  useEffect(() => {
+    const initialData = Array.isArray(dataCustomer)
+      ? dataCustomer.map((item) => ({
+          id: item?._id,
+          name: item?.name,
+          address: item?.address,
+          email: item?.email,
+          sdt: item?.sdt,
+          sex: item?.sex,
+          membership: item?.membership,
+          totalAmount: item?.totalAmount,
+          status: item?.isBlocked === true ? "blocked" : "active",
+          cart:
+            item?.cart?.map((cartItem) => ({
+              name: cartItem.name,
+              price: cartItem.price,
+              quantity: cartItem.quantity,
+            })) || [],
+        }))
+      : [];
+
+    if (initialData.length > 0) {
+      setItems(initialData);
+    }
+  }, [dataCustomer]);
 
   const columns = [
     { label: "Họ và tên", field: "name" },
@@ -77,28 +102,34 @@ export default function UserPage() {
   const handleEdit = (index) => {
     setDialogOpen(true);
     setStatus(index.status);
-    console.log("Edit", index);
-    console.log("Status", index.status);
     setStatusOptions([
-      { value: "Active", label: "Active" },
-      { value: "Inactive", label: "Inactive" },
+      { value: "active", label: "active" },
+      { value: "blocked", label: "blocked" },
     ]);
+    setIndex(index);
   };
 
   const handleEye = (index) => {
     setOpen(true);
     setData(index);
   };
+  const optionStatus = [
+    { value: "all", label: "Tất cả" },
+    { value: "active", label: "Hoạt động" },
+    { value: "blocked", label: "Bị chặn" },
+  ];
   return (
     <>
-      <ReusableTable
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
-        data={initialData}
-        columns={columns}
-        handleEye={handleEye}
-      />
-
+      <LoadingWrapper>
+        <ReusableTable
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+          data={items}
+          columns={columns}
+          handleEye={handleEye}
+          optionStatus={optionStatus}
+        />
+      </LoadingWrapper>
       <CartDialog
         open={open}
         handleClose={() => setOpen(false)}
@@ -112,6 +143,7 @@ export default function UserPage() {
         currentStatus={status}
         onSubmit={handleSubmit}
         statusOptions={statusOptions}
+        data={index}
       />
     </>
   );
