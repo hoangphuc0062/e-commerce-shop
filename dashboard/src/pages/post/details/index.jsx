@@ -37,7 +37,7 @@ export default function EyePost({ open, handleClose, selectedData, handleDelete,
                         {selectedData?.post_title}
                     </Typography>
                     <Typography variant="body2" color="textSecondary" paragraph>
-                        {selectedData?.shortDescription}
+                        {selectedData?.postShortDescription}
                     </Typography>
                 </Box>
 
@@ -65,6 +65,9 @@ export default function EyePost({ open, handleClose, selectedData, handleDelete,
                     </Grid>
                     <Grid item xs={12}>
                         <Typography variant="body1"><strong>Trạng thái:</strong> {selectedData?.statustPost}</Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography variant="body1"><strong>Đánh ghá:</strong> {selectedData?.rating}</Typography>
                     </Grid>
                 </Grid>
             </DialogContent>

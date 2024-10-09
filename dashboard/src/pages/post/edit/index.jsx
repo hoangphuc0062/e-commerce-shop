@@ -44,7 +44,7 @@ function EditPost({ fetchPostData }) {
             post_title: "",
             slug: "",
             thumbnail: "",
-            shortDescription: "",
+            postShortDescription: "",
             seoKeywords: "",
             metaDescription: "",
             shortSeoDescription: "",
@@ -216,10 +216,10 @@ function EditPost({ fetchPostData }) {
                                 <Grid item xs={12}>
                                     <Textarea
                                         label="Mô tả ngắn"
-                                        name="shortDescription"
-                                        value={formik.values.shortDescription}
+                                        name="postShortDescription"
+                                        value={formik.values.postShortDescription}
                                         onChange={formik.handleChange}
-                                        {...getErrorProps("shortDescription")}
+                                        {...getErrorProps("postShortDescription")}
                                         height={250}
                                     />
                                 </Grid>

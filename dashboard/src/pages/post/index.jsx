@@ -3,15 +3,19 @@ import ReusableTable from '../../components/Table';
 import EyePost from './details';
 // import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import ReusableTablePost from './table';
 
 const columns = [
-    { label: "ID", field: "id" },
+    // { label: "ID", field: "id" },
     { label: "Tác giả", field: "name" },
+    { label: "", field: "thumbnail" },
     { label: "Tiêu đề bài viết", field: "post_title" },
-    { label: "Ảnh đại diện", field: "thumbnail" },
-    { label: "Mô tả ngắn", field: "shortDescription" },
-    { label: "Từ khóa SEO", field: "seoKeywords" },
+    { label: "Mô tả ngắn", field: "postShortDescription" },
+    // { label: "Từ khóa SEO", field: "seoKeywords" },
+    { label: "Ngày đăng ", field: "" },
     { label: "Trạng thái", field: "statustPost" },
+    { label: "Đánh giá", field: "rating" },
+
 ];
 
 const initialData = [
@@ -21,7 +25,7 @@ const initialData = [
         post_title: "Cách tối ưu hóa SEO cho bài viết",
         slug: "toi-uu-hoa-seo-bai-viet",
         thumbnail: "https://via.placeholder.com/50",
-        shortDescription: "Hướng dẫn chi tiết cách tối ưu hóa SEO cho bài viết.",
+        postShortDescription: "Hướng dẫn chi tiết cách tối ưu hóa SEO cho bài viết.",
         seoKeywords: "SEO, tối ưu hóa",
         metaDescription: "Bài viết này giúp bạn hiểu rõ hơn về SEO.",
         shortSeoDescription: "SEO là yếu tố quan trọng",
@@ -29,6 +33,7 @@ const initialData = [
         staff: [1, 2],
         category: [1, 3],
         statustPost: "draft",
+        rating: [5],
     },
     {
         id: 1112,
@@ -36,7 +41,7 @@ const initialData = [
         post_title: "Hướng dẫn viết bài chuyên nghiệp",
         slug: "huong-dan-viet-bai-chuyen-nghiep",
         thumbnail: "https://via.placeholder.com/50",
-        shortDescription: "Cách viết bài hấp dẫn và chuẩn SEO.",
+        postShortDescription: "Cách viết bài hấp dẫn và chuẩn SEO.",
         seoKeywords: "viết bài, chuyên nghiệp",
         metaDescription: "Bài viết này hướng dẫn cách viết bài hấp dẫn và thu hút.",
         shortSeoDescription: "Viết bài chuyên nghiệp và chuẩn SEO.",
@@ -44,6 +49,7 @@ const initialData = [
         staff: [3, 4],
         category: [2, 4],
         statustPost: "published",
+        rating: [4]
     },
 ];
 export default function PostList() {
@@ -68,7 +74,7 @@ export default function PostList() {
     };
     return (
         <>
-            <ReusableTable
+            <ReusableTablePost
                 data={initialData}
                 columns={columns}
                 handleEdit={handleEdit}
