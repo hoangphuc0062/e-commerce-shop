@@ -101,18 +101,6 @@ const menuItems = {
               type: "item",
               url: "/dashboard/customer",
             },
-            {
-              id: "new-customers",
-              title: "Khách hàng mới",
-              type: "item",
-              url: "/dashboard/customer/new",
-            },
-            {
-              id: "contacted-customers",
-              title: "Khách hàng đã liên hệ",
-              type: "item",
-              url: "/dashboard/customer/contacted",
-            },
           ],
         },
         {

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import StaffService from "../../services/staff.service";
 
@@ -35,8 +36,8 @@ export const deleteStaff = createAsyncThunk(
 // updateStaff
 export const updateStaff = createAsyncThunk(
   "auth/updateStaff",
-  (data, thunkAPI) =>
-    handleAsyncThunk(StaffService.updateStaff, [data.id, data], thunkAPI)
+  ({ staffId, data }, thunkAPI) =>
+    handleAsyncThunk(StaffService.updateStaff, [staffId, data], thunkAPI)
 );
 
 // getStaffById
@@ -167,10 +168,11 @@ const staffSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(resetState.fulfilled, (state, action) => {
-        const { key, value } = action.payload; // Destructure the action payload
-        if (key && value !== undefined) {
-          // Ensure key and value exist
-          state[key] = value; // Update the state based on the key
+        if (action.payload) {
+          const { key, value } = action.payload;
+          if (key && value !== undefined) {
+            state[key] = value;
+          }
         }
       });
   },

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import CustomerService from "../../services/customer.service";
 
@@ -21,6 +22,17 @@ export const resetState = createAsyncThunk(
     return payload;
   }
 );
+
+// update customer
+export const updateCustomer = createAsyncThunk(
+  "customer/updateCustomer",
+  ({ customerId, data }, thunkAPI) =>
+    handleAsyncThunk(
+      CustomerService.updateCustomer,
+      [customerId, data],
+      thunkAPI
+    )
+);
 const customerSlice = createSlice({
   name: "customer",
   initialState: {
@@ -28,6 +40,7 @@ const customerSlice = createSlice({
     status: "idle",
     error: null,
     me: null,
+    statusUpdate: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -42,10 +55,24 @@ const customerSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
       })
+      .addCase(updateCustomer.pending, (state) => {
+        state.statusUpdate = "loading";
+      })
+      .addCase(updateCustomer.fulfilled, (state, action) => {
+        state.statusUpdate = "success";
+        state.data = action.payload;
+      })
+      .addCase(updateCustomer.rejected, (state, action) => {
+        state.statusUpdate = "failed";
+        state.error = action.payload;
+      })
+
       .addCase(resetState.fulfilled, (state, action) => {
-        const { key, value } = action.payload; // Destructure the action payload
-        if (key && value !== undefined) {
-          state[key] = value;
+        if (action.payload) {
+          const { key, value } = action.payload;
+          if (key && value !== undefined) {
+            state[key] = value;
+          }
         }
       });
   },

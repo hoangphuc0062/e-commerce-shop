@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -19,34 +18,46 @@ const EditStatusDialog = ({
   currentStatus,
   onSubmit,
   statusOptions,
+  data,
 }) => {
   const [status, setStatus] = useState(currentStatus);
 
-  // Cập nhật trạng thái khi currentStatus thay đổi
+  // Update status when currentStatus changes
   useEffect(() => {
-    if (currentStatus) {
-      setStatus(currentStatus);
-    }
+    setStatus(currentStatus);
   }, [currentStatus]);
 
-  // Hàm xử lý khi thay đổi trạng thái
+  // Handle status change
   const handleStatusChange = (event) => {
     setStatus(event.target.value);
   };
 
-  // Hàm submit form
+  // Handle form submission
   const handleSubmit = () => {
-    onSubmit(status);
-    handleClose(); // Đóng hộp thoại sau khi gửi
+    onSubmit(status, data);
+    handleClose();
+  };
+
+  // Reset the dialog state when it closes
+  const handleDialogClose = () => {
+    handleClose();
+    setStatus(currentStatus); // Reset to current status on close
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+    <Dialog
+      open={open}
+      onClose={handleDialogClose}
+      fullWidth
+      maxWidth="sm"
+      aria-labelledby="dialog-title"
+      aria-describedby="dialog-description"
+    >
       <DialogTitle>
         Chỉnh sửa trạng thái
         <IconButton
           aria-label="close"
-          onClick={handleClose}
+          onClick={handleDialogClose}
           sx={{ position: "absolute", right: 8, top: 8 }}
         >
           <CloseIcon />
@@ -54,7 +65,7 @@ const EditStatusDialog = ({
       </DialogTitle>
       <DialogContent dividers>
         <form>
-          {/* Dropdown chọn trạng thái */}
+          {/* Dropdown for selecting status */}
           <TextField
             select
             label="Trạng thái"
@@ -73,7 +84,7 @@ const EditStatusDialog = ({
         </form>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="secondary">
+        <Button onClick={handleDialogClose} color="secondary">
           Hủy
         </Button>
         <Button onClick={handleSubmit} variant="contained" color="primary">

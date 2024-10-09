@@ -74,6 +74,19 @@ const deletePost = asyncHandler(async (req, res) => {
     mes: post ? "Delete post is successful" : "Some thing went wrong",
   });
 });
+
+const deleteManyPost = asyncHandler(async (req, res) => {
+  const { ids } = req.body;
+  if (!ids) {
+    return res.status(400).json({
+      mes: "Missing ids",
+    });
+  }
+  const post = await Post.deleteMany({ _id: { $in: ids } });
+  return res.status(200).json({
+    mes: post ? "Delete posts is successful" : "Some thing went wrong",
+  });
+});
 module.exports = {
   getAllPost,
   getPostBySlug,
@@ -81,4 +94,5 @@ module.exports = {
   addPost,
   updatePost,
   deletePost,
+  deleteManyPost,
 };

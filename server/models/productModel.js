@@ -124,10 +124,17 @@ var ProductSchema = new mongoose.Schema(
         typeOfValue: String,
       },
     ],
-
     series: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Series",
+    },
+    brand: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brands",
+    },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Categories",
     },
   },
   {

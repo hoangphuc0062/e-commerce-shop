@@ -3,41 +3,54 @@ import { useFormik } from "formik";
 import CustomInputField from "../../../components/InputField";
 import CustomDropdown from "../../../components/Dropdown";
 import Textarea from "../../../components/textarea";
-import { StaffSchema } from "../validade/create";
 import { useNavigate, useParams } from "react-router-dom";
 import { handleToast } from "../../../utils/toast";
 import ImageUploader from "../../../components/upload";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getStaffById } from "../../../redux/slices/staff";
+import { getStaffById, updateStaff } from "../../../redux/slices/staff";
 
-// Assume options are coming from an external source or can be passed as props
-const options = {
-  roles: [
-    { value: "1", label: "Quản trị viên" },
-    { value: "2", label: "Biên tập viên" },
-    { value: "3", label: "Nhân viên" },
-  ],
-  departments: [
-    { value: "Sale", label: "Marketing" },
-    { value: "Support", label: "Hỗ trợ viên" },
-    { value: "Warehouse", label: "Kho" },
-    { value: "Accounting", label: "Kế toán" },
-  ],
-  bases: [
-    { value: "cơ sở 1", label: "cơ sở 1" },
-    { value: "cơ sở 2", label: "cơ sở 2" },
-  ],
-};
-function EditStaff() {
+// Static options for dropdowns
+const roles = [
+  { value: "0", label: "Quản trị" },
+  { value: "1", label: "Quản trị viên" },
+  { value: "2", label: "Biên tập viên" },
+  { value: "3", label: "Nhân viên" },
+];
+
+const departments = [
+  { value: "Sale", label: "Marketing" },
+  { value: "Support", label: "Hỗ trợ viên" },
+  { value: "Warehouse", label: "Kho" },
+  { value: "Accounting", label: "Kế toán" },
+];
+
+const bases = [
+  { value: "cơ sở 1", label: "cơ sở 1" },
+  { value: "cơ sở 2", label: "cơ sở 2" },
+];
+
+const EditStaff = () => {
   const dispatch = useDispatch();
-  const [staffData, setStaffData] = useState();
-  const { id } = useParams();
-  console.log("id", id);
   const navigate = useNavigate();
+  const { id } = useParams();
+
   const status = useSelector((state) => state.staff.getStaffByIdStatus);
   const Data = useSelector((state) => state.staff.data);
-  console.log("staffData", Data);
+
+  const [staffData, setStaffData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    role: "",
+    department: "",
+    base: "",
+    fixedSalary: "",
+    description: "",
+    avatar: "",
+  });
+
   useEffect(() => {
     if (id) {
       dispatch(getStaffById(id));
@@ -45,57 +58,51 @@ function EditStaff() {
   }, [id, dispatch]);
 
   useEffect(() => {
-    if (status === "success") {
+    if (status === "success" && Data) {
       setStaffData({
-        name: Data.name,
-        email: Data.email,
-        phone: Data.phone,
-        address: Data.address,
-        role: Data.role,
-        department: Data.department,
-        base: Data.base,
-        salary: Data.salary,
-        description: Data.description,
-        avatar: Data.avatar,
+        name: Data.name || "",
+        email: Data.email || "",
+        phone: Data.phone || "",
+        address: Array.isArray(Data.address)
+          ? Data.address.join(", ")
+          : Data.address || "",
+        role: Array.isArray(Data.role) ? Data.role.join(", ") : Data.role || "",
+        department: Data.department || "",
+        base: Array.isArray(Data.base) ? Data.base.join(", ") : Data.base || "",
+        fixedSalary: Data.fixedSalary || "",
+        description: Data.description || "",
+        avatar: Data.avatar || "",
       });
     }
   }, [status, Data]);
 
   const formik = useFormik({
-    initialValues: {
-      name: staffData?.name || "",
-      email: staffData?.email || "",
-      phone: staffData?.phone || "",
-      address: staffData?.address || "",
-      role: staffData?.role || "",
-      department: staffData?.department || "",
-      base: staffData?.base || "",
-      salary: staffData?.salary || "",
-      description: staffData?.description || "",
-      avatar: staffData?.avatar || "",
-    },
-    validationSchema: StaffSchema,
+    initialValues: staffData,
+    // validationSchema: StaffSchema,
     enableReinitialize: true,
-    validateOnChange: true,
-    validateOnBlur: true,
-    onSubmit: (values) => {
-      console.log("Submitting edit form", values);
-      try {
-        handleToast("success", "Nhân viên đã được cập nhật", "top-right");
-        navigate("/dashboard/staff");
-      } catch (error) {
-        console.error("Error during form submission", error);
-      }
+    onSubmit: async (values) => {
+      console.log(values);
+      await dispatch(updateStaff({ staffId: id, data: values })).then((res) => {
+        console.log(res);
+        if (res.type === "auth/updateStaff/fulfilled") {
+          handleToast("success", "Cập nhật nhân viên thành công", "top-right");
+          navigate("/dashboard/staff");
+        } else {
+          handleToast(
+            "error",
+            "Cập nhật nhân viên không thành công",
+            "top-right"
+          );
+        }
+      });
     },
   });
 
   const handleUploadComplete = (url) => {
-    console.log("Image uploaded:", url);
     formik.setFieldValue("avatar", url);
   };
 
   const handleDelete = () => {
-    console.log("Image deleted");
     formik.setFieldValue("avatar", "");
   };
 
@@ -113,16 +120,14 @@ function EditStaff() {
             <Paper elevation={3} sx={{ padding: 2 }}>
               <Box textAlign="center" mb={2}>
                 <Typography variant="h6">Ảnh hồ sơ</Typography>
-                <Box>
-                  <ImageUploader
-                    onUploadComplete={handleUploadComplete}
-                    onDelete={handleDelete}
-                    avatarSize={100}
-                    {...getErrorProps("avatar")}
-                    onBlur={formik.handleBlur}
-                    folder="staff" // Change dynamically if needed
-                  />
-                </Box>
+                <ImageUploader
+                  onUploadComplete={handleUploadComplete}
+                  onDelete={handleDelete}
+                  avatarSize={100}
+                  {...getErrorProps("avatar")}
+                  onBlur={formik.handleBlur}
+                  fooder="staff"
+                />
               </Box>
             </Paper>
           </Grid>
@@ -134,36 +139,28 @@ function EditStaff() {
                 <Grid item xs={12} md={6}>
                   <CustomInputField
                     label="Họ và tên"
-                    name="name"
-                    value={formik.values.name}
-                    onChange={formik.handleChange}
+                    {...formik.getFieldProps("name")}
                     {...getErrorProps("name")}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <CustomInputField
                     label="Email"
-                    name="email"
-                    value={formik.values.email}
-                    onChange={formik.handleChange}
+                    {...formik.getFieldProps("email")}
                     {...getErrorProps("email")}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <CustomInputField
                     label="Số điện thoại"
-                    name="phone"
-                    value={formik.values.phone}
-                    onChange={formik.handleChange}
+                    {...formik.getFieldProps("phone")}
                     {...getErrorProps("phone")}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <CustomInputField
                     label="Địa chỉ"
-                    name="address"
-                    value={formik.values.address}
-                    onChange={formik.handleChange}
+                    {...formik.getFieldProps("address")}
                     {...getErrorProps("address")}
                   />
                 </Grid>
@@ -171,7 +168,7 @@ function EditStaff() {
                   <CustomDropdown
                     label="Chức vụ"
                     name="role"
-                    options={options.roles}
+                    options={roles}
                     value={formik.values.role}
                     onChange={formik.handleChange}
                     {...getErrorProps("role")}
@@ -181,7 +178,7 @@ function EditStaff() {
                   <CustomDropdown
                     label="Phòng ban"
                     name="department"
-                    options={options.departments}
+                    options={departments}
                     value={formik.values.department}
                     onChange={formik.handleChange}
                     {...getErrorProps("department")}
@@ -191,7 +188,7 @@ function EditStaff() {
                   <CustomDropdown
                     label="Cơ sở làm việc"
                     name="base"
-                    options={options.bases}
+                    options={bases}
                     value={formik.values.base}
                     onChange={formik.handleChange}
                     {...getErrorProps("base")}
@@ -200,18 +197,14 @@ function EditStaff() {
                 <Grid item xs={12} md={6}>
                   <CustomInputField
                     label="Lương cơ bản"
-                    name="salary"
-                    value={formik.values.salary}
-                    onChange={formik.handleChange}
-                    {...getErrorProps("salary")}
+                    {...formik.getFieldProps("fixedSalary")}
+                    {...getErrorProps("fixedSalary")}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <Textarea
                     label="Mô tả"
-                    name="description"
-                    value={formik.values.description}
-                    onChange={formik.handleChange}
+                    {...formik.getFieldProps("description")}
                     {...getErrorProps("description")}
                     height={300}
                   />
@@ -244,6 +237,6 @@ function EditStaff() {
       </Box>
     </form>
   );
-}
+};
 
 export default EditStaff;
