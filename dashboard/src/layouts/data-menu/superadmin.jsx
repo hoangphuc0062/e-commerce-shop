@@ -120,7 +120,7 @@ const menuItems = {
           title: "Mã giảm giá",
           type: "item",
           icon: "feather icon-tag",
-          url: "/app/coupons",
+          url: "/dashboard/coupons",
         },
         {
           id: "comfig",
