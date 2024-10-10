@@ -82,11 +82,8 @@ var staffSchema = new mongoose.Schema(
     avatar: {
       type: String,
       default:
-        "https://asset.cloudinary.com/dgthe0zuj/426512c1702396bd962a4de573a60b15",
+        "https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/avatar%2Favatar-default-w.png?alt=media&token=7b7e2290-128d-4eb8-a800-4c86e64c3030",
     },
-    // token: {
-    //   type: String,
-    // },
   },
   {
     timestamps: true,

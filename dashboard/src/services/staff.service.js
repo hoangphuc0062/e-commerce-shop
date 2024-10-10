@@ -9,6 +9,7 @@ const StaffService = {
   getStaffById: (id) => sendRequest("get", `/staffs/${id}`),
   fetchMe: (data) => sendRequest("post", "/staffs/getstaffbytoken", data),
   logout: () => sendRequest("post", "/staffs/logout"),
+  forgotpassword: (data) => sendRequest("post", "/staffs/forgotpassword", data),
 };
 
 export default StaffService;
