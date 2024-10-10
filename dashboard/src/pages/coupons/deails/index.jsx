@@ -23,6 +23,15 @@ const EyeCoupons = ({ open, handleClose, selectedData }) => {
         return selectedData?.discount || ''; // Return raw value if no match
     };
 
+
+    const [status, setStatus] = useState(selectedData?.status);
+
+    // Hàm thay đổi trạng thái
+    const handleChangeStatus = () => {
+        // Thay đổi giữa 'active' và 'inactive'
+        const newStatus = status === 'active' ? 'inactive' : 'active';
+        setStatus(newStatus);
+    };
     const [showMore, setShowMore] = useState(false); // State for showing more info
     const displayedCategories = selectedData.categoryApply.slice(0, 3); // Hiển thị tối đa 3 danh mục
     const showMoreCategories = selectedData.categoryApply.length > 3;
@@ -30,17 +39,16 @@ const EyeCoupons = ({ open, handleClose, selectedData }) => {
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
             <DialogContent>
                 <Box className="boxContainer" sx={{ textAlign: "center", mb: 2 }}>
-                    <Typography className="title" variant="h5">
+                    <Typography className="title" variant="h5" sx={{ fontWeight: 'bold' }}>
                         <span>Chiến dịch</span>
                         <span>: </span>
                         {selectedData?.name}
                     </Typography>
-                    <Typography variant="body2" color="textSecondary">
+                    <Typography variant="body1" color="rgb(24, 28, 26)" sx={{ fontWeight: 'bold' }} >
                         {selectedData?.description}
                     </Typography>
-                    <span>MÃ CODE</span>
+                    <span className="code-label">MÃ CODE</span>
                     <Typography variant="body2" className="codeCoupons">
-
                         {selectedData?.code ? selectedData.code : "Không có mã code"}
                     </Typography>
                     {/* Loại giảm giá */}
@@ -81,64 +89,71 @@ const EyeCoupons = ({ open, handleClose, selectedData }) => {
                     {showMore && (
                         <>
                             {/* Danh mục áp dụng */}
-                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                            <Grid item xs={12} sm={6} display="flex" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
                                 <Typography>
-                                    <span style={{ display: "block" }}>Danh mục áp dụng</span>
+                                    <span className="block-span" style={{ display: "block" }}>Danh mục áp dụng</span>
                                     <span>{selectedData?.categoryApply.join(', ')}</span>
                                 </Typography>
                             </Grid>
                             {/* Danh mục không áp dụng */}
-                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                            <Grid item xs={12} sm={6} display="flex" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
                                 <Typography>
-                                    <span style={{ display: "block" }}>Danh mục không áp dụng</span>
+                                    <span className="block-span" style={{ display: "block" }}>Danh mục không áp dụng</span>
                                     <span>{selectedData?.categoryNotApply.join(', ')}</span>
                                 </Typography>
                             </Grid>
                             {/* Hãng áp dụng */}
-                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                            <Grid item xs={12} sm={6} display="flex" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
                                 <Typography>
-                                    <span style={{ display: "block" }}>Hãng áp dụng</span>
+                                    <span className="block-span" style={{ display: "block" }}>Hãng áp dụng</span>
                                     <span>{selectedData?.brandApply.join(', ')}</span>
                                 </Typography>
                             </Grid>
                             {/* Hãng không áp dụng */}
-                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                            <Grid item xs={12} sm={6} display="flex" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
                                 <Typography>
-                                    <span style={{ display: "block" }}>Hãng không áp dụng</span>
+                                    <span className="block-span" style={{ display: "block" }}>Hãng không áp dụng</span>
                                     <span>{selectedData?.brandNotApply.join(', ')}</span>
                                 </Typography>
                             </Grid>
                             {/* Bộ sưu tập áp dụng */}
-                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                            <Grid item xs={12} sm={6} display="flex" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
                                 <Typography>
-                                    <span style={{ display: "block" }}>Bộ sưu tập áp dụng</span>
+                                    <span className="block-span" style={{ display: "block" }}>Bộ sưu tập áp dụng</span>
                                     <span>{selectedData?.collectionApply.join(', ')}</span>
                                 </Typography>
                             </Grid>
                             {/* Bộ sưu tập không áp dụng */}
-                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                            <Grid item xs={12} sm={6} display="flex" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
                                 <Typography>
-                                    <span style={{ display: "block" }}>Bộ sưu tập không áp dụng</span>
+                                    <span className="block-span" style={{ display: "block" }}>Bộ sưu tập không áp dụng</span>
                                     <span>{selectedData?.collectionNotApply.join(', ')}</span>
                                 </Typography>
                             </Grid>
                             {/* Sản phẩm áp dụng */}
-                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                            <Grid item xs={12} sm={6} display="flex" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
                                 <Typography>
-                                    <span style={{ display: "block" }}>Sản phẩm áp dụng</span>
+                                    <span className="block-span" style={{ display: "block" }}>Sản phẩm áp dụng</span>
                                     <span>{selectedData?.productApply.join(', ')}</span>
                                 </Typography>
                             </Grid>
                             {/* Sản phẩm không áp dụng */}
-                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                            <Grid item xs={12} sm={6} display="flex" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
                                 <Typography>
-                                    <span style={{ display: "block" }}>Sản phẩm không áp dụng</span>
+                                    <span className="block-span" style={{ display: "block" }}>Sản phẩm không áp dụng</span>
                                     <span>{selectedData?.productNotApply.join(', ')}</span>
                                 </Typography>
                             </Grid>
                             {/* Trạng thái */}
-                            <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                                {selectedData?.status && <StatusChip status={selectedData?.status} />}
+                            <Grid container spacing={2}>
+                                {/* Hiển thị trạng thái có thể nhấn vào */}
+                                <Grid item xs={12} sm={6} display="flex"  >
+                                    {status && (
+                                        <div onClick={handleChangeStatus} className="statusChipContainer">
+                                            <StatusChip status={status} />
+                                        </div>
+                                    )}
+                                </Grid>
                             </Grid>
                         </>
                     )}
