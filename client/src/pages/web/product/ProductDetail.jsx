@@ -8,8 +8,6 @@ import { Button } from "../../../components/Button/Button";
 import AddToCart from "../../../components/Button/AddToCart";
 import ProductInfo from "../../../components/Products/ProductInfo";
 import StoreList from "../../../components/Products/StoreList";
-import TextBgrGray from "../../../components/Products/Text/TextBgrGray";
-import TextBgrWhite from "../../../components/Products/Text/TextBgrWhite";
 import QnASection from "../../../components/Form/QnAForm";
 import SmallPost from "../../../components/Forum/SmallPost";
 import Heading from "../../../components/Heading/Heading";
@@ -26,6 +24,7 @@ import "./ProductDetail.css";
 
 // import required modules
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
+import ProductSpecifications from "../../../components/Products/ProductSpecifications";
 
 const ProductDetail = () => {
   const [product, setProduct] = useState(null);
@@ -89,7 +88,7 @@ const ProductDetail = () => {
               breakpoints={{
                 640: { slidesPerView: 4 }, // Small Tablet
                 768: { slidesPerView: 5 }, // Tablet View
-                1024: { slidesPerView: 11}, // Laptop View
+                1024: { slidesPerView: 11 }, // Laptop View
                 1440: { slidesPerView: 11 }, // Large Screens
               }}
               freeMode={true}
@@ -139,20 +138,14 @@ const ProductDetail = () => {
           <div className="flex justify-center items-center">
             <Heading title={`Đặc điểm nổi bật của ${product?.name}`} />
           </div>
-          {product?.description}
-        </div>
-
-        {/* Thông Số Kỹ Thuật */}
-        <div className="p-4 rounded-lg shadow-md w-full lg:w-[30%] lg:flex hidden flex-col gap-4">
-          <Heading title="Thông Số Kỹ Thuật" />
-          <div className="flex flex-col">
-            <TextBgrGray content={`Màn hình: ${product?.screen}`} />
-            <TextBgrWhite content={`RAM: ${product?.options[0].ram}`} />
-            <TextBgrGray content={`ROM: ${product?.options[0].rom}`} />
-            <TextBgrWhite content={`RAM: ${product?.options[0].ram}`} />
+          <div className="flex flex-col gap-2">
+            {product?.description}
           </div>
         </div>
+
+        <ProductSpecifications product={product} />
       </div>
+
       <div className="flex gap-4 w-full lg:flex-row flex-col lg:w-full">
         <div className="p-4 rounded-lg shadow-md w-full lg:w-[70%] flex flex-col gap-4">
           <h2 className="text-lg font-semibold text-black dark:text-white">

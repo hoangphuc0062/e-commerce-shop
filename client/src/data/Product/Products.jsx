@@ -357,31 +357,6 @@ export const products = [
   },
   {
     id: 11,
-    name: "Samsung Galaxy Z Fold4 5G 256GB",
-    type: "Foldable Smartphone",
-    options: [
-      {
-        ram: "12GB",
-        rom: "1TB",
-        price: 17990000,
-        salePrice: 0,
-        colors: "Black",
-      },
-    ],
-    description: "Samsung foldable phone with large screen",
-    category: "Điện Thoại",
-    review: 20,
-    discount: 14,
-    brand: Brand.Samsung,
-    images: [
-      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung_galaxy_z_fold_4-7_4_3.jpg",
-      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung_galaxy_z_fold_4-6_2_2.jpg",
-      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/a/samsung_galaxy_z_fold_4-5_2_2.jpg",
-    ],
-    slug: "samsung-galaxy-z-fold4-5g-256gb",
-  },
-  {
-    id: 12,
     name: "Huawei P50 Pro",
     type: "Smartphone",
     options: [

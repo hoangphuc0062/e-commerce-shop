@@ -5,11 +5,11 @@ const ProductOptions = ({ options, handleOptionClick, selectedOption }) => {
   return (
     <>
       <Heading title="Chọn dung lượng" />
-      <div className="flex flex-wrap w-full">
+      <div className="flex flex-wrap">
         {options.map((option, index) => (
           <div
             key={index}
-            className={`p-4 m-2 flex flex-col items-center justify-center border rounded cursor-pointer 
+            className={`p-4 m-2 flex flex-col items-center justify-center border rounded cursor-pointer w-full 
               ${
                 option === selectedOption
                   ? "border-main text-gray-900"

@@ -13,7 +13,7 @@ const ProductColors = ({ productId, selectedOption, handleOptionClick }) => {
         {product.options.map((option, index) => (
           <div
             key={index}
-            className={`p-4 m-2 flex flex-col items-center justify-center border rounded cursor-pointer 
+            className={`p-4 m-2 flex flex-col items-center justify-center border rounded cursor-pointer w-full 
               ${
                 option.colors === selectedOption
                   ? "border-main text-gray-900"

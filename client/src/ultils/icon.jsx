@@ -8,7 +8,7 @@ import { BsGeoAlt } from "react-icons/bs";
 import { BsTruck } from "react-icons/bs";
 import { FaPen } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { IoMdAddCircleOutline } from "react-icons/io";
+import { IoMdAddCircleOutline, IoMdClose } from "react-icons/io";
 
 import { FaAngleDoubleRight } from "react-icons/fa";
 import { FaAngleDoubleLeft } from "react-icons/fa";
@@ -30,7 +30,6 @@ import { CiViewList } from "react-icons/ci";
 import { FiUser } from "react-icons/fi";
 import { MdManageAccounts } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
-
 
 import { PiNotepadBold } from "react-icons/pi";
 import { TbWorldSearch } from "react-icons/tb";
@@ -61,7 +60,7 @@ import {
 import { IoIosArrowBack } from "react-icons/io";
 import { IoIosArrowForward } from "react-icons/io";
 import { IoIosStar } from "react-icons/io";
-import { FaLocationDot } from "react-icons/fa6";
+import { FaLocationDot, FaAngleDown } from "react-icons/fa6";
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
@@ -116,7 +115,7 @@ const icons = {
   FaSortAmountDown,
   IoEye,
   FaPercent,
-  
+
   FiUser,
   MdManageAccounts,
   CiLogout,
@@ -128,6 +127,8 @@ const icons = {
   FaCartPlus,
   FaPhoneAlt,
   FaLocationDot,
+  FaAngleDown,
+  IoMdClose,
 };
 
 export default icons;
