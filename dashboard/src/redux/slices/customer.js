@@ -33,6 +33,12 @@ export const updateCustomer = createAsyncThunk(
       thunkAPI
     )
 );
+
+const deleteCustomer = createAsyncThunk(
+  "customer/deleteCustomer",
+  (id, thunkAPI) =>
+    handleAsyncThunk(CustomerService.deleteCustomer, [id], thunkAPI)
+);
 const customerSlice = createSlice({
   name: "customer",
   initialState: {
@@ -41,6 +47,7 @@ const customerSlice = createSlice({
     error: null,
     me: null,
     statusUpdate: "idle",
+    deleteStatus: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -64,6 +71,16 @@ const customerSlice = createSlice({
       })
       .addCase(updateCustomer.rejected, (state, action) => {
         state.statusUpdate = "failed";
+        state.error = action.payload;
+      })
+      .addCase(deleteCustomer.pending, (state) => {
+        state.deleteStatus = "loading";
+      })
+      .addCase(deleteCustomer.fulfilled, (state) => {
+        state.deleteStatus = "success";
+      })
+      .addCase(deleteCustomer.rejected, (state, action) => {
+        state.deleteStatus = "failed";
         state.error = action.payload;
       })
 

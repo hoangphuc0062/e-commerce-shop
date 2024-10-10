@@ -47,12 +47,10 @@ export const getStaffById = createAsyncThunk(
   (id, thunkAPI) => handleAsyncThunk(StaffService.getStaffById, [id], thunkAPI)
 );
 
-// getStaffByToken
-
-export const getStaffByToken = createAsyncThunk(
-  "auth/getStaffByToken",
-  (data, thunkAPI) => handleAsyncThunk(StaffService.fetchMe, [data], thunkAPI)
+export const getMe = createAsyncThunk("staff/getMe", (data, thunkAPI) =>
+  handleAsyncThunk(StaffService.fetchMe, [data], thunkAPI)
 );
+
 export const resetState = createAsyncThunk(
   "state/resetState",
   async (payload, thunkAPI) => {
@@ -63,6 +61,15 @@ export const resetState = createAsyncThunk(
 export const logout = createAsyncThunk("staff/logout", (_, thunkAPI) =>
   handleAsyncThunk(StaffService.logout, [null], thunkAPI)
 );
+
+// forgotpassword
+
+export const forgotpassword = createAsyncThunk(
+  "auth/forgotpassword",
+  (data, thunkAPI) =>
+    handleAsyncThunk(StaffService.forgotpassword, [data], thunkAPI)
+);
+
 const staffSlice = createSlice({
   name: "staff",
   initialState: {
@@ -77,8 +84,9 @@ const staffSlice = createSlice({
     deleteStatus: "idle",
     updateStatus: "idle",
     getStaffByIdStatus: "idle",
-    getStaffByTokenStatus: "idle",
     logoutStatus: "idle",
+    getMeStatus: "idle",
+    forgotPasswordStatus: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -145,17 +153,6 @@ const staffSlice = createSlice({
         state.getStaffByIdStatus = "failed";
         state.error = action.payload;
       })
-      .addCase(getStaffByToken.pending, (state) => {
-        state.getStaffByTokenStatus = "loading";
-      })
-      .addCase(getStaffByToken.fulfilled, (state, action) => {
-        state.getStaffByTokenStatus = "success";
-        state.me = action.payload;
-      })
-      .addCase(getStaffByToken.rejected, (state, action) => {
-        state.getStaffByTokenStatus = "failed";
-        state.error = action.payload;
-      })
       .addCase(logout.pending, (state) => {
         state.logoutStatus = "loading";
       })
@@ -165,6 +162,27 @@ const staffSlice = createSlice({
       })
       .addCase(logout.rejected, (state, action) => {
         state.logoutStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getMe.pending, (state) => {
+        state.getMeStatus = "loading";
+      })
+      .addCase(getMe.fulfilled, (state, action) => {
+        state.getMeStatus = "success";
+        state.me = action.payload;
+      })
+      .addCase(getMe.rejected, (state, action) => {
+        state.getMeStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(forgotpassword.pending, (state) => {
+        state.forgotPasswordStatus = "loading";
+      })
+      .addCase(forgotpassword.fulfilled, (state) => {
+        state.forgotPasswordStatus = "success";
+      })
+      .addCase(forgotpassword.rejected, (state, action) => {
+        state.forgotPasswordStatus = "failed";
         state.error = action.payload;
       })
       .addCase(resetState.fulfilled, (state, action) => {
