@@ -1,3 +1,4 @@
+import React, { useState } from 'react'; // Make sure to import React and useState
 import {
     Dialog,
     DialogContent,
@@ -7,111 +8,145 @@ import {
     Typography,
     Grid,
 } from "@mui/material";
-import { Stack } from "@mui/material";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import DateRangeIcon from "@mui/icons-material/DateRange";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-// import DescriptionIcon from "@mui/icons-material/Description";
-import CategoryIcon from "@mui/icons-material/Category";
 import propTypes from "prop-types";
 import { StatusChip } from "../../../components/StatusColor"; // Assuming you have a StatusChip component
-import { fDateVN } from "../../../utils/format-time"; // Assuming this formats dates
-
+import { fDateVN, formatCurrency, formatPercentage } from "../../../utils/format-time"; // Assuming this formats dates
+import './details.scss';
 const EyeCoupons = ({ open, handleClose, selectedData }) => {
+    const renderDiscount = () => {
+        if (selectedData?.type === 'fixed') {
+            return formatCurrency(selectedData.discount); // Format currency
+        } else if (selectedData?.type === 'percent') {
+            return formatPercentage(selectedData.discount); // Format percentage
+        }
+        return selectedData?.discount || ''; // Return raw value if no match
+    };
+
+    const [showMore, setShowMore] = useState(false); // State for showing more info
+    const displayedCategories = selectedData.categoryApply.slice(0, 3); // Hiển thị tối đa 3 danh mục
+    const showMoreCategories = selectedData.categoryApply.length > 3;
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
             <DialogContent>
-                <Box sx={{ textAlign: "center", mb: 2 }}>
-                    <Typography variant="h6" fontWeight="bold">
+                <Box className="boxContainer" sx={{ textAlign: "center", mb: 2 }}>
+                    <Typography className="title" variant="h5">
+                        <span>Chiến dịch</span>
+                        <span>: </span>
                         {selectedData?.name}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
                         {selectedData?.description}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: "rgb(73, 158, 255)", fontWeight: "bold" }}>
-                        {selectedData?.code}
+                    <span>MÃ CODE</span>
+                    <Typography variant="body2" className="codeCoupons">
+
+                        {selectedData?.code ? selectedData.code : "Không có mã code"}
                     </Typography>
+                    {/* Loại giảm giá */}
+                    <Box className="discountCoupons">
+                        <Typography>
+                            {selectedData?.type === 'percent' ? 'giảm' : 'Giảm trực tiếp'} {renderDiscount()}
+                        </Typography>
+                    </Box>
                 </Box>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                        <LocalOfferIcon sx={{ marginRight: 1 }} />Loại :
-                        <Typography>{`${selectedData?.discount} ${selectedData?.type}`}</Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
+                    {/* Ngày bắt đầu */}
+                    <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
                         <DateRangeIcon sx={{ marginRight: 1 }} />
                         <Typography>
-                            <span style={{ display: "block" }}>Ngày bắt đầu</span>
-                            <span>{fDateVN(selectedData?.startDate)}</span>
+                            <span>Ngày bắt đầu: </span>
+                            <span className="date">{fDateVN(selectedData?.startDate)}</span>
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                        <CategoryIcon sx={{ marginRight: 1 }} />
-                        <Typography>
-                            <span style={{ display: "block" }}>Danh mục áp dụng</span>
-                            <span>
-                                {selectedData?.categoryApply.join(', ')}
-                            </span>
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
+
+                    {/* Ngày kết thúc */}
+                    <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
                         <DateRangeIcon sx={{ marginRight: 1 }} />
                         <Typography>
-                            <span style={{ display: "block" }}>Ngày kết thúc</span>
+                            <span>Ngày kết thúc: </span>
                             <span>{fDateVN(selectedData?.endDate)}</span>
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                        <Typography>
-                            <span style={{ display: "block" }}>Hãng áp dụng</span>
-                            <span>{selectedData?.brandApply.join(', ')}</span>
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                        <Typography>
-                            <span style={{ display: "block" }}>Bộ sưu tập áp dụng</span>
-                            <span>{selectedData?.collectionApply.join(', ')}</span>
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                        <Typography>
-                            <span style={{ display: "block" }}>Sản phẩm áp dụng</span>
-                            <span>{selectedData?.productApply.join(', ')}</span>
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                        <Typography>
-                            <span style={{ display: "block" }}>Sản phẩm không áp dụng</span>
-                            <span>{selectedData?.productNotApply.join(', ')}</span>
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                        <Typography>
-                            <span style={{ display: "block" }}>Hãng không áp dụng</span>
-                            <span>{selectedData?.brandNotApply.join(', ')}</span>
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                        <Typography>
-                            <span style={{ display: "block" }}>Bộ sưu tập không áp dụng</span>
-                            <span>{selectedData?.collectionNotApply.join(', ')}</span>
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                        <Typography>
-                            <span style={{ display: "block" }}>Danh mục không áp dụng</span>
-                            <span>{selectedData?.categoryNotApply.join(', ')}</span>
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
+                    {/* Số lượng */}
+                    <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
                         <Typography>{`Số lượng: ${selectedData?.quantity}`}</Typography>
                     </Grid>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
+
+                    {/* Số lượng đã dùng */}
+                    <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
                         <Typography>{`Số lượng đã dùng: ${selectedData?.quantityUsed}`}</Typography>
                     </Grid>
-                    <Grid item xs={12} sm={6} display="flex" alignItems="center">
-                        {selectedData?.status && <StatusChip status={selectedData?.status} />}
-                    </Grid>
+                    {/* Hiển thị thông tin bổ sung khi showMore là true */}
+                    {showMore && (
+                        <>
+                            {/* Danh mục áp dụng */}
+                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                                <Typography>
+                                    <span style={{ display: "block" }}>Danh mục áp dụng</span>
+                                    <span>{selectedData?.categoryApply.join(', ')}</span>
+                                </Typography>
+                            </Grid>
+                            {/* Danh mục không áp dụng */}
+                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                                <Typography>
+                                    <span style={{ display: "block" }}>Danh mục không áp dụng</span>
+                                    <span>{selectedData?.categoryNotApply.join(', ')}</span>
+                                </Typography>
+                            </Grid>
+                            {/* Hãng áp dụng */}
+                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                                <Typography>
+                                    <span style={{ display: "block" }}>Hãng áp dụng</span>
+                                    <span>{selectedData?.brandApply.join(', ')}</span>
+                                </Typography>
+                            </Grid>
+                            {/* Hãng không áp dụng */}
+                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                                <Typography>
+                                    <span style={{ display: "block" }}>Hãng không áp dụng</span>
+                                    <span>{selectedData?.brandNotApply.join(', ')}</span>
+                                </Typography>
+                            </Grid>
+                            {/* Bộ sưu tập áp dụng */}
+                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                                <Typography>
+                                    <span style={{ display: "block" }}>Bộ sưu tập áp dụng</span>
+                                    <span>{selectedData?.collectionApply.join(', ')}</span>
+                                </Typography>
+                            </Grid>
+                            {/* Bộ sưu tập không áp dụng */}
+                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                                <Typography>
+                                    <span style={{ display: "block" }}>Bộ sưu tập không áp dụng</span>
+                                    <span>{selectedData?.collectionNotApply.join(', ')}</span>
+                                </Typography>
+                            </Grid>
+                            {/* Sản phẩm áp dụng */}
+                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                                <Typography>
+                                    <span style={{ display: "block" }}>Sản phẩm áp dụng</span>
+                                    <span>{selectedData?.productApply.join(', ')}</span>
+                                </Typography>
+                            </Grid>
+                            {/* Sản phẩm không áp dụng */}
+                            <Grid item xs={12} sm={6} display="flex" alignItems="center" sx={{ borderBottom: '1px solid #ccc', paddingBottom: 1 }}>
+                                <Typography>
+                                    <span style={{ display: "block" }}>Sản phẩm không áp dụng</span>
+                                    <span>{selectedData?.productNotApply.join(', ')}</span>
+                                </Typography>
+                            </Grid>
+                            {/* Trạng thái */}
+                            <Grid item xs={12} sm={6} display="flex" alignItems="center">
+                                {selectedData?.status && <StatusChip status={selectedData?.status} />}
+                            </Grid>
+                        </>
+                    )}
                 </Grid>
+
+                <Button onClick={() => setShowMore(!showMore)} color="primary" sx={{ mt: 2 }}>
+                    {showMore ? 'Ẩn thông tin bổ sung' : 'Hiển thị thêm thông tin'}
+                </Button>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color="primary">
@@ -119,7 +154,6 @@ const EyeCoupons = ({ open, handleClose, selectedData }) => {
                 </Button>
             </DialogActions>
         </Dialog>
-
     );
 };
 

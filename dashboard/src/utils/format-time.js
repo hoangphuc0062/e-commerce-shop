@@ -20,8 +20,8 @@ export function fTimestamp(date) {
 export function fToNow(date) {
   return date
     ? formatDistanceToNow(new Date(date), {
-        addSuffix: true,
-      })
+      addSuffix: true,
+    })
     : "";
 }
 
@@ -35,8 +35,23 @@ export function fDateVN(date, newFormat) {
 export function fToNowVN(date) {
   return date
     ? formatDistanceToNow(new Date(date), {
-        addSuffix: true,
-        locale: vi, // Use Vietnamese locale
-      })
+      addSuffix: true,
+      locale: vi, // Use Vietnamese locale
+    })
     : "";
+}
+// tiền tệ và % //
+export function formatCurrency(value, locale = 'vi-VN', currency = 'VND') {
+  if (!value) return '';
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 0, // No decimal points for VND
+  }).format(value);
+}
+
+// Format percentage
+export function formatPercentage(value, minimumFractionDigits = 0, maximumFractionDigits = 2) {
+  if (value == null) return '';
+  return `${value.toFixed(minimumFractionDigits)}%`;
 }
