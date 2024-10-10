@@ -40,15 +40,13 @@ const checkRole = (requiredRole, roleName) => {
 // Quản lý các quyền cụ thể
 const isSuperAdmin = checkRole(0, "superadmin");
 const isAdmin = checkRole(1, "admin");
-const isEditor = checkRole(2, "editor");
-const isSales = checkRole(3, "sales");
-const isCustomer = checkRole(4, "customer");
+const isAuthor = checkRole(2, "author");
+const isStaff = checkRole(3, "staff");
 
 module.exports = {
   verifyAccessToken,
   isAdmin,
-  isEditor,
-  isSales,
-  isCustomer,
+  isAuthor,
+  isStaff,
   isSuperAdmin,
 };
