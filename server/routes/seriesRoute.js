@@ -2,14 +2,15 @@ const router = require("express").Router();
 
 const ctrl = require("../controllers/seriesController");
 
-const { verifyAccessToken, isAdmin } = require("../middlewares/vertifyToken");
+const { verifyAccessToken, isStaff } = require("../middlewares/vertifyToken");
 
 //api for client
-router.get("/", ctrl.getAllCollection);
+router.get("/", ctrl.getAllSeries);
 // apis for admin
-router.use([verifyAccessToken, isAdmin]);
-router.post("/create", ctrl.addSery);
-router.put("/:sid", ctrl.updateSery);
-router.delete("/:sid", ctrl.deleteSery);
+router.use([verifyAccessToken, isStaff]);
+router.post("/create", ctrl.addSeries);
+router.put("/:sid", ctrl.updateSeries);
+router.delete("/:sid", ctrl.deleteSeries);
+router.delete("/", ctrl.deleteManySeries);
 
 module.exports = router;

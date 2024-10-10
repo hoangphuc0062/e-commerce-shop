@@ -1,8 +1,9 @@
+const { populate } = require("../models/attributeModel");
 const Brand = require("../models/brandModel");
 const asyncHandler = require("express-async-handler");
 
 const getAllBrand = asyncHandler(async (req, res) => {
-  const brands = await Brand.find();
+  const brands = await Brand.find().populate("category", "name");
   return res.status(200).json(brands);
 });
 
@@ -34,6 +35,11 @@ const updateBrand = asyncHandler(async (req, res) => {
   const brand = await Brand.findByIdAndUpdate(bid, req.body, {
     new: true,
   });
+  if (!brand) {
+    return res.status(400).json({
+      mes: "No brand found in database",
+    });
+  }
   return res.status(200).json({
     success: brand ? true : false,
     mes: brand ? "Update brand is successful" : "Some thing went wrong",
@@ -56,9 +62,32 @@ const deleteBrand = asyncHandler(async (req, res) => {
   });
 });
 
+const deleteManyBrand = asyncHandler(async (req, res) => {
+  const { ids } = req.body;
+
+  if (ids.length === 0 || !Array.isArray(ids)) {
+    return res.status(400).json({
+      mes: "Missing ids to delete",
+    });
+  }
+
+  const result = await Brand.deleteMany({ _id: { $in: ids } });
+
+  if (result.deletedCount === 0) {
+    return res.status(400).json({
+      mes: "No brands found with the provided ids",
+    });
+  }
+
+  return res.status(200).json({
+    mes: "Delete brands is successful",
+  });
+});
+
 module.exports = {
   getAllBrand,
   addBrand,
   updateBrand,
   deleteBrand,
+  deleteManyBrand,
 };
