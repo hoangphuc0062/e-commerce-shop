@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const bannerCollectionSchema = new mongoose.Schema({
   series_id: {
     type: mongoose.Types.ObjectId,
-    ref: "Seri",
+    ref: "Series",
   },
   banner: {
     type: Array,

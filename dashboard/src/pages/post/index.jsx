@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ReusableTable from '../../components/Table';
+// import ReusableTable from '../../components/Table';
 import EyePost from './details';
 // import { useState } from "react";
 import { useNavigate } from 'react-router-dom';

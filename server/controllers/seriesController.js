@@ -2,13 +2,13 @@ const Series = require("../models/seriesModel");
 
 const asyncHandler = require("express-async-handler");
 
-const getAllCollection = asyncHandler(async (req, res) => {
-  const series = await Series.find();
+const getAllSeries = asyncHandler(async (req, res) => {
+  const series = await Series.find().populate("brand", "name", "");
 
   return res.status(200).json(series);
 });
 
-const addSery = asyncHandler(async (req, res) => {
+const addSeries = asyncHandler(async (req, res) => {
   const { name, brand } = req.body;
 
   if (!name || !brand) {
@@ -20,11 +20,11 @@ const addSery = asyncHandler(async (req, res) => {
   await series.save();
 
   return res.status(200).json({
-    mes: "Add sery is successful",
+    mes: "Add Series is successful",
   });
 });
 
-const updateSery = asyncHandler(async (req, res) => {
+const updateSeries = asyncHandler(async (req, res) => {
   const { sid } = req.params;
   if (!sid || Object.keys(req.body).length === 0) {
     return res.status(400).json({
@@ -41,7 +41,7 @@ const updateSery = asyncHandler(async (req, res) => {
   });
 });
 
-const deleteSery = asyncHandler(async (req, res) => {
+const deleteSeries = asyncHandler(async (req, res) => {
   const { sid } = req.params;
   if (!sid) {
     return res.status(400).json({
@@ -56,9 +56,29 @@ const deleteSery = asyncHandler(async (req, res) => {
   });
 });
 
+const deleteManySeries = asyncHandler(async (req, res) => {
+  const { ids } = req.body;
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    throw Error("Missing ids to delete");
+  }
+
+  const result = await Series.deleteMany({ _id: { $in: ids } });
+
+  if (result.deletedCount === 0) {
+    return res.status(400).json({
+      mes: "No series found with the provided ids",
+    });
+  }
+
+  return res.status(200).json({
+    mes: "Delete series is successful",
+  });
+});
+
 module.exports = {
-  getAllCollection,
-  addSery,
-  updateSery,
-  deleteSery,
+  getAllSeries,
+  addSeries,
+  updateSeries,
+  deleteSeries,
+  deleteManySeries,
 };
