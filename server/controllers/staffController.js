@@ -86,23 +86,41 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const logout = asyncHandler(async (req, res) => {
-  const cookie = req.cookies;
-  if (!cookie || !cookie.refreshToken)
-    throw new Error("No Refresh Token in cookies");
-  await Staff.findOneAndUpdate(
-    {
-      refreshToken: cookie.refreshToken,
-    },
+  const { refreshToken } = req.cookies;
+
+  if (!refreshToken) {
+    return res.status(400).json({ error: "No Refresh Token in cookies" });
+  }
+
+  // Find the staff by refreshToken and clear it
+  const staff = await Staff.findOneAndUpdate(
+    { refreshToken },
     { refreshToken: "" },
     { new: true }
   );
+
+  if (!staff) {
+    return res.status(404).json({ error: "Staff not found" });
+  }
+
+  // Clear relevant cookies individually
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: true,
+    sameSite: "strict", // Optional but improves security
   });
-  return res.status(200).json({
-    mes: "Logout is done",
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
   });
+  res.clearCookie("role", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+  });
+
+  return res.status(200).json({ message: "Logout successful" });
 });
 
 const getStaff = asyncHandler(async (req, res) => {
@@ -125,7 +143,9 @@ const getStaffById = asyncHandler(async (req, res) => {
 const updateStaff = asyncHandler(async (req, res) => {
   const { sid } = req.params;
   if (!sid) throw new Error("Missing inputs");
-  const response = await Staff.findByIdAndUpdate(sid, req.body, { new: true });
+  const response = await Staff.findByIdAndUpdate(sid, req.body, {
+    new: true,
+  });
   return res.status(200).json({
     mes: "Update success",
     response,
@@ -217,6 +237,23 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 
+const getStaffByToken = asyncHandler(async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    // Call the static method directly on the Staff model
+    const staff = await Staff.getStaffByToken(token);
+
+    if (!staff) {
+      return res.status(404).json({ message: "Staff not found" });
+    }
+
+    res.status(200).json(staff);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
 module.exports = {
   login,
   logout,
@@ -228,4 +265,5 @@ module.exports = {
   refreshAccessToken,
   forgotPassword,
   resetPassword,
+  getStaffByToken,
 };

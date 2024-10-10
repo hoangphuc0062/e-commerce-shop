@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Table, TableContainer, TableBody, Paper, Button } from "@mui/material";
 import TableHeader from "./TableHeader";
 import TableRowComponent from "./TableRowComponent";
@@ -9,6 +8,7 @@ import propTypes from "prop-types";
 import { Link } from "react-router-dom";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
 import SelectStatus from "./Select";
+import { applyFilter, getComparator } from "../../utils/sortUtils";
 
 const ReusableTable = ({
   handleDelete,
@@ -26,6 +26,8 @@ const ReusableTable = ({
   const [orderStatusFilter, setOrderStatusFilter] = useState(""); // State for filtering by `orderStatus`
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -46,22 +48,33 @@ const ReusableTable = ({
     setOrderStatusFilter(event.target.value);
   };
 
-  // Lọc dữ liệu theo từ khóa tìm kiếm, status, và order status
-  const filteredData = data.filter(
-    (row) =>
-      row.name.toLowerCase().includes(search.toLowerCase()) &&
-      (statusFilter === "" ||
-        row.status?.toLowerCase() === statusFilter.toLowerCase()) &&
-      (orderStatusFilter === "" ||
-        row.orderStatus?.toLowerCase() === orderStatusFilter.toLowerCase())
-  );
-
-  // Đảm bảo chỉ số `page` không vượt quá số trang tối đa có sẵn
-  useEffect(() => {
-    if (page > Math.ceil(filteredData.length / rowsPerPage) - 1) {
-      setPage(0); // Đặt lại trang nếu không hợp lệ
+  const handleSort = (field) => {
+    if (sortColumn === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(field);
+      setSortOrder("asc");
     }
-  }, [filteredData, page, rowsPerPage]);
+  };
+
+  // Sorting and filtering combined logic
+  const filteredData = useMemo(() => {
+    const comparator = getComparator(sortOrder, sortColumn);
+    return applyFilter({
+      inputData: data,
+      comparator,
+      filterName: search,
+    }).filter((row) => {
+      const matchesStatus =
+        statusFilter === "" ||
+        statusFilter === "all" ||
+        row.status?.toLowerCase() === statusFilter.toLowerCase();
+      const matchesOrderStatus =
+        orderStatusFilter === "" ||
+        row.orderStatus?.toLowerCase() === orderStatusFilter.toLowerCase();
+      return matchesStatus && matchesOrderStatus;
+    });
+  }, [data, sortOrder, sortColumn, search, statusFilter, orderStatusFilter]);
 
   return (
     <Paper>
@@ -69,11 +82,9 @@ const ReusableTable = ({
         {/* Left side: Search Input and Filters */}
         <div className="d-flex">
           <SearchInput search={search} setSearch={setSearch} />
-
-          {/* Conditionally render status filter */}
           {optionStatus && optionStatus.length > 0 && (
             <SelectStatus
-              valua={statusFilter}
+              value={statusFilter ? statusFilter : "all"}
               onChange={handleStatusChange}
               options={optionStatus}
             />
@@ -82,7 +93,7 @@ const ReusableTable = ({
           {/* Order Status Filter (this can be customized as needed) */}
           {StatusOrder && StatusOrder.length > 0 && (
             <SelectStatus
-              valua={orderStatusFilter}
+              value={orderStatusFilter}
               onChange={handleOrderStatusChange}
               options={StatusOrder}
             />
@@ -92,21 +103,7 @@ const ReusableTable = ({
         {/* Right side: Button */}
         {navigate && (
           <Link to={navigate}>
-            <Button
-              variant="contained"
-              sx={{
-                margin: 2,
-                display: "flex",
-                alignItems: "center",
-                backgroundColor: "#3498db",
-                color: "white",
-                width: "fit-content",
-
-                "&:hover": {
-                  backgroundColor: "#2980b9",
-                },
-              }}
-            >
+            <Button variant="contained" className="custom-button">
               <ControlPointIcon sx={{ marginRight: 1 }} />
               Thêm mới
             </Button>
@@ -115,18 +112,7 @@ const ReusableTable = ({
         {buttonAdd && (
           <Button
             variant="contained"
-            sx={{
-              margin: 2,
-              display: "flex",
-              alignItems: "center",
-              backgroundColor: "#3498db",
-              color: "white",
-              width: "fit-content",
-
-              "&:hover": {
-                backgroundColor: "#2980b9",
-              },
-            }}
+            className="custom-button"
             onClick={buttonAdd}
           >
             <ControlPointIcon sx={{ marginRight: 1 }} />
@@ -137,14 +123,21 @@ const ReusableTable = ({
 
       <TableContainer>
         <Table>
-          <TableHeader columns={columns} />
+          <TableHeader
+            columns={columns}
+            handleSort={handleSort}
+            sortColumn={sortColumn}
+            sortOrder={sortOrder}
+          />
+
           <TableBody>
             {filteredData
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => (
                 <TableRowComponent
-                  key={row.id}
+                  key={index}
                   row={row}
+                  item={row}
                   index={index}
                   handleEdit={handleEdit}
                   handleDelete={handleDelete}

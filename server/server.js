@@ -8,14 +8,6 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 8888;
 
-// app.use(
-//   cors({
-//     origin: process.env.CLIENT_URL,
-//     methods: ["POST", "GET", "PUT", "DELETE"],
-//     credentials: true,
-//   })
-// );
-
 app.use(
   cors({
     origin: [process.env.CLIENT_URL, process.env.DASHBOARD_URL].filter(Boolean),

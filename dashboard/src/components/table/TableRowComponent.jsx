@@ -23,6 +23,7 @@ const TableRowComponent = ({
       {columns.map((column) => (
         <TableCell
           key={column.field}
+          item={row[column.field]}
           sx={{
             verticalAlign: "middle",
             padding: "4px 8px", // Reduced padding

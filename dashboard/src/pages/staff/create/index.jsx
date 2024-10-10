@@ -51,7 +51,6 @@ function AddStaff() {
     },
     validationSchema: StaffSchema,
     onSubmit: async (values) => {
-      console.log("Submitting form", values);
       await dispatch(createStaff(values));
     },
   });

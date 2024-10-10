@@ -1,149 +1,88 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReusableTable from "../../components/Table";
 import CartDialog from "./details";
 import EditStatusDialog from "./edit";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getCustomer,
+  resetState,
+  updateCustomer,
+} from "../../redux/slices/customer";
+import { handleToast } from "../../utils/toast";
+import LoadingWrapper from "../../components/loading/LoadingWrapper";
 export default function UserPage() {
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [data, setData] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [status, setStatus] = useState("");
   const [statusOptions, setStatusOptions] = useState([]);
-  const handleSubmit = (status) => {
-    console.log("Submit", status);
+  const [items, setItems] = useState([]);
+  const [index, setIndex] = useState(null);
+  const handleSubmit = (status, data) => {
+    const updatedStatus = status === "blocked" ? true : false;
+    dispatch(
+      updateCustomer({
+        customerId: data.id,
+        data: { isBlocked: updatedStatus },
+      })
+    );
     setOpen(false);
   };
 
-  const initialData = [
-    {
-      id: 1011,
-      name: "John Doe",
-      address: "28 ywang",
-      email: "thainn@gamil.com",
-      sdt: "0987654321",
-      sex: "Nam",
-      membership: "Student - Member",
-      totalAmount: 2000000,
-      status: "Active",
-      cart: [
-        {
-          productName: "Watch XYZ",
-          quantity: 2,
-          price: 1000000,
-          image: "https://via.placeholder.com/100",
-          color: "Black",
-          size: "M",
-        },
-        {
-          productName: "Bracelet ABC",
-          quantity: 1,
-          price: 500000,
-          image: "https://via.placeholder.com/100",
-          color: "Silver",
-          size: "S",
-        },
-      ],
-    },
-    {
-      id: 1012,
-      name: "Jane Smith",
-      address: "12 Ngo Quyen",
-      email: "jane.smith@example.com",
-      sdt: "0912345678",
-      sex: "Nữ",
-      membership: "VIP - Member",
-      totalAmount: 5500000,
-      status: "Active",
-      cart: [
-        {
-          productName: "Necklace DEF",
-          quantity: 1,
-          price: 3000000,
-          image: "https://via.placeholder.com/100",
-          color: "Gold",
-          size: "L",
-        },
-        {
-          productName: "Earrings GHI",
-          quantity: 1,
-          price: 2500000,
-          image: "https://via.placeholder.com/100",
-          color: "Rose Gold",
-          size: "S",
-        },
-      ],
-    },
-    {
-      id: 1013,
-      name: "Michael Brown",
-      address: "45 Tran Phu",
-      email: "michael.brown@example.com",
-      sdt: "0923456789",
-      sex: "Nam",
-      membership: "Regular - Member",
-      totalAmount: 1500000,
-      status: "Inactive",
-      cart: [
-        {
-          productName: "Sunglasses JKL",
-          quantity: 1,
-          price: 1500000,
-          image: "https://via.placeholder.com/100",
-          color: "Brown",
-          size: "M",
-        },
-      ],
-    },
-    {
-      id: 1014,
-      name: "Emily Davis",
-      address: "23 Le Loi",
-      email: "emily.davis@example.com",
-      sdt: "0934567890",
-      sex: "Nữ",
-      membership: "Premium - Member",
-      totalAmount: 4000000,
-      status: "Active",
-      cart: [
-        {
-          productName: "Handbag MNO",
-          quantity: 1,
-          price: "2.000.000",
-          image: "https://via.placeholder.com/100",
-          color: "Red",
-          size: "S",
-        },
-        {
-          productName: "Watch PQR",
-          quantity: 1,
-          price: 2000000,
-          image: "https://via.placeholder.com/100",
-          color: "Blue",
-          size: "M",
-        },
-      ],
-    },
-    {
-      id: 1015,
-      name: "Chris Johnson",
-      address: "67 Nguyen Trai",
-      email: "chris.johnson@example.com",
-      sdt: "0945678901",
-      sex: "Nam",
-      membership: "Student - Member",
-      totalAmount: 1000000,
-      status: "Inactive",
-      cart: [
-        {
-          productName: "Belt STU",
-          quantity: 2,
-          price: 500000,
-          image: "https://via.placeholder.com/100",
-          color: "Black",
-          size: "L",
-        },
-      ],
-    },
-  ];
+  const statusGetCustomer = useSelector((state) => state.customer.status);
+  const dataCustomer = useSelector((state) => state.customer.data);
+  const statusUpdateCustomer = useSelector(
+    (state) => state.customer.statusUpdate
+  );
+  const getCustomers = () => dispatch(getCustomer());
+
+  useEffect(() => {
+    if (items.length === 0) {
+      getCustomers();
+    }
+  }, [items, getCustomers, statusGetCustomer]);
+  useEffect(() => {
+    if (statusGetCustomer === "success") {
+      dispatch(resetState({ key: "status", value: "idle" }));
+    }
+    if (statusGetCustomer === "failed") {
+      handleToast("error", "Get customer failed", "top-right");
+    }
+  }, [statusGetCustomer, dispatch]);
+  useEffect(() => {
+    if (statusUpdateCustomer === "success") {
+      getCustomers();
+      // handleToast("success", "Update customer success", "top-right");
+      dispatch(resetState({ key: "statusUpdate", value: "idle" }));
+    }
+  }, [statusUpdateCustomer, dispatch, getCustomers]);
+
+  useEffect(() => {
+    const initialData = Array.isArray(dataCustomer)
+      ? dataCustomer.map((item) => ({
+          id: item?._id,
+          name: item?.name,
+          address: item?.address,
+          email: item?.email,
+          sdt: item?.sdt,
+          sex: item?.sex,
+          membership: item?.membership,
+          totalAmount: item?.totalAmount,
+          status: item?.isBlocked === true ? "blocked" : "active",
+          cart:
+            item?.cart?.map((cartItem) => ({
+              name: cartItem.name,
+              price: cartItem.price,
+              quantity: cartItem.quantity,
+            })) || [],
+        }))
+      : [];
+
+    if (initialData.length > 0) {
+      setItems(initialData);
+    }
+  }, [dataCustomer]);
 
   const columns = [
     { label: "Họ và tên", field: "name" },
@@ -163,28 +102,34 @@ export default function UserPage() {
   const handleEdit = (index) => {
     setDialogOpen(true);
     setStatus(index.status);
-    console.log("Edit", index);
-    console.log("Status", index.status);
     setStatusOptions([
-      { value: "Active", label: "Active" },
-      { value: "Inactive", label: "Inactive" },
+      { value: "active", label: "active" },
+      { value: "blocked", label: "blocked" },
     ]);
+    setIndex(index);
   };
 
   const handleEye = (index) => {
     setOpen(true);
     setData(index);
   };
+  const optionStatus = [
+    { value: "all", label: "Tất cả" },
+    { value: "active", label: "Hoạt động" },
+    { value: "blocked", label: "Bị chặn" },
+  ];
   return (
     <>
-      <ReusableTable
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
-        data={initialData}
-        columns={columns}
-        handleEye={handleEye}
-      />
-
+      <LoadingWrapper>
+        <ReusableTable
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+          data={items}
+          columns={columns}
+          handleEye={handleEye}
+          optionStatus={optionStatus}
+        />
+      </LoadingWrapper>
       <CartDialog
         open={open}
         handleClose={() => setOpen(false)}
@@ -198,6 +143,7 @@ export default function UserPage() {
         currentStatus={status}
         onSubmit={handleSubmit}
         statusOptions={statusOptions}
+        data={index}
       />
     </>
   );

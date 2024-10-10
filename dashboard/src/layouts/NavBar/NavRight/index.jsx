@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // react-bootstrap
 import { ListGroup, Dropdown, Card } from "react-bootstrap";
@@ -15,11 +15,20 @@ import avatar1 from "../../../assets/user/avatar-1.jpg";
 import avatar2 from "../../../assets/user/avatar-2.jpg";
 import avatar3 from "../../../assets/user/avatar-3.jpg";
 import avatar4 from "../../../assets/user/avatar-4.jpg";
+import { useDispatch, useSelector } from "react-redux";
+import { logout as handleLogout } from "./../../../redux/slices/staff";
+import { Button } from "@mui/material";
+import { handleToast } from "../../../utils/toast";
+import { useAuth } from "../../../contexts/AuthContext";
 
 // ==============================|| NAV RIGHT ||============================== //
 
 const NavRight = () => {
+  const { logout } = useAuth();
+  const dispatch = useDispatch();
+  const navigation = useNavigate();
   const [listOpen, setListOpen] = useState(false);
+  const profile = useSelector((state) => state.staff.me?.staffData);
 
   const notiData = [
     {
@@ -42,6 +51,17 @@ const NavRight = () => {
     },
   ];
 
+  const logoutme = () => {
+    dispatch(handleLogout()).then((result) => {
+      if (result.type === "staff/logout/fulfilled") {
+        handleToast("success", "Logout successful", "top-right");
+        logout();
+        navigation("/login");
+      } else {
+        handleToast("error", "Logout failed", "top-right");
+      }
+    });
+  };
   return (
     <React.Fragment>
       <ListGroup as="ul" bsPrefix=" " className="navbar-nav ml-auto">
@@ -179,15 +199,19 @@ const NavRight = () => {
               id="dropdown-basic"
             >
               <img
-                src={avatar1}
+                src={profile?.avatar}
                 className="img-radius wid-40"
                 alt="User Profile"
               />
             </Dropdown.Toggle>
             <Dropdown.Menu align="end" className="profile-notification">
               <div className="pro-head">
-                <img src={avatar1} className="img-radius" alt="User Profile" />
-                <span>John Doe</span>
+                <img
+                  src={profile?.avatar}
+                  className="img-radius"
+                  alt="User Profile"
+                />
+                <span>{profile?.name}</span>
                 <Link to="#" className="dud-logout" title="Logout">
                   <i className="feather icon-log-out" />
                 </Link>
@@ -219,9 +243,10 @@ const NavRight = () => {
                   </Link>
                 </ListGroup.Item>
                 <ListGroup.Item as="li" bsPrefix=" ">
-                  <Link to="#" className="dropdown-item">
-                    <i className="feather icon-log-out" /> Logout
-                  </Link>
+                  <Button className="dropdown-item" onClick={logoutme}>
+                    <i className="feather icon-log-out" />
+                    Logout
+                  </Button>
                 </ListGroup.Item>
               </ListGroup>
             </Dropdown.Menu>

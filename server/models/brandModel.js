@@ -17,7 +17,7 @@ const brandSchema = new mongoose.Schema(
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      ref: "Categories",
     },
   },
   {
@@ -39,4 +39,4 @@ brandSchema.pre("save", function (next) {
   next();
 });
 
-module.exports = mongoose.model("Brand", brandSchema);
+module.exports = mongoose.model("Brands", brandSchema);
