@@ -15,10 +15,13 @@
 
 .title {
     font-size: 18px;
-    font-weight: Extra Bold;
+    // font-weight: Extra Bold;    
     /* Làm cho chữ đậm hơn */
     text-transform: uppercase;
-    /* Chuyển đổi tất cả ký tự thành chữ in hoa */
+    font-weight: bold;
+    /* Makes the text bold */
+    font-size: 2rem;
+
 }
 
 .boxContainer {
@@ -27,6 +30,14 @@
     padding: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
+}
+
+.code-label {
+    /* Add your desired styles here */
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    /* Any other styling you want */
 }
 
 .codeCoupons {
@@ -53,4 +64,22 @@
 
 .date {
     font-size: 14px;
+}
+
+.block-span {
+    margin-top: 5px;
+    padding: 2PX;
+}
+
+.statusChipContainer {
+    margin-top: 5px;
+    cursor: pointer;
+    /* Con trỏ dạng pointer để thể hiện có thể nhấn */
+    display: inline-block;
+    border-radius: 8px;
+    /* Góc bo tròn */
+    background-color: #f5f5f5;
+    /* Màu nền nhẹ */
+    transition: background-color 0.3s ease;
+    /* Thêm hiệu ứng khi hover */
 }
