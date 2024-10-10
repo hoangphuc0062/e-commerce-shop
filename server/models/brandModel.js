@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const slugify = require("slugify");
 
 const brandSchema = new mongoose.Schema(
   {
@@ -24,19 +23,5 @@ const brandSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-brandSchema.pre("validate", function (next) {
-  if (this.isModified("name")) {
-    this.slug = slugify(this.name, { lower: true, strict: true });
-  }
-  next();
-});
-
-brandSchema.pre("save", function (next) {
-  if (this.isModified("name")) {
-    this.slug = slugify(this.name, { lower: true, strict: true });
-  }
-  next();
-});
 
 module.exports = mongoose.model("Brands", brandSchema);
