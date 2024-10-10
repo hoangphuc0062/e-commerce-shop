@@ -11,7 +11,7 @@ const PrivateRoute = ({ roles = [], element }) => {
 
   // If no user role exists, redirect to login
   if (!userRole) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
 
   // Convert the roles array to lowercase once for comparison

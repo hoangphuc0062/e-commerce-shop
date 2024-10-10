@@ -1,20 +1,18 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const getAccessToken = () => Cookies.get("accessToken");
 const baseURL = import.meta.env.VITE_API_ROOT;
-
 const request = axios.create({
   baseURL,
   headers: {
-    "auth-token": getAccessToken(),
+    "auth-token": Cookies.get("accessToken"),
     "Content-Type": "application/json",
   },
   withCredentials: true,
 });
 
 request.interceptors.request.use((config) => {
-  config.headers.Authorization = `Bearer ${getAccessToken()}`;
+  config.headers.Authorization = `Bearer ${Cookies.get("accessToken")}`;
   return config;
 });
 

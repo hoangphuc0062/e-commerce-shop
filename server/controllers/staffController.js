@@ -5,7 +5,9 @@ const {
   generateRefreshToken,
 } = require("../middlewares/jwt");
 const jwt = require("jsonwebtoken");
-const { sendMail } = require("../ultils/sendMail");
+const sendMail = require("../ultils/sendMail");
+const crypto = require("crypto");
+const makeToken = require("uniquid");
 
 const registerStaff = asyncHandler(async (req, res) => {
   if (Object.keys(req.body).length === 0) throw new Error("Missing inputs");
@@ -24,22 +26,18 @@ const registerStaff = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  // Check for missing inputs
   if (!email || !password) {
     return res.status(400).json({ mes: "Missing inputs" });
   }
 
   const staff = await Staff.findOne({ email });
 
-  // Check if staff exists and the password is correct
   if (staff && (await staff.isCorrectPassword(password))) {
     const { password, role, refreshToken, ...staffData } = staff.toObject();
 
-    // Generate new tokens
     const accessToken = generateAccessToken(staff._id, role);
     const newRefreshToken = generateRefreshToken(staff._id);
 
-    // Update the refresh token in the database
     await Staff.findByIdAndUpdate(
       staff._id,
       { refreshToken: newRefreshToken },
@@ -48,15 +46,14 @@ const login = asyncHandler(async (req, res) => {
 
     // Set cookies
     const cookieOptions = {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      httpOnly: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     };
     res.cookie("refreshToken", newRefreshToken, cookieOptions);
 
-    // If the access token should only be used server-side, set httpOnly to true
     res.cookie("accessToken", accessToken, {
       ...cookieOptions,
-      httpOnly: false, // or true if used server-side only
+      httpOnly: false,
     });
 
     // Role-based cookie settings
@@ -154,7 +151,7 @@ const updateStaff = asyncHandler(async (req, res) => {
 
 const deleteStaff = asyncHandler(async (req, res) => {
   const { sid } = req.params;
-  const currentUserId = req.user._id; // Assuming the logged-in user's ID is stored in req.user
+  const currentUserId = req.user._id;
 
   if (!sid) {
     throw new Error("Missing inputs");
