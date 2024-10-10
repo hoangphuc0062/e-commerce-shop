@@ -6,7 +6,6 @@ export const StaffSchema = Yup.object({
     .email("Email không hợp lệ")
     .required("Email không được để trống"),
   phone: Yup.string().required("Số điện thoại không được để trống"),
-  address: Yup.string().required("Địa chỉ không được để trống"),
   role: Yup.string().required("Chức vụ không được để trống"),
   department: Yup.string().required("Phòng ban không được để trống"),
   base: Yup.string().required("Cơ sở làm việc không được để trống"),
