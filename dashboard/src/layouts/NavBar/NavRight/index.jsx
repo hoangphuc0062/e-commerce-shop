@@ -7,8 +7,12 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { handleToast } from "../../../utils/toast";
 import { getMe, logout as handleLogout } from "../../../redux/slices/staff";
 
-// Custom hook for handling user profile fetching and logout
-const useUserProfile = (dispatch, profile, status, data) => {
+// In the NavRight component
+const NavRight = () => {
+  const dispatch = useDispatch();
+  const profile = useSelector((state) => state.staff.me?.staffData);
+  const status = useSelector((state) => state.staff.getMeStatus);
+  const data = useSelector((state) => state.staff.me);
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState(null);
@@ -20,8 +24,7 @@ const useUserProfile = (dispatch, profile, status, data) => {
     }
     if (profile) {
       setProfileData(profile);
-    }
-    if (profile === undefined) {
+    } else if (profile === undefined) {
       const token = Cookies.get("refreshToken");
       dispatch(getMe({ token }));
     }
@@ -48,21 +51,6 @@ const useUserProfile = (dispatch, profile, status, data) => {
     });
   };
 
-  return { profileData, logoutme };
-};
-
-// In the NavRight component
-const NavRight = () => {
-  const dispatch = useDispatch();
-  const profile = useSelector((state) => state.staff.me?.staffData);
-  const status = useSelector((state) => state.staff.getMeStatus);
-  const data = useSelector((state) => state.staff.me.staffData);
-  const { profileData, logoutme } = useUserProfile(
-    dispatch,
-    profile,
-    status,
-    data
-  );
   return (
     <React.Fragment>
       <ListGroup as="ul" bsPrefix=" " className="navbar-nav ml-auto">
