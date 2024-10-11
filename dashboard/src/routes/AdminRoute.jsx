@@ -25,6 +25,7 @@ import EditPost from "../pages/post/edit";
 import EditStaff from "../pages/staff/edit";
 import CouponsList from "../pages/coupons";
 import CategoryCreate from "../pages/category/create";
+import AddCoupond from "../pages/coupons/create";
 
 // import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
@@ -241,6 +242,15 @@ const AdminRoute = () => {
           <PrivateRoute
             element={<CouponsList />}
             roles={["admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="coupons/create"
+        element={
+          <PrivateRoute
+            element={<AddCoupond />}
+            roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
       />
