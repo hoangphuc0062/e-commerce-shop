@@ -106,7 +106,7 @@ export default function CouponsList() {
             data={initialData}
             columns={columns}
             handleEye={handleEye}
-            navigate={"/"}
+            navigate={"/dashboard/coupons/create"}
         />
             {selectedData && (
                 <EyeCoupons
