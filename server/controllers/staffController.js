@@ -202,7 +202,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   await staff.save();
 
   const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ. 
-  <a href=${process.env.DASHBOARD_URL}/dashboard/reset-password/${resetToken}>Click here</a>`;
+  <a href=${process.env.DASHBOARD_URL}/reset-password/${resetToken}>Click here</a>`;
   const subject = `Forgot password`;
   const rs = await sendMail(email, html, subject);
   return res.status(200).json({

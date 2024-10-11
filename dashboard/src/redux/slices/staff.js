@@ -70,6 +70,12 @@ export const forgotpassword = createAsyncThunk(
     handleAsyncThunk(StaffService.forgotpassword, [data], thunkAPI)
 );
 
+export const resetpassword = createAsyncThunk(
+  "auth/resetpassword",
+  (data, thunkAPI) =>
+    handleAsyncThunk(StaffService.resetpassword, [data], thunkAPI)
+);
+
 const staffSlice = createSlice({
   name: "staff",
   initialState: {
@@ -87,6 +93,7 @@ const staffSlice = createSlice({
     logoutStatus: "idle",
     getMeStatus: "idle",
     forgotPasswordStatus: "idle",
+    resetPasswordStatus: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -183,6 +190,16 @@ const staffSlice = createSlice({
       })
       .addCase(forgotpassword.rejected, (state, action) => {
         state.forgotPasswordStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(resetpassword.pending, (state) => {
+        state.resetPasswordStatus = "loading";
+      })
+      .addCase(resetpassword.fulfilled, (state) => {
+        state.resetPasswordStatus = "success";
+      })
+      .addCase(resetpassword.rejected, (state, action) => {
+        state.resetPasswordStatus = "failed";
         state.error = action.payload;
       })
       .addCase(resetState.fulfilled, (state, action) => {

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteStaff, getStaff, resetState } from "../../redux/slices/staff";
 import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
 import LoadingWrapper from "../../components/loading/LoadingWrapper";
+import formatCurrency from "../../config/formatCurrency";
 
 export default function StaffPage() {
   const [open, setOpen] = useState(false);
@@ -87,20 +88,20 @@ export default function StaffPage() {
   useEffect(() => {
     const mappedItems = Array.isArray(staff)
       ? staff.map((item) => ({
-        id: item._id || "",
-        name: item.name || "",
-        role: item.role || "",
-        phone: item.phone || "",
-        email: item.email || "",
-        commission: item.commissionRate || "",
-        base: item.base || "",
-        fixedSalary: item.fixedSalary || "",
-        status: item.isBlocked === true ? "blocked" : "active",
-        avatar: item.avatar || "",
-        startDate: item.startDate || "",
-        department: item.department || "",
-        totalSalary: (item.commissionRate || 0) + (item.fixedSalary || 0),
-      }))
+          id: item._id || "",
+          name: item.name || "",
+          role: item.role || "",
+          phone: item.phone || "",
+          email: item.email || "",
+          commission: item.commissionRate || "",
+          base: item.base || "",
+          fixedSalary: formatCurrency(item.fixedSalary, "VND", "vi-VN") || "",
+          status: item.isBlocked === true ? "blocked" : "active",
+          avatar: item.avatar || "",
+          startDate: item.startDate || "",
+          department: item.department || "",
+          totalSalary: (item.commissionRate || 0) + (item.fixedSalary || 0),
+        }))
       : [];
     if (mappedItems.length > 0) {
       setItems(mappedItems);

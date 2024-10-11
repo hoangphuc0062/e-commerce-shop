@@ -36,7 +36,7 @@ export default function RootRouter() {
 
       {/* auth */}
       <Route path="/" element={<SignIn />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
     </Routes>
   );
 }
