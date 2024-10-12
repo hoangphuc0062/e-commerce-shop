@@ -1,5 +1,5 @@
 import { AiOutlineSearch } from "react-icons/ai";
-import { AiOutlineHeart } from "react-icons/ai";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 
 import { AiOutlineUnorderedList } from "react-icons/ai";
@@ -129,6 +129,7 @@ const icons = {
   FaLocationDot,
   FaAngleDown,
   IoMdClose,
+  AiFillHeart,
 };
 
 export default icons;

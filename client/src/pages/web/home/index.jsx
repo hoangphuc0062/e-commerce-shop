@@ -17,7 +17,7 @@ function HomePage() {
         <div className="pt-4 w-full">
           <CategoriesProduct title="Phụ kiện" />
           <CategoriesProduct title="Linh kiện máy tính" />
-          <div className="mt-4">
+          <div className="pt-4">
             <HeadingIndex title="Tin Công Nghệ" link="/forum" />
             <SliderPost category="S-Games" />
           </div>

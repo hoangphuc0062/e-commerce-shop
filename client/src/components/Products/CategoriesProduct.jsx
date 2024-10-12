@@ -134,12 +134,12 @@ const CategoriesProduct = ({ title }) => {
   return (
     <>
       <HeadingIndex title={title} />
-      <div className="flex flex-wrap gap-2 p-2 justify-start w-full">
+      <div className="flex flex-nowrap md:flex-wrap gap-2 p-2 justify-start w-full overflow-x-auto">
         {categories.map((item) => (
           <Link
             to={item.link}
             key={item.id}
-            className="flex w-[156px] h-[156px] relative rounded-lg overflow-hidden cursor-pointer hover:underline"
+            className="flex-shrink-0 w-[120px] h-[120px] md:w-[156px] md:h-[156px] relative rounded-lg overflow-hidden cursor-pointer hover:underline"
           >
             <img
               src={item.imageUrl}
