@@ -1,7 +1,30 @@
 const mongoose = require("mongoose");
 
 const { type } = require("os");
-var ProductSchema = new mongoose.Schema(
+
+const attributeSchema = new mongoose.Schema({
+  aid: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Attributes",
+    required: true,
+  },
+  price: {
+    type: Number,
+  },
+  inStock: {
+    type: Number,
+  },
+  avatar: {
+    type: String,
+  },
+  images: [
+    {
+      type: String,
+    },
+  ],
+});
+
+const ProductSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -110,13 +133,7 @@ var ProductSchema = new mongoose.Schema(
         },
       },
     ],
-    attributes: [
-      {
-        name: String,
-        value: String,
-        typeOfValue: String,
-      },
-    ],
+
     gifts: [
       {
         name: String,
@@ -136,6 +153,7 @@ var ProductSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Categories",
     },
+    attributes: [attributeSchema],
   },
   {
     timestamps: true,

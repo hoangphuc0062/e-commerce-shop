@@ -41,8 +41,13 @@ const deleteManyAttribute = asyncHandler(async (req, res) => {
   if (!ids || !Array.isArray(ids) || ids.length === 0)
     throw Error("Missing ids to delete");
 
-  await Attribute.deleteMany({ _id: { $in: ids } });
+  const result = await Attribute.deleteMany({ _id: { $in: ids } });
 
+  if (result.deletedCount === 0) {
+    return res.status(400).json({
+      mes: "Not found attributes to delete",
+    });
+  }
   return res.status(200).json({
     mes: "Delete attributes is successful",
   });
