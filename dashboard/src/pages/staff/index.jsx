@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteStaff, getStaff, resetState } from "../../redux/slices/staff";
 import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
 import LoadingWrapper from "../../components/loading/LoadingWrapper";
+import formatCurrency from "../../config/formatCurrency";
 
 export default function StaffPage() {
   const [open, setOpen] = useState(false);
@@ -14,17 +15,14 @@ export default function StaffPage() {
   const dispatch = useDispatch();
   const [items, setItems] = useState([]);
 
-  const { error, data: staff, status } = useSelector((state) => state.staff);
+  const { error, data: staff } = useSelector((state) => state.staff);
   const statusDelete = useSelector((state) => state.staff.deleteStatus);
   useEffect(() => {
     if (error) {
-      handleToast("error", "Thông tin đăng nhập không hợp lệ!", "top-right");
+      handleToast("error", error.mes, "top-right");
     }
-    if (status === "success") {
-      handleToast("success", "Login successful", "top-right");
-    }
-    dispatch(resetState());
-  }, [error, status, dispatch]);
+    dispatch(resetState({ key: "error", value: null }));
+  }, [error, dispatch]);
 
   useEffect(() => {
     dispatch(getStaff());
@@ -46,6 +44,17 @@ export default function StaffPage() {
     }
   };
 
+  useEffect(() => {
+    if (statusDelete === "success") {
+      handleToast("success", "Xóa nhân viên thành công", "top-right");
+      dispatch(getStaff());
+      dispatch(resetState({ key: "deleteStatus", value: "idle" }));
+    }
+    if (statusDelete === "failed") {
+      handleToast("error", "Xóa nhân viên thất bại", "top-right");
+      dispatch(resetState({ key: "deleteStatus", value: "idle" }));
+    }
+  }, [statusDelete, dispatch]);
   const handleDelete = (index) => {
     DeleteConfirmationModal({
       title: "Xác nhận xóa nhân viên",
@@ -55,22 +64,18 @@ export default function StaffPage() {
       icon: "warning",
       confirmButtonText: "Xóa",
       onConfirm: () => dispatch(deleteStaff(index.id)),
-      titledeleted: "Đã xóa!",
-      contentdeleted: "Nhân viên đã được xóa.",
-      icondeleted: "success",
+      titledeleted: statusDelete === "success" ? "Thành công!" : "Thất bại!",
+      contentdeleted:
+        statusDelete === "success"
+          ? "Nhân viên đã bị xóa."
+          : "Nhân viên không bị xóa.",
+      icondeleted: statusDelete === "success" ? "success" : "error",
+
       titlecanceled: "Đã hủy!",
       contentcanceled: "Nhân viên không bị xóa.",
       iconcanceled: "error",
     });
   };
-  useEffect(() => {
-    if (statusDelete === "success") {
-      handleToast("success", "Xóa nhân viên thành công", "top-right");
-      dispatch(getStaff());
-      dispatch(resetState());
-    }
-  }, [statusDelete, dispatch]);
-
   const handleEye = (index) => {
     setSelectedData(index);
     setOpen(true);
@@ -83,20 +88,20 @@ export default function StaffPage() {
   useEffect(() => {
     const mappedItems = Array.isArray(staff)
       ? staff.map((item) => ({
-        id: item._id || "",
-        name: item.name || "",
-        role: item.role || "",
-        phone: item.phone || "",
-        email: item.email || "",
-        commission: item.commissionRate || "",
-        base: item.base || "",
-        fixedSalary: item.fixedSalary || "",
-        status: item.isBlocked === true ? "blocked" : "active",
-        avatar: item.avatar || "",
-        startDate: item.startDate || "",
-        department: item.department || "",
-        totalSalary: (item.commissionRate || 0) + (item.fixedSalary || 0),
-      }))
+          id: item._id || "",
+          name: item.name || "",
+          role: item.role || "",
+          phone: item.phone || "",
+          email: item.email || "",
+          commission: item.commissionRate || "",
+          base: item.base || "",
+          fixedSalary: formatCurrency(item.fixedSalary, "VND", "vi-VN") || "",
+          status: item.isBlocked === true ? "blocked" : "active",
+          avatar: item.avatar || "",
+          startDate: item.startDate || "",
+          department: item.department || "",
+          totalSalary: (item.commissionRate || 0) + (item.fixedSalary || 0),
+        }))
       : [];
     if (mappedItems.length > 0) {
       setItems(mappedItems);

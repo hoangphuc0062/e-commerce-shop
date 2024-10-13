@@ -4,14 +4,16 @@ import AdminRoute from "./AdminRoute";
 import ErrorRoute from "./ErrorRoute";
 import EditorRoute from "./EditorRoute";
 import PrivateRoute from "./PrivateRoute";
-import LoginPage from "../pages/auth/login";
 import { useAuth } from "../contexts/AuthContext";
+import SignIn from "../pages/auth/login";
+import ResetPassword from "../pages/auth/ResetPassword";
 
 export default function RootRouter() {
   const { islogin } = useAuth();
   return (
     <Routes>
       {/* Admin layout wrapper */}
+
       <Route
         path="/dashboard"
         element={
@@ -21,7 +23,7 @@ export default function RootRouter() {
               roles={["customer", "staff", "admin", "superadmin"]}
             />
           ) : (
-            <Navigate to="/login" />
+            <Navigate to="/" />
           )
         }
       >
@@ -33,7 +35,8 @@ export default function RootRouter() {
       {ErrorRoute()}
 
       {/* auth */}
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={<SignIn />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
     </Routes>
   );
 }
