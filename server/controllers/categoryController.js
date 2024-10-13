@@ -3,7 +3,7 @@ const Category = require("../models/categoryModel");
 const asyncHandler = require("express-async-handler");
 
 const getAllCategory = asyncHandler(async (req, res) => {
-  const categories = await Category.find();
+  const categories = await Category.find().populate("icon", "name className");
 
   return res.status(200).json(categories);
 });
