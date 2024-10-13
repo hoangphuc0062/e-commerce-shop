@@ -79,8 +79,8 @@ export default function CouponsList() {
     const [open, setOpen] = useState(false);
     const [selectedData, setSelectedData] = useState(null);
     const navigate = useNavigate();
-    const handleEdit = (index) => {
-        console.log("Edit", index);
+    const handleEdit = (id) => {
+        navigate(`/dashboard/coupons/edit/${id}`);
     };
 
     const handleDelete = (index) => {

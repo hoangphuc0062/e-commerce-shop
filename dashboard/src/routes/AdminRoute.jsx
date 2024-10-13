@@ -26,6 +26,7 @@ import EditStaff from "../pages/staff/edit";
 import CouponsList from "../pages/coupons";
 import CategoryCreate from "../pages/category/create";
 import AddCoupond from "../pages/coupons/create";
+import UpdateCoupons from "../pages/coupons/edit";
 
 // import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
@@ -254,6 +255,16 @@ const AdminRoute = () => {
           />
         }
       />
+      <Route
+        path="coupons/edit/:id"
+        element={
+          <PrivateRoute
+            element={<UpdateCoupons />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+
     </>
   );
 };
