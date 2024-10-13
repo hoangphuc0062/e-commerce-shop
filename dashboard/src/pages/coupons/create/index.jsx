@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, Box, Paper, Button, Select, MenuItem, FormControl, InputLabel, FormHelperText, TextField } from "@mui/material";
+import { Grid, Box, Paper, Button, Select, MenuItem, FormControl, InputLabel, FormHelperText, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import CustomInputField from "../../../components/InputField";
 import Textarea from "../../../components/textarea";
@@ -83,6 +83,9 @@ function AddCoupon() {
                     <Grid container spacing={3}>
                         <Grid item xs={12}>
                             <Paper elevation={3} sx={{ padding: 2 }}>
+                                <Typography variant="h6" gutterBottom>
+                                    Thêm mã giảm giá
+                                </Typography>
                                 <Grid container spacing={2}>
                                     {/* Primary Fields */}
                                     <Grid item xs={12} md={6}>
@@ -167,7 +170,7 @@ function AddCoupon() {
                                             {...getErrorProps("endDate")}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} md={6}>
+                                    <Grid item xs={12} md={4}>
                                         <CustomInputField
                                             label="Số Lượng"
                                             name="quantity"
@@ -177,7 +180,7 @@ function AddCoupon() {
                                             {...getErrorProps("quantity")}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} md={6}>
+                                    <Grid item xs={12} md={4}>
                                         <CustomInputField
                                             label="Số Lượng Tối Thiểu"
                                             name="quantityMin"
@@ -187,7 +190,7 @@ function AddCoupon() {
                                             {...getErrorProps("quantityMin")}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} md={6}>
+                                    <Grid item xs={12} md={4}>
                                         <CustomInputField
                                             label="Số Lượng Tối Đa"
                                             name="quantityMax"
