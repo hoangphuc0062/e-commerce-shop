@@ -41,7 +41,6 @@ function CategoryPage() {
         handleDelete={handleDelete}
         data={items}
       />
-      <Icon icon="material-symbols:home" />
     </>
   );
 }

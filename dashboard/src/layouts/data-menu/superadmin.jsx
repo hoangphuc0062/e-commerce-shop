@@ -25,6 +25,12 @@ const menuItems = {
               type: "item",
               url: "/dashboard/category",
             },
+            {
+              id: "add-category",
+              title: "Thêm danh mục",
+              type: "item",
+              url: "/dashboard/category/create",
+            },
           ],
         },
         {

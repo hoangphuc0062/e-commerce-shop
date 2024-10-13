@@ -56,17 +56,12 @@ function CategoryCreate() {
     icon.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
   const handleChangeName = (e) => {
-    console.log(e.target.value);
     formik.setFieldValue("name", e.target.value);
     formik.setFieldValue("slug", slugify(e.target.value));
-    formik.setFieldValue("type", e.target.value);
-    formik.setFieldValue("description", e.target.value);
   };
 
   return (
     <div>
-      <h2>Add New Category</h2>
-
       <form onSubmit={formik.handleSubmit}>
         <TextField
           fullWidth
