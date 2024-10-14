@@ -25,6 +25,7 @@ import "./ProductDetail.css";
 // import required modules
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
 import ProductSpecifications from "../../../components/Products/ProductSpecifications";
+import ProductDecripton from "../../../components/Products/ProductDecripton";
 
 const ProductDetail = () => {
   const [product, setProduct] = useState(null);
@@ -104,25 +105,29 @@ const ProductDetail = () => {
             </Swiper>
 
             {/* Store List and Product Info */}
-            <div className="flex flex-col lg:flex-row pt-4 gap-2 w-full">
+            <div className="flex flex-col md:flex-row pt-4 gap-2 w-full">
               <StoreList />
               <ProductInfo />
             </div>
           </div>
-
           {/* Product Info Section */}
-          <div className="w-full lg:w-1/2 p-2 sm:p-4 lg:p-8">
-            <ProductOptions
-              options={product?.options}
-              selectedOption={selectedOption}
-              handleOptionClick={setSelectedOption}
-            />
-            <ProductColors
-              productId={product?.id}
-              selectedOption={selectedColor}
-              handleOptionClick={setSelectedColor}
-            />
-            <div className="flex gap-2 mt-4">
+          <div className="w-full lg:w-1/2 p-2 sm:p-4 lg:p-8 flex flex-col gap-4">
+            {/* Product Options */}
+            <div className="flex flex-col gap-2">
+              <ProductOptions
+                options={product?.options}
+                selectedOption={selectedOption}
+                handleOptionClick={setSelectedOption}
+              />
+              <ProductColors
+                productId={product?.id}
+                selectedOption={selectedColor}
+                handleOptionClick={setSelectedColor}
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-2 mt-4">
               <Button
                 subContent="Mua ngay"
                 content="Giao hàng nhanh từ 2 giờ hoặc nhận tại cửa hàng"
@@ -134,15 +139,7 @@ const ProductDetail = () => {
       </div>
       {/* Product Description and Specifications */}
       <div className="flex gap-4 w-full lg:flex-row flex-col lg:w-full">
-        <div className="p-4 rounded-lg shadow-md w-full lg:w-[70%] flex flex-col gap-4">
-          <div className="flex justify-center items-center">
-            <Heading title={`Đặc điểm nổi bật của ${product?.name}`} />
-          </div>
-          <div className="flex flex-col gap-2">
-            {product?.description}
-          </div>
-        </div>
-
+        <ProductDecripton product={product} />
         <ProductSpecifications product={product} />
       </div>
 
