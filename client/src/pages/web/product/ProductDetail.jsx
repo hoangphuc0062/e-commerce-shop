@@ -1,26 +1,34 @@
 import { products } from "../../../data/Product/Products";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import icons from "../../../ultils/icon";
 import { Compare } from "../../../components/Button/Compare";
 import ProductOptions from "../../../components/Products/ProductOptions";
 import ProductColors from "../../../components/Products/ProductColors";
-import LeftArrow from "../../../components/Button/LeftArrow";
-import RightArrow from "../../../components/Button/RightArrow";
 import { Button } from "../../../components/Button/Button";
 import AddToCart from "../../../components/Button/AddToCart";
 import ProductInfo from "../../../components/Products/ProductInfo";
 import StoreList from "../../../components/Products/StoreList";
-import TextBgrGray from "../../../components/Products/Text/TextBgrGray";
-import TextBgrWhite from "../../../components/Products/Text/TextBgrWhite";
 import QnASection from "../../../components/Form/QnAForm";
 import SmallPost from "../../../components/Forum/SmallPost";
 import Heading from "../../../components/Heading/Heading";
+import Ratings from "../../../components/Products/Ratings";
+import { Swiper, SwiperSlide } from "swiper/react";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/free-mode";
+import "swiper/css/navigation";
+import "swiper/css/thumbs";
+
+import "./ProductDetail.css";
+
+// import required modules
+import { FreeMode, Navigation, Thumbs } from "swiper/modules";
+import ProductSpecifications from "../../../components/Products/ProductSpecifications";
+import ProductDecripton from "../../../components/Products/ProductDecripton";
 
 const ProductDetail = () => {
-  const { IoIosStar } = icons;
-  const [product, setProduct] = useState(null); // Changed from [] to null
-  const [selectedImage, setSelectedImage] = useState(0);
+  const [product, setProduct] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const { slug } = useParams();
@@ -30,171 +38,140 @@ const ProductDetail = () => {
     setProduct(foundProduct);
   }, [slug]);
 
-  const handleNextImage = () => {
-    if (
-      product &&
-      product.images &&
-      selectedImage < product.images.length - 1
-    ) {
-      setSelectedImage(selectedImage + 1);
-    }
-  };
+  // const handleOptionChange = (option) => {
+  //   setSelectedOption(option);
+  // };
 
-  const handlePrevImage = () => {
-    if (product && product.images && selectedImage > 0) {
-      setSelectedImage(selectedImage - 1);
-    }
-  };
-
-  const handleOptionChange = (option) => {
-    setSelectedOption(option);
-  };
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
   return (
-    <div className="container p-4 w-full flex flex-col">
-      <div className="w-full flex">
-        {product && (
-          <div className="flex w-full">
-            <div className="flex flex-col w-3/4">
-              <div className="flex items-center gap-2">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  {product.name}
-                </h2>
-                <div className="flex items-center gap-2">
-                  <div className="flex text-[18px] text-yellow-500">
-                    {[...Array(5)].map((_, index) => (
-                      <span
-                        key={index}
-                        className={
-                          index < product.rating
-                            ? "text-yellow-500"
-                            : "text-gray-300"
-                        }
-                        aria-hidden="true"
-                      >
-                        <IoIosStar />
-                      </span>
-                    ))}
-                  </div>
-                  <p className="text-gray-500">{product?.review} đánh giá</p>
-                  <Compare className="ml-4" />
-                </div>
-              </div>
+    <div className="container p-2 sm:p-4 lg:p-8 w-full flex flex-col">
+      {/* Title and Ratings */}
+      <div className="flex flex-row flex-wrap items-center gap-2 mb-4">
+        <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold flex-1">
+          {product?.name}
+        </h2>
+        <Ratings />
+        <Compare />
+      </div>
 
-              <div className="flex flex-col">
-                <div className="h-[400px] w-[750px] relative rounded-lg shadow-lg flex items-center justify-center">
+      <div className="flex flex-col lg:flex-row bg-card">
+        {/* Product Images and Info Sections */}
+        <div className="w-full flex flex-col lg:flex-row gap-4">
+          {/* Image Section */}
+          <div className="w-full lg:w-1/2">
+            <Swiper
+              spaceBetween={10}
+              navigation={true}
+              thumbs={{
+                swiper:
+                  thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+              }}
+              modules={[FreeMode, Navigation, Thumbs]}
+              className="product-slide"
+            >
+              {product?.images.map((image, index) => (
+                <SwiperSlide key={index}>
                   <img
-                    src={product.images[selectedImage]}
-                    alt="Product"
-                    className="w-[280px] h-[280px] object-cover"
+                    src={image}
+                    alt={`${product?.name} ${index + 1}`}
+                    className="product-slide"
                   />
-                  <LeftArrow
-                    handleOnClick={handlePrevImage}
-                    disabled={selectedImage === 0}
-                  />
-                  <RightArrow
-                    handleOnClick={handleNextImage}
-                    disabled={selectedImage === product.images.length - 1}
-                  />
-                </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
 
-                <div className="flex overflow-x-auto mt-4 gap-2">
-                  {product.images.map((image, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedImage(index)}
-                      className={`border-2 ${
-                        index === selectedImage
-                          ? "border-main"
-                          : "border-gray-200"
-                      } rounded-lg p-1`}
-                    >
-                      <img
-                        src={image}
-                        alt="Thumbnail"
-                        className="w-16 h-16 object-cover"
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="w-full p-2 flex gap-4">
-                <ProductInfo />
-                <StoreList />
-              </div>
+            {/* Thumbnail Navigation */}
+            <Swiper
+              onSwiper={setThumbsSwiper}
+              spaceBetween={10}
+              slidesPerView={3} // Mobile View
+              breakpoints={{
+                640: { slidesPerView: 4 }, // Small Tablet
+                768: { slidesPerView: 5 }, // Tablet View
+                1024: { slidesPerView: 11 }, // Laptop View
+                1440: { slidesPerView: 11 }, // Large Screens
+              }}
+              freeMode={true}
+              watchSlidesProgress={true}
+              modules={[FreeMode, Navigation, Thumbs]}
+              className="product-slide-thumbs mt-2"
+            >
+              {product?.images.map((image, index) => (
+                <SwiperSlide key={index}>
+                  <img src={image} alt={`${product?.name} ${index + 1}`} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            {/* Store List and Product Info */}
+            <div className="flex flex-col md:flex-row pt-4 gap-2 w-full">
+              <StoreList />
+              <ProductInfo />
+            </div>
+          </div>
+          {/* Product Info Section */}
+          <div className="w-full lg:w-1/2 p-2 sm:p-4 lg:p-8 flex flex-col gap-4">
+            {/* Product Options */}
+            <div className="flex flex-col gap-2">
+              <ProductOptions
+                options={product?.options}
+                selectedOption={selectedOption}
+                handleOptionClick={setSelectedOption}
+              />
+              <ProductColors
+                productId={product?.id}
+                selectedOption={selectedColor}
+                handleOptionClick={setSelectedColor}
+              />
             </div>
 
-            <div className="w-full p-6">
-              <div className="flex flex-col mb-4">
-                <ProductOptions
-                  options={product.options}
-                  handleOptionClick={handleOptionChange}
-                  selectedOption={selectedOption}
-                />
-                <ProductColors
-                  handleOptionClick={(color) => setSelectedColor(color)}
-                  selectedOption={selectedColor}
-                  productId={product.id}
-                />
-                <div className="flex gap-4 mt-4">
-                  <Button
-                    content="(Giao nhanh từ 2 giờ hoặc nhận tại cửa hàng)"
-                    subContent="MUA NGAY"
-                  />
-                  <AddToCart />
-                </div>
-              </div>
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-2 mt-4">
+              <Button
+                subContent="Mua ngay"
+                content="Giao hàng nhanh từ 2 giờ hoặc nhận tại cửa hàng"
+              />
+              <AddToCart />
             </div>
           </div>
-        )}
+        </div>
       </div>
-      <div className="w-full p-2 m-2">
-        {product && (
-          <div className="mt-2 flex gap-4">
-            <div className="p-6 bg-white dark:bg-card rounded-lg shadow-lg w-3/4 overflow-y-auto h-[350px]">
-              <h2 className="text-xl font-bold text-main dark:text-zinc-200 mb-4 text-center ">
-                Đặc Điểm Nổi Bật Của {product.name}
-              </h2>
-              <div className="p-4 rounded-lg mb-4">
-                <p className="text-gray-500">{product.description}</p>
-              </div>
-            </div>
-            <div className="w-1/4 overflow-y-auto h-[350px] bg-white dark:bg-card rounded-lg shadow-lg">
-              <h2 className="text-xl font-bold text-main pl-4 pt-2">
-                Thông số kỹ thuật
-              </h2>
-              <div className="p-4 rounded-lg m-4">
-                <TextBgrGray
-                  text={`RAM: ${
-                    selectedOption ? selectedOption.ram : product.options[0].ram
-                  }`}
-                />
-                <TextBgrWhite
-                  text={`ROM: ${
-                    selectedOption ? selectedOption.rom : product.options[0].rom
-                  }`}
-                />
-                <TextBgrGray text={`Kích thước màn hình: ${product.screen}`} />
-                <TextBgrWhite
-                  text={`Màu sắc: ${product.options
-                    .map((option) => option.colors)
-                    .join(", ")}`}
-                />
-              </div>
-            </div>
-          </div>
-        )}
+      {/* Product Description and Specifications */}
+      <div className="flex gap-4 w-full lg:flex-row flex-col lg:w-full">
+        <ProductDecripton product={product} />
+        <ProductSpecifications product={product} />
       </div>
-      <div className="flex">
-        <section className="p-2 w-[70%]">
-          <QnASection />
-        </section>
-        <section className="p-2 w-[30%]">
-          <div className="p-6 bg-white dark:bg-card rounded-lg shadow-lg">
-            <Heading title="Tin tức nổi bật" />
-            <SmallPost />
+
+      <div className="flex gap-4 w-full lg:flex-row flex-col lg:w-full">
+        <div className="p-4 rounded-lg shadow-md w-full lg:w-[70%] flex flex-col gap-4">
+          <h2 className="text-lg font-semibold text-black dark:text-white">
+            Đánh giá & nhận xét {product?.name}
+          </h2>
+          <div className="flex justify-center my-4">
+            <img
+              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:90/plain/https://cellphones.com.vn/media/wysiwyg/Review-empty.png"
+              alt="Review Character"
+              className="rounded-full"
+            />
           </div>
-        </section>
+          <p className="text-center text-muted-foreground">
+            Hiện chưa có đánh giá nào. Bạn sẽ là người đầu tiên đánh giá sản
+            phẩm này chứ?
+          </p>
+          <div className="flex justify-center mt-6">
+            <Button subContent="Đánh giá ngay" />
+          </div>
+        </div>
+
+        {/* Tin Tức */}
+        <div className="p-4 rounded-lg shadow-md w-full lg:w-[30%] lg:flex hidden flex-col gap-4">
+          <Heading title="Tin Tức Về Sản Phẩm" />
+          <SmallPost />
+        </div>
+      </div>
+      <div className="w-full pt-4">
+        <QnASection />
       </div>
     </div>
   );
