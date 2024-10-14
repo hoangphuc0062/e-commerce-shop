@@ -1,11 +1,11 @@
 import React from "react";
 
 // react-bootstrap
-import { Row, Col, Card, Table } from "react-bootstrap";
+import { Row, Col, Card } from "react-bootstrap";
 
 // third party
 import Chart from "react-apexcharts";
-import PerfectScrollbar from "react-perfect-scrollbar";
+// import PerfectScrollbar from "react-perfect-scrollbar";
 
 // project import
 // import OrderCard from "../../components/Widgets/Statistic/OrderCard";
@@ -161,131 +161,7 @@ const DashAnalytics = () => {
             </Col>
           </Row>
         </Col>
-        <Col sm={12}>
-          <Card>
-            <Card.Header>
-              <Card.Title as="h5">Giám sát chiến dịch</Card.Title>
-            </Card.Header>
-            <Card.Body className="p-0">
-              <div className="table-card" style={{ height: "362px" }}>
-                <PerfectScrollbar>
-                  <Table responsive>
-                    <thead>
-                      <tr>
-                        <th>
-                          <span>Ngày chiến dịch</span>
-                        </th>
-                        <th>
-                          <span>nhấp chuột</span>
-                        </th>
-                        <th>
-                          <span>Trị giá</span>
-                        </th>
-                        <th>
-                          <span>Tỉ lệ chuyển đổi</span>
-                        </th>
-                        <th>
-                          <span>Tổng danh thu</span>
-                        </th>
-                        <th>
-                          <span>ECPI</span>
-                        </th>
-                        <th>
-                          <span>Tri phí đầu tư</span>
-                        </th>
-                        <th>
-                          <span>Doanh thu</span>
-                        </th>
-                        <th>
-                          <span>Chuyển đổi</span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>08-11-2016</td>
-                        <td>786</td>
-                        <td>485</td>
-                        <td>769</td>
-                        <td>45,3%</td>
-                        <td>6,7%</td>
-                        <td>8,56</td>
-                        <td>10:55</td>
-                        <td>33.8%</td>
-                      </tr>
-                      <tr>
-                        <td>15-10-2016</td>
-                        <td>786</td>
-                        <td>523</td>
-                        <td>736</td>
-                        <td>78,3%</td>
-                        <td>6,6%</td>
-                        <td>7,56</td>
-                        <td>4:30</td>
-                        <td>76.8%</td>
-                      </tr>
-                      <tr>
-                        <td>08-08-2017</td>
-                        <td>624</td>
-                        <td>436</td>
-                        <td>756</td>
-                        <td>78,3%</td>
-                        <td>6,4%</td>
-                        <td>9,45</td>
-                        <td>9:05</td>
-                        <td>8.63%</td>
-                      </tr>
-                      <tr>
-                        <td>11-12-2017</td>
-                        <td>423</td>
-                        <td>123</td>
-                        <td>756</td>
-                        <td>78,6%</td>
-                        <td>45,6%</td>
-                        <td>6,85</td>
-                        <td>7:45</td>
-                        <td>33.8%</td>
-                      </tr>
-                      <tr>
-                        <td>05-06-2015</td>
-                        <td>465</td>
-                        <td>463</td>
-                        <td>456</td>
-                        <td>68,6%</td>
-                        <td>76,6%</td>
-                        <td>7,56</td>
-                        <td>8:45</td>
-                        <td>39.8%</td>
-                      </tr>
-                      <tr>
-                        <td>08-11-2016</td>
-                        <td>786</td>
-                        <td>485</td>
-                        <td>769</td>
-                        <td>45,3%</td>
-                        <td>6,7%</td>
-                        <td>8,56</td>
-                        <td>10:55</td>
-                        <td>33.8%</td>
-                      </tr>
-                      <tr>
-                        <td>15-10-2016</td>
-                        <td>786</td>
-                        <td>523</td>
-                        <td>736</td>
-                        <td>78,3%</td>
-                        <td>6,6%</td>
-                        <td>7,56</td>
-                        <td>4:30</td>
-                        <td>76.8%</td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </PerfectScrollbar>
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
+
         <Col lg={4} md={6}>
           <SocialCard
             params={{
@@ -357,78 +233,6 @@ const DashAnalytics = () => {
               label: "Xem tất cả người dùng",
             }}
           />
-        </Col>
-        <Col sm={12}>
-          <Card>
-            <Card.Header>
-              <Card.Title as="h5">Bảng xếp hạng</Card.Title>
-            </Card.Header>
-            <Card.Body>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th>STT</th>
-                    <th>Người dùng</th>
-                    <th>Doanh thu</th>
-                    <th>Đơn hàng</th>
-                    <th>Đánh giá</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>
-                      <h6 className="mb-1">John Deo</h6>
-                      <p className="m-0">Người dùng</p>
-                    </td>
-                    <td>$1256</td>
-                    <td>45</td>
-                    <td>23</td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>
-                      <h6 className="mb-1">John Deo</h6>
-                      <p className="m-0">Người dùng</p>
-                    </td>
-                    <td>$1256</td>
-                    <td>45</td>
-                    <td>23</td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>
-                      <h6 className="mb-1">John Deo</h6>
-                      <p className="m-0">Người dùng</p>
-                    </td>
-                    <td>$1256</td>
-                    <td>45</td>
-                    <td>23</td>
-                  </tr>
-                  <tr>
-                    <td>4</td>
-                    <td>
-                      <h6 className="mb-1">John Deo</h6>
-                      <p className="m-0">Người dùng</p>
-                    </td>
-                    <td>$1256</td>
-                    <td>45</td>
-                    <td>23</td>
-                  </tr>
-                  <tr>
-                    <td>5</td>
-                    <td>
-                      <h6 className="mb-1">John Deo</h6>
-                      <p className="m-0">Người dùng</p>
-                    </td>
-                    <td>$1256</td>
-                    <td>45</td>
-                    <td>23</td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Card.Body>
-          </Card>
         </Col>
 
         <Col md={12} xl={12}>

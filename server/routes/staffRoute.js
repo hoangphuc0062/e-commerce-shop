@@ -20,5 +20,6 @@ router.get("/", verifyAccessToken, isAdmin, ctrl.getStaff);
 router.get("/:sid", verifyAccessToken, isAdmin, ctrl.getStaffById);
 router.put("/:sid", verifyAccessToken, isAdmin, ctrl.updateStaff);
 router.delete("/:sid", verifyAccessToken, isAdmin, ctrl.deleteStaff);
+router.post("/getstaffbytoken", ctrl.getStaffByToken);
 
 module.exports = router;

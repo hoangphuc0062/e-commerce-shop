@@ -3,7 +3,7 @@ const Category = require("../models/categoryModel");
 const asyncHandler = require("express-async-handler");
 
 const getAllCategory = asyncHandler(async (req, res) => {
-  const categories = await Category.find();
+  const categories = await Category.find().populate("icon", "name className");
 
   return res.status(200).json(categories);
 });
@@ -38,6 +38,25 @@ const deleteCategory = asyncHandler(async (req, res) => {
   });
 });
 
+const deleteManyCategories = asyncHandler(async (req, res) => {
+  const { ids } = req.body;
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    throw Error("Missing ids to delete");
+  }
+
+  const result = await Category.deleteMany({ _id: { $in: ids } });
+
+  if (result.deletedCount === 0) {
+    return res.status(400).json({
+      mes: "No categories found with the provided ids",
+    });
+  }
+
+  return res.status(200).json({
+    mes: "Delete categories is succesful",
+  });
+});
+
 const updateCategory = asyncHandler(async (req, res) => {
   const { _id } = req.params;
   if (!_id || Object.keys(req.body).length === 0) {
@@ -48,6 +67,13 @@ const updateCategory = asyncHandler(async (req, res) => {
   const category = await Category.findByIdAndUpdate(_id, req.body, {
     new: true,
   });
+
+  if (!category) {
+    return res.status(400).json({
+      mes: "No category found with the provided id",
+    });
+  }
+
   return res.status(200).json({
     mes: category ? "Update category is succesful" : "Some thing went wrong",
     category,
@@ -58,5 +84,6 @@ module.exports = {
   getAllCategory,
   addCategory,
   deleteCategory,
+  deleteManyCategories,
   updateCategory,
 };

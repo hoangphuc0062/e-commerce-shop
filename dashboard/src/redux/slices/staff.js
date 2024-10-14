@@ -1,4 +1,5 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+/* eslint-disable no-unused-vars */
+import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import StaffService from "../../services/staff.service";
 
 const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
@@ -35,8 +36,8 @@ export const deleteStaff = createAsyncThunk(
 // updateStaff
 export const updateStaff = createAsyncThunk(
   "auth/updateStaff",
-  (data, thunkAPI) =>
-    handleAsyncThunk(StaffService.updateStaff, [data.id, data], thunkAPI)
+  ({ staffId, data }, thunkAPI) =>
+    handleAsyncThunk(StaffService.updateStaff, [staffId, data], thunkAPI)
 );
 
 // getStaffById
@@ -44,6 +45,35 @@ export const updateStaff = createAsyncThunk(
 export const getStaffById = createAsyncThunk(
   "auth/getStaffById",
   (id, thunkAPI) => handleAsyncThunk(StaffService.getStaffById, [id], thunkAPI)
+);
+
+export const getMe = createAsyncThunk("staff/getMe", (data, thunkAPI) =>
+  handleAsyncThunk(StaffService.fetchMe, [data], thunkAPI)
+);
+
+export const resetState = createAsyncThunk(
+  "state/resetState",
+  async (payload, thunkAPI) => {
+    return payload;
+  }
+);
+
+export const logout = createAsyncThunk("staff/logout", (_, thunkAPI) =>
+  handleAsyncThunk(StaffService.logout, [null], thunkAPI)
+);
+
+// forgotpassword
+
+export const forgotpassword = createAsyncThunk(
+  "auth/forgotpassword",
+  (data, thunkAPI) =>
+    handleAsyncThunk(StaffService.forgotpassword, [data], thunkAPI)
+);
+
+export const resetpassword = createAsyncThunk(
+  "auth/resetpassword",
+  (data, thunkAPI) =>
+    handleAsyncThunk(StaffService.resetpassword, [data], thunkAPI)
 );
 
 const staffSlice = createSlice({
@@ -60,19 +90,10 @@ const staffSlice = createSlice({
     deleteStatus: "idle",
     updateStatus: "idle",
     getStaffByIdStatus: "idle",
-  },
-  reducers: {
-    resetState: (state) => {
-      state.status = "idle";
-      state.error = null;
-      state.statusMe = "idle";
-      state.statusUpdate = "idle";
-      state.statusPassword = "idle";
-      state.statusCreate = "idle";
-      state.deleteStatus = "idle";
-      state.updateStatus = "idle";
-      state.getStaffByIdStatus = "idle";
-    },
+    logoutStatus: "idle",
+    getMeStatus: "idle",
+    forgotPasswordStatus: "idle",
+    resetPasswordStatus: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -138,10 +159,58 @@ const staffSlice = createSlice({
       .addCase(getStaffById.rejected, (state, action) => {
         state.getStaffByIdStatus = "failed";
         state.error = action.payload;
+      })
+      .addCase(logout.pending, (state) => {
+        state.logoutStatus = "loading";
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.logoutStatus = "success";
+        state.me = null;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.logoutStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(getMe.pending, (state) => {
+        state.getMeStatus = "loading";
+      })
+      .addCase(getMe.fulfilled, (state, action) => {
+        state.getMeStatus = "success";
+        state.me = action.payload;
+      })
+      .addCase(getMe.rejected, (state, action) => {
+        state.getMeStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(forgotpassword.pending, (state) => {
+        state.forgotPasswordStatus = "loading";
+      })
+      .addCase(forgotpassword.fulfilled, (state) => {
+        state.forgotPasswordStatus = "success";
+      })
+      .addCase(forgotpassword.rejected, (state, action) => {
+        state.forgotPasswordStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(resetpassword.pending, (state) => {
+        state.resetPasswordStatus = "loading";
+      })
+      .addCase(resetpassword.fulfilled, (state) => {
+        state.resetPasswordStatus = "success";
+      })
+      .addCase(resetpassword.rejected, (state, action) => {
+        state.resetPasswordStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(resetState.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { key, value } = action.payload;
+          if (key && value !== undefined) {
+            state[key] = value;
+          }
+        }
       });
   },
 });
-
-export const { resetState } = staffSlice.actions;
 
 export default staffSlice.reducer;

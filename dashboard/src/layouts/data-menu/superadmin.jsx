@@ -25,6 +25,12 @@ const menuItems = {
               type: "item",
               url: "/dashboard/category",
             },
+            {
+              id: "add-category",
+              title: "Thêm danh mục",
+              type: "item",
+              url: "/dashboard/category/create",
+            },
           ],
         },
         {
@@ -101,18 +107,6 @@ const menuItems = {
               type: "item",
               url: "/dashboard/customer",
             },
-            {
-              id: "new-customers",
-              title: "Khách hàng mới",
-              type: "item",
-              url: "/dashboard/customer/new",
-            },
-            {
-              id: "contacted-customers",
-              title: "Khách hàng đã liên hệ",
-              type: "item",
-              url: "/dashboard/customer/contacted",
-            },
           ],
         },
         {
@@ -120,7 +114,7 @@ const menuItems = {
           title: "Mã giảm giá",
           type: "item",
           icon: "feather icon-tag",
-          url: "/app/coupons",
+          url: "/dashboard/coupons",
         },
         {
           id: "comfig",

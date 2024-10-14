@@ -23,6 +23,10 @@ import AddPost from "../pages/post/create";
 import EditPost from "../pages/post/edit";
 
 import EditStaff from "../pages/staff/edit";
+import CouponsList from "../pages/coupons";
+import CategoryCreate from "../pages/category/create";
+import AddCoupond from "../pages/coupons/create";
+import UpdateCoupons from "../pages/coupons/edit";
 
 // import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
@@ -48,18 +52,15 @@ const AdminRoute = () => {
           />
         }
       />
-
-      {/* Add Category Page route */}
-      {/* <Route
+      <Route
         path="category/create"
         element={
           <PrivateRoute
-            element={<CreateCaterory />}
+            element={<CategoryCreate />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
-      /> */}
-
+      />
       {/* Staff Page route */}
       <Route
         path="staff"
@@ -207,6 +208,7 @@ const AdminRoute = () => {
           />
         }
       />
+      {/* bài đăng */}
       <Route
         path="post"
         element={
@@ -234,6 +236,35 @@ const AdminRoute = () => {
           />
         }
       />
+      {/* Mã giảm giá */}
+      <Route
+        path="coupons"
+        element={
+          <PrivateRoute
+            element={<CouponsList />}
+            roles={["admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="coupons/create"
+        element={
+          <PrivateRoute
+            element={<AddCoupond />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="coupons/edit/:id"
+        element={
+          <PrivateRoute
+            element={<UpdateCoupons />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+
     </>
   );
 };

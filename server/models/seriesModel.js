@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
-const slugify = require("slugify");
 
-const seriSchema = new mongoose.Schema({
+const seriesSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -11,9 +10,10 @@ const seriSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+
   brand: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Brand",
+    ref: "Brands",
   },
   titleSEO: {
     type: String,
@@ -26,17 +26,4 @@ const seriSchema = new mongoose.Schema({
   },
 });
 
-seriSchema.pre("validate", function (next) {
-  if (this.name) {
-    this.slug = slugify(this.name, { lower: true, strict: true });
-  }
-  next();
-});
-seriSchema.pre("save", function (next) {
-  if (this.isModified("name")) {
-    this.slug = slugify(this.name, { lower: true, strict: true });
-  }
-  next();
-});
-
-module.exports = mongoose.model("Seri", seriSchema);
+module.exports = mongoose.model("Series", seriesSchema);

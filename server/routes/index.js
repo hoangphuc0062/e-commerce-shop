@@ -14,6 +14,10 @@ const wareHouseRouter = require("./wareHouseRoute");
 const bannerCollectionRouter = require("./bannerCollectionRoute");
 const shippingUnitRouter = require("./shippingUnitRoute");
 const globalSeoRouter = require("./globalSeoRoute");
+const postRouter = require("./postRoute");
+const attributeRouter = require("./attributeRoute");
+const iconRoute = require("./iconRoute");
+
 const { notFound, errHandler } = require("../middlewares/errHandler");
 const initRoutes = (app) => {
   app.use("/api/users", userRouter);
@@ -34,6 +38,9 @@ const initRoutes = (app) => {
   app.use("/api/bannerCollection", bannerCollectionRouter);
   app.use("/api/shippingUnits", shippingUnitRouter);
   app.use("/api/globalSeo", globalSeoRouter);
+  app.use("/api/blogs", postRouter);
+  app.use("/api/attributes", attributeRouter);
+  app.use("/api/icon-class", iconRoute);
 
   app.use(notFound);
   app.use(errHandler);
