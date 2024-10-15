@@ -1,4 +1,4 @@
-import { products } from "../../data/Product/Products";
+// import { products } from "../../data/Product/Products";
 import { Link } from "react-router-dom"; // Added import for Link
 import Favorites from "../Button/Favorites";
 import Ratings from "./Ratings";
@@ -12,7 +12,7 @@ import "swiper/css/pagination";
 import "./ProductSlide.css";
 // import required modules
 import { Grid, Pagination } from "swiper/modules";
-const ProductSlide = () => {
+const ProductSlide = ({products}) => {
   return (
     <div>
       <Swiper

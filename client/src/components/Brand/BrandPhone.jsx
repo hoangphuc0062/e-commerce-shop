@@ -1,10 +1,8 @@
-import { Brand } from "../../data/Product/Brand";
-
-const BrandPhone = () => {
+const BrandPhone = ({ brands }) => {
   return (
     <>
       <div className="hidden md:flex flex-wrap gap-1">
-        {Brand.map((brand) => (
+        {brands.map((brand) => (
           <a
             key={brand.name}
             href={brand.link}
@@ -21,7 +19,7 @@ const BrandPhone = () => {
 
       <div className="md:hidden bg-white p-4 z-50 overflow-x-auto whitespace-nowrap">
         <div className="flex space-x-4">
-          {Brand.map((brand) => (
+          {brands.map((brand) => (
             <a
               key={brand.name}
               href={brand.link}

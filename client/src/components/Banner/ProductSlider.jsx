@@ -4,9 +4,8 @@ import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
 import { Autoplay, Navigation } from "swiper/modules";
-import { Image } from "../../data/Product/SliderProduct";
 
-const ProductSlider = () => {
+const ProductSlider = ({ images }) => {
   return (
     <Swiper
       spaceBetween={10}
@@ -23,7 +22,7 @@ const ProductSlider = () => {
       }}
       className="mySwiper2"
     >
-      {Image.map((img, index) => (
+      {images.map((img, index) => (
         <SwiperSlide key={index}>
           <img src={img.src} alt={img.title} className="w-full h-auto" />
         </SwiperSlide>

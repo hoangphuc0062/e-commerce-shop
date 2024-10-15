@@ -1,7 +1,8 @@
 import HeadingIndex from "../Heading/HeadingIndex";
 import BrandIndex from "../Brand/BrandIndex";
 import ProductSlide from "./ProductSlide";
-
+import { products } from "../../data/Product/Products";
+import { brands } from "../../data/Product/Brand";
 const Featured = ({ title, link }) => {
   return (
     <div className="p-2">
@@ -10,11 +11,11 @@ const Featured = ({ title, link }) => {
           <HeadingIndex title={title} link={link} />
         </div>
         <div className="w-full lg:w-1/2">
-          <BrandIndex />
+          <BrandIndex brands={brands} />
         </div>
       </div>
       <div className="mt-4">
-        <ProductSlide />
+        <ProductSlide products={products} />
       </div>
     </div>
   );
