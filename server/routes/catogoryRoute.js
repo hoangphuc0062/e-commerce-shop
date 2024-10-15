@@ -9,5 +9,8 @@ router.post("/create", ctrl.addCategory);
 router.delete("/:_id", ctrl.deleteCategory);
 router.delete("/", ctrl.deleteManyCategories);
 router.put("/:_id", ctrl.updateCategory);
+router.get("/:_id", ctrl.getCategoryById);
+
+router.put("/position/update", ctrl.updateManyPosition);
 
 module.exports = router;

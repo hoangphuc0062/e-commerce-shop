@@ -4,16 +4,18 @@ import ProductSlide from "./ProductSlide";
 
 const Featured = ({ title, link }) => {
   return (
-    <div>
-      <div className="flex flex-col md:flex-row justify-between items-center p-2 space-y-2 md:space-y-0 md:space-x-2">
-        <div className="w-full md:w-auto">
+    <div className="p-2">
+      <div className="flex flex-wrap justify-between items-center space-y-2 lg:space-y-0 lg:space-x-2">
+        <div className="w-full lg:w-1/2">
           <HeadingIndex title={title} link={link} />
         </div>
-        <div className="w-full md:w-auto">
+        <div className="w-full lg:w-1/2">
           <BrandIndex />
         </div>
       </div>
-      <ProductSlide />
+      <div className="mt-4">
+        <ProductSlide />
+      </div>
     </div>
   );
 };

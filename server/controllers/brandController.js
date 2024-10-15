@@ -1,4 +1,3 @@
-const { populate } = require("../models/attributeModel");
 const Brand = require("../models/brandModel");
 const asyncHandler = require("express-async-handler");
 

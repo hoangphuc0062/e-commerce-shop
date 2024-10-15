@@ -25,6 +25,32 @@ const menuItems = {
               type: "item",
               url: "/dashboard/category",
             },
+            {
+              id: "add-category",
+              title: "Thêm danh mục",
+              type: "item",
+              url: "/dashboard/category/create",
+            },
+          ],
+        },
+        {
+          id: "brands",
+          title: "Thương hiệu",
+          type: "collapse",
+          icon: "feather icon-award",
+          children: [
+            {
+              id: "brand-list",
+              title: "Danh sách thương hiệu",
+              type: "item",
+              url: "/dashboard/brand",
+            },
+            {
+              id: "add-brand",
+              title: "Thêm thương hiệu",
+              type: "item",
+              url: "/dashboard/brand/create",
+            },
           ],
         },
         {

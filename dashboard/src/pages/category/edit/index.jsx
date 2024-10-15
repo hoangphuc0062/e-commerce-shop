@@ -12,22 +12,26 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
 import { useFormik } from "formik";
-import * as Yup from "yup"; // Import Yup for validation
+import * as Yup from "yup";
 import slugify from "../../../utils/slugify";
 import Textarea from "../../../components/textarea";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getIcon } from "../../../redux/slices/icon";
-import { createCategory, resetState } from "../../../redux/slices/category";
+import {
+  updateCategory,
+  getCategoryById,
+} from "../../../redux/slices/category";
 import { handleToast } from "../../../utils/toast";
 
-function CategoryCreate() {
+function CategoryEdit() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [iconList, setIconList] = useState([]);
+  const { id } = useParams();
+  const [iconList, setIconList] = useState([]); // Store icon list
   const [isIconModalOpen, setIsIconModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); // Loading state
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -42,12 +46,24 @@ function CategoryCreate() {
       slug: Yup.string().required("Slug là bắt buộc"),
       type: Yup.string().required("Loại là bắt buộc"),
       description: Yup.string().required("Mô tả là bắt buộc"),
-      // icon: Yup.string().required("Icon là bắt buộc"),
     }),
     onSubmit: (values) => {
       const { name, slug, type, description, iconId } = values;
-      setIsSubmitting(true); // Set loading state
-      dispatch(createCategory({ name, slug, type, description, icon: iconId }));
+      setIsSubmitting(true);
+      dispatch(
+        updateCategory({
+          categoryId: id,
+          data: { name, slug, type, description, icon: iconId },
+        })
+      ).then((res) => {
+        console.log(res);
+        if (res.type === "category/updateCategory/fulfilled") {
+          handleToast("success", "Cập nhật danh mục thành công");
+          navigate("/dashboard/category");
+        } else {
+          handleToast("error", "Cập nhật danh mục thất bại");
+        }
+      });
     },
   });
 
@@ -65,42 +81,42 @@ function CategoryCreate() {
     toggleIconModal();
   };
 
-  const status = useSelector((state) => state.icon.status);
-  const data = useSelector((state) => state.icon.data);
-  const createStatus = useSelector(
-    (state) => state.category.createCategoryStatus
+  const categoryData = useSelector(
+    (state) => state.category.category?.category
+  );
+  const categoryStatus = useSelector(
+    (state) => state.category.getcategoryStatus
   );
 
   useEffect(() => {
-    dispatch(getIcon());
-  }, [dispatch]);
+    dispatch(getIcon())
+      .unwrap()
+      .then((res) => {
+        setIconList(
+          res.map((icon) => ({
+            id: icon._id,
+            name: icon.name,
+            className: icon.className,
+          }))
+        );
+      })
+      .catch(() => handleToast("error", "Không tải được danh sách icon"));
+
+    dispatch(getCategoryById(id));
+  }, [dispatch, id]);
 
   useEffect(() => {
-    if (status === "success" && data) {
-      setIconList(
-        data.map((item) => ({
-          id: item._id,
-          name: item.name,
-          className: item.className, // Ensure you're using the correct property
-        }))
-      );
+    if (categoryStatus === "success" && categoryData) {
+      formik.setValues({
+        name: categoryData.name,
+        slug: categoryData.slug,
+        type: categoryData.type,
+        description: categoryData.description || "",
+        icon: categoryData.icon?.className,
+      });
     }
-  }, [status, data]);
+  }, [categoryStatus, categoryData]);
 
-  useEffect(() => {
-    if (createStatus === "success") {
-      handleToast("success", "Thêm danh mục thành công");
-      navigate("/dashboard/category");
-      setIsSubmitting(false);
-      dispatch(resetState({ key: "createCategoryStatus", value: "idle" }));
-    }
-    if (createStatus === "failed") {
-      handleToast("error", "Thêm danh mục thất bại");
-      setIsSubmitting(false); // Reset loading state
-    }
-  }, [createStatus, dispatch]);
-
-  // Filter icons based on search query
   const filteredIcons = iconList.filter((icon) =>
     icon.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -191,9 +207,9 @@ function CategoryCreate() {
                 type="submit"
                 sx={{ mt: 2 }}
                 color="success"
-                disabled={isSubmitting} // Disable button when submitting
+                disabled={isSubmitting}
               >
-                {isSubmitting ? "Đang thêm..." : "Thêm danh mục"}
+                {isSubmitting ? "Đang cập nhật..." : "Cập nhật danh mục"}
               </Button>
             </Grid>
             <Grid item>
@@ -202,7 +218,7 @@ function CategoryCreate() {
                 color="error"
                 sx={{ mt: 2 }}
                 onClick={() => navigate("/dashboard/category")}
-                disabled={isSubmitting} // Disable button when submitting
+                disabled={isSubmitting}
               >
                 Hủy
               </Button>
@@ -240,19 +256,23 @@ function CategoryCreate() {
           />
 
           <Stack direction="row" flexWrap="wrap">
-            {filteredIcons.map((icon, i) => (
-              <IconButton
-                key={i}
-                onClick={() =>
-                  handleIconSelect(icon.id, {
-                    name: icon.name,
-                    className: icon.className,
-                  })
-                }
-              >
-                <Icon icon={`eva:${icon.className}`} />
-              </IconButton>
-            ))}
+            {iconList.length > 0 ? (
+              filteredIcons.map((icon, i) => (
+                <IconButton
+                  key={i}
+                  onClick={() =>
+                    handleIconSelect(icon.id, {
+                      name: icon.name,
+                      className: icon.className,
+                    })
+                  }
+                >
+                  <Icon icon={`eva:${icon.className}`} />
+                </IconButton>
+              ))
+            ) : (
+              <p>Đang tải icons...</p> // Loader when no icons are available yet
+            )}
           </Stack>
         </Box>
       </Modal>
@@ -260,4 +280,4 @@ function CategoryCreate() {
   );
 }
 
-export default CategoryCreate;
+export default CategoryEdit;

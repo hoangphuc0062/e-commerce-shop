@@ -1,13 +1,14 @@
 import Heading from "../Heading/Heading";
+
 const ProductInfo = () => {
   return (
-    <div className="p-4 border rounded-lg shadow-md w-[50%] overflow-y-auto max-h-[250px]">
+    <div className="p-4 border rounded-lg shadow-md w-full md:w-[50%] overflow-y-auto max-h-[250px]">
       <Heading title="Thông tin sản phẩm" />
-      <ul className="mb-4">
+      <ul className="mb-4 list-disc list-inside">
         <li>Mới, đầy đủ phụ kiện từ nhà sản xuất</li>
         <li>Điện thoại thông minh</li>
-        <li>2. Cấp truyền dữ liệu</li>
-        <li>3. Que lấy sim</li>
+        <li>Cấp truyền dữ liệu</li>
+        <li>Que lấy sim</li>
         <li>* Galaxy S24 Ultra không bao gồm củ sạc.</li>
       </ul>
       <div className="mb-4">

@@ -1,1 +1,6 @@
-
+.products-slider {
+  width: 100%;
+  height: 840px; 
+  padding-bottom: 12px;
+  padding-top: 10px;
+}
