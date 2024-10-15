@@ -3,15 +3,15 @@ const Series = require("../models/seriesModel");
 const asyncHandler = require("express-async-handler");
 
 const getAllSeries = asyncHandler(async (req, res) => {
-  const series = await Series.find().populate("brand", "name", "");
+  const series = await Series.find();
 
   return res.status(200).json(series);
 });
 
 const addSeries = asyncHandler(async (req, res) => {
-  const { name, brand } = req.body;
+  const { name } = req.body;
 
-  if (!name || !brand) {
+  if (!name) {
     return res.status(400).json({
       mes: "Missing inputs",
     });
