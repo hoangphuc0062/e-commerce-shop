@@ -239,13 +239,16 @@ const getStaffByToken = asyncHandler(async (req, res) => {
     const { token } = req.body;
 
     // Call the static method directly on the Staff model
-    const staff = await Staff.getStaffByToken(token);
+    const staffData = await Staff.getStaffByToken(token);
 
-    if (!staff) {
+    if (!staffData) {
       return res.status(404).json({ message: "Staff not found" });
     }
 
-    res.status(200).json(staff);
+    return res.status(200).json({
+      mes: "Get staff by token success",
+      staffData,
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

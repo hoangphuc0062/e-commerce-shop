@@ -1,4 +1,10 @@
-import { TableRow, TableCell, IconButton, Tooltip } from "@mui/material";
+import {
+  TableRow,
+  TableCell,
+  IconButton,
+  Tooltip,
+  Avatar,
+} from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { StatusChip, StatusOrderChip, StatustPostChip } from "../StatusColor";
@@ -36,6 +42,13 @@ const TableRowComponent = ({
             <StatusChip status={row[column.field]} />
           ) : column.field === "statustPost" ? (
             <StatustPostChip status={row[column.field]} />
+          ) : column.field === "image" ? (
+            <Avatar
+              alt={row[column.name]}
+              variant="rounded"
+              src={row[column.image]}
+              sx={{ width: 50, height: 50 }}
+            />
           ) : (
             row[column.field]
           )}

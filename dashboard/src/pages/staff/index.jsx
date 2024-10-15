@@ -64,16 +64,6 @@ export default function StaffPage() {
       icon: "warning",
       confirmButtonText: "Xóa",
       onConfirm: () => dispatch(deleteStaff(index.id)),
-      titledeleted: statusDelete === "success" ? "Thành công!" : "Thất bại!",
-      contentdeleted:
-        statusDelete === "success"
-          ? "Nhân viên đã bị xóa."
-          : "Nhân viên không bị xóa.",
-      icondeleted: statusDelete === "success" ? "success" : "error",
-
-      titlecanceled: "Đã hủy!",
-      contentcanceled: "Nhân viên không bị xóa.",
-      iconcanceled: "error",
     });
   };
   const handleEye = (index) => {
