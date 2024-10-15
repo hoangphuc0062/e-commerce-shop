@@ -66,6 +66,31 @@ const getAllProduct = asyncHandler(async (req, res) => {
   }
 });
 
+const getProductBySlug = asyncHandler(async (req, res) => {
+  const { slug } = req.params;
+
+  if (!slug) {
+    return res.status(400).json({
+      mes: "Missing slug in params",
+    });
+  }
+
+  const product = await Product.findOne({ slug }).populate({
+    path: "attributes.aid",
+    select: "name value",
+  });
+
+  if (!product) {
+    return res.status(404).json({
+      mes: "Product is not found",
+    });
+  }
+
+  return res.status(200).json({
+    mes: "Get product successfull",
+    product,
+  });
+});
 const addProduct = asyncHandler(async (req, res) => {
   const requiredFields = [
     "name",
@@ -122,11 +147,13 @@ const updateProduct = asyncHandler(async (req, res) => {
       mes: "Missing inputs",
     });
   }
-  const product = await Product.findOneAndUpdate({ pid }, req.body, {
+
+  const product = await Product.findByIdAndUpdate(pid, req.body, {
     new: true,
   });
+
   return res.status(200).json({
-    mes: product ? "Update product is succesful" : "Some thing went wrong",
+    mes: product ? "Update product is succesful" : "Fail to update product",
     product,
   });
 });
@@ -139,6 +166,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
     });
   }
   const product = await Product.findByIdAndDelete(pid);
+  if (!product) throw new Error("Product is not found in datase");
   return res.status(200).json({
     mes: product ? "Delete product is succesful" : "Some thing went wrong",
   });
@@ -146,7 +174,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
 module.exports = {
   // getProductById,
-  // getProductBySlug,
+  getProductBySlug,
   getAllProduct,
   // getFilteredProducts,
   addProduct,
