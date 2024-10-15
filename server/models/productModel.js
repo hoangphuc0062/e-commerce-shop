@@ -5,7 +5,7 @@ const { type } = require("os");
 const attributeSchema = new mongoose.Schema({
   aid: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Attributes",
+    ref: "Attribute",
     required: true,
   },
   price: {
