@@ -45,11 +45,25 @@ const menuItems = {
               type: "item",
               url: "/dashboard/brand",
             },
+          ],
+        },
+        {
+          id: "collections",
+          title: "Bộ sưu tập",
+          type: "collapse",
+          icon: "feather icon-book",
+          children: [
             {
-              id: "add-brand",
-              title: "Thêm thương hiệu",
+              id: "collection-list",
+              title: "Danh sách bộ sưu tập",
               type: "item",
-              url: "/dashboard/brand/create",
+              url: "/dashboard/collection",
+            },
+            {
+              id: "add-collection",
+              title: "Thêm bộ sưu tập",
+              type: "item",
+              url: "/dashboard/collection/create",
             },
           ],
         },
