@@ -18,6 +18,9 @@ const brandSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Categories",
     },
+    description: {
+      type: String,
+    },
   },
   {
     timestamps: true,
