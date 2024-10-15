@@ -5,6 +5,7 @@ import customerReducer from "./slices/customer";
 import postReducer from "./slices/post";
 import categoryReducer from "./slices/category";
 import iconReducer from "./slices/icon";
+import brandReducer from "./slices/brand";
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     post: postReducer,
     category: categoryReducer,
     icon: iconReducer,
+    brand: brandReducer,
   },
 });
 
