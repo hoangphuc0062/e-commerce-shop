@@ -1,6 +1,9 @@
 import { HorizonBanner } from "@/components/Banner/HorizonBanner";
 import { MainSection } from "@/components/HomeSections/MainSection";
 import Featured from "../../../components/Products/Featured";
+import CategoriesProduct from "../../../components/Products/CategoriesProduct";
+import SliderPost from "../../../components/Forum/SliderPost";
+import HeadingIndex from "../../../components/Heading/HeadingIndex";
 function HomePage() {
   return (
     <div className="container w-full p-3">
@@ -10,11 +13,15 @@ function HomePage() {
       </div>
       <div className="main-content">
         <Featured title="Điện thoại nổi bật nhất" link="/phone" />
-        <Featured title="Laptop" link="/laptop" />
-        <Featured title="Màn hình, Máy tính để bàn" link="/desktop" />
-        <Featured title="Màn tính bảng" link="/tablet" />
-        <Featured title="Âm thanh" link="/audio" />
-        <Featured title="Đồng hồ thông minh" link="/smartwatch" />
+        <Featured title="Laptop nổi bật nhất" link="/laptop" />
+        <div className="pt-4 w-full">
+          <CategoriesProduct title="Phụ kiện" />
+          <CategoriesProduct title="Linh kiện máy tính" />
+          <div className="pt-4">
+            <HeadingIndex title="Tin Công Nghệ" link="/forum" />
+            <SliderPost category="S-Games" />
+          </div>
+        </div>
       </div>
     </div>
   );
