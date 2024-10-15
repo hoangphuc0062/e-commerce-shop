@@ -104,10 +104,6 @@ export default function BrandPage() {
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(getCategory());
-  }, [dispatch]);
-
-  useEffect(() => {
     if (status === "success" && data) {
       setItems(
         data.map((item) => ({
