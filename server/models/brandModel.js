@@ -14,10 +14,6 @@ const brandSchema = new mongoose.Schema(
     image: {
       type: String,
     },
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Categories",
-    },
     description: {
       type: String,
     },

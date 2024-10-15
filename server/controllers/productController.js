@@ -1,4 +1,7 @@
 const Product = require("../models/productModel");
+const Category = require("../models/categoryModel");
+const Brand = require("../models/brandModel");
+const Series = require("../models/seriesModel");
 
 const asyncHandler = require("express-async-handler");
 
@@ -7,7 +10,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
   try {
     const queries = { ...req.query };
     const excludeFields = ["sort", "page", "limit", "fields"];
-    excludeFields.forEach((el) => delete queries[el]);
+    excludeFields.forEach((el) => delete queries[el]); //  xóa từng trường (key) tương ứng trong đối tượng queries nếu trường đó tồn tại trong mảng.
 
     let queryString = JSON.stringify(queries);
     queryString = queryString.replace(
@@ -18,22 +21,27 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
     if (queries?.title)
       formattedQueries.title = { $regex: queries.title, $options: "i" };
-    // let queryCommand = Product.find(formattedQueries)
-    //   .populate("series", "name")
-    //   .populate("brand", "name")
-    //   .populate("category", "name")
-    //   .populate({
-    //     path: "attributes.aid",
-    //     select: "name value",
-    //   });
+
+    // query theo id
+    if (queries?.category) {
+      formattedQueries.category = queries.category;
+    }
+
+    if (queries?.brand) {
+      formattedQueries.brand = queries.brand;
+    }
+    if (queries?.series) {
+      formattedQueries.series = queries.series;
+    }
+
     let queryCommand = Product.find(formattedQueries)
-      .populate("series", "name")
-      .populate("brand", "name")
-      .populate("category", "name");
-    // .populate({
-    //   path: "attributes.aid",
-    //   select: "name value",
-    // });
+      .populate("series", "name slug")
+      .populate("brand", "name slug ")
+      .populate("category", "name slug")
+      .populate({
+        path: "attributes.aid",
+        select: "name value",
+      });
 
     if (req.query.sort) {
       const sortBy = req.query.sort.split(",").join(" ");
@@ -52,6 +60,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
     const response = await queryCommand.exec();
     const counts = await Product.find(formattedQueries).countDocuments();
+
     return res.status(200).json({
       counts,
       products: response.length ? response : "Không tìm thấy sản phẩm",
@@ -65,7 +74,6 @@ const getAllProduct = asyncHandler(async (req, res) => {
     });
   }
 });
-
 const getProductBySlug = asyncHandler(async (req, res) => {
   const { slug } = req.params;
 
