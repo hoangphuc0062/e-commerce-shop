@@ -34,6 +34,26 @@ const menuItems = {
           ],
         },
         {
+          id: "brands",
+          title: "Thương hiệu",
+          type: "collapse",
+          icon: "feather icon-award",
+          children: [
+            {
+              id: "brand-list",
+              title: "Danh sách thương hiệu",
+              type: "item",
+              url: "/dashboard/brand",
+            },
+            {
+              id: "add-brand",
+              title: "Thêm thương hiệu",
+              type: "item",
+              url: "/dashboard/brand/create",
+            },
+          ],
+        },
+        {
           id: "products",
           title: "Sản phẩm",
           type: "collapse",
