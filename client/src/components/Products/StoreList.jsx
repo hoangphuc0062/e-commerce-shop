@@ -1,7 +1,7 @@
 import Heading from "../Heading/Heading";
 import icons from "../../ultils/icon";
 const StoreList = () => {
-  const { FaPhoneAlt, FaLocationDot } = icons;
+  const { FaPhoneAlt } = icons;
   const stores = [
     { phone: "0287108335", address: "55B Trần Quang Khải, P.Tân Định, Q.1" },
     { phone: "0287100021", address: "218-220 Trần Quang Khải, P.Tân Định, Q.1" },
@@ -19,7 +19,7 @@ const StoreList = () => {
   ];
 
   return (
-    <div className="p-4 border rounded-lg shadow-md w-[50%] overflow-y-auto max-h-[250px]">
+    <div className="p-4 border rounded-lg shadow-md w-full md:w-[50%] overflow-y-auto max-h-[250px]">
       <Heading title={`Có ${stores.length} cửa hàng có sản phẩm`} />
       <ul className="space-y-2">
         {stores.map((store, index) => (

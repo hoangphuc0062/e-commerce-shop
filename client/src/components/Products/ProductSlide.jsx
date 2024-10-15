@@ -1,100 +1,118 @@
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import { products } from "../../data/Product/Products";
 import { Link } from "react-router-dom"; // Added import for Link
 import Favorites from "../Button/Favorites";
 import Ratings from "./Ratings";
-const ProductSlide = () => {
-  const settings = {
-    dots: false,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 4,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 3,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-    ],
-  };
+import { Swiper, SwiperSlide } from "swiper/react";
 
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/grid";
+import "swiper/css/pagination";
+
+import "./ProductSlide.css";
+// import required modules
+import { Grid, Pagination } from "swiper/modules";
+const ProductSlide = () => {
   return (
     <div>
-      <Slider {...settings}>
+      <Swiper
+        modules={[Grid, Pagination]}
+        breakpoints={{
+          1440: {
+            slidesPerView: 5,
+            spaceBetween: 25,
+            grid: { rows: 2 },
+            height: 840,
+          },
+          1024: {
+            slidesPerView: 4,
+            spaceBetween: 10,
+            grid: { rows: 2 },
+            height: 500,
+          },
+          768: {
+            slidesPerView: 4,
+            spaceBetween: 10,
+            grid: { rows: 2 },
+            height: 400,
+          },
+          425: {
+            slidesPerView: 2,
+            spaceBetween: 10,
+            height: 100,
+            grid: { rows: 2 },
+          },
+          320: {
+            slidesPerView: 2,
+            spaceBetween: 10,
+            height: 100,
+            grid: { rows: 2 },
+          },
+        }}
+        className="products-slider"
+      >
         {products.map((product) => (
-          <div
-            key={product.id}
-            className="relative rounded-lg shadow-md overflow-hidden cursor-pointer px-2 py-2"
-          >
-            {/* Product Link */}
-            <Link to={`/phone/${product.slug}`} className="block">
-              {/* Product Image */}
-              <img
-                src={product.images[0]}
-                alt={product.name}
-                className="w-full object-cover"
-              />
-              {/* Discount Label */}
-              {product.discount && (
-                <div className="absolute top-0 left-0 h-6 w-14 md:w-16">
+          <SwiperSlide key={product.id}>
+            <div>
+              <div className="relative rounded-lg shadow-md overflow-hidden">
+                <Link to={`/phone/${product.slug}`} className="block">
                   <img
-                    src="https://firebasestorage.googleapis.com/v0/b/voi-tay-nguyen-datn.appspot.com/o/Nhan_cwuwhd.png?alt=media&token=1c12f273-922f-47db-88d2-09c5b5e0a6fa"
-                    alt="Discount Label"
-                    className="h-full w-full object-cover"
+                    src={product.images[0]}
+                    alt={product.name}
+                    className="w-full object-cover"
                   />
-                  <span className="absolute top-1 left-2 flex items-center justify-center text-white font-bold text-sm">
-                    Giảm {product.discount}%
-                  </span>
-                </div>
-              )}
-
-              {/* Installment Label */}
-              <span className="absolute top-0 right-0 bg-main text-white text-xs font-bold px-1 py-0.5 rounded">
-                Trả góp {product.installmentRate || "0%"}
-              </span>
-
-              {/* Product Details */}
-              <div className="p-2">
-                <h2 className="text-sm font-semibold truncate text-ellipsis">
-                  {product.name}
-                </h2>
-                <p className="text-sm font-bold text-primary pt-1">
-                  {product.options[0].salePrice > 0
-                    ? `${product.options[0].salePrice.toLocaleString()}đ `
-                    : "Giá liên hệ"}
-                  {product.options[0].salePrice > 0 && (
-                    <span className="line-through text-muted text-xs">
-                      {product.options[0].price.toLocaleString()}đ
-                    </span>
+                  {product.discount && (
+                    <div className="absolute top-0 left-0 w-24">
+                      <img
+                        src="https://firebasestorage.googleapis.com/v0/b/voi-tay-nguyen-datn.appspot.com/o/Nhan_cwuwhd.png?alt=media&token=1c12f273-922f-47db-88d2-09c5b5e0a6fa"
+                        alt="Discount Label"
+                        className="w-full object-cover"
+                      />
+                 
+                        <span className="absolute flex items-center justify-center text-white font-bold text-sm top-1.5 left-3">
+                          Giảm {product.discount}%
+                        </span>
+                    </div>
                   )}
-                </p>
+                  <span className="absolute top-1 right-0 bg-main text-white text-xs font-bold px-1 py-1.5 w-20 h-7 rounded">
+                    Trả góp 0%
+                  </span>
+                  <div className="p-2 text-start">
+                    <h2 className="text-sm font-semibold line-clamp-1">
+                      {product.name}
+                    </h2>
+                    <div className="flex items-center gap-1">
+                      <p className="text-xs text-muted-foreground border rounded-md p-1 line-clamp-1">
+                        {product.screen}
+                      </p>
+                      <p className="text-xs text-muted-foreground border rounded-md p-1">
+                        {product.options[0].ram}
+                      </p>
+                      <p className="text-xs text-muted-foreground border rounded-md p-1">
+                        {product.options[0].rom}
+                      </p>
+                    </div>
+                    <p className="text-md font-bold text-primary pt-1">
+                      {product.options[0].salePrice > 0
+                        ? `${product.options[0].salePrice.toLocaleString()}đ `
+                        : "Giá liên hệ"}
+                      {product.options[0].salePrice > 0 && (
+                        <span className="line-through text-muted text-sm text-gray-600">
+                          {product.options[0].price.toLocaleString()}đ
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </Link>
+                <div className="flex items-center justify-between p-2">
+                  <Ratings />
+                  <Favorites />
+                </div>
               </div>
-            </Link>
-
-            {/* Rating and Favorite Icon */}
-            <div className="flex items-center justify-between p-2">
-              <Ratings />
-              <Favorites />
             </div>
-          </div>
+          </SwiperSlide>
         ))}
-      </Slider>
+      </Swiper>
     </div>
   );
 };
