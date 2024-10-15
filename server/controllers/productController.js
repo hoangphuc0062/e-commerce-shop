@@ -18,22 +18,20 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
     if (queries?.title)
       formattedQueries.title = { $regex: queries.title, $options: "i" };
-    // let queryCommand = Product.find(formattedQueries)
-    //   .populate("series", "name")
-    //   .populate("brand", "name")
-    //   .populate("category", "name")
-    //   .populate({
-    //     path: "attributes.aid",
-    //     select: "name value",
-    //   });
+
+    // Thêm điều kiện lọc theo brand id nếu có
+    if (queries?.brand) {
+      formattedQueries.brand = queries.brand;
+    }
+
     let queryCommand = Product.find(formattedQueries)
       .populate("series", "name")
       .populate("brand", "name")
-      .populate("category", "name");
-    // .populate({
-    //   path: "attributes.aid",
-    //   select: "name value",
-    // });
+      .populate("category", "name")
+      .populate({
+        path: "attributes.aid",
+        select: "name value",
+      });
 
     if (req.query.sort) {
       const sortBy = req.query.sort.split(",").join(" ");
@@ -52,6 +50,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
     const response = await queryCommand.exec();
     const counts = await Product.find(formattedQueries).countDocuments();
+
     return res.status(200).json({
       counts,
       products: response.length ? response : "Không tìm thấy sản phẩm",
@@ -65,7 +64,6 @@ const getAllProduct = asyncHandler(async (req, res) => {
     });
   }
 });
-
 const getProductBySlug = asyncHandler(async (req, res) => {
   const { slug } = req.params;
 
