@@ -81,9 +81,7 @@ const EditStaff = () => {
     // validationSchema: StaffSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
-      console.log(values);
       await dispatch(updateStaff({ staffId: id, data: values })).then((res) => {
-        console.log(res);
         if (res.type === "auth/updateStaff/fulfilled") {
           handleToast("success", "Cập nhật nhân viên thành công", "top-right");
           navigate("/dashboard/staff");

@@ -80,10 +80,45 @@ const updateCategory = asyncHandler(async (req, res) => {
   });
 });
 
+const getCategoryById = asyncHandler(async (req, res) => {
+  const { _id } = req.params;
+  if (!_id) {
+    return res.status(400).json({
+      mes: "Missing inputs",
+    });
+  }
+  const category = await Category.findById(_id);
+  if (!category) {
+    return res.status(400).json({
+      mes: "No category found with the provided id",
+    });
+  }
+  return res.status(200).json({
+    mes: "Get category by id is succesful",
+    category,
+  });
+});
+
+const updateManyPosition = asyncHandler(async (req, res) => {
+  const { data } = req.body;
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    throw Error("Missing data to update");
+  }
+  for (let i = 0; i < data.length; i++) {
+    const { _id, position } = data[i];
+    await Category.findByIdAndUpdate(_id, { position });
+  }
+  return res.status(200).json({
+    mes: "Update position is succesful",
+  });
+});
+
 module.exports = {
   getAllCategory,
   addCategory,
   deleteCategory,
   deleteManyCategories,
   updateCategory,
+  getCategoryById,
+  updateManyPosition,
 };
