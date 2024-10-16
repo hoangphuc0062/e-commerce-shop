@@ -11,14 +11,14 @@ const CategoryProfile = [
     id: 2,
     name: "Tài khoản của bạn",
     icon: icons.FiUser,
-    link: "/profile/accountuser",
+    link: "/profile/account",
   },
   
   {
     id: 3,
     name: "Lịch sử mua hàng",
     icon: icons.PiNotepadBold,
-    link: "/profile/orderuser",
+    link: "/profile/order",
   },
   {
     id: 4,
