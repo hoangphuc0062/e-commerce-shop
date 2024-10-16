@@ -5,7 +5,9 @@ const {
   generateRefreshToken,
 } = require("../middlewares/jwt");
 const jwt = require("jsonwebtoken");
-const { sendMail } = require("../ultils/sendMail");
+const sendMail = require("../ultils/sendMail");
+const crypto = require("crypto");
+const makeToken = require("uniquid");
 
 const registerStaff = asyncHandler(async (req, res) => {
   if (Object.keys(req.body).length === 0) throw new Error("Missing inputs");
@@ -24,22 +26,18 @@ const registerStaff = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  // Check for missing inputs
   if (!email || !password) {
     return res.status(400).json({ mes: "Missing inputs" });
   }
 
   const staff = await Staff.findOne({ email });
 
-  // Check if staff exists and the password is correct
   if (staff && (await staff.isCorrectPassword(password))) {
     const { password, role, refreshToken, ...staffData } = staff.toObject();
 
-    // Generate new tokens
     const accessToken = generateAccessToken(staff._id, role);
     const newRefreshToken = generateRefreshToken(staff._id);
 
-    // Update the refresh token in the database
     await Staff.findByIdAndUpdate(
       staff._id,
       { refreshToken: newRefreshToken },
@@ -48,15 +46,14 @@ const login = asyncHandler(async (req, res) => {
 
     // Set cookies
     const cookieOptions = {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      httpOnly: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     };
     res.cookie("refreshToken", newRefreshToken, cookieOptions);
 
-    // If the access token should only be used server-side, set httpOnly to true
     res.cookie("accessToken", accessToken, {
       ...cookieOptions,
-      httpOnly: false, // or true if used server-side only
+      httpOnly: false,
     });
 
     // Role-based cookie settings
@@ -154,7 +151,7 @@ const updateStaff = asyncHandler(async (req, res) => {
 
 const deleteStaff = asyncHandler(async (req, res) => {
   const { sid } = req.params;
-  const currentUserId = req.user._id; // Assuming the logged-in user's ID is stored in req.user
+  const currentUserId = req.user._id;
 
   if (!sid) {
     throw new Error("Missing inputs");
@@ -205,7 +202,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   await staff.save();
 
   const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ. 
-  <a href=${process.env.DASHBOARD_URL}/dashboard/reset-password/${resetToken}>Click here</a>`;
+  <a href=${process.env.DASHBOARD_URL}/reset-password/${resetToken}>Click here</a>`;
   const subject = `Forgot password`;
   const rs = await sendMail(email, html, subject);
   return res.status(200).json({
@@ -242,13 +239,16 @@ const getStaffByToken = asyncHandler(async (req, res) => {
     const { token } = req.body;
 
     // Call the static method directly on the Staff model
-    const staff = await Staff.getStaffByToken(token);
+    const staffData = await Staff.getStaffByToken(token);
 
-    if (!staff) {
+    if (!staffData) {
       return res.status(404).json({ message: "Staff not found" });
     }
 
-    res.status(200).json(staff);
+    return res.status(200).json({
+      mes: "Get staff by token success",
+      staffData,
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

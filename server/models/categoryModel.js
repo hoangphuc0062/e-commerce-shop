@@ -12,7 +12,8 @@ const categorySchema = new mongoose.Schema(
       unique: true,
     },
     icon: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Icons",
     },
     type: {
       type: String,
@@ -20,10 +21,14 @@ const categorySchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    position: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
   },
   {
     timestamps: true,
   }
 );
-
 module.exports = mongoose.model("Categories", categorySchema);

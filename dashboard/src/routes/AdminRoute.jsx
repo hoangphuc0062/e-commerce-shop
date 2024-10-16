@@ -24,6 +24,12 @@ import EditPost from "../pages/post/edit";
 
 import EditStaff from "../pages/staff/edit";
 import CouponsList from "../pages/coupons";
+import CategoryCreate from "../pages/category/create";
+import AddCoupond from "../pages/coupons/create";
+import UpdateCoupons from "../pages/coupons/edit";
+import CategoryEdit from "../pages/category/edit";
+import BrandPage from "../pages/brand";
+import CollectionPage from "../pages/collection";
 
 // import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
@@ -45,6 +51,44 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<CategoryPage />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="category/create"
+        element={
+          <PrivateRoute
+            element={<CategoryCreate />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="category/update/:id"
+        element={
+          <PrivateRoute
+            element={<CategoryEdit />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+
+      <Route
+        path="brand"
+        element={
+          <PrivateRoute
+            element={<BrandPage />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+
+      <Route
+        path="collection"
+        element={
+          <PrivateRoute
+            element={<CollectionPage />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
@@ -231,6 +275,24 @@ const AdminRoute = () => {
           <PrivateRoute
             element={<CouponsList />}
             roles={["admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="coupons/create"
+        element={
+          <PrivateRoute
+            element={<AddCoupond />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="coupons/edit/:id"
+        element={
+          <PrivateRoute
+            element={<UpdateCoupons />}
+            roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
       />

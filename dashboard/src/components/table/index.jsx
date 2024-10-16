@@ -103,7 +103,11 @@ const ReusableTable = ({
         {/* Right side: Button */}
         {navigate && (
           <Link to={navigate}>
-            <Button variant="contained" className="custom-button">
+            <Button
+              variant="contained"
+              className="custom-button"
+              sx={{ mr: 2 }}
+            >
               <ControlPointIcon sx={{ marginRight: 1 }} />
               Thêm mới
             </Button>

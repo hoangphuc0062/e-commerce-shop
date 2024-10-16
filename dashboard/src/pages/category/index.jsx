@@ -1,108 +1,173 @@
-// import ReusableTable from "./../../components/table/index";
-// import { useState } from "react";
+import ReusableTable from "../../components/Table";
+import { Box, Paper, styled, Grid } from "@mui/material";
+import { useEffect, useState, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteCategory,
+  getCategory,
+  updatePosition,
+} from "../../redux/slices/category";
+import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
+import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
+import { resetState } from "../../redux/slices/icon";
+import { useNavigate } from "react-router-dom";
 
-import { useState } from "react";
-import CategoryForm from "./CategoryForm";
-import CategoryList from "./CategoryList";
-import { Grid, Paper, Typography } from "@mui/material";
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: "#fff",
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  color: theme.palette.text.secondary,
+  ...theme.applyStyles("dark", {
+    backgroundColor: "#1A2027",
+  }),
+}));
 
 function CategoryPage() {
-  const initialCategories = [
-    {
-      id: 1,
-      name: "Parent Category",
-      parentId: null,
-      image: "https://via.placeholder.com/50",
-      description: "This is a parent category",
-    },
-    {
-      id: 2,
-      name: "Child 1",
-      parentId: 1,
-      image: "https://via.placeholder.com/50",
-      description: "This is a child category",
-    },
-    {
-      id: 3,
-      name: "Child 2",
-      parentId: 1,
-      image: "https://via.placeholder.com/50",
-      description: "This is a child category",
-    },
-    {
-      id: 4,
-      name: "Second Category",
-      parentId: null,
-      image: "https://via.placeholder.com/50",
-      description: "This is a second parent category",
-    },
-    {
-      id: 5,
-      name: "Third Category",
-      parentId: null,
-      image: "https://via.placeholder.com/50",
-      description: "This is a third parent category",
-    },
-    {
-      id: 6,
-      name: "Child 1",
-      parentId: 5,
-      image: "https://via.placeholder.com/50",
-      description: "This is a child category",
-    },
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [draggedItem, setDraggedItem] = useState(null);
+  const [items, setItems] = useState([]);
+
+  const columns = [
+    { label: "Tên danh mục", field: "name" },
+    { label: "Slug", field: "slug" },
+    { label: "Icon", field: "icon" },
+    { label: "Loại", field: "type" },
   ];
 
-  const [categories, setCategories] = useState(initialCategories);
+  const status = useSelector((state) => state.category.status);
+  const data = useSelector((state) => state.category.data);
+  const deleteStatus = useSelector(
+    (state) => state.category.deleteCategoryStatus
+  );
 
-  const addCategory = (newCategory) => {
-    const newId = categories.length + 1;
-    const categoryToAdd = {
-      id: newId,
-      name: newCategory.name,
-      parentId: newCategory.parentId ? Number(newCategory.parentId) : null,
-    };
-    setCategories([...categories, categoryToAdd]);
-    console.log("New category added: ", categoryToAdd);
-  };
+  useEffect(() => {
+    dispatch(getCategory());
+  }, [dispatch]);
 
-  const editCategory = (id, newName) => {
-    const updatedCategories = categories.map((cat) =>
-      cat.id === id ? { ...cat, name: newName } : cat
-    );
-    setCategories(updatedCategories);
-  };
+  useEffect(() => {
+    if (status === "success" && data) {
+      setItems(
+        data
+          ?.filter((item) => item.position !== undefined)
+          .sort((a, b) => a.position - b.position)
+          .map((item) => ({
+            id: item._id,
+            name: item.name,
+            slug: item.slug,
+            icon: <Icon icon={`eva:${item.icon?.className}`} />,
+            type: item.type,
+            position: item.position,
+          }))
+      );
+    }
+    dispatch(resetState({ key: "status", value: "idle" }));
+  }, [status, data, dispatch]);
 
-  const deleteCategory = (id) => {
-    const updatedCategories = categories.filter((cat) => cat.id !== id);
-    setCategories(updatedCategories);
-  };
+  useEffect(() => {
+    if (deleteStatus === "success") {
+      dispatch(getCategory());
+      handleToast("success", "Xóa danh mục thành công", "top-right");
+      dispatch(resetState({ key: "deleteCategoryStatus", value: "idle" }));
+    }
+  }, [deleteStatus, dispatch]);
+
+  const onDragStart = useCallback((e, index) => {
+    setDraggedItem(index);
+  }, []);
+
+  const onDragOver = useCallback((e) => {
+    e.preventDefault();
+  }, []);
+
+  const onDrop = useCallback(
+    (e, index) => {
+      const newItems = [...items];
+      const [removed] = newItems.splice(draggedItem, 1);
+      newItems.splice(index, 0, removed);
+      setItems(newItems);
+
+      const categories = newItems.map((item, i) => ({
+        _id: item.id,
+        position: i,
+      }));
+
+      saveCategoryOrder(categories);
+    },
+    [draggedItem, items] // Dependency array includes draggedItem and items
+  );
+
+  const saveCategoryOrder = useCallback(
+    (categories) => {
+      dispatch(updatePosition({ data: categories })).then((res) => {
+        if (res.type === "category/updatePosition/fulfilled") {
+          handleToast("success", "Danh mục đã được cập nhật", "top-right");
+          dispatch(getCategory());
+        } else {
+          handleToast("error", "Có lỗi xảy ra", "top-right");
+        }
+      });
+    },
+    [dispatch]
+  );
+
+  const handleEdit = useCallback(
+    (index) => {
+      navigate(`/dashboard/category/update/${index.id}`);
+    },
+    [navigate]
+  );
+
+  const handleDelete = useCallback(
+    (index) => {
+      DeleteConfirmationModal({
+        title: "Xác nhận xóa danh mục",
+        content: "Bạn có chắc chắn muốn xóa danh mục này?",
+        okText: "Xóa",
+        cancelText: "Hủy",
+        icon: "warning",
+        confirmButtonText: "Xóa",
+        onConfirm: () => dispatch(deleteCategory(index.id)),
+      });
+    },
+    [dispatch]
+  );
 
   return (
-    <Grid container spacing={3}>
-      {/* Left: Category List */}
-      <Grid item xs={12} md={8}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            Danh mục
-          </Typography>
-          <CategoryList
-            categories={categories}
-            onEdit={editCategory}
-            onDelete={deleteCategory}
+    <Box sx={{ flexGrow: 1 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={3}>
+          <Item>
+            {items.map((item, index) => (
+              <div
+                key={item.id}
+                draggable
+                onDragStart={(e) => onDragStart(e, index)}
+                onDragOver={onDragOver}
+                onDrop={(e) => onDrop(e, index)}
+                style={{
+                  padding: "8px",
+                  margin: "4px",
+                  backgroundColor: "#f0f0f0",
+                  cursor: "move",
+                }}
+              >
+                {item.icon} - {item.name}
+              </div>
+            ))}
+          </Item>
+        </Grid>
+        <Grid item xs={9}>
+          <ReusableTable
+            columns={columns}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            data={items}
+            navigate={"/dashboard/category/create"}
           />
-        </Paper>
+        </Grid>
       </Grid>
-
-      {/* Right: Create Category Form */}
-      <Grid item xs={12} md={4}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            Tạo danh mục
-          </Typography>
-          <CategoryForm categories={categories} onAddCategory={addCategory} />
-        </Paper>
-      </Grid>
-    </Grid>
+    </Box>
   );
 }
 

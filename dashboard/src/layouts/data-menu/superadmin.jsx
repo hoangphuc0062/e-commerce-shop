@@ -25,6 +25,46 @@ const menuItems = {
               type: "item",
               url: "/dashboard/category",
             },
+            {
+              id: "add-category",
+              title: "Thêm danh mục",
+              type: "item",
+              url: "/dashboard/category/create",
+            },
+          ],
+        },
+        {
+          id: "brands",
+          title: "Thương hiệu",
+          type: "collapse",
+          icon: "feather icon-award",
+          children: [
+            {
+              id: "brand-list",
+              title: "Danh sách thương hiệu",
+              type: "item",
+              url: "/dashboard/brand",
+            },
+          ],
+        },
+        {
+          id: "collections",
+          title: "Bộ sưu tập",
+          type: "collapse",
+          icon: "feather icon-book",
+          children: [
+            {
+              id: "collection-list",
+              title: "Danh sách bộ sưu tập",
+              type: "item",
+              url: "/dashboard/collection",
+            },
+            {
+              id: "add-collection",
+              title: "Thêm bộ sưu tập",
+              type: "item",
+              url: "/dashboard/collection/create",
+            },
           ],
         },
         {

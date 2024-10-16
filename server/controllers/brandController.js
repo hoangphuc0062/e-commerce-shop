@@ -1,16 +1,15 @@
-const { populate } = require("../models/attributeModel");
 const Brand = require("../models/brandModel");
 const asyncHandler = require("express-async-handler");
 
 const getAllBrand = asyncHandler(async (req, res) => {
-  const brands = await Brand.find().populate("category", "name");
+  const brands = await Brand.find();
   return res.status(200).json(brands);
 });
 
 const addBrand = asyncHandler(async (req, res) => {
-  const { name, category, image } = req.body;
+  const { name, image } = req.body;
 
-  if (!name || !category || !image) {
+  if (!name || !image) {
     return res.status(400).json({
       success: false,
       mes: "Missing inputs",
