@@ -12,7 +12,7 @@ import "swiper/css/pagination";
 import "./ProductSlide.css";
 // import required modules
 import { Grid, Pagination } from "swiper/modules";
-const ProductSlide = ({products}) => {
+const ProductSlide = ({ products }) => {
   return (
     <div>
       <Swiper
@@ -68,13 +68,13 @@ const ProductSlide = ({products}) => {
                         alt="Discount Label"
                         className="w-full object-cover"
                       />
-                 
-                        <span className="absolute flex items-center justify-center text-white font-bold text-sm top-1.5 left-3">
-                          Giảm {product.discount}%
-                        </span>
+
+                      <span className="absolute flex items-center justify-center text-white font-bold text-sm top-1.5 left-3">
+                        Giảm {product.discount}%
+                      </span>
                     </div>
                   )}
-                  <span className="absolute top-1 right-0 bg-main text-white text-xs font-bold px-1 py-1.5 w-20 h-7 rounded">
+                  <span className="absolute top-1 right-0 bg-main text-white text-xs font-bold px-1 py-1.5 w-20 h-7 rounded text-center">
                     Trả góp 0%
                   </span>
                   <div className="p-2 text-start">

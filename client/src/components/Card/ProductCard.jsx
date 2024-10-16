@@ -97,21 +97,20 @@ export const ProductCard = ({ products }) => {
                 />
                 {/* Discount Label */}
                 {product.discount && (
-                  <div className="absolute top-0 left-0 w-20">
+                  <div className="absolute top-0 left-0 w-24">
                     <img
                       src="https://firebasestorage.googleapis.com/v0/b/voi-tay-nguyen-datn.appspot.com/o/Nhan_cwuwhd.png?alt=media&token=1c12f273-922f-47db-88d2-09c5b5e0a6fa"
                       alt="Discount Label"
                       className="w-full object-cover"
                     />
-                    <span className="absolute top-1 left-2 flex items-center justify-center text-white font-bold text-sm">
+
+                    <span className="absolute flex items-center justify-center text-white font-bold text-sm top-1.5 left-3">
                       Giảm {product.discount}%
                     </span>
                   </div>
                 )}
-
-                {/* Installment Label */}
-                <span className="absolute top-0 right-0 bg-main text-white text-xs font-bold px-1 py-0.5 rounded">
-                  Trả góp {product.installmentRate || "0%"}
+                <span className="absolute top-1 right-0 bg-main text-white text-xs font-bold px-1 py-1.5 w-20 h-7 rounded text-center">
+                  Trả góp 0%
                 </span>
 
                 {/* Product Details */}
