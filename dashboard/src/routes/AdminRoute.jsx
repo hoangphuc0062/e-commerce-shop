@@ -30,6 +30,8 @@ import UpdateCoupons from "../pages/coupons/edit";
 import CategoryEdit from "../pages/category/edit";
 import BrandPage from "../pages/brand";
 import CollectionPage from "../pages/collection";
+import AddBannerConllection from "../pages/bannercollection/create";
+import EditBannerCollection from "../pages/bannercollection/edit";
 
 // import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
@@ -237,6 +239,24 @@ const AdminRoute = () => {
           <PrivateRoute
             element={<BannerCollection />}
             roles={["admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="bannercollection/create"
+        element={
+          <PrivateRoute
+            element={<AddBannerConllection />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="bannercollection/edit/:id"
+        element={
+          <PrivateRoute
+            element={<EditBannerCollection />}
+            roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
       />
