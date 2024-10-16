@@ -10,11 +10,6 @@ const seriesSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-
-  brand: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Brands",
-  },
   titleSEO: {
     type: String,
   },

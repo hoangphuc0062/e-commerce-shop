@@ -4,11 +4,18 @@ const attributeSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true,
+  },
+  key: {
+    type: String,
+  },
+  typeOfValue: {
+    type: String,
+    enum: ["text", "number", "date", "boolean"],
+    default: "text",
   },
   value: {
     type: Array,
-    default: [],
+    unique: true,
   },
 });
 

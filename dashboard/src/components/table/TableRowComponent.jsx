@@ -46,7 +46,7 @@ const TableRowComponent = ({
             <Avatar
               alt={row[column.name]}
               variant="rounded"
-              src={row[column.image]}
+              src={row[column.field]}
               sx={{ width: 50, height: 50 }}
             />
           ) : (

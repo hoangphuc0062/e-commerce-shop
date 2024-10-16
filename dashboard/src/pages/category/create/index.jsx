@@ -191,7 +191,7 @@ function CategoryCreate() {
                 type="submit"
                 sx={{ mt: 2 }}
                 color="success"
-                disabled={isSubmitting} // Disable button when submitting
+                disabled={isSubmitting}
               >
                 {isSubmitting ? "Đang thêm..." : "Thêm danh mục"}
               </Button>
