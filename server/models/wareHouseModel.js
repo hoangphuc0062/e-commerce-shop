@@ -12,6 +12,10 @@ const wareHouseSchema = new mongoose.Schema(
     description: {
       type: String,
     },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
