@@ -34,14 +34,26 @@ const getAllProduct = asyncHandler(async (req, res) => {
       formattedQueries.series = queries.series;
     }
 
-    let queryCommand = Product.find(formattedQueries)
-      .populate("series", "name slug")
-      .populate("brand", "name slug ")
-      .populate("category", "name slug")
-      .populate({
+    let queryCommand = Product.find(formattedQueries);
+
+    if (queries?.series) {
+      queryCommand = queryCommand.populate("series", "name slug");
+    }
+
+    if (queries?.brand) {
+      queryCommand = queryCommand.populate("brand", "name slug");
+    }
+
+    if (queries?.category) {
+      queryCommand = queryCommand.populate("category", "name slug");
+    }
+
+    if (queries?.attributes) {
+      queryCommand = queryCommand.populate({
         path: "attributes.aid",
         select: "name value",
       });
+    }
 
     if (req.query.sort) {
       const sortBy = req.query.sort.split(",").join(" ");
@@ -54,7 +66,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
     }
 
     const page = +req.query.page || 1;
-    const limit = +req.query.limit || process.env.LIMIT_PRODUCTS;
+    const limit = +req.query.limit || 10;
     const skip = (page - 1) * limit;
     queryCommand.skip(skip).limit(limit);
 
@@ -74,31 +86,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
     });
   }
 });
-const getProductBySlug = asyncHandler(async (req, res) => {
-  const { slug } = req.params;
 
-  if (!slug) {
-    return res.status(400).json({
-      mes: "Missing slug in params",
-    });
-  }
-
-  const product = await Product.findOne({ slug }).populate({
-    path: "attributes.aid",
-    select: "name value",
-  });
-
-  if (!product) {
-    return res.status(404).json({
-      mes: "Product is not found",
-    });
-  }
-
-  return res.status(200).json({
-    mes: "Get product successfull",
-    product,
-  });
-});
 const addProduct = asyncHandler(async (req, res) => {
   const requiredFields = [
     "name",
@@ -135,14 +123,14 @@ const addProduct = asyncHandler(async (req, res) => {
 
 const addManyProduct = asyncHandler(async (req, res) => {
   const products = req.body;
-  if (!products) {
+  if (!products && products.length === 0 && !Array.isArray(products)) {
     return res.status(400).json({
       mes: "Missing inputs",
     });
   }
   const product = await Product.insertMany(products);
   return res.status(201).json({
-    mes: product ? "create a product successfull" : "Some thing went wrong",
+    mes: product ? "create product successfull" : "Some thing went wrong",
     product,
   });
 });
@@ -181,11 +169,9 @@ const deleteProduct = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  // getProductById,
-  getProductBySlug,
   getAllProduct,
-  // getFilteredProducts,
   addProduct,
+  addManyProduct,
   updateProduct,
   deleteProduct,
 };
