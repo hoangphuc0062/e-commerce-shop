@@ -49,35 +49,6 @@ const TableRowComponent = ({
                 ? extractTextFromHtml(row[column.field].slice(0, 50) + "...")
                 : extractTextFromHtml(row[column.field])}
             </div>
-          ) : column.field === "values" ? (
-            <div>
-              {row[column.field] && Array.isArray(row[column.field]) ? (
-                row[column.field].map((item, index) => (
-                  <span
-                    key={index}
-                    style={{ display: "inline-block", marginRight: "5px" }}
-                  >
-                    {item.startsWith("#") ? (
-                      <div
-                        style={{
-                          display: "inline-block",
-                          width: "20px",
-                          height: "20px",
-                          backgroundColor: item,
-                          border: "1px solid #000",
-                          marginRight: "5px",
-                        }}
-                      ></div>
-                    ) : (
-                      item
-                    )}
-                    {index !== row[column.field].length - 1 && ", "}
-                  </span>
-                ))
-              ) : (
-                <span>{row[column.field] || "Không có dữ liệu"}</span>
-              )}
-            </div>
           ) : column.field === "image" ? (
             <Avatar
               alt={row[column.name]}

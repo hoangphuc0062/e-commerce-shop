@@ -9,7 +9,6 @@ import brandReducer from "./slices/brand";
 import collectionReducer from "./slices/collection";
 import warehouseReducer from "./slices/warehouse";
 import productReducer from "./slices/product";
-import attributeReducer from "./slices/attribute";
 
 const store = configureStore({
   reducer: {
@@ -23,7 +22,6 @@ const store = configureStore({
     collection: collectionReducer,
     warehouse: warehouseReducer,
     product: productReducer,
-    attribute: attributeReducer,
   },
 });
 

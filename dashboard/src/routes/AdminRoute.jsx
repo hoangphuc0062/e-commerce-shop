@@ -10,6 +10,7 @@ import UserPage from "../pages/user";
 import WarehousePage from "../pages/warehouse";
 import AddWarehouse from "../pages/warehouse/create";
 import ProductPage from "../pages/product";
+import CreateProductForm from "../pages/product/create";
 import VariantForm from "../pages/product/variant/create";
 import VariantPage from "../pages/product/variant";
 import OrderPage from "../pages/order";
@@ -31,7 +32,6 @@ import BrandPage from "../pages/brand";
 import CollectionPage from "../pages/collection";
 import AddBannerConllection from "../pages/bannercollection/create";
 import EditBannerCollection from "../pages/bannercollection/edit";
-import CreateProductPage from "../pages/product/variant/create";
 
 // import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
@@ -180,7 +180,7 @@ const AdminRoute = () => {
         path="product/create"
         element={
           <PrivateRoute
-            element={<CreateProductPage />}
+            element={<CreateProductForm />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
