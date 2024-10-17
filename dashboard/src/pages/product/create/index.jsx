@@ -11,7 +11,7 @@ import Specifications from "./specifications";
 export default function CreateProductForm() {
   const [productDetails, setProductDetails] = useState({
     productName: "",
-    sku: "FXSK123U",
+    sku: "",
     description: "",
     basePrice: "",
     discountedPrice: "",

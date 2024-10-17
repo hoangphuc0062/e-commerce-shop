@@ -3,7 +3,9 @@ const asyncHandler = require("express-async-handler");
 const Post = require("../models/postModel");
 
 const getAllPost = asyncHandler(async (req, res) => {
-  const posts = await Post.find();
+  const posts = await Post.find()
+    .populate("author", "name")
+    .populate("category", "name slug");
   return res.status(200).json(posts);
 });
 
@@ -22,12 +24,22 @@ const getPostById = asyncHandler(async (req, res) => {
   if (!bid) {
     return res.status(400).json({ mes: "bid hasnt founded" });
   }
-  const post = await Post.findById(bid);
+  const post = await Post.findById(bid)
+    .populate("author", "name")
+    .populate("category", "name slug");
   return res.status(200).json(post);
 });
 
 const addPost = asyncHandler(async (req, res) => {
-  const { postTitle, shortDescription, content, category } = req.body;
+  const {
+    postTitle,
+    shortDescription,
+    content,
+    category,
+    slug,
+    seoKeyWords,
+    metaDescription,
+  } = req.body;
   const staff_id = req.user._id;
 
   if (!postTitle || !shortDescription || !content || !category) {
@@ -43,6 +55,9 @@ const addPost = asyncHandler(async (req, res) => {
     content,
     author: staff_id,
     category,
+    slug,
+    seoKeyWords,
+    metaDescription,
   });
   return res.status(200).json({ mes: "Create a post successful", post });
 });
