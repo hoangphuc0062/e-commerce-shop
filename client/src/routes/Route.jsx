@@ -32,8 +32,8 @@ export default function RootRouter() {
         { path: "/check_info", element: <Checkout_info /> },
         { path: "/checkout", element: <Checkout /> },
         { path: "/profile", element: <Profile /> },
-        { path: "profile/accountuser", element: <AccountUser /> },
-        { path: "profile/orderuser", element: <UserOrder /> },
+        { path: "profile/account", element: <AccountUser /> },
+        { path: "profile/order", element: <UserOrder /> },
       ],
     },
     {

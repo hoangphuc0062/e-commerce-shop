@@ -1,25 +1,12 @@
-import React, { useEffect, useState } from "react";
-import {
-    Grid,
-    Box,
-    Typography,
-    Paper,
-    Button,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    CircularProgress,
-    FormHelperText,
-    TextField
-} from "@mui/material";
+import React from 'react';
+import { Grid, Box, Typography, Paper, Button, Select, MenuItem, FormControl, InputLabel, FormHelperText, TextField } from "@mui/material";
 import { useFormik } from "formik";
 import CustomInputField from "../../../components/InputField";
+import { useNavigate } from "react-router-dom";
 import ImageUploader from "../../../components/upload";
-// import { BannerSchema } from '../validate/bannerCollection';
-import { useNavigate, useParams } from "react-router-dom";
-import { handleToast } from "../../../utils/toast";
-import { BannerSchema } from "../validate/bannerConllection";
+import { BannerSchema } from '../validate/bannerConllection';
+import { handleToast } from '../../../utils/toast';
+
 
 const collectionOptions = [
     { value: 1, label: "Collection 1" },
@@ -31,10 +18,8 @@ const collectionStatus = [
     { value: 'pending', label: 'Đang chờ' },
     { value: 'archived', label: 'Lưu trữ' },
 ];
-function EditBannerCollection({ fetchBannerData }) {
+function AddBannerCollection() {
     const navigate = useNavigate();
-    const { id } = useParams(); // Assuming the banner ID is passed via URL
-    const [loading, setLoading] = useState(true);
 
     const formik = useFormik({
         initialValues: {
@@ -42,70 +27,36 @@ function EditBannerCollection({ fetchBannerData }) {
             collection: "",
             image: "",
             status: "active",
-            priority: "1",
-            startDate: "",
-            endDate: "",
+            priority: "1", // Đảm bảo đây là chuỗi
+            startDate: "", // Thiết lập thành chuỗi rỗng thay vì null
+            endDate: "",   // Thiết lập thành chuỗi rỗng thay vì null
         },
         validationSchema: BannerSchema,
         validateOnChange: true,
         validateOnBlur: true,
-        onSubmit: async (values) => {
+        onSubmit: (values, { resetForm }) => {
             try {
-                // API call to update the banner collection
-                await handleToast("success", "Bộ sưu tập đã được cập nhật", "top-right");
-                console.log("Form updated", values);
-                navigate("/dashboard/bannercollection"); // Redirect after successful update
+                handleToast("success", "Bài viết đã được thêm", "top-right");
+                console.log("Form submitted", values);
+                resetForm();
             } catch (error) {
                 console.error("Error during form submission", error);
-                handleToast("error", "Cập nhật bộ sưu tập thất bại", "top-right");
             }
         },
     });
-
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const bannerData = await fetchBannerData(id); // Replace with actual data fetching logic
-                formik.setValues(bannerData);
-            } catch (error) {
-                console.error("Error fetching banner data:", error);
-                handleToast("error", "Không thể tải dữ liệu bộ sưu tập", "top-right");
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchData();
-    }, [id]);
 
     const handleUploadComplete = (url) => {
         formik.setFieldValue("image", url);
     };
 
     const handleDelete = () => {
-        if (window.confirm("Bạn có chắc chắn muốn xóa ảnh này không?")) {
-            formik.setFieldValue("image", "");
-        }
+        formik.setFieldValue("image", "");
     };
 
     const getErrorProps = (name) => ({
         error: formik.touched[name] && Boolean(formik.errors[name]),
         helperText: formik.touched[name] && formik.errors[name],
     });
-
-    const handleCancel = () => {
-        if (window.confirm("Bạn có chắc chắn muốn hủy những thay đổi này không?")) {
-            navigate("/dashboard/bannercollection");
-        }
-    };
-
-    if (loading) {
-        return (
-            <Box textAlign="center" mt={5}>
-                <CircularProgress />
-                <Typography mt={2}>Đang tải dữ liệu...</Typography>
-            </Box>
-        );
-    }
 
     return (
         <form onSubmit={formik.handleSubmit}>
@@ -126,10 +77,12 @@ function EditBannerCollection({ fetchBannerData }) {
                                         fooder="banner"
                                     />
                                 </Box>
+                                {formik.touched.image && formik.errors.image && (
+                                    <FormHelperText error>{formik.errors.image}</FormHelperText>
+                                )}
                             </Box>
                         </Paper>
                     </Grid>
-
                     {/* Banner Information Section */}
                     <Grid item xs={12} md={8}>
                         <Paper elevation={3} sx={{ padding: 2 }}>
@@ -202,7 +155,9 @@ function EditBannerCollection({ fetchBannerData }) {
                                         type="date"
                                         value={formik.values.startDate}
                                         onChange={formik.handleChange}
-                                        InputLabelProps={{ shrink: true }}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
                                         fullWidth
                                         {...getErrorProps("startDate")}
                                     />
@@ -214,7 +169,9 @@ function EditBannerCollection({ fetchBannerData }) {
                                         type="date"
                                         value={formik.values.endDate}
                                         onChange={formik.handleChange}
-                                        InputLabelProps={{ shrink: true }}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
                                         fullWidth
                                         {...getErrorProps("endDate")}
                                     />
@@ -227,14 +184,14 @@ function EditBannerCollection({ fetchBannerData }) {
                                     variant="contained"
                                     type="submit"
                                     color="success"
-                                    aria-label="Update Banner"
+                                    aria-label="Add Banner"
                                 >
-                                    Cập nhật bộ sưu tập banner
+                                    Thêm bộ sưu tập banner
                                 </Button>
                                 <Button
                                     variant="contained"
                                     color="error"
-                                    onClick={handleCancel}
+                                    onClick={() => navigate("/dashboard/bannercollection")}
                                     style={{ marginLeft: 10 }}
                                     aria-label="Cancel"
                                 >
@@ -249,4 +206,4 @@ function EditBannerCollection({ fetchBannerData }) {
     );
 }
 
-export default EditBannerCollection;
+export default AddBannerCollection;
