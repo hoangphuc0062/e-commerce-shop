@@ -1,8 +1,16 @@
-import { TableRow, TableCell, IconButton, Tooltip, Checkbox, Typography } from "@mui/material";
+import {
+  TableRow,
+  TableCell,
+  IconButton,
+  Tooltip,
+  Checkbox,
+  Typography,
+} from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import propTypes from "prop-types";
 import { StatustPostChip } from "../../../components/StatusColor";
+import { extractTextFromHtml } from "../../../utils/extractTextFromHtml";
 
 const TableRowComponent = ({
   row,
@@ -48,16 +56,23 @@ const TableRowComponent = ({
             <img
               src={row[column.field]} // Đường dẫn hình ảnh từ dữ liệu
               alt="Thumbnail"
-              style={{ width: "50px", height: "50px", objectFit: "cover", marginRight: "10px" }} // Thêm margin phải
+              style={{
+                width: "50px",
+                height: "50px",
+                objectFit: "cover",
+                marginRight: "10px",
+              }} // Thêm margin phải
             />
-          ) : column.field === "post_title" ? (
-            <Typography sx={{ marginLeft: "5x" }}>{row[column.field]}</Typography> // Thêm khoảng cách cho tiêu đề
+          ) : column.field === "postTitle" ? (
+            <Typography sx={{ marginLeft: "5x" }}>
+              {row[column.field]}
+            </Typography> // Thêm khoảng cách cho tiêu đề
+          ) : column.field === "postShortDescription" ? (
+            <div>{extractTextFromHtml(row[column.field])}</div>
           ) : (
             row[column.field]
           )}
         </TableCell>
-
-
       ))}
 
       {/* Action buttons for View, Edit, and Delete */}
@@ -107,8 +122,8 @@ TableRowComponent.propTypes = {
   handleDelete: propTypes.func,
   handleEdit: propTypes.func,
   handleEye: propTypes.func,
-  handleSelectRow: propTypes.func.isRequired,  // Function to handle row selection
-  isSelected: propTypes.bool.isRequired,       // Boolean to indicate if row is selected
+  handleSelectRow: propTypes.func.isRequired, // Function to handle row selection
+  isSelected: propTypes.bool.isRequired, // Boolean to indicate if row is selected
 };
 
 export default TableRowComponent;

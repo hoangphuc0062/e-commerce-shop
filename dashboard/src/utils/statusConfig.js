@@ -19,6 +19,7 @@ export const statusColors = {
   partial: { label: "Thanh toán một phần", color: "warning" },
   waiting: { label: "Chờ đợi", color: "warning" },
   blocked: { label: "Bị chặn", color: "error" },
+  available: { label: "Có sẵn", color: "success" },
 };
 
 export const statusOrder = {
@@ -43,5 +44,5 @@ export const statustPost = {
   archived: { label: "Lưu trữ", color: "error" },
   pendingReview: { label: "Chờ xét duyệt", color: "warning" },
   scheduled: { label: "Đã lên lịch", color: "primary" },
-  rejected: { label: "Bị từ chối", color: "error" }
+  rejected: { label: "Bị từ chối", color: "error" },
 };

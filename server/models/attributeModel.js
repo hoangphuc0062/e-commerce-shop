@@ -13,9 +13,8 @@ const attributeSchema = new mongoose.Schema({
     enum: ["text", "number", "date", "boolean"],
     default: "text",
   },
-  value: {
+  values: {
     type: Array,
-    unique: true,
   },
 });
 

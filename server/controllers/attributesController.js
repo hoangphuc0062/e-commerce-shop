@@ -8,9 +8,9 @@ const getAllAttribute = asyncHandler(async (req, res) => {
 });
 
 const addAttribute = asyncHandler(async (req, res) => {
-  const { name, value } = req.body;
+  const { name, values } = req.body;
 
-  if (!name || !value) {
+  if (!name || !values) {
     return res.status(400).json({
       mes: "Missing inputs",
     });

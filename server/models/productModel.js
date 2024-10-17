@@ -8,10 +8,41 @@ const attributeSchema = new mongoose.Schema({
     ref: "Attribute",
     required: true,
   },
-  price: {
+  value: {
+    type: String,
+    required: true,
+  },
+  SKU: {
+    type: String,
+    required: true,
+  },
+  historicalPrice: {
     type: Number,
   },
-  inStock: {
+  priceInMarket: {
+    type: Number,
+    required: true,
+  },
+  priceInStore: {
+    type: Number,
+    required: true,
+  },
+  priceOnline: {
+    type: Number,
+  },
+  discount: {
+    type: Number,
+  },
+  onStock: {
+    type: Number,
+  },
+  unit: {
+    type: String,
+  },
+  minInventory: {
+    type: Number,
+  },
+  maxInventory: {
     type: Number,
   },
   avatar: {
@@ -115,7 +146,7 @@ const ProductSchema = new mongoose.Schema(
           type: String,
         },
         value: {
-          type: String,
+          type: mongoose.Mixed,
         },
       },
     ],

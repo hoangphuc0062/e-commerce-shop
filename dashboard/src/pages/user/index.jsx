@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReusableTable from "../../components/Table";
 import CartDialog from "./details";
 import EditStatusDialog from "./edit";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  deleteCustomer,
   getCustomer,
   resetState,
   updateCustomer,
 } from "../../redux/slices/customer";
-import { handleToast } from "../../utils/toast";
+import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
 import LoadingWrapper from "../../components/loading/LoadingWrapper";
+
 export default function UserPage() {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -19,67 +21,69 @@ export default function UserPage() {
   const [statusOptions, setStatusOptions] = useState([]);
   const [items, setItems] = useState([]);
   const [index, setIndex] = useState(null);
-  const handleSubmit = (status, data) => {
-    const updatedStatus = status === "blocked" ? true : false;
-    dispatch(
-      updateCustomer({
-        customerId: data.id,
-        data: { isBlocked: updatedStatus },
-      })
-    );
-    setOpen(false);
-  };
 
+  // Redux selectors
   const statusGetCustomer = useSelector((state) => state.customer.status);
   const dataCustomer = useSelector((state) => state.customer.data);
   const statusUpdateCustomer = useSelector(
     (state) => state.customer.statusUpdate
   );
-  const getCustomers = () => dispatch(getCustomer());
+  const deleteStatus = useSelector((state) => state.customer.deleteStatus);
 
+  // Fetch customers on mount
   useEffect(() => {
-    if (items.length === 0) {
-      getCustomers();
-    }
-  }, [items, getCustomers, statusGetCustomer]);
+    dispatch(getCustomer());
+  }, [dispatch]);
+
+  // Handle status updates for customer fetching
   useEffect(() => {
     if (statusGetCustomer === "success") {
       dispatch(resetState({ key: "status", value: "idle" }));
-    }
-    if (statusGetCustomer === "failed") {
+    } else if (statusGetCustomer === "failed") {
       handleToast("error", "Get customer failed", "top-right");
     }
   }, [statusGetCustomer, dispatch]);
+
+  // Handle customer update status
   useEffect(() => {
     if (statusUpdateCustomer === "success") {
-      getCustomers();
-      // handleToast("success", "Update customer success", "top-right");
+      handleToast("success", "Update customer success", "top-right");
       dispatch(resetState({ key: "statusUpdate", value: "idle" }));
+      dispatch(getCustomer()); // Refetch customer list after update
     }
-  }, [statusUpdateCustomer, dispatch, getCustomers]);
+  }, [statusUpdateCustomer, dispatch]);
 
+  // Handle customer deletion
   useEffect(() => {
-    const initialData = Array.isArray(dataCustomer)
-      ? dataCustomer.map((item) => ({
-          id: item?._id,
-          name: item?.name,
-          address: item?.address,
-          email: item?.email,
-          sdt: item?.sdt,
-          sex: item?.sex,
-          membership: item?.membership,
-          totalAmount: item?.totalAmount,
-          status: item?.isBlocked === true ? "blocked" : "active",
-          cart:
-            item?.cart?.map((cartItem) => ({
-              name: cartItem.name,
-              price: cartItem.price,
-              quantity: cartItem.quantity,
-            })) || [],
-        }))
-      : [];
+    if (deleteStatus === "success") {
+      handleToast("success", "Delete customer success", "top-right");
+      dispatch(resetState({ key: "deleteStatus", value: "idle" }));
+      dispatch(getCustomer()); // Refetch customer list after deletion
+    } else if (deleteStatus === "failed") {
+      handleToast("error", "Delete customer failed", "top-right");
+    }
+  }, [deleteStatus, dispatch]);
 
-    if (initialData.length > 0) {
+  // Map customer data for the table
+  useEffect(() => {
+    if (Array.isArray(dataCustomer)) {
+      const initialData = dataCustomer.map((item) => ({
+        id: item?._id,
+        name: item?.name,
+        address: item?.address,
+        email: item?.email,
+        sdt: item?.sdt,
+        sex: item?.sex,
+        membership: item?.membership,
+        totalAmount: item?.totalAmount,
+        status: item?.isBlocked ? "blocked" : "active",
+        cart:
+          item?.cart?.map((cartItem) => ({
+            name: cartItem.name,
+            price: cartItem.price,
+            quantity: cartItem.quantity,
+          })) || [],
+      }));
       setItems(initialData);
     }
   }, [dataCustomer]);
@@ -95,11 +99,24 @@ export default function UserPage() {
     { label: "Trạng thái", field: "status" },
   ];
 
-  const handleDelete = (id) => {
-    console.log("Delete", id);
-  };
+  // Handle delete customer
+  const handleDelete = useCallback(
+    (index) => {
+      DeleteConfirmationModal({
+        title: "Xác nhận xóa người dùng",
+        content: "Bạn có chắc chắn muốn xóa người dùng này?",
+        okText: "Xóa",
+        cancelText: "Hủy",
+        icon: "warning",
+        confirmButtonText: "Xóa",
+        onConfirm: () => dispatch(deleteCustomer(index.id)),
+      });
+    },
+    [dispatch]
+  );
 
-  const handleEdit = (index) => {
+  // Handle edit status dialog
+  const handleEdit = useCallback((index) => {
     setDialogOpen(true);
     setStatus(index.status);
     setStatusOptions([
@@ -107,17 +124,35 @@ export default function UserPage() {
       { value: "blocked", label: "blocked" },
     ]);
     setIndex(index);
-  };
+  }, []);
 
-  const handleEye = (index) => {
+  // Handle viewing the user's cart details
+  const handleEye = useCallback((index) => {
     setOpen(true);
     setData(index);
-  };
+  }, []);
+
+  // Handle status submission
+  const handleSubmit = useCallback(
+    (status, data) => {
+      const updatedStatus = status === "blocked" ? true : false;
+      dispatch(
+        updateCustomer({
+          customerId: data.id,
+          data: { isBlocked: updatedStatus },
+        })
+      );
+      setDialogOpen(false);
+    },
+    [dispatch]
+  );
+
   const optionStatus = [
     { value: "all", label: "Tất cả" },
     { value: "active", label: "Hoạt động" },
     { value: "blocked", label: "Bị chặn" },
   ];
+
   return (
     <>
       <LoadingWrapper>
@@ -136,7 +171,6 @@ export default function UserPage() {
         items={data}
         onRemove={() => {}}
       />
-
       <EditStatusDialog
         open={dialogOpen}
         handleClose={() => setDialogOpen(false)}
