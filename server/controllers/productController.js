@@ -34,6 +34,10 @@ const getAllProduct = asyncHandler(async (req, res) => {
       formattedQueries.series = queries.series;
     }
 
+    if (queries?.warehouses) {
+      formattedQueries.warehouse = queries.warehouses;
+    }
+
     let queryCommand = Product.find(formattedQueries);
 
     if (queries?.series) {
@@ -51,8 +55,12 @@ const getAllProduct = asyncHandler(async (req, res) => {
     if (queries?.attributes) {
       queryCommand = queryCommand.populate({
         path: "attributes.aid",
-        select: "name value",
+        select: "name values",
       });
+    }
+
+    if (queries?.warehouses) {
+      queryCommand = queryCommand.populate("warehouse", "name");
     }
 
     if (req.query.sort) {
@@ -92,16 +100,12 @@ const addProduct = asyncHandler(async (req, res) => {
     "name",
     "slug",
     "historicalPrice",
-    "priceInStore",
-    "priceOnline",
-    "series",
-    "category",
-    "brand",
     "description",
     "images",
     "weight",
     "SKU",
     "priceInMarket",
+    "price",
     "onStock",
     "unit",
   ];

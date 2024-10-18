@@ -76,18 +76,21 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    priceInStore: {
+    price: {
       type: Number,
       required: true,
-    },
-    priceOnline: {
-      type: Number,
     },
     discount: {
       type: Number,
     },
+    inStock: {
+      type: Number, // số lượng tồn kho
+    },
     onStock: {
-      type: Number,
+      type: Number, // số lượng có thể bán
+    },
+    inComing: {
+      type: Number, // số lượng hàng đang về
     },
     unit: {
       type: String,
@@ -105,15 +108,14 @@ const ProductSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    isMain: {
-      type: Boolean,
-      default: true,
-    },
     isStopSelling: {
       type: Boolean,
       default: false,
     },
     description: {
+      type: String,
+    },
+    shortDescription: {
       type: String,
     },
     keywords: {
@@ -150,21 +152,12 @@ const ProductSchema = new mongoose.Schema(
         },
       },
     ],
+    views: {
+      type: Number,
+    },
     rating: {
       type: Number,
     },
-    warranty: [
-      {
-        title: String,
-        key: {
-          type: String,
-        },
-        value: {
-          type: String,
-        },
-      },
-    ],
-
     gifts: [
       {
         name: String,
@@ -183,6 +176,10 @@ const ProductSchema = new mongoose.Schema(
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Categories",
+    },
+    warehouse: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Warehouses",
     },
     attributes: [attributeSchema],
   },
