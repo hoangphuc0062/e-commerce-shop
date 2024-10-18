@@ -45,7 +45,7 @@ const attributeSchema = new mongoose.Schema({
   maxInventory: {
     type: Number,
   },
-  avatar: {
+  thumbnail: {
     type: String,
   },
   images: [
@@ -181,6 +181,12 @@ const ProductSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Warehouses",
     },
+    tagsProduct: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tags",
+      },
+    ],
     attributes: [attributeSchema],
   },
   {

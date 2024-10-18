@@ -1,49 +1,51 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
+
+const key = "man-hinh";
+
 (async () => {
-  const browser = await puppeteer.launch({ headless: false }); // Đặt headless thành false để thấy quá trình
-  const page = await browser.newPage();
+  let browser;
+  try {
+    browser = await puppeteer.launch({ headless: false });
+    const page = await browser.newPage();
 
-  const allProducts = [];
-
-  // Truy cập trang web và lặp qua các trang
-  for (let i = 1; i <= 10; i++) {
-    await page.goto(`https://www.thegioididong.com/dtdd#c=42&o=13&pi=${i}`, {
+    const connect = await page.goto(`https://fptshop.com.vn/${key}`, {
       waitUntil: "networkidle2",
     });
 
-    // Đợi để trang tải đầy đủ sản phẩm (nếu có lazy loading, có thể cần thời gian chờ)
+    connect ? console.log("Connected") : console.log("Not connected");
 
-    // Crawl dữ liệu sản phẩm sau khi trang đã tải đầy đủ
-    const products = await page.evaluate(() => {
-      const productList = [];
-      const productElements = document.querySelectorAll(".item"); // Chọn tất cả các sản phẩm trên trang
+    const getProducts = await page.evaluate(() => {
+      const products = document.querySelectorAll(
+        ".ProductCard_cardDefault__km9c5"
+      );
 
-      productElements.forEach((product) => {
-        const name = product.querySelector("h3")?.innerText || "N/A"; // Lấy tên sản phẩm
-        const price =
-          product.querySelector(".price strong")?.innerText || "N/A"; // Lấy giá sản phẩm
-        const imageUrl =
-          product.querySelector("img")?.getAttribute("src") || "N/A"; // Lấy URL ảnh
-        const ref = product.querySelector("a")?.getAttribute("href") || "N/A"; // Lấy URL ảnh
-        productList.push({
-          name,
-          price,
-          imageUrl,
-          ref,
-        });
+      const productArray = [];
+
+      products.forEach((product) => {
+        const productObj = {
+          name: product.querySelector(".ProductCard_cardTitle__HlwIo")
+            .innerText,
+          price: parseInt(
+            product
+              .querySelector(".Price_currentPrice__PBYcv")
+              .innerText.replace(/\D/g, "")
+          ),
+          thumbnail: product.querySelector("img").src,
+          images: product.querySelector("img").src,
+        };
+
+        productArray.push(productObj);
       });
-
-      return productList;
+      return productArray;
     });
 
-    // Kết hợp sản phẩm từ trang hiện tại vào danh sách tất cả sản phẩm
-    allProducts.push(...products);
+    fs.writeFileSync(`${key}.json`, JSON.stringify(getProducts, null, 2));
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
-
-  // In kết quả ra console
-  console.log(allProducts);
-  //   fs.writeFileSync("data.json", JSON.stringify(allProducts, null, 2));
-  // Đóng trình duyệt sau khi hoàn thành
-  await browser.close();
 })();

@@ -59,6 +59,10 @@ const getAllProduct = asyncHandler(async (req, res) => {
       });
     }
 
+    if (queryCommand?.tagsProduct) {
+      queryCommand = queryCommand.populate("tagsProduct", "name");
+    }
+
     if (queries?.warehouses) {
       queryCommand = queryCommand.populate("warehouse", "name");
     }
