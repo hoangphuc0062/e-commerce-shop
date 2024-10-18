@@ -10,7 +10,7 @@ const sendSMS = require("../ultils/sendPhone");
 
 const checkOTP = asyncHandler(async (req, res) => {
   const { phone, code } = req.body;
-  console.log(phone, code);
+
   const customer = await Customer.findOne({ phone });
   if (!customer) {
     res.status(400);
@@ -61,7 +61,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   await customer.updateCode(otp);
 
   // Message content with OTP
-  const messages = `Mã OTP: ${otp}. Please do not share it with anyone else.`;
+  const messages = `Mã OTP: ${otp}. Vui lòng không chia sẻ mã này với ai. Mã sẽ hết hạn trong 15 phút`;
 
   try {
     // Send the OTP via SMS
@@ -76,7 +76,25 @@ const forgotPassword = asyncHandler(async (req, res) => {
 });
 
 const getCustomer = asyncHandler(async (req, res) => {
-  const customer = await Customer.find().select("-refreshToken");
+  const customer = await Customer.find().select(
+    "-refreshToken -role -password -passwordResetToken "
+  );
+  return res.status(200).json(customer);
+});
+
+const getCurrentCustomer = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+
+  if (!_id) {
+    return res.status(400).json({
+      message: "Missing customer _id",
+    });
+  }
+
+  const customer = await Customer.findById(_id).select(
+    "-refreshToken -role -password -passwordResetToken isBlocked code "
+  );
+
   return res.status(200).json(customer);
 });
 
@@ -84,7 +102,9 @@ const loginCustomer = asyncHandler(async (req, res) => {
   const { phone, password } = req.body;
 
   // Check if the phone number exists
-  const customer = await Customer.findOne({ phone });
+  const customer = await Customer.findOne({ phone }).select(
+    "-role -code -isBlocked -resetPasswordToken -resetPasswordExpires "
+  );
   if (!customer) {
     res.status(400);
     throw new Error("Phone number not found");
@@ -97,21 +117,35 @@ const loginCustomer = asyncHandler(async (req, res) => {
   }
 
   // Extract required details and create tokens
-  const { _id, role } = customer;
-  const accessToken = generateAccessToken(_id, role);
-  const refreshToken = generateRefreshToken(_id);
+  const {
+    password: _,
+    memberShipType,
+    refreshToken: oldRefreshToken,
+    ...customerData
+  } = customer.toObject();
 
-  // Save the refresh token to the database
-  await Customer.findByIdAndUpdate(_id, { refreshToken }, { new: true });
+  const accessToken = generateAccessToken(customer._id, memberShipType);
+  const newRefreshToken = generateRefreshToken(customer._id);
+
+  // Save the new refresh token to the database
+  await Customer.findByIdAndUpdate(
+    customer._id,
+    { refreshToken: newRefreshToken },
+    { new: true }
+  );
 
   // Set the refresh token as a cookie
-  res.cookie("refreshToken", refreshToken, {
+  res.cookie("refreshToken", newRefreshToken, {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
   });
 
   // Return the response to the client
-  res.status(200).json(customer);
+  res.status(200).json({
+    mes: "Login success",
+    accessToken,
+    customer: customerData,
+  });
 });
 
 const logout = asyncHandler(async (req, res) => {
@@ -277,6 +311,7 @@ module.exports = {
   deleteCustomer,
   forgotPassword,
   getCustomer,
+  getCurrentCustomer,
   loginCustomer,
   logout,
   refreshAccessToken,
