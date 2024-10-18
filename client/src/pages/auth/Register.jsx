@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 import { RegisterForm } from "../../components/Form/RegisterForm";
+import e from "cors";
 
 export const Register = () => {
+  const handleSubmit = (data) => {
+    console.log(data);
+  };
   return (
     <section className="mx-2">
       <div className="container flex justify-center">
@@ -20,7 +24,7 @@ export const Register = () => {
               </Link>
             </span>
           </div>
-          <RegisterForm />
+          <RegisterForm onSubmit={handleSubmit} />
         </div>
         <div className="hidden lg:flex flex-1 justify-center ">
           <img
