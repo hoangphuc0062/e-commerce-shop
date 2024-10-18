@@ -118,6 +118,7 @@ const ReusableTable = ({
             variant="contained"
             className="custom-button"
             onClick={buttonAdd}
+            sx={{ mr: 2 }}
           >
             <ControlPointIcon sx={{ marginRight: 1 }} />
             Thêm mới

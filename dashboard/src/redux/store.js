@@ -6,6 +6,9 @@ import postReducer from "./slices/post";
 import categoryReducer from "./slices/category";
 import iconReducer from "./slices/icon";
 import brandReducer from "./slices/brand";
+import collectionReducer from "./slices/collection";
+import warehouseReducer from "./slices/warehouse";
+import productReducer from "./slices/product";
 
 const store = configureStore({
   reducer: {
@@ -16,6 +19,9 @@ const store = configureStore({
     category: categoryReducer,
     icon: iconReducer,
     brand: brandReducer,
+    collection: collectionReducer,
+    warehouse: warehouseReducer,
+    product: productReducer,
   },
 });
 

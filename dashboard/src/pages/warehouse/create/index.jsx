@@ -3,39 +3,36 @@ import * as Yup from "yup";
 import { Box, Grid, Paper, Button, TextField } from "@mui/material";
 import { handleToast } from "../../../utils/toast";
 import Textarea from "../../../components/textarea";
-import CustomDropdown from "../../../components/Dropdown";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { createWarehouse } from "../../../redux/slices/warehouse";
 
 function AddWarehouse() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   // Formik configuration
   const formik = useFormik({
     initialValues: {
       name: "",
       address: "",
-      describe: "",
-      status: "",
+      description: "",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Tên kho là bắt buộc"),
       address: Yup.string().required("Địa chỉ là bắt buộc"),
-      describe: Yup.string().required("Mô tả là bắt buộc"),
-      status: Yup.string().required("Trạng thái là bắt buộc"),
+      description: Yup.string().required("Mô tả là bắt buộc"),
     }),
     onSubmit: (values) => {
-      console.log("Form submitted:", values);
-      // Handle form submission, e.g., send data to an API
-      handleToast("success", "Kho đã được thêm vào danh sách", "top-right");
-      // Đóng hộp thoại sau khi thêm thành công
+      dispatch(createWarehouse(values)).then((res) => {
+        if (res.type === "warehouse/createWarehouse/fulfilled") {
+          handleToast("success", "Thêm kho thành công");
+          navigate("/dashboard/warehouse");
+        } else {
+          handleToast("error", res.error.message);
+        }
+      });
     },
   });
-  const options = [
-    { value: "pending", label: "Chờ xử lý" },
-    { value: "in_progress", label: "Đang xử lý" },
-    { value: "completed", label: "Hoàn thành" },
-    { value: "canceled", label: "Đã hủy" },
-  ];
-
   return (
     <form onSubmit={formik.handleSubmit}>
       <Box>
@@ -69,31 +66,20 @@ function AddWarehouse() {
                     helperText={formik.touched.address && formik.errors.address}
                   />
                 </Grid>
-                <Grid item xs={12} md={6}>
-                  <CustomDropdown
-                    label="Trạng thái"
-                    name="status"
-                    value={formik.values.status}
-                    onChange={formik.handleChange}
-                    error={
-                      formik.touched.status && Boolean(formik.errors.status)
-                    }
-                    helperText={formik.touched.status && formik.errors.status}
-                    options={options}
-                  />
-                </Grid>
+
                 {/* Description Field */}
                 <Grid item xs={12} md={12}>
                   <Textarea
                     label="Mô tả"
-                    name="describe"
-                    value={formik.values.describe}
+                    name="description"
+                    value={formik.values.description}
                     onChange={formik.handleChange}
                     error={
-                      formik.touched.describe && Boolean(formik.errors.describe)
+                      formik.touched.description &&
+                      Boolean(formik.errors.description)
                     }
                     helperText={
-                      formik.touched.describe && formik.errors.describe
+                      formik.touched.description && formik.errors.description
                     }
                     height={300}
                   />

@@ -9,6 +9,7 @@ import { Edit, Delete } from "@mui/icons-material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { StatusChip, StatusOrderChip, StatustPostChip } from "../StatusColor";
 import propTypes from "prop-types";
+import { extractTextFromHtml } from "../../utils/extractTextFromHtml";
 
 const TableRowComponent = ({
   row,
@@ -42,11 +43,24 @@ const TableRowComponent = ({
             <StatusChip status={row[column.field]} />
           ) : column.field === "statustPost" ? (
             <StatustPostChip status={row[column.field]} />
+          ) : column.field === "description" ? (
+            <div>
+              {row[column.field].length > 50
+                ? extractTextFromHtml(row[column.field].slice(0, 50) + "...")
+                : extractTextFromHtml(row[column.field])}
+            </div>
           ) : column.field === "image" ? (
             <Avatar
               alt={row[column.name]}
               variant="rounded"
               src={row[column.field]}
+              sx={{ width: 50, height: 50 }}
+            />
+          ) : column.field === "images" ? (
+            <Avatar
+              alt={row[column.name]}
+              variant="rounded"
+              src={row[column.field][0]}
               sx={{ width: 50, height: 50 }}
             />
           ) : (
