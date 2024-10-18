@@ -26,6 +26,9 @@ import ProductSpecifications from "../../../components/Products/ProductSpecifica
 import ProductDecripton from "../../../components/Products/ProductDecripton";
 import ProductOptions from "../../../components/Products/ProductOptions";
 import ProductColors from "../../../components/Products/ProductColors";
+import Reviews from "../../../components/Products/Reviews";
+import { reviewProducts } from "../../../data/Product/ReviewProducts";
+import WarrantyProduct from "../../../components/Products/WarrantyProduct";
 
 const ProductDetail = () => {
   const [product, setProduct] = useState(null);
@@ -102,6 +105,7 @@ const ProductDetail = () => {
               <StoreList />
               <ProductInfo />
             </div>
+    
           </div>
           {/* Product Info Section */}
           <div className="w-full lg:w-1/2">
@@ -116,6 +120,7 @@ const ProductDetail = () => {
               />
               <AddToCart />
             </div>
+            <WarrantyProduct/>
           </div>
         </div>
       </div>
@@ -126,25 +131,7 @@ const ProductDetail = () => {
       </div>
 
       <div className="flex gap-4 w-full lg:flex-row flex-col lg:w-full">
-        <div className="p-4 rounded-lg shadow-md w-full lg:w-[70%] flex flex-col gap-4">
-          <h2 className="text-lg font-semibold text-black dark:text-white">
-            Đánh giá & nhận xét {product?.name}
-          </h2>
-          <div className="flex justify-center my-4">
-            <img
-              src="https://cdn2.cellphones.com.vn/insecure/rs:fill:150:0/q:90/plain/https://cellphones.com.vn/media/wysiwyg/Review-empty.png"
-              alt="Review Character"
-              className="rounded-full"
-            />
-          </div>
-          <p className="text-center text-muted-foreground">
-            Hiện chưa có đánh giá nào. Bạn sẽ là người đầu tiên đánh giá sản
-            phẩm này chứ?
-          </p>
-          <div className="flex justify-center mt-6">
-            <Button subContent="Đánh giá ngay" />
-          </div>
-        </div>
+        <Reviews reviews={reviewProducts} product={product} />
 
         {/* Tin Tức */}
         <div className="p-4 rounded-lg shadow-md w-full lg:w-[30%] lg:flex hidden flex-col gap-4">

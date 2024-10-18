@@ -9,6 +9,8 @@ import { BsTruck } from "react-icons/bs";
 import { FaPen } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { IoMdAddCircleOutline, IoMdClose } from "react-icons/io";
+import { FaRegStar } from "react-icons/fa6";
+import { FaStar } from "react-icons/fa";
 
 import { FaAngleDoubleRight } from "react-icons/fa";
 import { FaAngleDoubleLeft } from "react-icons/fa";
@@ -130,6 +132,8 @@ const icons = {
   FaAngleDown,
   IoMdClose,
   AiFillHeart,
+  FaRegStar,
+  FaStar,
 };
 
 export default icons;

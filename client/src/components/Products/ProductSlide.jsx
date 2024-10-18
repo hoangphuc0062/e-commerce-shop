@@ -81,17 +81,6 @@ const ProductSlide = ({ products }) => {
                     <h2 className="text-sm font-semibold line-clamp-1">
                       {product.name}
                     </h2>
-                    <div className="flex items-center gap-1">
-                      <p className="text-xs text-muted-foreground border rounded-md p-1 line-clamp-1">
-                        {product.screen}
-                      </p>
-                      <p className="text-xs text-muted-foreground border rounded-md p-1">
-                        {product.options[0].ram}
-                      </p>
-                      <p className="text-xs text-muted-foreground border rounded-md p-1">
-                        {product.options[0].rom}
-                      </p>
-                    </div>
                     <p className="text-md font-bold text-primary pt-1">
                       {product.options[0].salePrice > 0
                         ? `${product.options[0].salePrice.toLocaleString()}đ `
