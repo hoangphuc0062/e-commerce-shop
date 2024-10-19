@@ -72,7 +72,6 @@ function AddStaff() {
   };
 
   const handleDelete = () => {
-    console.log("Image deleted");
     formik.setFieldValue("avatar", "");
   };
 

@@ -31,7 +31,7 @@ import BrandPage from "../pages/brand";
 import CollectionPage from "../pages/collection";
 import AddBannerConllection from "../pages/bannercollection/create";
 import EditBannerCollection from "../pages/bannercollection/edit";
-import CreateProductPage from "../pages/product/variant/create";
+import CreateProduct from "../pages/product/create";
 
 // import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
@@ -180,7 +180,7 @@ const AdminRoute = () => {
         path="product/create"
         element={
           <PrivateRoute
-            element={<CreateProductPage />}
+            element={<CreateProduct />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
