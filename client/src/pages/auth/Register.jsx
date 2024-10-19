@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { RegisterForm } from "../../components/Form/RegisterForm";
-import e from "cors";
 
 export const Register = () => {
   const handleSubmit = (data) => {
