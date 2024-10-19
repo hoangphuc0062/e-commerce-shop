@@ -41,7 +41,7 @@ const postSchema = new mongoose.Schema(
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      ref: "Categories",
     },
     rating: [
       {
@@ -56,6 +56,11 @@ const postSchema = new mongoose.Schema(
         },
       },
     ],
+    status: {
+      type: String,
+      enum: ["draft", "published", "archived"],
+      default: "draft",
+    },
   },
   {
     timestamps: true,

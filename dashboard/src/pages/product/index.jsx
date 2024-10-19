@@ -1,61 +1,29 @@
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReusableTable from "../../components/Table";
 import ProductDetailsDialog from "./details";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deleteProduct,
+  getProduct,
+  resetState,
+} from "../../redux/slices/product";
+import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
 
 export default function ProductPage() {
+  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+  const [data, setData] = useState([]);
+
   const columns = [
-    { label: "mã", field: "sku" },
+    { label: "mã", field: "SKU" },
     { label: "Tên sản phẩm", field: "name" },
-    { label: "hình ảnh", field: "imgage" },
-    { label: "Giá", field: "price" },
-    { label: "Số lượng", field: "quantity" },
-    { label: "Loại", field: "type" },
-    { label: "Mô tả", field: "description" },
+    { label: "hình ảnh", field: "images" },
+    { label: "giá thị trường", field: "priceInMarket" },
+    { label: "giá cửa hàng", field: "priceInStore" },
+    { label: "giá trên website", field: "priceOnline" },
+    { label: "Số lượng", field: "onStock" },
     { label: "Trạng thái", field: "status" },
-  ];
-  const initialData = [
-    {
-      id: 1,
-      sku: "SP001",
-      name: "Áo thun",
-      images: [
-        "https://via.placeholder.com/50",
-        "https://i0.wp.com/travelsummary.com/wp-content/uploads/2017/05/12.-View-of-Velociraptor-from-Outside.jpg?fit=750%2C750",
-        "https://via.placeholder.com/50",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTofZXK-_G7CFJF8T32HbnSjj-Vtl9w9BLXUg&s",
-      ],
-      price: "100000",
-      quantity: "100",
-      type: "Áo",
-      description: "Áo thun cotton",
-      status: "instock",
-      colors: ["#FF6B6B", "#6BFF6B", "#6B6BFF"],
-      sizes: [38, 40, 42, 44],
-      stock: 100,
-    },
-    {
-      id: 2,
-      sku: "SP002",
-      name: "Quần jean",
-      imgage: "https://via.placeholder.com/50",
-      price: "200000",
-      quantity: "100",
-      type: "Quần",
-      description: "Quần jean dài",
-      status: "outofstock",
-    },
-    {
-      id: 3,
-      sku: "SP003",
-      name: "Giày thể thao",
-      imgage: "https://via.placeholder.com/50",
-      price: "300000",
-      quantity: "100",
-      type: "Giày",
-      description: "Giày thể thao",
-      status: "abouttosell",
-    },
   ];
 
   const [product, setProduct] = useState({});
@@ -71,9 +39,6 @@ export default function ProductPage() {
     console.log("Edit", index);
   };
 
-  const handleDelete = (index) => {
-    console.log("Delete", index);
-  };
   const handleEye = (index) => {
     console.log("Eye", index);
     setProduct(index);
@@ -94,10 +59,54 @@ export default function ProductPage() {
   const handleQuantity = () => {
     console.log("Quantity");
   };
+  const status = useSelector((state) => state.product.status);
+  const products = useSelector((state) => state.product.data.products);
+  const deleteStatus = useSelector((state) => state.product.statusDelete);
+  useEffect(() => {
+    dispatch(getProduct());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (status === "success") {
+      setData(products);
+    }
+    dispatch(resetState({ key: "status", value: "idle" }));
+  }, [status, products, dispatch]);
+
+  useEffect(() => {
+    if (deleteStatus === "success") {
+      dispatch(getProduct());
+      handleToast("success", "Xóa sản phẩm thành công", "top-right");
+    }
+    if (deleteStatus === "failed")
+      handleToast("error", "Xóa sản phẩm thất bại", "top-right");
+    dispatch(resetState({ key: "statusDelete", value: "idle" }));
+  }, [deleteStatus, dispatch]);
+  const handleDelete = useCallback(
+    (index) => {
+      console.log("Delete", index);
+      DeleteConfirmationModal({
+        title: "Xác nhận xóa sản phẩm",
+        content: "Bạn có chắc chắn muốn xóa sản phẩm này?",
+        okText: "Xóa",
+        cancelText: "Hủy",
+        icon: "warning",
+        confirmButtonText: "Xóa",
+        onConfirm: () => dispatch(deleteProduct(index._id)),
+      });
+    },
+    [dispatch]
+  );
+
+  const handleSave = (data) => {
+    console.log("Save", data);
+
+    setOpen(false);
+  };
   return (
     <>
       <ReusableTable
-        data={initialData}
+        data={data}
         columns={columns}
         navigate={"/dashboard/product/create"}
         handleEdit={handleEdit}

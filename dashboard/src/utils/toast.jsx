@@ -23,12 +23,6 @@ export const DeleteConfirmationModal = ({
   icon,
   confirmButtonText,
   onConfirm,
-  titledeleted,
-  contentdeleted,
-  icondeleted,
-  titlecanceled,
-  contentcanceled,
-  iconcanceled,
 }) => {
   return Swal.fire({
     title: title,
@@ -41,17 +35,8 @@ export const DeleteConfirmationModal = ({
   }).then((result) => {
     if (result.isConfirmed) {
       onConfirm();
-      Swal.fire({
-        title: titledeleted,
-        text: contentdeleted,
-        icon: icondeleted,
-      });
     } else if (result.isDismissed) {
-      Swal.fire({
-        title: titlecanceled,
-        text: contentcanceled,
-        icon: iconcanceled,
-      });
+      return;
     }
   });
 };

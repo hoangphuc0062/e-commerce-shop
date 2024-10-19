@@ -47,9 +47,7 @@ export default function ProductDetailsDialog({
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogContent>
         <Grid container spacing={4}>
-          {/* Image Carousel */}
           <Grid item xs={12} md={4}>
-            {/* Display the selected image */}
             <div
               style={{
                 width: "17rem",
@@ -60,8 +58,7 @@ export default function ProductDetailsDialog({
                 src={selectedImage}
                 alt="Selected Product Image"
                 style={{
-                  // Maintain aspect ratio
-                  objectFit: "contain", // Prevent distortion
+                  objectFit: "contain",
                   marginBottom: 5,
                   width: "100%",
                   height: "100%",
@@ -69,7 +66,6 @@ export default function ProductDetailsDialog({
               />
             </div>
 
-            {/* Thumbnails for each image */}
             <Grid container spacing={2}>
               {product?.images?.map((img, index) => (
                 <Grid item xs={3} key={index}>
@@ -85,13 +81,13 @@ export default function ProductDetailsDialog({
                       style={{
                         marginTop: 10,
                         width: "100%",
-                        height: "100%", // Maintain aspect ratio for thumbnails
+                        height: "100%",
                         cursor: "pointer",
-                        objectFit: "cover", // Make thumbnails square if needed
+                        objectFit: "cover",
                         borderBottom:
                           selectedImage === img ? "4px solid #66adff" : "none",
                       }}
-                      onClick={() => setSelectedImage(img)} // Update the selected image on click
+                      onClick={() => setSelectedImage(img)}
                     />
                   </div>
                 </Grid>
@@ -105,7 +101,7 @@ export default function ProductDetailsDialog({
               {product?.name}
             </Typography>
             <Typography variant="h4" color="primary" gutterBottom>
-              {formatCurrency(product?.price, "VND", "vi-VN")}
+              {formatCurrency(product?.priceOnline, "VND", "vi-VN")}
             </Typography>
 
             {/* Colors */}
@@ -156,13 +152,23 @@ export default function ProductDetailsDialog({
                 type="number"
                 value={quantity}
                 onChange={(e) => setQuantity(Number(e.target.value))}
-                inputProps={{ min: 1, max: product?.stock }}
+                inputProps={{ min: 1, max: product?.onStock }}
                 sx={{ width: 60, ml: 2, mr: 2 }}
               />
-              <Typography variant="body2">Có sẵn : {product?.stock}</Typography>
+              <Typography variant="body2">
+                Có sẵn : {product?.onStock}
+              </Typography>
+
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleAddToCart}
+                sx={{ ml: "auto" }}
+              >
+                Thêm vào giỏ hàng
+              </Button>
             </Box>
 
-            {/* Tabs for Description & Reviews */}
             <Tabs
               value={tabValue}
               onChange={handleTabChange}
@@ -178,9 +184,7 @@ export default function ProductDetailsDialog({
                   <Typography variant="body1">
                     {product?.description}
                   </Typography>
-                  <Typography variant="h6" fontWeight="bold" sx={{ mt: 2 }}>
-                    MATERIAL AND WASHING INSTRUCTIONS
-                  </Typography>
+
                   <Typography variant="body2">{product?.materials}</Typography>
                 </div>
               )}
