@@ -63,6 +63,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { IoIosArrowForward } from "react-icons/io";
 import { IoIosStar } from "react-icons/io";
 import { FaLocationDot, FaAngleDown } from "react-icons/fa6";
+import { TbCategoryPlus } from "react-icons/tb";
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
@@ -134,6 +135,7 @@ const icons = {
   AiFillHeart,
   FaRegStar,
   FaStar,
+  TbCategoryPlus,
 };
 
 export default icons;
