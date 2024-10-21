@@ -11,6 +11,7 @@ import {
 import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
 
 export default function ProductPage() {
+  const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
 
@@ -96,6 +97,12 @@ export default function ProductPage() {
     },
     [dispatch]
   );
+
+  const handleSave = (data) => {
+    console.log("Save", data);
+
+    setOpen(false);
+  };
   return (
     <>
       <ReusableTable

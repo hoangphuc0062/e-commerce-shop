@@ -14,49 +14,61 @@ import {
 } from "@mui/material";
 import { HexColorPicker } from "react-colorful"; // Thay thế ChromePicker bằng HexColorPicker
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function VariantForm({
+export default function EditVariant({
   open,
+  initialData,
   handleClose,
-  variantData,
-  handleVariantChange,
-  handleSubmit,
+  handleSave,
 }) {
-  const typeOfValue = [
-    { value: "text", label: "Text" },
-    { value: "number", label: "Number" },
-    { value: "date", label: "Date" },
-    { value: "boolean", label: "Boolean" },
-  ];
+  const [variantData, setVariantData] = useState(() => {
+    return {
+      name: initialData.name,
+      key: initialData.key,
+      typeOfValue: initialData.typeOfValue,
+      values: initialData.values,
+    };
+  });
+  const [selectedColor, setSelectedColor] = useState("#fff");
 
-  const [selectedColor, setSelectedColor] = useState("#fff"); // Màu hiện tại
-
-  // Hàm thêm màu mới vào danh sách khi nhấn Enter
+  // Hàm thêm màu mới vào danh sách
   const handleColorAdd = (color) => {
     if (!variantData.values.includes(color)) {
-      const newColors = [...(variantData.values || []), color];
-      handleVariantChange("values", newColors); // Lưu màu đã chọn
+      const newColors = [...variantData.values, color];
+      setVariantData({ ...variantData, values: newColors });
     }
   };
 
+  // Hàm xóa màu khỏi danh sách
   const handleDeleteColor = (colorToDelete) => {
     const updatedColors = variantData.values.filter(
       (color) => color !== colorToDelete
     );
-    handleVariantChange("values", updatedColors);
+    setVariantData({ ...variantData, values: updatedColors });
   };
 
+  // Xử lý thay đổi input
+  const handleInputChange = (field, value) => {
+    setVariantData({ ...variantData, [field]: value });
+  };
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
       handleColorAdd(selectedColor);
     }
   };
+  // Khi submit form
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const attributeId = initialData.id;
+    handleSave({ attributeId, data: variantData });
+    handleClose();
+  };
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth>
-      <DialogTitle>Nhập biến thể sản phẩm</DialogTitle>
+      <DialogTitle>Chỉnh sửa biến thể sản phẩm</DialogTitle>
       <form onSubmit={handleSubmit}>
         <DialogContent>
           <Grid container spacing={2}>
@@ -66,7 +78,7 @@ export default function VariantForm({
                 label="Tên biến thể"
                 variant="outlined"
                 value={variantData.name}
-                onChange={(e) => handleVariantChange("name", e.target.value)}
+                onChange={(e) => handleInputChange("name", e.target.value)}
               />
             </Grid>
             <Grid item xs={6}>
@@ -75,7 +87,7 @@ export default function VariantForm({
                 label="Key"
                 variant="outlined"
                 value={variantData.key}
-                onChange={(e) => handleVariantChange("key", e.target.value)}
+                onChange={(e) => handleInputChange("key", e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -85,30 +97,25 @@ export default function VariantForm({
                 variant="outlined"
                 value={variantData.typeOfValue}
                 onChange={(e) =>
-                  handleVariantChange("typeOfValue", e.target.value)
+                  handleInputChange("typeOfValue", e.target.value)
                 }
               >
-                {typeOfValue.map((item) => (
-                  <MenuItem key={item.value} value={item.value}>
-                    {item.label}
-                  </MenuItem>
-                ))}
+                <MenuItem value="text">Text</MenuItem>
+                <MenuItem value="number">Number</MenuItem>
+                <MenuItem value="date">Date</MenuItem>
+                <MenuItem value="boolean">Boolean</MenuItem>
+                <MenuItem value="color">Color</MenuItem>
               </Select>
             </Grid>
 
-            {variantData.key === "color" && (
-              <Grid
-                container
-                spacing={2}
-                sx={{
-                  marginTop: "10px",
-                }}
-              >
+            {/* Nếu loại giá trị là màu sắc, hiển thị bảng chọn màu */}
+            {variantData.typeOfValue === "color" && (
+              <Grid container spacing={2} sx={{ marginTop: "10px" }}>
                 <Grid item xs={6}>
                   <HexColorPicker
                     color={selectedColor}
                     onChange={setSelectedColor}
-                    onKeyDown={handleKeyPress}
+                    onKeyPress={handleKeyPress}
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -133,17 +140,16 @@ export default function VariantForm({
               </Grid>
             )}
 
-            {variantData.key !== "color" && (
+            {/* Nếu không phải loại màu, hiển thị autocomplete */}
+            {variantData.typeOfValue !== "color" && (
               <Grid item xs={12}>
                 <Autocomplete
                   multiple
                   freeSolo
                   options={[]}
-                  value={
-                    Array.isArray(variantData.values) ? variantData.values : []
-                  } // Đảm bảo luôn là mảng
+                  value={variantData.values}
                   onChange={(event, newValue) =>
-                    handleVariantChange("values", newValue)
+                    handleInputChange("values", newValue)
                   }
                   renderInput={(params) => (
                     <TextField
@@ -163,7 +169,7 @@ export default function VariantForm({
             Hủy
           </Button>
           <Button type="submit" variant="contained" color="primary">
-            Lưu biến thể
+            Lưu thay đổi
           </Button>
         </DialogActions>
       </form>
