@@ -109,7 +109,7 @@ export default function EditVariant({
             </Grid>
 
             {/* Nếu loại giá trị là màu sắc, hiển thị bảng chọn màu */}
-            {variantData.typeOfValue === "color" && (
+            {variantData.key === "color" && (
               <Grid container spacing={2} sx={{ marginTop: "10px" }}>
                 <Grid item xs={6}>
                   <HexColorPicker
@@ -141,7 +141,7 @@ export default function EditVariant({
             )}
 
             {/* Nếu không phải loại màu, hiển thị autocomplete */}
-            {variantData.typeOfValue !== "color" && (
+            {variantData.key !== "color" && (
               <Grid item xs={12}>
                 <Autocomplete
                   multiple

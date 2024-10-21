@@ -142,11 +142,13 @@ export default function VariantPage() {
         handleVariantChange={handleVariantChange}
         handleSubmit={handleSubmit}
       />
-      {/* eslint-disable no-unused-vars */}
       {dataEdit && (
         <EditVariant
           open={openEdit}
-          handleClose={() => setOpenEdit(false)}
+          handleClose={() => {
+            setOpenEdit(false);
+            setDataEdit(null);
+          }}
           initialData={dataEdit}
           handleSave={handleSave}
         />

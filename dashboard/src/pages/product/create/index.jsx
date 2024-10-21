@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { Button, Tabs, Tab, Card, Typography, Box } from "@mui/material";
 import TabPanel, { a11yProps } from "../tags";
@@ -5,7 +6,6 @@ import Information from "./information";
 import SEOInformation from "./SEOInformation";
 import AttributesSection from "./attributes/AttributesSection";
 import { Grid } from "@mui/material";
-import PriceProduct from "./price";
 import ImagesProduct from "./image/images";
 import VideoProduct from "./image/video";
 import ThumbnailProduct from "./image/thumbnail";
@@ -52,9 +52,9 @@ export default function CreateProduct() {
     priceInMarket: "",
     price: "",
     discount: "",
-    onStock: "", // hàng có thể bán
-    inStock: "", // hàng tồn kho
-    inComing: "", // hàng đang về
+    onStock: "",
+    inStock: "",
+    inComing: "",
     unit: "",
     minInventory: "",
     maxInventory: "",
@@ -290,207 +290,217 @@ export default function CreateProduct() {
 
   return (
     <>
-      <Card>
-        <Tabs value={mainTabValue} onChange={handleMainTabChange} centered>
+      <Card sx={{ mt: 2, p: 3 }}>
+        <Tabs value={mainTabValue} onChange={handleMainTabChange}>
           <Tab label="Thông tin sản phẩm" {...a11yProps(0)} />
           <Tab label="Thông tin SEO" {...a11yProps(1)} />
           <Tab label="Biến thể" {...a11yProps(2)} />
         </Tabs>
+      </Card>
 
-        <TabPanel value={mainTabValue} index={0}>
-          <Grid container spacing={2} sx={{ mt: 2 }}>
+      <TabPanel value={mainTabValue} index={0}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Information
+              productData={productData}
+              handleInputChange={handleInputChange}
+              warehouseSelect={warehouseSelect}
+            />
+          </Grid>
+        </Grid>
+        <Card sx={{ mt: 2, p: 3 }}>
+          <Grid container spacing={3}>
             <Grid item xs={12}>
-              <Typography variant="h6">Thông tin sản phẩm</Typography>
-              <Information
+              <Typography sx={{ mb: 2 }} variant="h6">
+                Thông tin danh mục
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <OtherProduct
                 productData={productData}
                 handleInputChange={handleInputChange}
-                warehouseSelect={warehouseSelect}
+                categorySelect={categorySelect}
+                brandSelect={brandSelect}
+                seriesSelect={seriesSelect}
+                tagsProduct={tagsSelect}
               />
             </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Giá và hình ảnh</Typography>
-              <Grid
-                container
-                spacing={2}
-                sx={{
-                  mt: 2,
-                  display: "flex",
-                  alignItems: "flex-start",
-                }}
-              >
-                <Grid
-                  item
-                  xs={2}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Tabs
-                    value={subTabValue}
-                    onChange={handleSubTabChange}
-                    orientation="vertical"
-                    aria-label="Tabs phụ dọc"
-                    sx={{ borderRight: 1, borderColor: "divider" }}
-                  >
-                    <Tab label="Giá" {...a11yProps(0)} />
-                    <Tab label="Hình và video" {...a11yProps(1)} />
-                    <Tab label="Thông số" {...a11yProps(2)} />
-                    <Tab label="Khác" {...a11yProps(3)} />
-                  </Tabs>
-                </Grid>
+          </Grid>
+        </Card>
 
-                <Grid item xs={10}>
-                  <TabPanel value={subTabValue} index={0}>
-                    <PriceProduct
-                      productData={productData}
-                      handleInputChange={handleInputChange}
-                    />
-                  </TabPanel>
-                  <TabPanel value={subTabValue} index={1}>
-                    <Tabs
-                      value={subTabValue2}
-                      onChange={handleSubTabChange2}
-                      orientation="horizontal"
-                      aria-label="Tabs phụ dọc"
-                      centered
-                    >
-                      <Tab label="hình" {...a11yProps(0)} />
-                      <Tab label="video" {...a11yProps(1)} />
-                      <Tab label="Khác" {...a11yProps(2)} />
-                    </Tabs>
-                    <TabPanel value={subTabValue2} index={0}>
-                      <Grid container spacing={2} sx={{ mt: 2 }}>
-                        <Grid item xs={6}>
-                          <ThumbnailProduct
-                            handleUploadThumbnail={handleUploadThumbnail}
-                          />
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography
-                            variant="h6"
-                            sx={{
-                              alignItems: "center",
-                              justifyContent: "center",
-                              display: "flex",
-                            }}
-                          >
-                            Hình ảnh
-                          </Typography>
-                          {/* Component xử lý hình ảnh */}
-                          <ImagesProduct
-                            handleUploadImages={handleUploadImages}
-                            onDelete={(index) => {
-                              const newImages = [...productData.images];
-                              newImages.splice(index, 1);
-                              setProductData({
-                                ...productData,
-                                images: newImages,
-                              });
-                            }}
-                          />
-                        </Grid>
-                      </Grid>
-                    </TabPanel>
-                    <TabPanel value={subTabValue2} index={1}>
-                      <Grid sx={{ mt: 2 }}>
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            alignItems: "center",
-                            justifyContent: "center",
-                            display: "flex",
-                          }}
-                        >
-                          Video
-                        </Typography>
-                        <VideoProduct
-                          handleUploadVideo={handleUploadVideo}
-                          onDelete={(index) => {
-                            const newVideos = [...productData.videos];
-                            newVideos.splice(index, 1);
-                            setProductData({
-                              ...productData,
-                              videos: newVideos,
-                            });
-                          }}
-                        />
-                      </Grid>
-                    </TabPanel>
-                    <TabPanel value={subTabValue2} index={2}>
-                      <OtherProduct
-                        productData={productData}
-                        handleInputChange={handleInputChange}
-                        categorySelect={categorySelect}
-                        brandSelect={brandSelect}
-                        seriesSelect={seriesSelect}
-                        tagsProduct={tagsSelect}
+        <Card sx={{ mt: 2, p: 3 }}>
+          <Grid
+            container
+            justifyContent="center"
+            alignItems="center"
+            spacing={3}
+          >
+            <Grid item xs={12}>
+              <Typography sx={{ mb: 2 }} variant="h6">
+                hình ảnh và thông số
+              </Typography>
+            </Grid>
+
+            <Grid item xs={1}>
+              <Tabs
+                value={subTabValue}
+                onChange={handleSubTabChange}
+                orientation="vertical"
+                aria-label="Tabs phụ dọc"
+                sx={{ borderRight: 1, borderColor: "divider" }}
+              >
+                <Tab label="Hình và video" {...a11yProps(0)} />
+                <Tab label="Thông số" {...a11yProps(1)} />
+                <Tab label="Khác" {...a11yProps(2)} />
+              </Tabs>
+            </Grid>
+
+            <Grid item xs={11}>
+              <TabPanel value={subTabValue} index={0}>
+                <Tabs
+                  value={subTabValue2}
+                  onChange={handleSubTabChange2}
+                  orientation="horizontal"
+                  aria-label="Tabs phụ dọc"
+                  centered
+                >
+                  <Tab label="hình" {...a11yProps(0)} />
+                  <Tab label="video" {...a11yProps(1)} />
+                </Tabs>
+                <TabPanel value={subTabValue2} index={0}>
+                  <Grid container spacing={2} sx={{ mt: 2 }}>
+                    <Grid item xs={6}>
+                      <ThumbnailProduct
+                        handleUploadThumbnail={handleUploadThumbnail}
                       />
-                    </TabPanel>
-                  </TabPanel>
-                  <TabPanel value={subTabValue} index={2}>
-                    <Specifications
-                      productData={productData}
-                      handleInputChange={handleInputChange}
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "center",
+                          display: "flex",
+                        }}
+                      >
+                        Hình ảnh
+                      </Typography>
+                      <ImagesProduct
+                        handleUploadImages={handleUploadImages}
+                        onDelete={(index) => {
+                          const newImages = [...productData.images];
+                          newImages.splice(index, 1);
+                          setProductData({
+                            ...productData,
+                            images: newImages,
+                          });
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </TabPanel>
+                <TabPanel value={subTabValue2} index={1}>
+                  <Grid sx={{ mt: 2 }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        display: "flex",
+                      }}
+                    >
+                      Video
+                    </Typography>
+                    <VideoProduct
+                      handleUploadVideo={handleUploadVideo}
+                      onDelete={(index) => {
+                        const newVideos = [...productData.videos];
+                        newVideos.splice(index, 1);
+                        setProductData({
+                          ...productData,
+                          videos: newVideos,
+                        });
+                      }}
                     />
-                  </TabPanel>
-                  <TabPanel value={subTabValue} index={3}>
-                    <Gifts
-                      productData={productData}
-                      handleInputChange={handleInputChange}
-                    />
-                  </TabPanel>
-                </Grid>
-              </Grid>
+                  </Grid>
+                </TabPanel>
+              </TabPanel>
+              <TabPanel value={subTabValue} index={1}>
+                <Specifications
+                  productData={productData}
+                  handleInputChange={handleInputChange}
+                />
+              </TabPanel>
+              <TabPanel value={subTabValue} index={2}>
+                <Gifts
+                  productData={productData}
+                  handleInputChange={handleInputChange}
+                />
+              </TabPanel>
             </Grid>
           </Grid>
-        </TabPanel>
+        </Card>
+      </TabPanel>
 
-        <TabPanel value={mainTabValue} index={1}>
-          <Typography variant="h6">Thông tin Seo</Typography>
+      <TabPanel value={mainTabValue} index={1}>
+        <Card sx={{ mt: 2, p: 3 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="h6">Thông tin Seo</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <SEOInformation
+                productData={productData}
+                handleInputChange={handleInputChange}
+              />
+            </Grid>
+          </Grid>
+        </Card>
+      </TabPanel>
 
-          <SEOInformation
-            productData={productData}
-            handleInputChange={handleInputChange}
-          />
-        </TabPanel>
+      <TabPanel value={mainTabValue} index={2}>
+        <Card sx={{ mt: 2, p: 3 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="h6">Biến thể</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <AttributesSection
+                attributeData={attributeData}
+                productData={productData}
+                handleAttributeChange={handleAttributeChange}
+                handleAddAttribute={handleAddAttribute}
+                handleDeleteAttribute={handleDeleteAttribute}
+                handleEditAttribute={handleEditAttribute}
+                attributesSelect={attributesSelect}
+                handleUploadImagesAttribute={handleUploadImagesAttribute}
+                handleDeleteImagesAttribute={handleDeleteImagesAttribute}
+              />
+            </Grid>
+          </Grid>
+        </Card>
+      </TabPanel>
 
-        <TabPanel value={mainTabValue} index={2}>
-          <AttributesSection
-            attributeData={attributeData}
-            productData={productData}
-            handleAttributeChange={handleAttributeChange}
-            handleAddAttribute={handleAddAttribute}
-            handleDeleteAttribute={handleDeleteAttribute}
-            handleEditAttribute={handleEditAttribute}
-            attributesSelect={attributesSelect}
-            handleUploadImagesAttribute={handleUploadImagesAttribute}
-            handleDeleteImagesAttribute={handleDeleteImagesAttribute}
-          />
-        </TabPanel>
-
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            mt: 2,
-            p: 2,
-          }}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          mt: 2,
+          p: 2,
+        }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSaveProduct}
+          sx={{ mr: 2 }}
         >
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSaveProduct}
-            sx={{ mr: 2 }}
-          >
-            Lưu sản phẩm
-          </Button>
-          <Button variant="contained" color="error">
-            Hủy
-          </Button>
-        </Box>
-      </Card>
+          Lưu sản phẩm
+        </Button>
+        <Button variant="contained" color="error">
+          Hủy
+        </Button>
+      </Box>
     </>
   );
 }
