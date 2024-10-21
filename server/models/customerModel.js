@@ -11,6 +11,7 @@ var customerSchema = new mongoose.Schema(
     },
     email: {
       type: String,
+      sparse: true,
     },
     phone: {
       type: String,

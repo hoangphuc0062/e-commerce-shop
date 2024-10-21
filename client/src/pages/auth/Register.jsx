@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Input } from "../../components/Input/Input";
 import { useForm } from "react-hook-form";
+import { RegisterForm } from "../../components/Form/RegisterForm";
 
 export const Register = () => {
   const {
