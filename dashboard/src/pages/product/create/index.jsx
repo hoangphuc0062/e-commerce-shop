@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button, Tabs, Tab, Card, Typography, Box } from "@mui/material";
-import PropTypes from "prop-types";
 import TabPanel, { a11yProps } from "../tags";
 import Information from "./information";
 import SEOInformation from "./SEOInformation";
-import AttributesSection from "./AttributesSection";
+import AttributesSection from "./attributes/AttributesSection";
 import { Grid } from "@mui/material";
 import PriceProduct from "./price";
 import ImagesProduct from "./image/images";
@@ -15,12 +14,24 @@ import Specifications from "./specifications";
 import Gifts from "./gifts";
 import { useDispatch, useSelector } from "react-redux";
 import { getAttribute } from "../../../redux/slices/attribute";
+import { getCategory } from "../../../redux/slices/category";
+import { getBrand } from "../../../redux/slices/brand";
+import { getAllCollections } from "../../../redux/slices/collection";
+import { getAllTags as getTags } from "../../../redux/slices/tags";
+import { getAllWarehouses } from "../../../redux/slices/warehouse";
+import { createProduct } from "../../../redux/slices/product";
+import { handleToast } from "./../../../utils/toast";
 
 export default function CreateProduct() {
   const dispatch = useDispatch();
   const [mainTabValue, setMainTabValue] = useState(0);
   const [subTabValue, setSubTabValue] = useState(0);
   const [subTabValue2, setSubTabValue2] = useState(0);
+  const [categorySelect, setCategorySelect] = useState([]);
+  const [brandSelect, setBrandSelect] = useState([]);
+  const [seriesSelect, setSeriesSelect] = useState([]);
+  const [tagsSelect, setTagsSelect] = useState([]);
+  const [warehouseSelect, setWarehouseSelect] = useState([]);
 
   const handleMainTabChange = (event, newValue) => setMainTabValue(newValue);
   const handleSubTabChange = (event, newValue) => setSubTabValue(newValue);
@@ -56,7 +67,7 @@ export default function CreateProduct() {
     titleSEO: "",
     descriptionSEO: "",
     thumbnail: "",
-    images: [],
+    images: "",
     videos: "",
     status: "available",
     series: "",
@@ -67,6 +78,7 @@ export default function CreateProduct() {
     attributes: [],
     specifications: [],
     gifts: [],
+    views: 0,
   });
 
   const [attributeData, setAttributeData] = useState({
@@ -83,7 +95,7 @@ export default function CreateProduct() {
     unit: "",
     minInventory: "",
     maxInventory: "",
-    images: [],
+    images: "",
   });
 
   useEffect(() => {
@@ -98,10 +110,11 @@ export default function CreateProduct() {
       }));
       setAttributesSelect(attributes);
     }
-  }, [dataAttribute, statusGetAttribute]); // Loại bỏ `attributesSelect` khỏi danh sách phụ thuộc
+  }, [dataAttribute, statusGetAttribute]);
 
-  const handleInputChange = (field, value) =>
+  const handleInputChange = (field, value) => {
     setProductData({ ...productData, [field]: value });
+  };
 
   const handleAttributeChange = (field, value) =>
     setAttributeData({ ...attributeData, [field]: value });
@@ -109,8 +122,12 @@ export default function CreateProduct() {
   const handleUploadThumbnail = (url) =>
     setProductData({ ...productData, thumbnail: url });
 
-  const handleUploadImages = (url) =>
-    setProductData({ ...productData, images: [...productData.images, url] });
+  const handleUploadImages = (url) => {
+    setProductData((prevData) => ({
+      ...prevData,
+      images: url,
+    }));
+  };
 
   const handleUploadVideo = (url) =>
     setProductData({ ...productData, videos: url });
@@ -126,22 +143,28 @@ export default function CreateProduct() {
       SKU: "",
       historicalPrice: "",
       priceInMarket: "",
-      priceInStore: "",
-      priceOnline: "",
+      price: "",
       discount: "",
-      onStock: "",
+      onStock: "", // hàng có thể bán
+      inStock: "", // hàng tồn kho
+      inComing: "", // hàng đang về
       unit: "",
       minInventory: "",
       maxInventory: "",
-      avatar: "",
-      images: [],
+      images: "",
     });
   };
 
   // Lưu sản phẩm
   const handleSaveProduct = () => {
-    console.log("Dữ liệu sản phẩm:", productData);
-    // Gửi dữ liệu sản phẩm lên API hoặc xử lý lưu trữ tại đây
+    console.log(productData);
+    dispatch(createProduct(productData)).then((result) => {
+      if (result.type === "product/createProduct/fulfilled") {
+        handleToast("success", "Thêm sản phẩm thành công");
+      } else {
+        handleToast("error", "Thêm sản phẩm thất bại");
+      }
+    });
   };
 
   const handleDeleteAttribute = (index) => {
@@ -149,6 +172,23 @@ export default function CreateProduct() {
       ...productData,
       attributes: productData.attributes.filter((_, i) => i !== index),
     });
+  };
+
+  const handleUploadImagesAttribute = (url) => {
+    setAttributeData((prevData) => ({
+      ...prevData,
+      images: Array.isArray(prevData.images)
+        ? { ...prevData.images, url }
+        : url,
+    }));
+  };
+  const handleDeleteImagesAttribute = (index) => {
+    setAttributeData((prevData) => ({
+      ...prevData,
+      images: Array.isArray(prevData.images)
+        ? prevData.images.filter((_, i) => i !== index)
+        : [],
+    }));
   };
 
   const handleEditAttribute = (index) => {
@@ -167,33 +207,86 @@ export default function CreateProduct() {
       unit: attribute.unit,
       minInventory: attribute.minInventory,
       maxInventory: attribute.maxInventory,
-      images: attribute.images,
+      images: Array.isArray(attribute.images) ? attribute.images : [], // Ensure images is an array
     });
   };
+  const statusGetCategory = useSelector((state) => state.category.status);
+  const dataCategory = useSelector((state) => state.category.data);
+  const statusBrand = useSelector((state) => state.brand.status);
+  const dataBrand = useSelector((state) => state.brand.data);
+  const statusSeries = useSelector((state) => state.collection.status);
+  const dataSeries = useSelector((state) => state.collection.data);
+  const statusTag = useSelector((state) => state.tag.status);
+  const dataTag = useSelector((state) => state.tag.data.tags);
+  const statusWarehouse = useSelector((state) => state.warehouse.status);
+  const dataWarehouse = useSelector((state) => state.warehouse.data.wareHouses);
+  useEffect(() => {
+    dispatch(getCategory());
+  }, [dispatch]);
 
-  const categorySelect = [
-    { value: "1", label: "Category 1" },
-    { value: "2", label: "Category 2" },
-    { value: "3", label: "Category 3" },
-  ];
+  useEffect(() => {
+    dispatch(getBrand());
+  }, [dispatch]);
 
-  const brandSelect = [
-    { value: "1", label: "Brand 1" },
-    { value: "2", label: "Brand 2" },
-    { value: "3", label: "Brand 3" },
-  ];
+  useEffect(() => {
+    dispatch(getAllCollections());
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(getTags());
+  }, [dispatch]);
 
-  const seriesSelect = [
-    { value: "1", label: "Series 1" },
-    { value: "2", label: "Series 2" },
-    { value: "3", label: "Series 3" },
-  ];
+  useEffect(() => {
+    dispatch(getAllWarehouses());
+  }, [dispatch]);
 
-  const tagsProduct = [
-    { value: "1", label: "Tag 1" },
-    { value: "2", label: "Tag 2" },
-    { value: "3", label: "Tag 3" },
-  ];
+  useEffect(() => {
+    if (statusGetCategory === "success") {
+      const categories = dataCategory.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setCategorySelect(categories);
+    }
+  }, [statusGetCategory, dataCategory]);
+  useEffect(() => {
+    if (statusBrand === "success") {
+      const brands = dataBrand.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setBrandSelect(brands);
+    }
+  }, [statusBrand, dataBrand]);
+
+  useEffect(() => {
+    if (statusSeries === "succeeded") {
+      const series = dataSeries.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setSeriesSelect(series);
+    }
+  }, [statusSeries, dataSeries]);
+
+  useEffect(() => {
+    if (statusTag === "succeeded") {
+      const tags = dataTag.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setTagsSelect(tags);
+    }
+  }, [statusTag, dataTag]);
+
+  useEffect(() => {
+    if (statusWarehouse === "success") {
+      const warehouses = dataWarehouse.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setWarehouseSelect(warehouses);
+    }
+  }, [statusWarehouse, dataWarehouse]);
 
   return (
     <>
@@ -211,9 +304,7 @@ export default function CreateProduct() {
               <Information
                 productData={productData}
                 handleInputChange={handleInputChange}
-                seriesSelect={seriesSelect}
-                categorySelect={categorySelect}
-                brandSelect={brandSelect}
+                warehouseSelect={warehouseSelect}
               />
             </Grid>
             <Grid item xs={12}>
@@ -334,7 +425,7 @@ export default function CreateProduct() {
                         categorySelect={categorySelect}
                         brandSelect={brandSelect}
                         seriesSelect={seriesSelect}
-                        tagsProduct={tagsProduct}
+                        tagsProduct={tagsSelect}
                       />
                     </TabPanel>
                   </TabPanel>
@@ -374,6 +465,8 @@ export default function CreateProduct() {
             handleDeleteAttribute={handleDeleteAttribute}
             handleEditAttribute={handleEditAttribute}
             attributesSelect={attributesSelect}
+            handleUploadImagesAttribute={handleUploadImagesAttribute}
+            handleDeleteImagesAttribute={handleDeleteImagesAttribute}
           />
         </TabPanel>
 

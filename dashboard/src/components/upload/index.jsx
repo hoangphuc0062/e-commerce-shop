@@ -21,6 +21,7 @@ const ImageUploader = ({
   helperText,
   allowedFormats = ["PNG", "JPG"],
   fooder, // Dynamic folder path for upload
+  idupload,
 }) => {
   const [downloadURLs, setDownloadURLs] = useState([]);
   const [imageRefs, setImageRefs] = useState([]);
@@ -95,13 +96,13 @@ const ImageUploader = ({
     <Box textAlign="center" p={3}>
       <input
         type="file"
-        id="uploadFile"
+        id={idupload || "uploadFile"}
         accept="image/*"
         style={{ display: "none" }}
         onChange={handleFileUpload}
         multiple // Allow multiple file uploads
       />
-      <label htmlFor="uploadFile">
+      <label htmlFor={idupload || "uploadFile"}>
         <Box
           sx={{
             width: avatarSize + 30,
@@ -208,6 +209,7 @@ ImageUploader.propTypes = {
   helperText: propTypes.string,
   allowedFormats: propTypes.arrayOf(propTypes.string),
   fooder: propTypes.string.isRequired, // Required prop for dynamic folder path
+  idupload: propTypes.string,
 };
 
 export default ImageUploader;
