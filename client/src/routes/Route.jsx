@@ -18,7 +18,6 @@ import UserOrder from "../pages/web/profile/UserOrder";
 
 export default function RootRouter() {
   const routes = useRoutes([
-    
     {
       path: "/",
       element: <PublicLayout />,
@@ -29,8 +28,8 @@ export default function RootRouter() {
         { path: "/phone", element: <ProductList /> },
         { path: "/phone/:slug", element: <ProductDetail /> },
         { path: "/cart", element: <CartProduct /> },
-        { path: "/check_info", element: <Checkout_info /> },
-        { path: "/checkout", element: <Checkout /> },
+        { path: "/checkout", element: <Checkout_info /> },
+        { path: "/payment", element: <Checkout /> },
         { path: "/profile", element: <Profile /> },
         { path: "profile/account", element: <AccountUser /> },
         { path: "profile/order", element: <UserOrder /> },
