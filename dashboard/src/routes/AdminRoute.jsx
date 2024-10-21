@@ -32,8 +32,8 @@ import CollectionPage from "../pages/collection";
 import AddBannerConllection from "../pages/bannercollection/create";
 import EditBannerCollection from "../pages/bannercollection/edit";
 import CreateProduct from "../pages/product/create";
+import EditProduct from "../pages/product/update";
 
-// import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
   return (
     <>
@@ -181,6 +181,15 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<CreateProduct />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="product/update/:id"
+        element={
+          <PrivateRoute
+            element={<EditProduct />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }

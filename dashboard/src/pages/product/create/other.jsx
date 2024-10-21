@@ -1,15 +1,14 @@
+/* eslint-disable react/prop-types */
 import {
   Autocomplete,
   Checkbox,
   FormControl,
   Grid,
   InputLabel,
-  ListItemText,
   MenuItem,
   Select,
   TextField,
 } from "@mui/material";
-import React from "react";
 
 export default function OtherProduct({
   productData,

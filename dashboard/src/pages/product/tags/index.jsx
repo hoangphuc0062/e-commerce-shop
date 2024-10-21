@@ -11,7 +11,7 @@ function TabPanel(props) {
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
-      style={{ height: "100%", overflowY: "auto" }} // Scrollable container for long content
+      style={{ height: "100%", overflowY: "auto" }}
       {...other}
     >
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
