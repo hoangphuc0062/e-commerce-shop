@@ -26,11 +26,24 @@ export const getProduct = createAsyncThunk(
   (_, thunkAPI) => handleAsyncThunk(ProductService.getAll, [null], thunkAPI)
 );
 
+export const getProducts = createAsyncThunk(
+  "product/getProducts",
+  ([page, limit], thunkAPI) =>
+    handleAsyncThunk(ProductService.getAll, [page, limit], thunkAPI)
+);
+
 // delete product
 
 export const deleteProduct = createAsyncThunk(
   "product/deleteProduct",
   (id, thunkAPI) => handleAsyncThunk(ProductService.delete, [id], thunkAPI)
+);
+
+// create product
+
+export const createProduct = createAsyncThunk(
+  "product/createProduct",
+  (data, thunkAPI) => handleAsyncThunk(ProductService.create, [data], thunkAPI)
 );
 
 const productSlice = createSlice({
@@ -40,6 +53,8 @@ const productSlice = createSlice({
     status: "idle",
     error: null,
     statusDelete: "idle",
+    statusCreate: "idle",
+    statusGet: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -70,6 +85,25 @@ const productSlice = createSlice({
       })
       .addCase(deleteProduct.rejected, (state) => {
         state.statusDelete = "failed";
+      })
+      .addCase(createProduct.pending, (state) => {
+        state.statusCreate = "loading";
+      })
+      .addCase(createProduct.fulfilled, (state) => {
+        state.statusCreate = "success";
+      })
+      .addCase(createProduct.rejected, (state) => {
+        state.statusCreate = "failed";
+      })
+      .addCase(getProducts.pending, (state) => {
+        state.statusGet = "loading";
+      })
+      .addCase(getProducts.fulfilled, (state, action) => {
+        state.statusGet = "success";
+        state.data = action.payload;
+      })
+      .addCase(getProducts.rejected, (state) => {
+        state.statusGet = "failed";
       });
   },
 });

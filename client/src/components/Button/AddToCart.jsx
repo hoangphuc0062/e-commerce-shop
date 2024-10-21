@@ -8,7 +8,7 @@ const AddToCart = () => {
   };
 
   return (
-    <button 
+    <button
       className="flex flex-col items-center justify-center border border-main text-main rounded-lg p-2 hover:bg-main hover:text-white"
       onClick={handleAddToCart}
     >

@@ -1,4 +1,4 @@
-export const Image = [
+export const images = [
   {
     title: "Banner-1",
     descrtiption: "This is banner 1",
@@ -70,5 +70,5 @@ export const Image = [
     descrtiption: "This is banner 12",
     src: "https://cdn2.cellphones.com.vn/insecure/rs:fill:595:100/q:80/plain/https://dashboard.cellphones.com.vn/storage/real-me-note-60-cate-6-9-2024.png",
     link: "url_3",
-  }, 
+  },
 ];

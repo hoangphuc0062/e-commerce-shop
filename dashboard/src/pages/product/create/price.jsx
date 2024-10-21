@@ -1,4 +1,5 @@
-import { TextField, Grid } from "@mui/material";
+/* eslint-disable react/prop-types */
+import { TextField, Grid, InputAdornment } from "@mui/material";
 
 export default function PriceProduct({ productData, handleInputChange }) {
   return (
@@ -9,6 +10,9 @@ export default function PriceProduct({ productData, handleInputChange }) {
           fullWidth
           value={productData.historicalPrice}
           onChange={(e) => handleInputChange("historicalPrice", e.target.value)}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">đ</InputAdornment>,
+          }}
         />
       </Grid>
       <Grid item xs={4}>
@@ -17,30 +21,20 @@ export default function PriceProduct({ productData, handleInputChange }) {
           fullWidth
           value={productData.priceInMarket}
           onChange={(e) => handleInputChange("priceInMarket", e.target.value)}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">đ</InputAdornment>,
+          }}
         />
       </Grid>
       <Grid item xs={4}>
         <TextField
-          label="Giá cửa hàng"
+          label="Giá"
           fullWidth
-          value={productData.priceInStore}
-          onChange={(e) => handleInputChange("priceInStore", e.target.value)}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <TextField
-          label="Giá online"
-          fullWidth
-          value={productData.priceOnline}
-          onChange={(e) => handleInputChange("priceOnline", e.target.value)}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <TextField
-          label="Giảm giá"
-          fullWidth
-          value={productData.discount}
-          onChange={(e) => handleInputChange("discount", e.target.value)}
+          value={productData.price}
+          onChange={(e) => handleInputChange("price", e.target.value)}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">đ</InputAdornment>,
+          }}
         />
       </Grid>
     </Grid>

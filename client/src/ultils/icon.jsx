@@ -9,6 +9,8 @@ import { BsTruck } from "react-icons/bs";
 import { FaPen } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { IoMdAddCircleOutline, IoMdClose } from "react-icons/io";
+import { FaRegStar } from "react-icons/fa6";
+import { FaStar } from "react-icons/fa";
 
 import { FaAngleDoubleRight } from "react-icons/fa";
 import { FaAngleDoubleLeft } from "react-icons/fa";
@@ -62,6 +64,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import { IoIosArrowForward } from "react-icons/io";
 import { IoIosStar } from "react-icons/io";
 import { FaLocationDot, FaAngleDown } from "react-icons/fa6";
+import { TbCategoryPlus } from "react-icons/tb";
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
@@ -132,6 +135,9 @@ const icons = {
   FaAngleDown,
   IoMdClose,
   AiFillHeart,
+  FaRegStar,
+  FaStar,
+  TbCategoryPlus,
 };
 
 export default icons;

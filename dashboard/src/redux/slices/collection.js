@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 
-import CollectionService from "../../services/collection.service";
+import ServiceService from "../../services/series.service";
 
 const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
   try {
@@ -23,22 +23,21 @@ export const resetState = createAsyncThunk(
 
 export const getAllCollections = createAsyncThunk(
   "collection/getAllCollections",
-  (_, thunkAPI) => handleAsyncThunk(CollectionService.getAll, [null], thunkAPI)
+  (_, thunkAPI) => handleAsyncThunk(ServiceService.getAll, [null], thunkAPI)
 );
 
 // create collection
 
 export const createCollection = createAsyncThunk(
   "collection/createCollection",
-  (data, thunkAPI) =>
-    handleAsyncThunk(CollectionService.create, [data], thunkAPI)
+  (data, thunkAPI) => handleAsyncThunk(ServiceService.create, [data], thunkAPI)
 );
 
 // delete collection
 
 export const deleteCollection = createAsyncThunk(
   "collection/deleteCollection",
-  (id, thunkAPI) => handleAsyncThunk(CollectionService.delete, [id], thunkAPI)
+  (id, thunkAPI) => handleAsyncThunk(ServiceService.delete, [id], thunkAPI)
 );
 
 // update collection
@@ -46,7 +45,7 @@ export const deleteCollection = createAsyncThunk(
 export const updateCollection = createAsyncThunk(
   "collection/updateCollection",
   ({ collectionId, data }, thunkAPI) =>
-    handleAsyncThunk(CollectionService.update, [collectionId, data], thunkAPI)
+    handleAsyncThunk(ServiceService.update, [collectionId, data], thunkAPI)
 );
 
 const collection = createSlice({
