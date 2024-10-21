@@ -1,4 +1,6 @@
 import Sidebar from "../../../components/Profile/SidebarProfile";
+import ProfileUser from "../../../components/Profile/ProfileUser";
+import OrderFilter from "../../../components/Profile/OrderFilter";
 const UserOrder = () => {
   return (
     <div className="container mx-auto p-2 md:flex">
@@ -8,27 +10,16 @@ const UserOrder = () => {
         </div>
         {/* Main Content */}
       <div className="w-full md:w-3/4 lg:w-4/5 xl:w-5/6 p-4">
-        <div className="flex items-center space-x-4 mb-4">
-            <img
-              src="https://cdn2.cellphones.com.vn/50x50,webp,q100/media/wysiwyg/Shipper_CPS3_1.png"
-              alt="Avatar"
-              className="w-16 h-16 rounded-full border"
-            />
-            <div>
-              <h2 className="text-xl font-bold">NGUYỄN SỸ</h2>
-              <p className="text-gray-500">0344484162</p>
-              <span className="bg-pink-200 text-pink-700 text-xs font-semibold px-2.5 py-0.5 rounded">
-                SNULL
-              </span>
-            </div>
+      <div className="w-full md:w-3/4 lg:w-4/5 xl:w-5/6 p-4">
+          <ProfileUser />
         </div>
 
-        <div className="flex justify-center p-3 border border-gray-300 rounded-lg mx-auto" style={{ maxWidth: '650px' }}>
-            <div className="text-center mx-20">
+        <div className="flex justify-center p-3 border border-gray-300 rounded-lg w-full">
+            <div className="text-center mx-40">
               <p className="text-2xl font-bold">0</p>
               <p className="text-gray-500">đơn hàng</p>
             </div>
-            <div className="text-center mx-20">
+            <div className="text-center mx-40">
               <p className="text-2xl font-bold">0đ</p>
               <p className="text-gray-500">Tổng tiền tích lũy</p>
             </div>
@@ -49,23 +40,69 @@ const UserOrder = () => {
         </div>
 
         {/* Order Filter */}
-        <div className="flex flex-wrap space-x-2 mb-4">
-          <button className="bg-red-500 text-white py-2 px-4 rounded-md mb-2 md:mb-0">Tất cả</button>
-          <button className="bg-gray-200 py-2 px-4 rounded-md mb-2 md:mb-0">Chờ xác nhận</button>
-          <button className="bg-gray-200 py-2 px-4 rounded-md mb-2 md:mb-0">Đã xác nhận</button>
-          <button className="bg-gray-200 py-2 px-4 rounded-md mb-2 md:mb-0">Đang vận chuyển</button>
-          <button className="bg-gray-200 py-2 px-4 rounded-md mb-2 md:mb-0">Đã giao hàng</button>
-          <button className="bg-gray-200 py-2 px-4 rounded-md mb-2 md:mb-0">Đã huỷ</button>
-        </div>
+        <OrderFilter />
 
         {/* No Orders Image */}
         <div className="text-center mt-8">
-          <img
-            src="https://cellphones.com.vn/smember/_nuxt/img/empty.db6deab.svg"
-            alt="No Orders"
-            className="mx-auto w-1/5"
-          />
-          <p className="mt-4 text-gray-500">Không có đơn hàng nào thoả mãn!</p>
+        <div className="order-list">
+          <div className="order-item border border-gray-300 rounded-lg p-4 mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-red-500 font-bold">99.9mhz Sale Khó Mua</span>
+              <div className="flex items-center ml-auto px-2">
+                <a href="" className="text-sm border border-gray-300 py-1 px-3 rounded-md">Xem Shop</a>
+              </div>
+              <button className="text-green-500" onClick={() => window.location.href = '/profile/manage'}>HOÀN THÀNH</button>
+            </div>
+            <div className="flex">
+              <img
+                src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/i/xiaomi_14t.png"
+                alt="Product"
+                className="w-20 h-20 object-cover mr-4"
+              />
+              <div className="text-left">
+                <p className="font-bold">
+                Xiaomi 14T - series mới nhất
+                </p>
+                <p className="text-gray-500">Phân loại hàng: Xiaomi 14T, Đen - 256GB</p>
+                <p className="text-gray-500">Số lượng: x1</p>
+                <p className="text-red-500 font-bold">Thành tiền: 13.990.000 VNĐ</p>
+              </div>
+            </div>
+            <div className="flex justify-end mt-2">
+              <button className="bg-main text-white py-1 px-3 rounded-md mr-2">Mua Lại</button>
+              <button className="bg-gray-200 py-1 px-3 rounded-md">Liên Hệ Người Bán</button>
+            </div>
+          </div>
+
+          <div className="order-item border border-gray-300 rounded-lg p-4 mb-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-red-500 font-bold">Hoàng Lê-Biker Life</span>
+              
+              <div className="flex items-center ml-auto px-2">
+                <a href="" className="text-sm border border-gray-300 py-1 px-3 rounded-md">Xem Shop</a>
+              </div><button className="text-green-500">ĐÃ HỦY</button>
+            </div>
+            <div className="flex">
+              <img
+                src="https://cdn2.cellphones.com.vn/insecure/rs:fill:300:0/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-titan-sa-mac_3.png"
+                alt="Product"
+                className="w-20 h-20 object-cover mr-4"
+              />
+              <div className="text-left">
+                <p className="font-bold">
+                  Iphone 16 Pro Max Series Chính Hãng VN/A
+                </p>
+                <p className="text-gray-500">Phân loại hàng: 1TB, Titan Sa Mạc</p>
+                <p className="text-gray-500">Số lượng: x1</p>
+                <p className="text-red-500 font-bold">Thành tiền: 34.990.000 VNĐ</p>
+              </div>
+            </div>
+            <div className="flex justify-end mt-2">
+              <button className="bg-main text-white py-1 px-3 rounded-md mr-2">Mua Lại</button>
+              <button className="bg-gray-200 py-1 px-3 rounded-md">Xem Chi Tiết Hủy Đơn</button>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
     </div>
