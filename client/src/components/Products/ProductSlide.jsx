@@ -1,4 +1,4 @@
-import { products } from "../../data/Product/Products";
+// import { products } from "../../data/Product/Products";
 import { Link } from "react-router-dom"; // Added import for Link
 import Favorites from "../Button/Favorites";
 import Ratings from "./Ratings";
@@ -12,7 +12,7 @@ import "swiper/css/pagination";
 import "./ProductSlide.css";
 // import required modules
 import { Grid, Pagination } from "swiper/modules";
-const ProductSlide = () => {
+const ProductSlide = ({ products }) => {
   return (
     <div>
       <Swiper
@@ -68,30 +68,19 @@ const ProductSlide = () => {
                         alt="Discount Label"
                         className="w-full object-cover"
                       />
-                 
-                        <span className="absolute flex items-center justify-center text-white font-bold text-sm top-1.5 left-3">
-                          Giảm {product.discount}%
-                        </span>
+
+                      <span className="absolute flex items-center justify-center text-white font-bold text-sm top-1.5 left-3">
+                        Giảm {product.discount}%
+                      </span>
                     </div>
                   )}
-                  <span className="absolute top-1 right-0 bg-main text-white text-xs font-bold px-1 py-1.5 w-20 h-7 rounded">
+                  <span className="absolute top-1 right-0 bg-main text-white text-xs font-bold px-1 py-1.5 w-20 h-7 rounded text-center">
                     Trả góp 0%
                   </span>
                   <div className="p-2 text-start">
                     <h2 className="text-sm font-semibold line-clamp-1">
                       {product.name}
                     </h2>
-                    <div className="flex items-center gap-1">
-                      <p className="text-xs text-muted-foreground border rounded-md p-1 line-clamp-1">
-                        {product.screen}
-                      </p>
-                      <p className="text-xs text-muted-foreground border rounded-md p-1">
-                        {product.options[0].ram}
-                      </p>
-                      <p className="text-xs text-muted-foreground border rounded-md p-1">
-                        {product.options[0].rom}
-                      </p>
-                    </div>
                     <p className="text-md font-bold text-primary pt-1">
                       {product.options[0].salePrice > 0
                         ? `${product.options[0].salePrice.toLocaleString()}đ `

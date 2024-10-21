@@ -15,7 +15,7 @@ import Profile from "../pages/web/profile/Profile";
 import AccountUser from "../pages/web/profile/AccountUser";
 import ProductDetail from "../pages/web/product/ProductDetail";
 import UserOrder from "../pages/web/profile/UserOrder";
-
+import Manage from "../pages/web/profile/manage";
 export default function RootRouter() {
   const routes = useRoutes([
     
@@ -34,6 +34,7 @@ export default function RootRouter() {
         { path: "/profile", element: <Profile /> },
         { path: "profile/account", element: <AccountUser /> },
         { path: "profile/order", element: <UserOrder /> },
+        { path: "profile/manage", element: <Manage /> },
       ],
     },
     {
