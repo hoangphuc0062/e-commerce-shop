@@ -1,17 +1,21 @@
 import { Link } from "react-router-dom";
-import { RegisterForm } from "../../components/Form/RegisterForm";
-import e from "cors";
+import { Input } from "../../components/Input/Input";
+import { useForm } from "react-hook-form";
 
 export const Register = () => {
-  const handleSubmit = (data) => {
-    console.log(data);
-  };
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm();
+  const onSubmit = (data) => console.log(data);
+
   return (
     <section className="mx-2">
       <div className="container flex justify-center">
         <div className="flex-1">
           <div>
-            <h1>Logo here</h1>
             <h1 className="text-[32px] font-bold">Chào mừng bạn trở lại</h1>
           </div>
           <div>
@@ -24,7 +28,64 @@ export const Register = () => {
               </Link>
             </span>
           </div>
-          <RegisterForm onSubmit={handleSubmit} />
+          <form onSubmit={handleSubmit(onSubmit)} action="" className="py-5">
+            <div className="grid gap-6 mb-6 md:grid-cols-1 lg:grid-cols-2">
+              <Input
+                label="Họ và tên"
+                id="name"
+                placeholder="Nhập họ và tên"
+                {...register("name", {
+                  required: "Bạn cần nhập họ và tên để đăng ký",
+                  minLength: { value: 2, message: "Họ và tên quá ngắn" },
+                })}
+                errorMessage={errors.name?.message}
+              />
+              <Input
+                label="Số điện thoại"
+                id="phone"
+                type="text"
+                placeholder="Nhập số điện thoại"
+                {...register("phone", {
+                  required: "Bạn cần điên thoại để đăng ký",
+                  minLength: { value: 10, message: "Số điện thoại quá ngắn" },
+                })}
+                errorMessage={errors.phone?.message}
+              />
+
+              <Input
+                label="Mật khẩu"
+                type="password"
+                id="confirmPassword"
+                placeholder="Nhập lại mật khẩu"
+                iconName={"mdi-light:eye"}
+                {...register("password", {
+                  required: "Bạn cần nhập mật khẩu để đăng ký",
+                  minLength: { value: 6, message: "Mật khẩu quá ngắn" },
+                })}
+                errorMessage={errors.password?.message}
+              />
+              <Input
+                label="Xác nhận mật khẩu"
+                type="password"
+                id="confirmPassword"
+                placeholder="Nhập lại mật khẩu"
+                iconName={"mdi-light:eye"}
+                {...register("confirmPassword", {
+                  required: "Bạn cần xác nhận lại mật khẩu",
+                  validate: (value) =>
+                    value === watch("password") || "Mật khẩu không khớp",
+                })}
+                errorMessage={errors.confirmPassword?.message}
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="px-4 py-2 my-3 bg-blue-700 w-[100%] text-white rounded hover:bg-blue-800"
+            >
+              Đăng ký tài khoản
+            </button>
+          </form>
         </div>
         <div className="hidden lg:flex flex-1 justify-center ">
           <img
