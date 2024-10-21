@@ -34,6 +34,7 @@ import { MdManageAccounts } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
 
 import { PiNotepadBold } from "react-icons/pi";
+import { GoChecklist } from "react-icons/go";
 import { TbWorldSearch } from "react-icons/tb";
 import { IoGameControllerOutline, IoTrendingUp } from "react-icons/io5";
 import { MdOutlineSignpost } from "react-icons/md";
@@ -95,6 +96,7 @@ const icons = {
   CiHeart,
 
   PiNotepadBold,
+  GoChecklist,
   TbWorldSearch,
   IoGameControllerOutline,
   MdOutlineSignpost,

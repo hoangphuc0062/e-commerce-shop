@@ -1,5 +1,4 @@
 import icons from "../../ultils/icon";
-
 const CategoryProfile = [
   {
     id: 1,
@@ -23,8 +22,8 @@ const CategoryProfile = [
   {
     id: 4,
     name: "Quản lý đơn hàng",
-    icon: icons.MdManageAccounts,
-    link: "",
+    icon: icons.GoChecklist,
+    link: "/profile/manage",
   },
   {
     id: 5,
@@ -34,5 +33,6 @@ const CategoryProfile = [
   },
 
 ];
+
 
 export default CategoryProfile;

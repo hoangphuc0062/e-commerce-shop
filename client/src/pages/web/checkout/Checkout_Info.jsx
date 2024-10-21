@@ -162,3 +162,5 @@ export const CheckoutInfo = () => {
 };
 
 export default CheckoutInfo;
+
+
