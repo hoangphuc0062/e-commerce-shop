@@ -31,13 +31,13 @@ const initRoutes = (app) => {
   app.use("/api/staffs", staffRouter);
   app.use("/api/series", seryRouter);
 
-  app.use("/api/webConfig", webConfigRouter);
+  app.use("/api/webconfig", webConfigRouter);
   app.use("/api/tags", tagRouter);
   app.use("/api/stores", storeRouter);
-  app.use("/api/wareHouses", wareHouseRouter);
-  app.use("/api/bannerCollection", bannerCollectionRouter);
+  app.use("/api/warehouses", wareHouseRouter);
+  app.use("/api/bannercollection", bannerCollectionRouter);
   app.use("/api/shippingUnits", shippingUnitRouter);
-  app.use("/api/globalSeo", globalSeoRouter);
+  app.use("/api/globalseo", globalSeoRouter);
   app.use("/api/blogs", postRouter);
   app.use("/api/attributes", attributeRouter);
   app.use("/api/icon-class", iconRoute);

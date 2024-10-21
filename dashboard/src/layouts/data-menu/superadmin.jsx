@@ -59,12 +59,6 @@ const menuItems = {
               type: "item",
               url: "/dashboard/collection",
             },
-            {
-              id: "add-collection",
-              title: "Thêm bộ sưu tập",
-              type: "item",
-              url: "/dashboard/collection/create",
-            },
           ],
         },
         {

@@ -9,6 +9,7 @@ import { Edit, Delete } from "@mui/icons-material";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { StatusChip, StatusOrderChip, StatustPostChip } from "../StatusColor";
 import propTypes from "prop-types";
+import { extractTextFromHtml } from "../../utils/extractTextFromHtml";
 
 const TableRowComponent = ({
   row,
@@ -42,11 +43,53 @@ const TableRowComponent = ({
             <StatusChip status={row[column.field]} />
           ) : column.field === "statustPost" ? (
             <StatustPostChip status={row[column.field]} />
+          ) : column.field === "description" ? (
+            <div>
+              {row[column.field].length > 50
+                ? extractTextFromHtml(row[column.field].slice(0, 50) + "...")
+                : extractTextFromHtml(row[column.field])}
+            </div>
+          ) : column.field === "values" ? (
+            <div>
+              {row[column.field] && Array.isArray(row[column.field]) ? (
+                row[column.field].map((item, index) => (
+                  <span
+                    key={index}
+                    style={{ display: "inline-block", marginRight: "5px" }}
+                  >
+                    {item.startsWith("#") ? (
+                      <div
+                        style={{
+                          display: "inline-block",
+                          width: "20px",
+                          height: "20px",
+                          backgroundColor: item,
+                          border: "1px solid #000",
+                          marginRight: "5px",
+                        }}
+                      ></div>
+                    ) : (
+                      item
+                    )}
+                    {index !== row[column.field].length - 1 && ", "}
+                  </span>
+                ))
+              ) : (
+                <span>{row[column.field] || "Không có dữ liệu"}</span>
+              )}
+            </div>
           ) : column.field === "image" ? (
             <Avatar
               alt={row[column.name]}
               variant="rounded"
               src={row[column.field]}
+              sx={{ width: 50, height: 50 }}
+            />
+          ) : column.field === "images" ? (
+            <Avatar
+              alt={row[column.name]}
+              variant="rounded"
+              src={row[column.field][0]}
               sx={{ width: 50, height: 50 }}
             />
           ) : (

@@ -10,7 +10,6 @@ import UserPage from "../pages/user";
 import WarehousePage from "../pages/warehouse";
 import AddWarehouse from "../pages/warehouse/create";
 import ProductPage from "../pages/product";
-import CreateProductForm from "../pages/product/create";
 import VariantForm from "../pages/product/variant/create";
 import VariantPage from "../pages/product/variant";
 import OrderPage from "../pages/order";
@@ -30,6 +29,9 @@ import UpdateCoupons from "../pages/coupons/edit";
 import CategoryEdit from "../pages/category/edit";
 import BrandPage from "../pages/brand";
 import CollectionPage from "../pages/collection";
+import AddBannerConllection from "../pages/bannercollection/create";
+import EditBannerCollection from "../pages/bannercollection/edit";
+import CreateProduct from "../pages/product/create";
 
 // import CreateCaterory from "../pages/category/create";
 const AdminRoute = () => {
@@ -178,7 +180,7 @@ const AdminRoute = () => {
         path="product/create"
         element={
           <PrivateRoute
-            element={<CreateProductForm />}
+            element={<CreateProduct />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
@@ -237,6 +239,24 @@ const AdminRoute = () => {
           <PrivateRoute
             element={<BannerCollection />}
             roles={["admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="bannercollection/create"
+        element={
+          <PrivateRoute
+            element={<AddBannerConllection />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="bannercollection/edit/:id"
+        element={
+          <PrivateRoute
+            element={<EditBannerCollection />}
+            roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
       />
