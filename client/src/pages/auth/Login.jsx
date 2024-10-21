@@ -8,13 +8,23 @@ import { Input } from "../../components/Input/Input";
 import { SSOButton } from "../../components/Button/SSOButton";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export const Login = () => {
+  const dispatch = useDispatch();
+  const [captchaValue, setCaptchaValue] = useState(null);
   const { handleSubmit, register } = useForm();
   const [errors, setErrors] = useState("");
-  const dispatch = useDispatch();
+
+  const onChange = (value) => {
+    setCaptchaValue(value);
+  };
 
   const onSubmit = (data) => {
+    if (!captchaValue) {
+      handleToast("error", "Vui lòng xác nhận bạn không phải là robot.");
+      return;
+    }
     // console.log(data);
     dispatch(login(data)).then((res) => {
       if (res.type === "customer/login/fulfilled") {
@@ -64,7 +74,10 @@ export const Login = () => {
                 errorMessage={errors}
               />
             </div>
-
+            <ReCAPTCHA
+              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+              onChange={onChange}
+            />
             <button
               type="submit"
               className="px-4 py-2 my-3 bg-blue-700 w-[100%] text-white rounded hover:bg-blue-800"

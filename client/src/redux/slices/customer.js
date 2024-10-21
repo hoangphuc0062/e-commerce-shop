@@ -18,6 +18,13 @@ export const login = createAsyncThunk(
     handleAsyncThunk(CustomerService.login, [data], thunkAPI)
 );
 
+// register
+export const registerCustomer = createAsyncThunk(
+  "customer/register",
+  async (data, thunkAPI) =>
+    handleAsyncThunk(CustomerService.registerCustomer, [data], thunkAPI)
+);
+
 // get current customer
 export const getCurrentCustomer = createAsyncThunk(
   "customer/getCurrentCustomer",
@@ -53,6 +60,7 @@ const customerSlice = createSlice({
     statusUpdate: "idle",
     deleteStatus: "idle",
     loginStatus: "idle",
+    registerStatus: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -84,6 +92,17 @@ const customerSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.loginStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(registerCustomer.pending, (state) => {
+        state.registerStatus = "loading";
+      })
+      .addCase(registerCustomer.fulfilled, (state, action) => {
+        state.registerStatus = "success";
+        state.data = action.payload;
+      })
+      .addCase(registerCustomer.rejected, (state, action) => {
+        state.registerStatus = "failed";
         state.error = action.payload;
       });
   },
