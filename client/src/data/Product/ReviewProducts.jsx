@@ -1,0 +1,51 @@
+export const reviewProducts = [
+  {
+    id: 1,
+    name: "Nguyễn Văn Sỹ",
+    date: "2024-02-02",
+    rating: 4.5,
+    comment: "Sản phẩm tốt ! oke",
+  },
+  {
+    id: 2,
+    name: "Nguyễn Văn Sỹ",
+    date: "2024-02-02",
+    rating: 3.5,
+    comment: "Sản phẩm tốt, giá cả phải chăng",
+  },
+  {
+    id: 3,
+    name: "Nguyễn Văn Sỹ",
+    date: "2024-02-02",
+    rating: 5.0,
+    comment: "Sản phẩm tốt, giá cả tuyệt vời",
+  },
+  {
+    id: 4,
+    name: "Nguyễn Văn Sỹ",
+    date: "2024-02-02",
+    rating: 4.0,
+    comment: "Sản phẩm tốt, giá cả tuyệt vời",
+  },
+  {
+    id: 5,
+    name: "Nguyễn Văn Sỹ",
+    date: "2024-02-02",
+    rating: 3.0,
+    comment: "Sản phẩm tốt, giá cả tuyệt vời",
+  },
+  {
+    id: 6,
+    name: "Nguyễn Văn Sỹ",
+    date: "2024-02-02",
+    rating: 2.0,
+    comment: "Sản phẩm tốt, giá cả tuyệt vời",
+  },
+  {
+    id: 7,
+    name: "Nguyễn Văn Sỹ",
+    date: "2024-02-02",
+    rating: 1.0,
+    comment: "Sản phẩm tốt, giá cả tuyệt vời",
+  },
+];

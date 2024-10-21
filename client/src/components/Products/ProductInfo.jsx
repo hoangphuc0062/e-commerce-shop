@@ -1,8 +1,8 @@
 import Heading from "../Heading/Heading";
-
+import "./ProductInfo.css";
 const ProductInfo = () => {
   return (
-    <div className="p-4 border rounded-lg shadow-md w-full md:w-[50%] overflow-y-auto max-h-[250px]">
+    <div className="p-4 border rounded-lg shadow-md w-full md:w-[50%] overflow-y-auto max-h-[250px] scrollbar-hide">
       <Heading title="Thông tin sản phẩm" />
       <ul className="mb-4 list-disc list-inside">
         <li>Mới, đầy đủ phụ kiện từ nhà sản xuất</li>

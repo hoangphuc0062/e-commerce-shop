@@ -1,0 +1,10 @@
+/* Ẩn thanh cuộn cho các trình duyệt WebKit */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Duy trì khả năng cuộn trong tất cả các trình duyệt */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
