@@ -1,19 +1,23 @@
-import { Brand } from "../../data/Product/Brand";
+import { Link } from "react-router-dom";
 
-const BrandIndex = () => {
+const BrandIndex = ({ brands }) => {
   return (
-    <div className="flex overflow-x-auto sm:overflow-visible gap-2">
-      {Brand.map((brand, index) => (
-        <div
+    <div className="flex overflow-x-auto sm:overflow-visible gap-2 justify-center">
+      {brands.slice(0, 11).map((brand, index) => (
+        <Link
           key={index}
+          to={`/brands/${brand.slug}`}
           className="flex-shrink-0 bg-gray-200 text-gray-800 px-3 py-1 rounded cursor-pointer text-sm sm:text-base hover:bg-main hover:text-white"
         >
           {brand.name}
-        </div>
+        </Link>
       ))}
-      <div className="flex-shrink-0 bg-gray-200 text-gray-800 px-3 py-1 rounded cursor-pointer text-sm sm:text-base hover:bg-main hover:text-white">
+      <Link
+        to="/brands/all"
+        className="flex-shrink-0 bg-gray-200 text-gray-800 px-3 py-1 rounded cursor-pointer text-sm sm:text-base hover:bg-main hover:text-white"
+      >
         Xem tất cả
-      </div>
+      </Link>
     </div>
   );
 };
