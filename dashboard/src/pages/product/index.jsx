@@ -9,8 +9,11 @@ import {
   resetState,
 } from "../../redux/slices/product";
 import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductPage() {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
 
@@ -35,7 +38,7 @@ export default function ProductPage() {
     console.log(`Added ${quantity} of ${product.name} to cart`);
   };
   const handleEdit = (index) => {
-    console.log("Edit", index);
+    navigate(`/dashboard/product/update/${index._id}`);
   };
 
   const handleEye = (index) => {
@@ -96,6 +99,12 @@ export default function ProductPage() {
     },
     [dispatch]
   );
+
+  const handleSave = (data) => {
+    console.log("Save", data);
+
+    setOpen(false);
+  };
   return (
     <>
       <ReusableTable

@@ -26,6 +26,12 @@ export const getProduct = createAsyncThunk(
   (_, thunkAPI) => handleAsyncThunk(ProductService.getAll, [null], thunkAPI)
 );
 
+export const getProducts = createAsyncThunk(
+  "product/getProducts",
+  ([page, limit], thunkAPI) =>
+    handleAsyncThunk(ProductService.getAll, [page, limit], thunkAPI)
+);
+
 // delete product
 
 export const deleteProduct = createAsyncThunk(
@@ -33,6 +39,19 @@ export const deleteProduct = createAsyncThunk(
   (id, thunkAPI) => handleAsyncThunk(ProductService.delete, [id], thunkAPI)
 );
 
+// create product
+
+export const createProduct = createAsyncThunk(
+  "product/createProduct",
+  (data, thunkAPI) => handleAsyncThunk(ProductService.create, [data], thunkAPI)
+);
+
+// get product by id
+
+export const getProductById = createAsyncThunk(
+  "product/getProductById",
+  (id, thunkAPI) => handleAsyncThunk(ProductService.getById, [id], thunkAPI)
+);
 const productSlice = createSlice({
   name: "product",
   initialState: {
@@ -40,6 +59,9 @@ const productSlice = createSlice({
     status: "idle",
     error: null,
     statusDelete: "idle",
+    statusCreate: "idle",
+    statusGet: "idle",
+    statusGetById: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -70,6 +92,35 @@ const productSlice = createSlice({
       })
       .addCase(deleteProduct.rejected, (state) => {
         state.statusDelete = "failed";
+      })
+      .addCase(createProduct.pending, (state) => {
+        state.statusCreate = "loading";
+      })
+      .addCase(createProduct.fulfilled, (state) => {
+        state.statusCreate = "success";
+      })
+      .addCase(createProduct.rejected, (state) => {
+        state.statusCreate = "failed";
+      })
+      .addCase(getProducts.pending, (state) => {
+        state.statusGet = "loading";
+      })
+      .addCase(getProducts.fulfilled, (state, action) => {
+        state.statusGet = "success";
+        state.data = action.payload;
+      })
+      .addCase(getProducts.rejected, (state) => {
+        state.statusGet = "failed";
+      })
+      .addCase(getProductById.pending, (state) => {
+        state.statusGetById = "loading";
+      })
+      .addCase(getProductById.fulfilled, (state, action) => {
+        state.statusGetById = "success";
+        state.data = action.payload;
+      })
+      .addCase(getProductById.rejected, (state) => {
+        state.statusGetById = "failed";
       });
   },
 });

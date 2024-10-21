@@ -1,139 +1,260 @@
 import {
-  Paper,
-  Typography,
-  Grid,
   Button,
   IconButton,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  Typography,
+  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableContainer,
+  Paper,
+  Collapse,
+  TextField,
+  Tooltip,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import EditIcon from "@mui/icons-material/Edit"; // Thêm icon để chỉnh sửa tiêu đề
+import React, { useState } from "react";
 
-export default function Specifications({
-  productDetails,
-  setProductDetails,
-  dataSpecifications,
-}) {
-  const addSpecification = () => {
-    setProductDetails({
-      ...productDetails,
-      Specifications: [
-        ...productDetails.Specifications,
-        { NameTT: "", ValueTT: "", TypeTT: "" },
-      ],
-    });
+export default function Specifications({ productData, handleInputChange }) {
+  const [expandedIndex, setExpandedIndex] = useState(null); // Trạng thái theo dõi mục mở rộng
+  const [editingIndex, setEditingIndex] = useState(null); // Trạng thái theo dõi mục đang chỉnh sửa tiêu đề
+
+  // Hàm toggle mở rộng/thu gọn
+  const handleToggleExpand = (index) => {
+    setExpandedIndex(expandedIndex === index ? null : index);
   };
 
-  const removeSpecification = (index) => {
-    const newSpecifications = productDetails.Specifications.filter(
-      (_, i) => i !== index
+  // Hàm cập nhật tiêu đề
+  const handleUpdateTitle = (index, newTitle) => {
+    const updatedSpecifications = productData.specifications.map((spec, i) =>
+      i === index ? { ...spec, title: newTitle } : spec
     );
-    setProductDetails({ ...productDetails, Specifications: newSpecifications });
+    handleInputChange("specifications", updatedSpecifications);
+    setEditingIndex(null); // Dừng chỉnh sửa sau khi cập nhật
   };
 
-  const handleSpecificationChange = (index, key, value) => {
-    const newSpecifications = [...productDetails.Specifications];
-    newSpecifications[index][key] = value;
-    setProductDetails({ ...productDetails, Specifications: newSpecifications });
+  // Hàm thêm thông số kỹ thuật
+  const handleAddSpecification = () => {
+    handleInputChange("specifications", [
+      ...productData.specifications,
+      { title: "", details: [] },
+    ]);
+  };
+
+  // Hàm xóa thông số kỹ thuật
+  const handleRemoveSpecification = (index) => {
+    handleInputChange(
+      "specifications",
+      productData.specifications.filter((spec, i) => i !== index)
+    );
+  };
+
+  // Hàm xóa cặp key-value
+
+  const handleRemoveDetail = (specIndex, detailIndex) => {
+    const newDetails = productData.specifications[specIndex].details.filter(
+      (detail, i) => i !== detailIndex
+    );
+    handleInputChange(
+      "specifications",
+      productData.specifications.map((spec, i) =>
+        i === specIndex ? { ...spec, details: newDetails } : spec
+      )
+    );
+  };
+
+  // Hàm cập nhật key-value
+  const handleChangeDetail = (specIndex, detailIndex, key, value) => {
+    const newDetails = productData.specifications[specIndex].details.map(
+      (detail, i) => (i === detailIndex ? { ...detail, [key]: value } : detail)
+    );
+    handleInputChange(
+      "specifications",
+      productData.specifications.map((spec, i) =>
+        i === specIndex ? { ...spec, details: newDetails } : spec
+      )
+    );
   };
 
   return (
-    <>
-      <Paper elevation={3} sx={{ padding: 5, mt: 4 }}>
-        <Typography
-          sx={{
-            marginBottom: 2,
-          }}
-          variant="h6"
+    <Grid container spacing={2}>
+      <Grid item xs={6}>
+        <Typography variant="h6">Thêm thông số kỹ thuật</Typography>
+      </Grid>
+      <Grid item xs={6} textAlign="end">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleAddSpecification}
         >
-          Thông số kỹ thuật
-        </Typography>
-        {productDetails.Specifications.map((spec, index) => (
-          <Grid
-            container
-            spacing={2}
-            key={index}
-            alignItems="center"
-            sx={{ marginBottom: 2 }}
-          >
-            {/* Select for NameTT */}
-            <Grid item xs={12} sm={4}>
-              <FormControl fullWidth>
-                <InputLabel>Tên thuộc tính</InputLabel>
-                <Select
-                  value={spec.NameTT}
-                  onChange={(e) =>
-                    handleSpecificationChange(index, "NameTT", e.target.value)
-                  }
-                >
-                  {dataSpecifications.NameTT.map((name, i) => (
-                    <MenuItem key={i} value={name}>
-                      {name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
+          Thêm thông số
+        </Button>
+      </Grid>
 
-            {/* Select for ValueTT */}
-            <Grid item xs={12} sm={4}>
-              <FormControl fullWidth>
-                <InputLabel>Giá trị</InputLabel>
-                <Select
-                  value={spec.ValueTT}
-                  onChange={(e) =>
-                    handleSpecificationChange(index, "ValueTT", e.target.value)
-                  }
-                >
-                  {dataSpecifications.ValueTT[spec.NameTT]?.map((value, i) => (
-                    <MenuItem key={i} value={value}>
-                      {value}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
+      {productData.specifications.length > 0 && (
+        <Grid item xs={12}>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Tiêu đề</TableCell>
+                  <TableCell>Key</TableCell>
+                  <TableCell>Value</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {productData.specifications.map((spec, specIndex) => (
+                  <React.Fragment key={specIndex}>
+                    {/* Hiển thị tiêu đề của mỗi thông số với khả năng mở rộng */}
+                    <TableRow>
+                      <TableCell colSpan={4}>
+                        <Grid container alignItems="center">
+                          <Grid item xs={10}>
+                            <TextField
+                              fullWidth
+                              label="Tiêu đề"
+                              value={spec.title}
+                              onChange={(e) =>
+                                handleUpdateTitle(specIndex, e.target.value)
+                              }
+                            />
+                          </Grid>
+                          <Grid item xs={1}>
+                            <Tooltip title="Xóa Thông số">
+                              <IconButton
+                                sx={{ color: "red", padding: "4px", ml: 2 }}
+                                onClick={() =>
+                                  handleRemoveSpecification(specIndex)
+                                }
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </Grid>
+                          <Grid item xs={1}>
+                            <IconButton
+                              onClick={() => handleToggleExpand(specIndex)}
+                            >
+                              <ExpandMoreIcon
+                                style={{
+                                  transform:
+                                    expandedIndex === specIndex
+                                      ? "rotate(180deg)"
+                                      : "rotate(0deg)",
+                                  transition: "transform 0.3s",
+                                }}
+                              />
+                            </IconButton>
+                          </Grid>
+                        </Grid>
+                      </TableCell>
+                    </TableRow>
 
-            {/* Select for TypeTT */}
-            <Grid item xs={12} sm={3}>
-              <FormControl fullWidth>
-                <InputLabel>Loại thuộc tính</InputLabel>
-                <Select
-                  value={spec.TypeTT}
-                  onChange={(e) =>
-                    handleSpecificationChange(index, "TypeTT", e.target.value)
-                  }
-                >
-                  {dataSpecifications.TypeTT.map((type, i) => (
-                    <MenuItem key={i} value={type}>
-                      {type}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            {/* Delete Button */}
-            <Grid item xs={12} sm={1}>
-              <IconButton
-                aria-label="delete"
-                color="secondary"
-                onClick={() => removeSpecification(index)}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </Grid>
-          </Grid>
-        ))}
-
-        <Grid item xs={12} sx={{ mt: 2 }}>
-          <Button variant="contained" onClick={addSpecification}>
-            Thêm Thông Số
-          </Button>
+                    {/* Collapse cho các chi tiết key-value */}
+                    <TableRow>
+                      <TableCell colSpan={4}>
+                        <Collapse
+                          in={expandedIndex === specIndex}
+                          timeout="auto"
+                          unmountOnExit
+                        >
+                          {spec.details.map((detail, detailIndex) => (
+                            <>
+                              <Grid container spacing={2} key={detailIndex}>
+                                <Grid item xs={5}>
+                                  <TextField
+                                    fullWidth
+                                    label="Key"
+                                    value={detail.key}
+                                    onChange={(e) =>
+                                      handleChangeDetail(
+                                        specIndex,
+                                        detailIndex,
+                                        "key",
+                                        e.target.value
+                                      )
+                                    }
+                                  />
+                                </Grid>
+                                <Grid item xs={5}>
+                                  <TextField
+                                    fullWidth
+                                    label="Value"
+                                    value={detail.value}
+                                    onChange={(e) =>
+                                      handleChangeDetail(
+                                        specIndex,
+                                        detailIndex,
+                                        "value",
+                                        e.target.value
+                                      )
+                                    }
+                                  />
+                                </Grid>
+                                <Grid
+                                  item
+                                  xs={2}
+                                  justifyContent="center"
+                                  textAlign="start"
+                                  sx={{
+                                    mt: 1,
+                                  }}
+                                >
+                                  <Tooltip title="Xóa">
+                                    <IconButton
+                                      sx={{ color: "red", padding: "4px" }}
+                                      onClick={() =>
+                                        handleRemoveDetail(
+                                          specIndex,
+                                          detailIndex
+                                        )
+                                      }
+                                    >
+                                      <DeleteIcon />
+                                    </IconButton>
+                                  </Tooltip>
+                                </Grid>
+                              </Grid>
+                            </>
+                          ))}
+                          <Grid item xs={12} textAlign="end">
+                            <Button
+                              variant="contained"
+                              color="secondary"
+                              onClick={() => {
+                                const newDetails = [
+                                  ...productData.specifications[specIndex]
+                                    .details,
+                                  { key: "", value: "" },
+                                ];
+                                handleInputChange(
+                                  "specifications",
+                                  productData.specifications.map((spec, i) =>
+                                    i === specIndex
+                                      ? { ...spec, details: newDetails }
+                                      : spec
+                                  )
+                                );
+                              }}
+                            >
+                              Thêm
+                            </Button>
+                          </Grid>
+                        </Collapse>
+                      </TableCell>
+                    </TableRow>
+                  </React.Fragment>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Grid>
-      </Paper>
-    </>
+      )}
+    </Grid>
   );
 }

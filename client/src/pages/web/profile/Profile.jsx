@@ -1,5 +1,6 @@
 import Sidebar from "../../../components/Profile/SidebarProfile";
 import PromotionSlider from "../../../components/Profile/promotionSlider";
+import ProfileUser from "../../../components/Profile/ProfileUser";
 import BannerSlider from "../../../components/Profile/slider";
 import { SiGoogleclassroom } from "react-icons/si";
 import { BiSolidDiscount } from "react-icons/bi";
@@ -16,26 +17,15 @@ const Profile = () => {
         </div>
 
         <div className="flex-1 p-1 bg-white rounded-lg shadow-md">
-          <div className="flex items-center space-x-4 mb-4">
-            <img
-              src="https://cdn2.cellphones.com.vn/50x50,webp,q100/media/wysiwyg/Shipper_CPS3_1.png"
-              alt="Avatar"
-              className="w-16 h-16 rounded-full border"
-            />
-            <div>
-              <h2 className="text-xl font-bold">NGUYỄN SỸ</h2>
-              <p className="text-gray-500">0344484162</p>
-              <span className="bg-pink-200 text-pink-700 text-xs font-semibold px-2.5 py-0.5 rounded">
-                SNULL
-              </span>
-            </div>
-          </div>
-          <div className="flex justify-center p-3 border border-gray-300 rounded-lg mx-auto" style={{ maxWidth: '650px' }}>
-            <div className="text-center mx-20">
+        <div className="w-full md:w-3/4 lg:w-4/5 xl:w-5/6 p-4">
+          <ProfileUser />
+        </div>
+          <div className="flex justify-center p-3 border border-gray-300 rounded-lg w-full">
+            <div className="text-center mx-40">
               <p className="text-2xl font-bold">0</p>
               <p className="text-gray-500">đơn hàng</p>
             </div>
-            <div className="text-center mx-20">
+            <div className="text-center mx-40">
               <p className="text-2xl font-bold">0đ</p>
               <p className="text-gray-500">Tổng tiền tích lũy</p>
             </div>
