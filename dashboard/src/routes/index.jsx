@@ -7,7 +7,6 @@ import PrivateRoute from "./PrivateRoute";
 import { useAuth } from "../contexts/AuthContext";
 import SignIn from "../pages/auth/login";
 import ResetPassword from "../pages/auth/ResetPassword";
-import CreateProductTest from "../pages/test";
 
 export default function RootRouter() {
   const { islogin } = useAuth();
@@ -38,7 +37,6 @@ export default function RootRouter() {
       {/* auth */}
       <Route path="/" element={<SignIn />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
-      <Route path="/test" element={<CreateProductTest />} />
     </Routes>
   );
 }

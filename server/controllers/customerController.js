@@ -241,7 +241,11 @@ const registerCustomer = asyncHandler(async (req, res) => {
   });
 
   // Return response to the client
-  res.status(201).json(newCustomer);
+  res.status(201).json({
+    mes: "Register success",
+    accessToken,
+    customer: newCustomer,
+  });
 });
 
 const resetPassword = asyncHandler(async (req, res) => {
