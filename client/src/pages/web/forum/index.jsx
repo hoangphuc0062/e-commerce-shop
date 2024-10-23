@@ -8,8 +8,46 @@ import PostList from "../../../components/Forum/PostList";
 import SmallPost from "../../../components/Forum/SmallPost";
 import PostTag from "../../../components/Forum/PostTag";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { getPosts } from "../../../redux/slices/post";
+
 
 function ForumPage() {
+  const dispatch = useDispatch();
+  const status = useSelector((state) => state.postReducer.status);
+  const postData = useSelector((state) => state.postReducer.data);
+  const [data, setData] = useState([]);
+  
+  useEffect(() => {
+    dispatch(getPosts());
+  }, [dispatch]);
+  
+  useEffect(() => {
+    if (status === "success" && Array.isArray(postData)) {
+      setData(
+        postData.map((item) => ({
+          status: item.status,
+          id: item._id,
+          postTitle: item.postTitle,
+          shortDescription: item.shortDescription,
+          seoKeyWords: item.seoKeyWords,
+          content: item.content,
+          author: item.author?.name || "Unknown",  // Kiểm tra nếu author tồn tại
+          category: item.category,
+          rating: item.rating,
+          slug: item.slug,
+          date: item.createdAt,
+          thumbnail: item.thumbnail
+        }))
+      );
+    }
+  }, [status, postData]);
+  
+  
+
+
+
   return (
     <div className="container w-full">
       <div className="flex flex-col md:flex-row w-full pt-16">
@@ -39,7 +77,7 @@ function ForumPage() {
 
           <section className="mb-8 p-4">
             <HeadingSection title="xem nhiều tuần qua" />
-            <SliderPost category="S-Games" />
+            <SliderPost category="S-Games" data={data} />
           </section>
 
           <section className="mb-8 p-4">
