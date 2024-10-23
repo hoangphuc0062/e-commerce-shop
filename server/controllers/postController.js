@@ -14,7 +14,7 @@ const getPostBySlug = asyncHandler(async (req, res) => {
   if (!slug) {
     return res.status(400).json({ mes: "Missing slug" });
   }
-  const post = await Post.findOne({ slug });
+  const post = await Post.findOne({ slug }).populate("author", "name").populate("category", "name slug");
   return res.status(200).json(post);
 });
 

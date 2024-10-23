@@ -61,6 +61,9 @@ const postSchema = new mongoose.Schema(
       enum: ["draft", "published", "archived"],
       default: "draft",
     },
+    thumbnail:{
+      type: String,
+    },
   },
   {
     timestamps: true,
