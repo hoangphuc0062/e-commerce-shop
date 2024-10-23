@@ -145,6 +145,13 @@ const menuItems = {
           url: "/dashboard/coupons",
         },
         {
+          id: "tags",
+          title: "Thẻ",
+          type: "item",
+          icon: "feather icon-tag",
+          url: "/dashboard/tags",
+        },
+        {
           id: "comfig",
           title: "Cấu hình",
           type: "collapse",

@@ -33,6 +33,7 @@ import AddBannerConllection from "../pages/bannercollection/create";
 import EditBannerCollection from "../pages/bannercollection/edit";
 import CreateProduct from "../pages/product/create";
 import EditProduct from "../pages/product/update";
+import TagPage from "../pages/tags";
 
 const AdminRoute = () => {
   return (
@@ -321,6 +322,15 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<UpdateCoupons />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="tags"
+        element={
+          <PrivateRoute
+            element={<TagPage />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
