@@ -42,7 +42,7 @@ export default function RootRouter() {
       element: <ForumLayout />,
       children: [
         { path: "", element: <ForumPage /> },
-        { path: "blog/:id", element: <DetailBlog /> },
+        { path: "blog/:slug", element: <DetailBlog /> },
       ],
     },
     {
