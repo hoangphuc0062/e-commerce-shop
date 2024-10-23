@@ -16,6 +16,8 @@ import AccountUser from "../pages/web/profile/AccountUser";
 import ProductDetail from "../pages/web/product/ProductDetail";
 import UserOrder from "../pages/web/profile/UserOrder";
 import Manage from "../pages/web/profile/manage";
+import { ForgetPassoword } from "../pages/auth/ForgetPassoword";
+import { ProtectedRoute } from "./ProtectedRoute";
 export default function RootRouter() {
   const routes = useRoutes([
     {
@@ -23,17 +25,67 @@ export default function RootRouter() {
       element: <PublicLayout />,
       children: [
         { path: "/", element: <HomePage /> },
-        { path: "login", element: <Login /> },
+        { path: "/login", element: <Login /> },
+        { path: "/forget-password", element: <ForgetPassoword /> },
         { path: "register", element: <Register /> },
         { path: "/phone", element: <ProductList /> },
         { path: "/phone/:slug", element: <ProductDetail /> },
-        { path: "/cart", element: <CartProduct /> },
-        { path: "/checkout", element: <Checkout_info /> },
-        { path: "/payment", element: <Checkout /> },
-        { path: "/profile", element: <Profile /> },
-        { path: "profile/account", element: <AccountUser /> },
-        { path: "profile/order", element: <UserOrder /> },
-        { path: "profile/manage", element: <Manage /> },
+        {
+          path: "/cart",
+          element: (
+            <ProtectedRoute>
+              <CartProduct />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/checkout",
+          element: (
+            <ProtectedRoute>
+              <Checkout_info />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/payment",
+          element: (
+            <ProtectedRoute>
+              <Checkout />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/profile",
+          element: (
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/profile/account",
+          element: (
+            <ProtectedRoute>
+              <AccountUser />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/profile/order",
+          element: (
+            <ProtectedRoute>
+              <UserOrder />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "/profile/manage",
+          element: (
+            <ProtectedRoute>
+              <Manage />
+            </ProtectedRoute>
+          ),
+        },
       ],
     },
     {

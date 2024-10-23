@@ -12,7 +12,7 @@ const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
 };
 
 // login
-export const login = createAsyncThunk(
+export const loginCustomer = createAsyncThunk(
   "customer/login",
   async (data, thunkAPI) =>
     handleAsyncThunk(CustomerService.login, [data], thunkAPI)
@@ -25,6 +25,13 @@ export const registerCustomer = createAsyncThunk(
     handleAsyncThunk(CustomerService.registerCustomer, [data], thunkAPI)
 );
 
+export const logout = createAction("customer/logout");
+
+export const resetPassword = createAsyncThunk(
+  "customer/forgotpassword",
+  async (data, thunkAPI) =>
+    handleAsyncThunk(CustomerService.forgotPassword, [data], thunkAPI)
+);
 // get current customer
 export const getCurrentCustomer = createAsyncThunk(
   "customer/getCurrentCustomer",
@@ -83,14 +90,14 @@ const customerSlice = createSlice({
           }
         }
       })
-      .addCase(login.pending, (state) => {
+      .addCase(loginCustomer.pending, (state) => {
         state.loginStatus = "loading";
       })
-      .addCase(login.fulfilled, (state, action) => {
+      .addCase(loginCustomer.fulfilled, (state, action) => {
         state.loginStatus = "success";
         state.data = action.payload;
       })
-      .addCase(login.rejected, (state, action) => {
+      .addCase(loginCustomer.rejected, (state, action) => {
         state.loginStatus = "failed";
         state.error = action.payload;
       })

@@ -17,7 +17,6 @@ const checkOTP = asyncHandler(async (req, res) => {
     throw new Error("Phone number not found");
   }
   if (customer.code !== code) {
-    console.log(customer.code);
     res.status(400);
     throw new Error("OTP is incorrect");
   }
@@ -52,6 +51,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   }
 
   const resetToken = customer.createPasswordChangeToken();
+
   await customer.save(); // Save the customer with the token
 
   // Generate an OTP
@@ -72,7 +72,8 @@ const forgotPassword = asyncHandler(async (req, res) => {
     return res.status(500).json({ message: "Error sending OTP" });
   }
 
-  res.status(200).json(resetToken, customer);
+  // Send the response with resetToken and customer
+  res.status(200).json({ resetToken, customer });
 });
 
 const getCustomer = asyncHandler(async (req, res) => {

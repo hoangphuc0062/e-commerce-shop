@@ -47,7 +47,7 @@ export const Register = () => {
   };
 
   return (
-    <section className="mx-2">
+    <section className="mx-2 my-4">
       <div className="container flex justify-center">
         <div className="flex-1">
           <div>
