@@ -1,172 +1,152 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     Button,
     Grid,
-    Paper,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
+    Box,
+    Card,
+    Typography,
 } from "@mui/material";
 import ReusableTable from "../../components/table";
 import CustomInputField from "../../components/InputField";
+import { useDispatch, useSelector } from "react-redux";
+import { createTag, deleteTag, getAllTags, updateTag } from "../../redux/slices/tags"; // Added updateTag action
+import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
+import { useFormik } from "formik";
 
 const columns = [
     { label: "Tên tag", field: "name" },
-    { label: "Ngày tạo", field: "creationDate" }
-];
-
-const initialData = [
-    {
-        id: 12562267,
-        name: "broduct",
-        creationDate: "14/10/2024"
-    }
 ];
 
 export default function TagPage() {
-    const [name, setName] = useState("");
-    const [data, setData] = useState(initialData);
-    const [editTag, setEditTag] = useState(null);
-    const [confirmDelete, setConfirmDelete] = useState(false);
-    const [tagToDelete, setTagToDelete] = useState(null);
+    const dispatch = useDispatch();
+    const [editTag, setEditTag] = useState(null);  // To track if we are in edit mode
     const [error, setError] = useState("");
+    const [data, setData] = useState([]);
+
+    const status = useSelector((state) => state.tag.status);  // Adjust state path to 'tags'
+    const dataTags = useSelector((state) => state.tag.data?.tags);
+
+    useEffect(() => {
+        dispatch(getAllTags());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (status === "succeeded") {
+            setData(dataTags);
+        }
+    }, [status, dataTags]);
 
     const handleEdit = (tag) => {
-        setEditTag(tag);
-        setName(tag.name);
-        setError("");
+        setEditTag(tag);  // Set the tag to edit mode
+        formik.setFieldValue("name", tag.name); // Populate the form with selected tag data
     };
 
-    const handleSaveEdit = () => {
-        if (validateInput()) {
-            const updatedData = data.map(item =>
-                item.id === editTag.id ? { ...item, name: name } : item
-            );
-            setData(updatedData);
-            resetForm();
-        }
-    };
+    const formik = useFormik({
+        initialValues: {
+            name: "",
+        },
+        onSubmit: (values, { resetForm }) => {
+            if (editTag) {
+                // If edit mode, dispatch update action
+                dispatch(updateTag({ tagId: editTag._id, data: { ...values } })).then((res) => {
+                    if (res.type === "tags/updateTag/fulfilled") {
+                        handleToast("success", "Tag cập nhật thành công");
+                        resetForm();
+                        setEditTag(null);  // Exit edit mode after successful update
+                        dispatch(getAllTags());
+                    } else {
+                        handleToast("error", "Cập nhật tag thất bại");
+                    }
+                });
+            } else {
+                // If not in edit mode, create new tag
+                dispatch(createTag(values)).then((res) => {
+                    if (res.type === "tags/createTag/fulfilled") {
+                        handleToast("success", "Tag thêm thành công");
+                        resetForm();
+                        dispatch(getAllTags());
+                    } else {
+                        handleToast("error", "Thêm tag thất bại");
+                    }
+                });
+            }
+        },
+    });
 
-    const validateInput = () => {
-        if (!name.trim()) {
-            setError("Tên tag không được để trống");
-            return false;
-        }
-        if (name.length < 3) {
-            setError("Tên tag phải có ít nhất 3 ký tự");
-            return false;
-        }
-        if (name.length > 100) {
-            setError("Tên tag không được vượt quá 100 ký tự");
-            return false;
-        }
-        setError("");
-        return true;
-    };
-
-    const resetForm = () => {
-        setEditTag(null);
-        setName("");
-    };
-
-    const handleDelete = (tag) => {
-        setTagToDelete(tag);
-        setConfirmDelete(true);
-    };
-
-    const confirmDeleteTag = () => {
-        const newData = data.filter(item => item.id !== tagToDelete.id);
-        setData(newData);
-        setConfirmDelete(false);
-        setTagToDelete(null);
-    };
-
-    const handleCloseConfirmDelete = () => {
-        setConfirmDelete(false);
-        setTagToDelete(null);
-    };
-
-    const handleAddNew = () => {
-        if (validateInput()) {
-            const newTag = {
-                id: Date.now(),
-                name: name,
-                creationDate: new Date().toLocaleDateString('vi-VN')
-            };
-            setData([...data, newTag]);
-            setName("");
-        }
-    };
-
+    const handleDelete = useCallback(
+        (index) => {
+            DeleteConfirmationModal({
+                title: "Xác nhận xóa tag",
+                content: "Bạn có chắc chắn muốn xóa tag này không?",
+                okText: "Xóa",
+                cancelText: "Hủy",
+                icon: "warning",
+                confirmButtonText: "Xóa",
+                onConfirm: () =>
+                    dispatch(deleteTag(index._id)).then((res) => {
+                        if (res.type === "tags/deleteTag/fulfilled") {
+                            handleToast("success", "Xóa tag thành công");
+                            dispatch(getAllTags());
+                        } else {
+                            handleToast("error", "Xóa tag thất bại");
+                        }
+                    }),
+            });
+        },
+        [dispatch]
+    );
     return (
         <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: '20px' }}>
             <div>
-                <ReusableTable
-                    data={data}
-                    columns={columns}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
-                />
+                {data && (
+                    <ReusableTable
+                        data={data}
+                        columns={columns}
+                        handleEdit={handleEdit} // Pass the handleEdit function to the table
+                        handleDelete={handleDelete}
+                    />
+                )}
             </div>
             <div>
-                <Paper style={{ padding: '20px' }}>
-                    <h3>{editTag ? "Chỉnh sửa Tag" : "Thêm mới Tag"}</h3>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} md={6}>
-                            <CustomInputField
-                                label="Tên Tag"
-                                name="name"
-                                value={name}
-                                onChange={(e) => {
-                                    setName(e.target.value);
-                                    setError(""); // Reset lỗi khi thay đổi giá trị
+                <Card sx={{ p: 3 }}>
+                    <Typography sx={{ mb: 2 }} variant="h6">
+                        {editTag ? "Cập nhật tag" : "Thêm tag"}
+                    </Typography>
+                    <form onSubmit={formik.handleSubmit}>
+                        <CustomInputField
+                            label="Tên Tag"
+                            name="name"
+                            value={formik.values.name}
+                            onChange={formik.handleChange}
+                            error={!!error} // Error status
+                            helperText={error} // Error message
+                        />
+                        <Box mt={3} textAlign="right">
+                            <Button
+                                variant="contained"
+                                type="submit"
+                                color="success"
+                                aria-label={editTag ? "Update Tag" : "Add Tag"} // Change button label based on mode
+                                disabled={!formik.values.name}
+                            >
+                                {editTag ? "Cập nhật" : "Thêm tag"}
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                style={{ marginLeft: 10 }}
+                                aria-label="Cancel"
+                                onClick={() => {
+                                    formik.resetForm();
+                                    setEditTag(null);  // Exit edit mode
                                 }}
-                                error={!!error} // Truyền trạng thái lỗi
-                                helperText={error} // Truyền thông báo lỗi
-                                inputProps={{ maxLength: 100 }} // Giới hạn ký tự
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            {editTag ? (
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={handleSaveEdit}
-                                    disabled={!name}
-                                >
-                                    Lưu
-                                </Button>
-                            ) : (
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={handleAddNew}
-                                    disabled={!name}
-                                >
-                                    Thêm mới
-                                </Button>
-                            )}
-                        </Grid>
-                    </Grid>
-                </Paper>
+                            >
+                                Hủy
+                            </Button>
+                        </Box>
+                    </form>
+                </Card>
             </div>
-
-            {/* Dialog xác nhận xóa */}
-            <Dialog open={confirmDelete} onClose={handleCloseConfirmDelete}>
-                <DialogTitle>Xác nhận xóa</DialogTitle>
-                <DialogContent>
-                    <p>Bạn có chắc chắn muốn xóa tag "{tagToDelete ? tagToDelete.name : ''}" không?</p>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseConfirmDelete} color="secondary">
-                        Hủy
-                    </Button>
-                    <Button onClick={confirmDeleteTag} color="primary">
-                        Xóa
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </div>
     );
 }
