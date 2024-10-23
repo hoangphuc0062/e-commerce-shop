@@ -12,12 +12,26 @@ const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
 };
 
 // login
-export const login = createAsyncThunk(
+export const loginCustomer = createAsyncThunk(
   "customer/login",
   async (data, thunkAPI) =>
     handleAsyncThunk(CustomerService.login, [data], thunkAPI)
 );
 
+// register
+export const registerCustomer = createAsyncThunk(
+  "customer/register",
+  async (data, thunkAPI) =>
+    handleAsyncThunk(CustomerService.registerCustomer, [data], thunkAPI)
+);
+
+export const logout = createAction("customer/logout");
+
+export const resetPassword = createAsyncThunk(
+  "customer/forgotpassword",
+  async (data, thunkAPI) =>
+    handleAsyncThunk(CustomerService.forgotPassword, [data], thunkAPI)
+);
 // get current customer
 export const getCurrentCustomer = createAsyncThunk(
   "customer/getCurrentCustomer",
@@ -53,6 +67,7 @@ const customerSlice = createSlice({
     statusUpdate: "idle",
     deleteStatus: "idle",
     loginStatus: "idle",
+    registerStatus: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -75,15 +90,26 @@ const customerSlice = createSlice({
           }
         }
       })
-      .addCase(login.pending, (state) => {
+      .addCase(loginCustomer.pending, (state) => {
         state.loginStatus = "loading";
       })
-      .addCase(login.fulfilled, (state, action) => {
+      .addCase(loginCustomer.fulfilled, (state, action) => {
         state.loginStatus = "success";
         state.data = action.payload;
       })
-      .addCase(login.rejected, (state, action) => {
+      .addCase(loginCustomer.rejected, (state, action) => {
         state.loginStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(registerCustomer.pending, (state) => {
+        state.registerStatus = "loading";
+      })
+      .addCase(registerCustomer.fulfilled, (state, action) => {
+        state.registerStatus = "success";
+        state.data = action.payload;
+      })
+      .addCase(registerCustomer.rejected, (state, action) => {
+        state.registerStatus = "failed";
         state.error = action.payload;
       });
   },
