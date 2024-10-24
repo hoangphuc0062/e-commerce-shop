@@ -26,10 +26,9 @@ import ProductDecripton from "../../../components/Products/ProductDecripton";
 import ProductOptions from "../../../components/Products/ProductOptions";
 import ProductColors from "../../../components/Products/ProductColors";
 import Reviews from "../../../components/Products/Reviews";
-import SliderPost from "../../../components/Forum/SliderPost";
 import WarrantyProduct from "../../../components/Products/WarrantyProduct";
 import { reviewProducts } from "../../../data/Product/ReviewProducts";
-import SmallPost from "../../../components/Forum/SmallPost";
+import { SmallPost } from "../../../components/Forum";
 
 const ProductDetail = () => {
   const [product, setProduct] = useState(null);
@@ -136,7 +135,7 @@ const ProductDetail = () => {
         {/* Tin Tức */}
         <div className="p-4 rounded-lg shadow-md w-full lg:w-[30%] lg:flex hidden flex-col gap-4">
           <Heading title="Tin Tức Về Sản Phẩm" />
-          <SmallPost/>
+          <SmallPost />
         </div>
       </div>
       <div className="w-full pt-4">

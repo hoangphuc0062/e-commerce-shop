@@ -1,19 +1,23 @@
-import HeadingSection from "../../../components/Forum/HeadingSection";
-import TopicCard from "../../../components/Forum/TopicCard";
-import FeaturedPost from "../../../components/Forum/FeaturedPost";
-import SliderPost from "../../../components/Forum/SliderPost";
-import Sidebar from "../../../components/Forum/Sidebar";
-import PostScroll from "../../../components/Forum/PostScroll";
-import PostTag from "../../../components/Forum/PostTag";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+
+import {
+  Sidebar,
+  HeadingSection,
+  TopicCard,
+  FeaturedPost,
+  SliderPost,
+  PostTag,
+  PostScroll,
+} from "../../../components/Forum";
+
 import { getPosts } from "../../../redux/slices/post";
 
 function ForumPage() {
   const dispatch = useDispatch();
-  const status = useSelector((state) => state.postReducer?.status);
-  const postData = useSelector((state) => state.postReducer?.data);
+  const status = useSelector((state) => state.post.status);
+  const postData = useSelector((state) => state.post.data);
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -40,6 +44,7 @@ function ForumPage() {
       );
     }
   }, [status, postData]);
+  console.log(data);
 
   return (
     <div className="container w-full">
@@ -55,22 +60,22 @@ function ForumPage() {
               <TopicCard />
             </section>
 
-            <FeaturedPost data={data} />
+            {data && <FeaturedPost data={data} />}
           </section>
 
           <section className="mb-8 p-4">
             <HeadingSection title="xem nhiều tuần qua" />
-            {data && <SliderPost category="S-Games" data={data} />}
+            {/* {data && <SliderPost category="S-Games" data={data} />} */}
           </section>
 
-          <PostScroll data={data} />
+          {/* <PostScroll data={data} /> */}
 
           <section className="mb-8 px-4 bg-gray-100 w-full rounded-lg">
             <HeadingSection title="S-GAMES" />
             <SliderPost category="S-Games" />
             <div className="mt-4 text-right">
               <Link
-                to=""
+                to="#"
                 className="text-red-500 text-sm font-semibold hover:underline"
               >
                 Xem thêm
@@ -79,9 +84,9 @@ function ForumPage() {
           </section>
           <section className="mb-8 p-4">
             <div className="flex overflow-x-auto space-x-4">
-              <PostTag category="Trên Tay" data={data} />
+              {/* <PostTag category="Trên Tay" data={data} />
               <PostTag category="Tin Công Nghệ" data={data} />
-              <PostTag category="Đánh Giá" data={data} />
+              <PostTag category="Đánh Giá" data={data} /> */}
             </div>
           </section>
 

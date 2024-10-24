@@ -1,7 +1,7 @@
-import { PostDB } from "../../data/Forum/PostDB";
-import HeadingSection from "./HeadingSection";
+import HeadingSection from "../Heading/HeadingSection";
+import PropTypes from 'prop-types';
+
 function FeaturedPost({ data }) {
-  const post = PostDB[1];
   return (
     <section className="mb-8">
       <HeadingSection title="Nổi bật nhất" />
@@ -9,23 +9,23 @@ function FeaturedPost({ data }) {
         <div className="w-full">
           <div className="relative rounded-lg overflow-hidden cursor-pointer h-full">
             <img
-              src={post.imageUrl}
-              alt={post.title}
+              src={data[0]?.thumbnail}
+              alt={data[0]?.postTitle}
               className="w-full h-80 object-cover"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4 ">
-              <h3 className="text-xl font-bold mb-2 line-clamp-2 hover:text-main">
-                {post.title}
+              <h3 className="text-xl font-bold mb-2 line-clamp-2">
+                {data[0]?.postTitle}
               </h3>
               <p className="text-sm">
-                {post.author} • {post.date}
+                {data[0]?.author} • {data[0]?.date}
               </p>
             </div>
           </div>
         </div>
         <div className="space-y-4">
           <div className="space-y-4 md:space-y-6">
-            {PostDB.slice(0, 3).map((item) => (
+            {data?.slice(1, 4).map((item) => (
               <div
                 key={item.id}
                 className="flex items-center space-x-4 md:space-x-6 cursor-pointer"
@@ -51,5 +51,17 @@ function FeaturedPost({ data }) {
     </section>
   );
 }
+
+FeaturedPost.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    thumbnail: PropTypes.string,
+    postTitle: PropTypes.string,
+    author: PropTypes.string,
+    date: PropTypes.string,
+    imageUrl: PropTypes.string,
+    title: PropTypes.string,
+  })).isRequired,
+};
 
 export default FeaturedPost;

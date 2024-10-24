@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { PostDB } from "../../data/Forum/PostDB";
+import { PostDB } from "../../../data/Forum/PostDB";
 
 const PostTag = ({ category, data }) => {
   // Lọc bài viết theo category

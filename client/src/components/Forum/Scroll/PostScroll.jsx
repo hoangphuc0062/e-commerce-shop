@@ -1,5 +1,5 @@
-import { PostDB } from "../../data/Forum/PostDB";
-import HeadingSection from "./HeadingSection";
+import { PostDB } from "../../../data/Forum/PostDB";
+import HeadingSection from "../Heading/HeadingSection";
 const PostScroll = ({ data }) => {
   return (
     <>

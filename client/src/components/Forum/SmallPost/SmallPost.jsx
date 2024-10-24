@@ -1,4 +1,4 @@
-import { PostDB } from "../../data/Forum/PostDB";
+import { PostDB } from "../../../data/Forum/PostDB";
 
 function SmallPost() {
   return (

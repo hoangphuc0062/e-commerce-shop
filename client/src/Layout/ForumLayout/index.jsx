@@ -6,7 +6,7 @@ export default function ForumLayout() {
   return (
     <>
       <Header />
-      <main>
+      <main className="flex-grow">
         <Outlet />
       </main>
       <Footer />
