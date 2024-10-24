@@ -1,10 +1,9 @@
-import { Brand } from "./Brand";
 export const products = [
   {
     id: 1,
     name: "iPhone 14 Pro Max",
     type: "Smartphone",
-    brand: Brand.Apple,
+    brand: "Apple",
     screen: "7.6 inches",
     options: [
       {
@@ -48,9 +47,16 @@ export const products = [
     id: 2,
     name: "Samsung Galaxy S24 Ultra",
     type: "Smartphone",
-    brand: Brand.Samsung,
+    brand: "Samsung",
     screen: "6.8 inches",
     options: [
+      {
+        ram: "6GB",
+        rom: "128GB",
+        price: 4500000,
+        salePrice: 4990000,
+        colors: "Black",
+      },
       {
         ram: "6GB",
         rom: "128GB",
@@ -88,7 +94,7 @@ export const products = [
     id: 3,
     name: "Google Pixel 7",
     type: "Smartphone",
-    brand: Brand.Google,
+    brand: "Google",
     screen: "6.3 inches",
     options: [
       {
@@ -170,7 +176,7 @@ export const products = [
     category: "Điện Thoại",
     review: 40,
     discount: 7,
-    brand: Brand.Xiaomi,
+    brand: "Xiaomi",
     images: [
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/i/xiaomi-redmi-note-13-pro-plus_9_.png",
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/i/xiaomi-redmi-note-13-pro-plus_1.png",
@@ -217,7 +223,7 @@ export const products = [
     category: "Điện Thoại",
     review: 45,
     discount: 8,
-    brand: Brand.OPPO,
+    brand: "OPPO",
     images: [
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/d/o/download_3__4_1.png",
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/o/p/oppo-find-x5-pro-1.png",
@@ -242,7 +248,7 @@ export const products = [
     category: "Điện Thoại",
     review: 65,
     discount: 9,
-    brand: Brand.Vivo,
+    brand: "Vivo",
     images: [
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/7/7/77725f642649329d8a5ea716e86d9027.jpg",
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/6/3/637677310894938336_vivo-x70-pro-den-1_1.jpg",
@@ -268,7 +274,7 @@ export const products = [
     category: "Điện Thoại",
     review: 35,
     discount: 10,
-    brand: Brand.Sony,
+    brand: "Sony",
     images: [
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/m/image_1184_2.png",
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/1/0/10_1_.png",
@@ -293,7 +299,7 @@ export const products = [
     category: "Điện Thoại",
     review: 70,
     discount: 11,
-    brand: Brand.Realme,
+    brand: "Realme",
     images: [
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/r/e/realme-gt-neo-3.png",
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/r/e/realme-gt-neo-3_2_.png",
@@ -319,7 +325,7 @@ export const products = [
     category: "Điện Thoại",
     review: 30,
     discount: 12,
-    brand: Brand.Asus,
+    brand: "Asus",
     images: [
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/a/s/asus-rog-phone-6-12gb-256gb-den_2.png",
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/a/s/asus-rog-phone-6-12gb-256gb_2.png",
@@ -345,7 +351,7 @@ export const products = [
     category: "Điện Thoại",
     review: 90,
     discount: 13,
-    brand: Brand.Apple,
+    brand: "Apple",
     images: [
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/1/2/12_3_8_2_8.jpg",
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/1/5/15_2_7_2_5.jpg",
@@ -373,7 +379,7 @@ export const products = [
     description: "Huawei flagship with advanced camera technology",
     category: "Điện Thoại",
     review: 40,
-    brand: Brand.Huawei,
+    brand: "Huawei",
     images: [
       "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/h/u/huawei-p50-pro.jpg",
     ],

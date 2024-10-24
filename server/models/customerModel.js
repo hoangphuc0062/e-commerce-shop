@@ -11,7 +11,7 @@ var customerSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      unique: true,
+      sparse: true,
     },
     phone: {
       type: String,
@@ -51,7 +51,7 @@ var customerSchema = new mongoose.Schema(
       enum: ["Nam", "Nữ", "Khác"],
       default: "Nam",
     },
-    MembershipType: {
+    memberShipType: {
       type: String,
       enum: ["Basic", "Member", "VIP Member"],
       default: "Basic",

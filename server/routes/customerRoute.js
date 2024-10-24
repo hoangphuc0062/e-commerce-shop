@@ -12,6 +12,7 @@ router.put("/resetpassword", ctrl.resetPassword);
 router.post("/refreshtoken", ctrl.refreshAccessToken);
 
 router.get("/", ctrl.getCustomer);
+router.get("/get-current", verifyAccessToken, ctrl.getCurrentCustomer);
 router.use([verifyAccessToken, isAdmin]);
 router.delete("/:_id", ctrl.deleteCustomer);
 router.put("/:_id", verifyAccessToken, ctrl.updateCustomer);

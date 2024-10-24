@@ -9,6 +9,7 @@ import {
   resetState,
 } from "../../redux/slices/product";
 import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductPage() {
   const dispatch = useDispatch();
@@ -16,11 +17,11 @@ export default function ProductPage() {
 
   const columns = [
     { label: "mã", field: "SKU" },
+    { label: "Hình ảnh", field: "images" },
     { label: "Tên sản phẩm", field: "name" },
-    { label: "hình ảnh", field: "images" },
-    { label: "giá thị trường", field: "priceInMarket" },
-    { label: "giá cửa hàng", field: "priceInStore" },
-    { label: "giá trên website", field: "priceOnline" },
+    { label: "Giá thị trường", field: "priceInMarket" },
+    { label: "Giá cửa hàng", field: "priceInStore" },
+    { label: "Giá trên website", field: "priceOnline" },
     { label: "Số lượng", field: "onStock" },
     { label: "Trạng thái", field: "status" },
   ];
@@ -35,7 +36,7 @@ export default function ProductPage() {
     console.log(`Added ${quantity} of ${product.name} to cart`);
   };
   const handleEdit = (index) => {
-    console.log("Edit", index);
+    navigate(`/dashboard/product/update/${index._id}`);
   };
 
   const handleEye = (index) => {

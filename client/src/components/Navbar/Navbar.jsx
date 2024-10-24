@@ -5,11 +5,12 @@ import { Account } from "../Button/Account";
 import { Cart } from "../Button/Cart";
 import { BottomNavigation } from "./BottonNavigation";
 import { Link } from "react-router-dom";
+import Category from "../Button/Category";
 
 const Navbar = () => {
   const { AiOutlinePhone, BsGeoAlt, BsTruck } = icons;
   return (
-    <header className="bg-main">
+    <header className="bg-main sticky top-0 z-50">
       <div className="container text-semi p-3 w-full">
         <nav className="grid grid-flow-col gap-4 items-center">
           <div>
@@ -23,7 +24,9 @@ const Navbar = () => {
               </span>
             </Link>
           </div>
-          <div></div>
+          <div className="justify-center flex gap-2">
+            <Category />
+          </div>
           <div>
             <GroupInput />
           </div>
@@ -36,13 +39,12 @@ const Navbar = () => {
             />
             <Contact icon={BsGeoAlt} content="Cửa hàng gần bạn" />
             <Contact icon={BsTruck} content="Tra cứu đơn hàng" />
-            <Link to={'/cart'}>
+            <Link to={"/cart"}>
               <Cart />
             </Link>
-           <Link to={'/login'}>
-            <Account />
-           </Link>
-           
+            <Link to={"/login"}>
+              <Account />
+            </Link>
           </div>
         </nav>
         {/* mobile */}

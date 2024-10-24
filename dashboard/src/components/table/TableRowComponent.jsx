@@ -30,7 +30,6 @@ const TableRowComponent = ({
       {columns.map((column) => (
         <TableCell
           key={column.field}
-          item={row[column.field]}
           sx={{
             verticalAlign: "middle",
             padding: "4px 8px", // Reduced padding
@@ -45,9 +44,38 @@ const TableRowComponent = ({
             <StatustPostChip status={row[column.field]} />
           ) : column.field === "description" ? (
             <div>
-              {row[column.field].length > 50
+              {row[column.field] && row[column.field].length > 50
                 ? extractTextFromHtml(row[column.field].slice(0, 50) + "...")
-                : extractTextFromHtml(row[column.field])}
+                : extractTextFromHtml(row[column.field] || "Không có dữ liệu")}
+            </div>
+          ) : column.field === "values" ? (
+            <div>
+              {row[column.field] && Array.isArray(row[column.field]) ? (
+                row[column.field].map((item, index) => (
+                  <span
+                    key={index}
+                    style={{ display: "inline-block", marginRight: "5px" }}
+                  >
+                    {item.startsWith("#") ? (
+                      <div
+                        style={{
+                          display: "inline-block",
+                          width: "20px",
+                          height: "20px",
+                          backgroundColor: item,
+                          border: "1px solid #000",
+                          marginRight: "5px",
+                        }}
+                      ></div>
+                    ) : (
+                      item
+                    )}
+                    {index !== row[column.field].length - 1 && ", "}
+                  </span>
+                ))
+              ) : (
+                <span>Không có dữ liệu</span>
+              )}
             </div>
           ) : column.field === "image" ? (
             <Avatar
@@ -63,8 +91,22 @@ const TableRowComponent = ({
               src={row[column.field][0]}
               sx={{ width: 50, height: 50 }}
             />
-          ) : (
+          ) : column.field === "priceInMarket" ? (
+            <span>{row[column.field].toLocaleString()} VNĐ</span>
+          ) : column.field === "priceInStore" ? (
+            <span>{row[column.field].toLocaleString()} VNĐ</span>
+          ) : column.field === "priceOnline" ? (
+            <span>{row[column.field].toLocaleString()} VNĐ</span>
+          ) : column.field === "address" ? (
+            row[column.field].length > 50 ? (
+              row[column.field].slice(0, 50) + "..."
+            ) : (
+              row[column.field] || "Không có dữ liệu"
+            )
+          ) : row[column.field] && row[column.field].length > 0 ? (
             row[column.field]
+          ) : (
+            "Không có dữ liệu"
           )}
         </TableCell>
       ))}

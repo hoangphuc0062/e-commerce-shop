@@ -5,7 +5,7 @@ export const Button = ({
   subContent = "",
 }) => {
   return (
-    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-md flex items-center justify-center">
+    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-md flex items-center justify-center w-full">
       <div className="flex items-center justify-center">
         {IconComponent && (
           <IconComponent className="text-lg sm:text-xl md:text-2xl lg:text-3xl" />

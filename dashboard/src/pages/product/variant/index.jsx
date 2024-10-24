@@ -71,6 +71,17 @@ export default function VariantPage() {
         handleVariantChange={handleVariantChange}
         handleSubmit={handleSubmit}
       />
+      {dataEdit && (
+        <EditVariant
+          open={openEdit}
+          handleClose={() => {
+            setOpenEdit(false);
+            setDataEdit(null);
+          }}
+          initialData={dataEdit}
+          handleSave={handleSave}
+        />
+      )}
     </>
   );
 }

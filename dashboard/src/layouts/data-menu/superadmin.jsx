@@ -109,17 +109,16 @@ const menuItems = {
           icon: "feather icon-user",
           children: [
             {
-              id: "add-personnel",
-              title: "Thêm nhân viên",
-              type: "item",
-              // url: "dashboard/staff/create",
-              url: "/dashboard/staff/create",
-            },
-            {
               id: "personnel-list",
               title: "Danh sách nhân viên",
               type: "item",
               url: "/dashboard/staff",
+            },
+            {
+              id: "add-personnel",
+              title: "Thêm nhân viên",
+              type: "item",
+              url: "/dashboard/staff/create",
             },
           ],
         },
