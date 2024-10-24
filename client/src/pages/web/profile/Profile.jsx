@@ -7,8 +7,11 @@ import { BiSolidDiscount } from "react-icons/bi";
 import { PiNotepadBold } from "react-icons/pi";
 import { PiStudentDuotone } from "react-icons/pi";
 import { MdOutlineWhereToVote } from "react-icons/md";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
+  const customerData = useSelector((state) => state.customer.data);
+
   return (
     <div className="container mx-auto p-2">
       <div className="flex flex-col md:flex-row">
@@ -17,9 +20,14 @@ const Profile = () => {
         </div>
 
         <div className="flex-1 p-1 bg-white rounded-lg shadow-md">
-        <div className="w-full md:w-3/4 lg:w-4/5 xl:w-5/6 p-4">
-          <ProfileUser />
-        </div>
+          <div className="w-full md:w-3/4 lg:w-4/5 xl:w-5/6 p-4">
+            <ProfileUser
+              name={customerData?.name}
+              phone={customerData.phone}
+              avatar={customerData?.avatar}
+              memberShip={customerData?.memberShip}
+            />
+          </div>
           <div className="flex justify-center p-3 border border-gray-300 rounded-lg w-full">
             <div className="text-center mx-40">
               <p className="text-2xl font-bold">0</p>
@@ -99,7 +107,12 @@ const Profile = () => {
           <div className="border border-gray-300 p-4 rounded-lg mt-4 bg-[#FFF5E5]">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-main font-semibold">Chương trình nổi bật</h2>
-              <a href="" className="text-red-500 text-sm hover:underline hover:text-main">Xem tất cả</a>
+              <a
+                href=""
+                className="text-red-500 text-sm hover:underline hover:text-main"
+              >
+                Xem tất cả
+              </a>
             </div>
             <BannerSlider />
           </div>

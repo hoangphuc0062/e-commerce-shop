@@ -105,7 +105,7 @@ const loginCustomer = asyncHandler(async (req, res) => {
 
   // Check if the phone number exists
   const customer = await Customer.findOne({ phone }).select(
-    "-role -code -isBlocked -resetPasswordToken -resetPasswordExpires -passwordResetExprires -passwordResetToken -refreshToken "
+    "-code -isBlocked -resetPasswordToken -resetPasswordExpires -passwordResetExprires -passwordResetToken -refreshToken "
   );
   if (!customer) {
     res.status(400);
