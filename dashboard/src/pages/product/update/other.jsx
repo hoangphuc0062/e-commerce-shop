@@ -21,7 +21,7 @@ export default function OtherProductEdit({
   tagsProduct,
 }) {
   return (
-    <Card sx={{ p: 3 }}>
+    <Card sx={{ mt: 2, p: 3 }}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Typography variant="h6">Thông tin danh mục</Typography>
@@ -98,7 +98,7 @@ export default function OtherProductEdit({
                 .filter(Boolean)}
               onChange={(event, newValue) => {
                 const values = newValue.map((item) => item.value);
-                formik.setFieldValue("tagsProduct", values);
+                handleInputChange("tagsProduct", values);
               }}
               renderInput={(params) => <TextField {...params} label="Tags" />}
               renderOption={(props, option, { selected }) => {

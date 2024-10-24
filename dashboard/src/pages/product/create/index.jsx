@@ -62,282 +62,445 @@ export default function CreateProduct() {
     isBattery: false,
     isStopSelling: false,
     description: "",
+    shortDescription: "",
     keywords: "",
     titleSEO: "",
     descriptionSEO: "",
     thumbnail: "",
-    images: [],
+    images: "",
     videos: "",
     status: "available",
     series: "",
     brand: "",
     category: "",
+    warehouse: "",
+    tagsProduct: [],
+    attributes: [],
+    specifications: [],
+    gifts: [],
+    views: 0,
   });
 
-  const dataVariants = {
-    type: ["size", "color", "weight"],
-    value: {
-      size: ["S", "M", "L", "XL"],
-      color: ["Red", "Blue", "Green", "Black", "White"],
-      weight: ["1kg", "2kg", "3kg"],
-    },
+  const [attributeData, setAttributeData] = useState({
+    aid: "",
+    value: "",
+    SKU: "",
+    historicalPrice: "",
+    priceInMarket: "",
+    price: "",
+    discount: "",
+    onStock: "", // hàng có thể bán
+    inStock: "", // hàng tồn kho
+    inComing: "", // hàng đang về
+    unit: "",
+    minInventory: "",
+    maxInventory: "",
+    images: "",
+  });
+
+  useEffect(() => {
+    if (statusGetAttribute === "success") {
+      const attributes = dataAttribute.map((item) => ({
+        id: item._id,
+        name: item.name,
+        values: item.values.map((value) => ({
+          name: value,
+          value: value, // Thêm giá trị để sử dụng trong Select
+        })),
+      }));
+      setAttributesSelect(attributes);
+    }
+  }, [dataAttribute, statusGetAttribute]);
+
+  const handleInputChange = (field, value) => {
+    setProductData({ ...productData, [field]: value });
   };
 
-  const dataSpecifications = {
-    NameTT: ["Màu sắc", "Kích thước", "Trọng lượng"],
-    ValueTT: {
-      "Màu sắc": ["Đỏ", "Xanh", "Vàng", "Đen", "Trắng"],
-      "Kích thước": ["S", "M", "L", "XL"],
-      "Trọng lượng": ["1kg", "2kg", "3kg"],
-    },
-    TypeTT: ["text", "array", "number"],
+  const handleAttributeChange = (field, value) =>
+    setAttributeData({ ...attributeData, [field]: value });
+
+  const handleUploadThumbnail = (url) =>
+    setProductData({ ...productData, thumbnail: url });
+
+  const handleUploadImages = (url) => {
+    setProductData((prevData) => ({
+      ...prevData,
+      images: url,
+    }));
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setProductDetails({ ...productDetails, [name]: value });
+  const handleUploadVideo = (url) =>
+    setProductData({ ...productData, videos: url });
+
+  const handleAddAttribute = () => {
+    setProductData({
+      ...productData,
+      attributes: [...productData.attributes, attributeData],
+    });
+    setAttributeData({
+      aid: "",
+      value: "",
+      SKU: "",
+      historicalPrice: "",
+      priceInMarket: "",
+      price: "",
+      discount: "",
+      onStock: "", // hàng có thể bán
+      inStock: "", // hàng tồn kho
+      inComing: "", // hàng đang về
+      unit: "",
+      minInventory: "",
+      maxInventory: "",
+      images: "",
+    });
   };
 
+  // Lưu sản phẩm
   const handleSaveProduct = () => {
-    console.log("Dữ liệu sản phẩm:", productData);
-    // Gửi dữ liệu sản phẩm lên API hoặc xử lý lưu trữ tại đây
+    console.log(productData);
+    dispatch(createProduct(productData)).then((result) => {
+      if (result.type === "product/createProduct/fulfilled") {
+        handleToast("success", "Thêm sản phẩm thành công");
+      } else {
+        handleToast("error", "Thêm sản phẩm thất bại");
+      }
+    });
   };
+
+  const handleDeleteAttribute = (index) => {
+    setProductData({
+      ...productData,
+      attributes: productData.attributes.filter((_, i) => i !== index),
+    });
+  };
+
+  const handleUploadImagesAttribute = (url) => {
+    setAttributeData((prevData) => ({
+      ...prevData,
+      images: Array.isArray(prevData.images)
+        ? { ...prevData.images, url }
+        : url,
+    }));
+  };
+  const handleDeleteImagesAttribute = (index) => {
+    setAttributeData((prevData) => ({
+      ...prevData,
+      images: Array.isArray(prevData.images)
+        ? prevData.images.filter((_, i) => i !== index)
+        : [],
+    }));
+  };
+
+  const handleEditAttribute = (index) => {
+    const attribute = productData.attributes[index];
+    setAttributeData({
+      aid: attribute.aid,
+      value: attribute.value,
+      SKU: attribute.SKU,
+      historicalPrice: attribute.historicalPrice,
+      priceInMarket: attribute.priceInMarket,
+      price: attribute.price,
+      discount: attribute.discount,
+      onStock: attribute.onStock,
+      inStock: attribute.inStock,
+      inComing: attribute.inComing,
+      unit: attribute.unit,
+      minInventory: attribute.minInventory,
+      maxInventory: attribute.maxInventory,
+      images: Array.isArray(attribute.images) ? attribute.images : [], // Ensure images is an array
+    });
+  };
+  const statusGetCategory = useSelector((state) => state.category.status);
+  const dataCategory = useSelector((state) => state.category.data);
+  const statusBrand = useSelector((state) => state.brand.status);
+  const dataBrand = useSelector((state) => state.brand.data);
+  const statusSeries = useSelector((state) => state.collection.status);
+  const dataSeries = useSelector((state) => state.collection.data);
+  const statusTag = useSelector((state) => state.tag.status);
+  const dataTag = useSelector((state) => state.tag.data.tags);
+  const statusWarehouse = useSelector((state) => state.warehouse.status);
+  const dataWarehouse = useSelector((state) => state.warehouse.data.wareHouses);
+  useEffect(() => {
+    dispatch(getCategory());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getBrand());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getAllCollections());
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(getTags());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getAllWarehouses());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (statusGetCategory === "success") {
+      const categories = dataCategory.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setCategorySelect(categories);
+    }
+  }, [statusGetCategory, dataCategory]);
+  useEffect(() => {
+    if (statusBrand === "success") {
+      const brands = dataBrand.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setBrandSelect(brands);
+    }
+  }, [statusBrand, dataBrand]);
+
+  useEffect(() => {
+    if (statusSeries === "succeeded") {
+      const series = dataSeries.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setSeriesSelect(series);
+    }
+  }, [statusSeries, dataSeries]);
+
+  useEffect(() => {
+    if (statusTag === "succeeded") {
+      const tags = dataTag.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setTagsSelect(tags);
+    }
+  }, [statusTag, dataTag]);
+
+  useEffect(() => {
+    if (statusWarehouse === "success") {
+      const warehouses = dataWarehouse.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setWarehouseSelect(warehouses);
+    }
+  }, [statusWarehouse, dataWarehouse]);
 
   return (
     <>
-      <Typography variant="h4" gutterBottom>
-        Tạo Sản Phẩm Mới
-      </Typography>
+      <Card sx={{ mt: 2, p: 3 }}>
+        <Tabs value={mainTabValue} onChange={handleMainTabChange}>
+          <Tab label="Thông tin sản phẩm" {...a11yProps(0)} />
+          <Tab label="Thông tin SEO" {...a11yProps(1)} />
+          <Tab label="Biến thể" {...a11yProps(2)} />
+        </Tabs>
+      </Card>
 
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <TextField
-            label="Tên sản phẩm"
-            fullWidth
-            value={productData.name}
-            onChange={(e) => handleInputChange("name", e.target.value)}
-          />
+      <TabPanel value={mainTabValue} index={0}>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Information
+              productData={productData}
+              handleInputChange={handleInputChange}
+              warehouseSelect={warehouseSelect}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Slug"
-            fullWidth
-            value={productData.slug}
-            onChange={(e) => handleInputChange("slug", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="SKU"
-            fullWidth
-            value={productData.SKU}
-            onChange={(e) => handleInputChange("SKU", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Giá thị trường"
-            fullWidth
-            type="number"
-            value={productData.priceInMarket}
-            onChange={(e) => handleInputChange("priceInMarket", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Giá cửa hàng"
-            fullWidth
-            type="number"
-            value={productData.priceInStore}
-            onChange={(e) => handleInputChange("priceInStore", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Giá online"
-            fullWidth
-            type="number"
-            value={productData.priceOnline}
-            onChange={(e) => handleInputChange("priceOnline", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Giảm giá"
-            fullWidth
-            type="number"
-            value={productData.discount}
-            onChange={(e) => handleInputChange("discount", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Tồn kho"
-            fullWidth
-            type="number"
-            value={productData.onStock}
-            onChange={(e) => handleInputChange("onStock", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Đơn vị"
-            fullWidth
-            value={productData.unit}
-            onChange={(e) => handleInputChange("unit", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Khối lượng"
-            fullWidth
-            type="number"
-            value={productData.weight}
-            onChange={(e) => handleInputChange("weight", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={productData.isBattery}
-                onChange={(e) =>
-                  handleInputChange("isBattery", e.target.checked)
-                }
+        <Card sx={{ mt: 2, p: 3 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography sx={{ mb: 2 }} variant="h6">
+                Thông tin danh mục
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <OtherProduct
+                productData={productData}
+                handleInputChange={handleInputChange}
+                categorySelect={categorySelect}
+                brandSelect={brandSelect}
+                seriesSelect={seriesSelect}
+                tagsProduct={tagsSelect}
               />
-            }
-            label="Có pin"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={productData.isMain}
-                onChange={(e) => handleInputChange("isMain", e.target.checked)}
-              />
-            }
-            label="Sản phẩm chính"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={productData.isStopSelling}
-                onChange={(e) =>
-                  handleInputChange("isStopSelling", e.target.checked)
-                }
-              />
-            }
-            label="Ngừng bán"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            label="Mô tả sản phẩm"
-            fullWidth
-            multiline
-            rows={4}
-            value={productData.description}
-            onChange={(e) => handleInputChange("description", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Từ khóa"
-            fullWidth
-            value={productData.keywords}
-            onChange={(e) => handleInputChange("keywords", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Tiêu đề SEO"
-            fullWidth
-            value={productData.titleSEO}
-            onChange={(e) => handleInputChange("titleSEO", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            label="Mô tả SEO"
-            fullWidth
-            multiline
-            rows={3}
-            value={productData.descriptionSEO}
-            onChange={(e) =>
-              handleInputChange("descriptionSEO", e.target.value)
-            }
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            label="Ảnh đại diện"
-            fullWidth
-            value={productData.thumbnail}
-            onChange={(e) => handleInputChange("thumbnail", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextareaAutosize
-            placeholder="Danh sách ảnh (URL), ngăn cách bởi dấu phẩy"
-            minRows={3}
-            style={{ width: "100%" }}
-            value={productData.images.join(", ")}
-            onChange={(e) =>
-              handleInputChange("images", e.target.value.split(", "))
-            }
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            label="Video (URL)"
-            fullWidth
-            value={productData.videos}
-            onChange={(e) => handleInputChange("videos", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Select
-            fullWidth
-            value={productData.status}
-            onChange={(e) => handleInputChange("status", e.target.value)}
+            </Grid>
+          </Grid>
+        </Card>
+
+        <Card sx={{ mt: 2, p: 3 }}>
+          <Grid
+            container
+            justifyContent="center"
+            alignItems="center"
+            spacing={3}
           >
-            <MenuItem value="available">Còn hàng</MenuItem>
-            <MenuItem value="unavailable">Hết hàng</MenuItem>
-          </Select>
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Series ID"
-            fullWidth
-            value={productData.series}
-            onChange={(e) => handleInputChange("series", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Brand ID"
-            fullWidth
-            value={productData.brand}
-            onChange={(e) => handleInputChange("brand", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            label="Category ID"
-            fullWidth
-            value={productData.category}
-            onChange={(e) => handleInputChange("category", e.target.value)}
-          />
-        </Grid>
-      </Grid>
+            <Grid item xs={12}>
+              <Typography sx={{ mb: 2 }} variant="h6">
+                hình ảnh và thông số
+              </Typography>
+            </Grid>
 
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSaveProduct}
-        style={{ marginTop: "20px" }}
+            <Grid item xs={1}>
+              <Tabs
+                value={subTabValue}
+                onChange={handleSubTabChange}
+                orientation="vertical"
+                aria-label="Tabs phụ dọc"
+                sx={{ borderRight: 1, borderColor: "divider" }}
+              >
+                <Tab label="Hình và video" {...a11yProps(0)} />
+                <Tab label="Thông số" {...a11yProps(1)} />
+                <Tab label="Khác" {...a11yProps(2)} />
+              </Tabs>
+            </Grid>
+
+            <Grid item xs={11}>
+              <TabPanel value={subTabValue} index={0}>
+                <Tabs
+                  value={subTabValue2}
+                  onChange={handleSubTabChange2}
+                  orientation="horizontal"
+                  aria-label="Tabs phụ dọc"
+                  centered
+                >
+                  <Tab label="hình" {...a11yProps(0)} />
+                  <Tab label="video" {...a11yProps(1)} />
+                </Tabs>
+                <TabPanel value={subTabValue2} index={0}>
+                  <Grid container spacing={2} sx={{ mt: 2 }}>
+                    <Grid item xs={6}>
+                      <ThumbnailProduct
+                        handleUploadThumbnail={handleUploadThumbnail}
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          alignItems: "center",
+                          justifyContent: "center",
+                          display: "flex",
+                        }}
+                      >
+                        Hình ảnh
+                      </Typography>
+                      <ImagesProduct
+                        handleUploadImages={handleUploadImages}
+                        onDelete={(index) => {
+                          const newImages = [...productData.images];
+                          newImages.splice(index, 1);
+                          setProductData({
+                            ...productData,
+                            images: newImages,
+                          });
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </TabPanel>
+                <TabPanel value={subTabValue2} index={1}>
+                  <Grid sx={{ mt: 2 }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        display: "flex",
+                      }}
+                    >
+                      Video
+                    </Typography>
+                    <VideoProduct
+                      handleUploadVideo={handleUploadVideo}
+                      onDelete={(index) => {
+                        const newVideos = [...productData.videos];
+                        newVideos.splice(index, 1);
+                        setProductData({
+                          ...productData,
+                          videos: newVideos,
+                        });
+                      }}
+                    />
+                  </Grid>
+                </TabPanel>
+              </TabPanel>
+              <TabPanel value={subTabValue} index={1}>
+                <Specifications
+                  productData={productData}
+                  handleInputChange={handleInputChange}
+                />
+              </TabPanel>
+              <TabPanel value={subTabValue} index={2}>
+                <Gifts
+                  productData={productData}
+                  handleInputChange={handleInputChange}
+                />
+              </TabPanel>
+            </Grid>
+          </Grid>
+        </Card>
+      </TabPanel>
+
+      <TabPanel value={mainTabValue} index={1}>
+        <Card sx={{ mt: 2, p: 3 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="h6">Thông tin Seo</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <SEOInformation
+                productData={productData}
+                handleInputChange={handleInputChange}
+              />
+            </Grid>
+          </Grid>
+        </Card>
+      </TabPanel>
+
+      <TabPanel value={mainTabValue} index={2}>
+        <Card sx={{ mt: 2, p: 3 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="h6">Biến thể</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <AttributesSection
+                attributeData={attributeData}
+                productData={productData}
+                handleAttributeChange={handleAttributeChange}
+                handleAddAttribute={handleAddAttribute}
+                handleDeleteAttribute={handleDeleteAttribute}
+                handleEditAttribute={handleEditAttribute}
+                attributesSelect={attributesSelect}
+                handleUploadImagesAttribute={handleUploadImagesAttribute}
+                handleDeleteImagesAttribute={handleDeleteImagesAttribute}
+              />
+            </Grid>
+          </Grid>
+        </Card>
+      </TabPanel>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          mt: 2,
+          p: 2,
+        }}
       >
-        Tạo sản phẩm
-      </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSaveProduct}
+          sx={{ mr: 2 }}
+        >
+          Lưu sản phẩm
+        </Button>
+        <Button variant="contained" color="error">
+          Hủy
+        </Button>
+      </Box>
     </>
   );
 }

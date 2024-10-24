@@ -12,17 +12,18 @@ import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
 import { useNavigate } from "react-router-dom";
 
 export default function ProductPage() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
   const [data, setData] = useState([]);
 
   const columns = [
     { label: "mã", field: "SKU" },
-    { label: "Hình ảnh", field: "images" },
     { label: "Tên sản phẩm", field: "name" },
-    { label: "Giá thị trường", field: "priceInMarket" },
-    { label: "Giá cửa hàng", field: "priceInStore" },
-    { label: "Giá trên website", field: "priceOnline" },
+    { label: "hình ảnh", field: "images" },
+    { label: "giá thị trường", field: "priceInMarket" },
+    { label: "giá cửa hàng", field: "priceInStore" },
+    { label: "giá trên website", field: "priceOnline" },
     { label: "Số lượng", field: "onStock" },
     { label: "Trạng thái", field: "status" },
   ];
@@ -98,6 +99,12 @@ export default function ProductPage() {
     },
     [dispatch]
   );
+
+  const handleSave = (data) => {
+    console.log("Save", data);
+
+    setOpen(false);
+  };
   return (
     <>
       <ReusableTable
