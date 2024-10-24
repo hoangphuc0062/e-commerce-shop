@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 import { PostDB } from "../../data/Forum/PostDB";
-import PropTypes from "prop-types";
 
-const PostTag = ({ category }) => {
+const PostTag = ({ category, data }) => {
   // Lọc bài viết theo category
   const filteredPosts = PostDB.filter((post) => post.category === category);
   // Giới hạn số lượng bài viết tối đa là 3
@@ -45,10 +44,6 @@ const PostTag = ({ category }) => {
       )}
     </div>
   );
-};
-
-PostTag.propTypes = {
-  category: PropTypes.string.isRequired,
 };
 
 export default PostTag;

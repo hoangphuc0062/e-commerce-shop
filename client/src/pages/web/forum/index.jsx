@@ -4,25 +4,22 @@ import FeaturedPost from "../../../components/Forum/FeaturedPost";
 import SliderPost from "../../../components/Forum/SliderPost";
 import Sidebar from "../../../components/Forum/Sidebar";
 import PostScroll from "../../../components/Forum/PostScroll";
-import PostList from "../../../components/Forum/PostList";
-import SmallPost from "../../../components/Forum/SmallPost";
 import PostTag from "../../../components/Forum/PostTag";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getPosts } from "../../../redux/slices/post";
 
-
 function ForumPage() {
   const dispatch = useDispatch();
-  const status = useSelector((state) => state.postReducer.status);
-  const postData = useSelector((state) => state.postReducer.data);
+  const status = useSelector((state) => state.postReducer?.status);
+  const postData = useSelector((state) => state.postReducer?.data);
   const [data, setData] = useState([]);
-  
+
   useEffect(() => {
     dispatch(getPosts());
   }, [dispatch]);
-  
+
   useEffect(() => {
     if (status === "success" && Array.isArray(postData)) {
       setData(
@@ -38,15 +35,11 @@ function ForumPage() {
           rating: item.rating,
           slug: item.slug,
           date: item.createdAt,
-          thumbnail: item.thumbnail
+          thumbnail: item.thumbnail,
         }))
       );
     }
   }, [status, postData]);
-  
-  
-
-
 
   return (
     <div className="container w-full">
@@ -62,47 +55,15 @@ function ForumPage() {
               <TopicCard />
             </section>
 
-            <section className="mb-8">
-              <HeadingSection title="Nổi bật nhất" />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="w-full">
-                  <FeaturedPost />
-                </div>
-                <div className="space-y-4">
-                  <SmallPost />
-                </div>
-              </div>
-            </section>
+            <FeaturedPost data={data} />
           </section>
 
           <section className="mb-8 p-4">
             <HeadingSection title="xem nhiều tuần qua" />
-            {
-              data && (
-                <SliderPost category="S-Games" data={data} />
-              )
-            }
+            {data && <SliderPost category="S-Games" data={data} />}
           </section>
 
-          <section className="mb-8 p-4"> 
-            <div className="md:flex md:space-x-8">
-              <div className="md:w-1/2">
-                <HeadingSection title="tin tức mới nhất" />
-                <div className="space-y-4">
-                  <PostList />
-                </div>
-              </div>
-              <div className="md:w-1/2 space-y-8">
-                <div>
-                  <PostScroll />
-                </div>
-                <div>
-                  <HeadingSection title="khám phá - TRENDING" />
-                  <PostScroll />
-                </div>
-              </div>
-            </div>
-          </section>
+          <PostScroll data={data} />
 
           <section className="mb-8 px-4 bg-gray-100 w-full rounded-lg">
             <HeadingSection title="S-GAMES" />
@@ -118,9 +79,9 @@ function ForumPage() {
           </section>
           <section className="mb-8 p-4">
             <div className="flex overflow-x-auto space-x-4">
-              <PostTag category="Trên Tay" />
-              <PostTag category="Tin Công Nghệ" />
-              <PostTag category="Đánh Giá" />
+              <PostTag category="Trên Tay" data={data} />
+              <PostTag category="Tin Công Nghệ" data={data} />
+              <PostTag category="Đánh Giá" data={data} />
             </div>
           </section>
 
