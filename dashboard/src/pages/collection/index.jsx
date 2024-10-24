@@ -20,8 +20,8 @@ export default function CollectionPage() {
   const [collectionData, setCollectionData] = useState(null);
   const columns = [
     { label: "Tên bộ sưu tập", field: "name" },
-    { label: "tiêu đề ", field: "titleSEO" },
-    { label: "từ khóa", field: "keywordsSEO" },
+    { label: "Tiêu đề ", field: "titleSEO" },
+    { label: "Từ khóa", field: "keywordsSEO" },
   ];
 
   const handleEdit = (index) => {

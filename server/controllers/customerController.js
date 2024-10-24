@@ -17,6 +17,7 @@ const checkOTP = asyncHandler(async (req, res) => {
     throw new Error("Phone number not found");
   }
   if (customer.code !== code) {
+    console.log(customer.code);
     res.status(400);
     throw new Error("OTP is incorrect");
   }
@@ -51,7 +52,6 @@ const forgotPassword = asyncHandler(async (req, res) => {
   }
 
   const resetToken = customer.createPasswordChangeToken();
-
   await customer.save(); // Save the customer with the token
 
   // Generate an OTP
@@ -72,32 +72,30 @@ const forgotPassword = asyncHandler(async (req, res) => {
     return res.status(500).json({ message: "Error sending OTP" });
   }
 
-  // Send the response with resetToken and customer
-  res.status(200).json({ resetToken, customer });
+  res.status(200).json(resetToken, customer);
 });
 
 const getCustomer = asyncHandler(async (req, res) => {
-  const customers = await Customer.find().select(
+  const customer = await Customer.find().select(
     "-refreshToken -role -password -passwordResetToken "
   );
-  return res.status(200).json(customers);
+  return res.status(200).json(customer);
 });
 
 const getCurrentCustomer = asyncHandler(async (req, res) => {
   const { _id } = req.user;
+
   if (!_id) {
     return res.status(400).json({
-      message: "Missing _id",
+      message: "Missing customer _id",
     });
   }
 
   const customer = await Customer.findById(_id).select(
-    "-role -refreshToken -password -passwordResetToken -passwordResetExprires "
+    "-refreshToken -role -password -passwordResetToken isBlocked code "
   );
 
-  return res
-    .status(200)
-    .json({ rs: customer ? customer : "Customer is not founded" });
+  return res.status(200).json(customer);
 });
 
 const loginCustomer = asyncHandler(async (req, res) => {
@@ -105,7 +103,7 @@ const loginCustomer = asyncHandler(async (req, res) => {
 
   // Check if the phone number exists
   const customer = await Customer.findOne({ phone }).select(
-    "-role -code -isBlocked -resetPasswordToken -resetPasswordExpires -passwordResetExprires -passwordResetToken -refreshToken "
+    "-role -code -isBlocked -resetPasswordToken -resetPasswordExpires "
   );
   if (!customer) {
     res.status(400);

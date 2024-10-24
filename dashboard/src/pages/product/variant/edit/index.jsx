@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { HexColorPicker } from "react-colorful"; // Thay thế ChromePicker bằng HexColorPicker
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function EditVariant({
   open,

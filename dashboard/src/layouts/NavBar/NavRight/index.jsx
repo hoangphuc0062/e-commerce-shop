@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown, ListGroup } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import Cookies from "js-cookie";
 import { useAuth } from "../../../contexts/AuthContext";
 import { handleToast } from "../../../utils/toast";
 import { getMe, logout as handleLogout } from "../../../redux/slices/staff";
@@ -16,9 +15,8 @@ const NavRight = () => {
   const [profileData, setProfileData] = useState(null);
 
   useEffect(() => {
-    const token = Cookies.get("refreshToken");
-    if (!profile && token) {
-      dispatch(getMe({ token }));
+    if (!profile) {
+      dispatch(getMe());
     } else if (profile?.isBlocked) {
       handleToast("error", "Your account is blocked", "top-right");
       logout();
@@ -29,9 +27,7 @@ const NavRight = () => {
   }, [dispatch, profile, logout, navigate]);
 
   useEffect(() => {
-    if (status === "failed") {
-      handleToast("error", "Failed to load profile", "top-right");
-    } else if (status === "success") {
+    if (status === "success") {
       setProfileData(profile);
     }
   }, [status, profile]);

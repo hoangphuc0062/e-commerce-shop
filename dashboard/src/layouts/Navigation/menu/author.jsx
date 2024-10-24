@@ -3,10 +3,10 @@ import React, { useContext } from "react";
 // project import
 import useWindowSize from "../../../hooks/useWindowSize";
 import NavContent from "../NavContent";
-import navigation from "../../data-menu/customer";
+import navigation from "../../data-menu/author";
 import { ConfigContext } from "../../../contexts/ConfigContext";
 
-export default function Customer() {
+export default function NavigationAuthor() {
   const configContext = useContext(ConfigContext);
   const { layoutType, collapseMenu } = configContext.state;
   const windowSize = useWindowSize();

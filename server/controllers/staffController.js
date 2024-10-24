@@ -234,23 +234,36 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 
+const getStaffCurrent = asyncHandler(async (req, res) => {
+  console.log("req.user:", req.user); // Log the entire req.user object
+  const { _id } = req.user;
+  console.log("_id:", _id); // Log the extracted _id
+  if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
+    res.status(400);
+    throw new Error("Invalid or missing inputs");
+  }
+  const staff = await Staff.findById(_id);
+  if (staff) {
+    res.json(staff);
+  } else {
+    res.status(404);
+    throw new Error("Staff not found");
+  }
+});
+
 const getStaffByToken = asyncHandler(async (req, res) => {
-  try {
-    const { token } = req.body;
-
-    // Call the static method directly on the Staff model
-    const staffData = await Staff.getStaffByToken(token);
-
-    if (!staffData) {
-      return res.status(404).json({ message: "Staff not found" });
-    }
-
-    return res.status(200).json({
-      mes: "Get staff by token success",
-      staffData,
+  const { refreshToken } = req.cookies;
+  if (!refreshToken) throw new Error("No refresh token");
+  const staff = await Staff.findOne({ refreshToken }).select(
+    "-password -refreshToken -passwordResetToken -passwordResetExprires"
+  );
+  if (staff) {
+    res.json({
+      staffData: staff,
     });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+  } else {
+    res.status(404);
+    throw new Error("Staff not found");
   }
 });
 
@@ -265,5 +278,6 @@ module.exports = {
   refreshAccessToken,
   forgotPassword,
   resetPassword,
+  getStaffCurrent,
   getStaffByToken,
 };

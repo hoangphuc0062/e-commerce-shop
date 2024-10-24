@@ -129,6 +129,7 @@ export default function InformationEdit({ formik, warehouseSelect }) {
                 label="Kho"
                 value={formik.values.warehouse || ""}
                 onChange={formik.handleChange}
+                name="warehouse"
               >
                 {warehouseSelect.map((warehouse) => (
                   <MenuItem key={warehouse.value} value={warehouse.value}>

@@ -1,7 +1,6 @@
 import Sidebar from "../../../components/Profile/SidebarProfile";
 import ProfileUser from "../../../components/Profile/ProfileUser";
 import OrderFilter from "../../../components/Profile/OrderFilter";
-import { Link } from "react-router-dom";
 const UserOrder = () => {
   return (
     <div className="container mx-auto p-2 md:flex">
@@ -50,13 +49,9 @@ const UserOrder = () => {
             <div className="flex justify-between items-center mb-2">
               <span className="text-red-500 font-bold">99.9mhz Sale Khó Mua</span>
               <div className="flex items-center ml-auto px-2">
-              <Link to="/phone">
-                <button className="text-sm border border-gray-300 py-1 px-3 rounded-md">Xem Shop</button>
-              </Link>
+                <a href="" className="text-sm border border-gray-300 py-1 px-3 rounded-md">Xem Shop</a>
               </div>
-              <Link to="/profile/manage">
-                <button className="text-green-500">Hoàn Thành</button>
-              </Link>
+              <button className="text-green-500" onClick={() => window.location.href = '/profile/manage'}>HOÀN THÀNH</button>
             </div>
             <div className="flex">
               <img
@@ -74,9 +69,7 @@ const UserOrder = () => {
               </div>
             </div>
             <div className="flex justify-end mt-2">
-              <Link to="/cart">
-                <button className="bg-main text-white py-1 px-3 rounded-md mr-2">Mua Lại</button>
-              </Link>
+              <button className="bg-main text-white py-1 px-3 rounded-md mr-2">Mua Lại</button>
               <button className="bg-gray-200 py-1 px-3 rounded-md">Liên Hệ Người Bán</button>
             </div>
           </div>
@@ -86,13 +79,8 @@ const UserOrder = () => {
               <span className="text-red-500 font-bold">Hoàng Lê-Biker Life</span>
               
               <div className="flex items-center ml-auto px-2">
-              <Link to="/phone">
-                <button className="text-sm border border-gray-300 py-1 px-3 rounded-md">Xem Shop</button>
-              </Link>
-              </div>
-              <Link to="/profile/manage">
-                <button className="text-green-500">Đã Hủy</button>
-              </Link>
+                <a href="" className="text-sm border border-gray-300 py-1 px-3 rounded-md">Xem Shop</a>
+              </div><button className="text-green-500">ĐÃ HỦY</button>
             </div>
             <div className="flex">
               <img
@@ -110,9 +98,7 @@ const UserOrder = () => {
               </div>
             </div>
             <div className="flex justify-end mt-2">
-              <Link to="/cart">
-                <button className="bg-main text-white py-1 px-3 rounded-md mr-2">Mua Lại</button>
-              </Link>
+              <button className="bg-main text-white py-1 px-3 rounded-md mr-2">Mua Lại</button>
               <button className="bg-gray-200 py-1 px-3 rounded-md">Xem Chi Tiết Hủy Đơn</button>
             </div>
           </div>
