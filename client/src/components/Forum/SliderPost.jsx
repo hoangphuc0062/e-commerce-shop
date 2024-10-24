@@ -1,5 +1,5 @@
 import Slider from "react-slick";
-// import { PostDB } from "../../data/Forum/PostDB";
+import { PostDB } from "../../data/Forum/PostDB";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useRef } from "react";
@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import "./SliderPost.css";
 
-const SliderPost = ({ category, data }) => {
+const SliderPost = ({ category }) => {
   const sliderRef = useRef(null);
 
   const settings = {
@@ -41,26 +41,26 @@ const SliderPost = ({ category, data }) => {
     ],
   };
 
-  const filteredPosts = data?.filter((post) => post.category === category);
+  const filteredPosts = PostDB.filter((post) => post.category === category);
 
   return (
     <div className="relative w-full">
       <Slider ref={sliderRef} {...settings}>
-        {filteredPosts?.map((post) => (
+        {filteredPosts.map((post) => (
           <div key={post.id} className="px-1">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <img
-                src={post.thumbnail}
-                alt={post.postTitle}
+                src={post.imageUrl}
+                alt={post.title}
                 className="w-full h-36 object-cover md:h-48 lg:h-60 cursor-pointer"
               />
               <div className="p-3">
-                <Link to={`blog/${post.slug}`}>
+                <Link to="">
                   <h3 className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main">
-                    {post.postTitle}
+                    {post.title}
                   </h3>
                 </Link>
-                <Link to={`blog/${post.slug}`}>
+                <Link to="">
                   <p className="text-xs text-blue-500 pb-1 cursor-pointer">
                     {post.author}
                   </p>

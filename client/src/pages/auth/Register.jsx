@@ -1,53 +1,19 @@
-import { Link, useNavigate } from "react-router-dom";
-import ReCAPTCHA from "react-google-recaptcha";
-
+import { Link } from "react-router-dom";
 import { Input } from "../../components/Input/Input";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
-import { handleToast } from "../../ultils/toast";
-import { registerCustomer } from "../../redux/slices/customer";
-import messageConverter from "../../ultils/converMes";
-import { useState } from "react";
+import { RegisterForm } from "../../components/Form/RegisterForm";
 
 export const Register = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [captchaValue, setCaptchaValue] = useState(null);
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
-
-  const onChange = (value) => {
-    setCaptchaValue(value);
-  };
-
-  const onSubmit = async (rawData) => {
-    if (!captchaValue) {
-      handleToast("error", "Vui lòng xác nhận bạn không phải là robot.");
-      return;
-    }
-
-    const { name, phone, password } = rawData;
-    const data = { name, phone, password };
-
-    dispatch(registerCustomer(data)).then((res) => {
-      if (res.type === "customer/register/fulfilled") {
-        handleToast("success", "Đăng ký thành công");
-        setTimeout(() => {
-          navigate("/login");
-        }, 3000);
-      } else {
-        const message = messageConverter(res.payload.mes);
-        handleToast("error", message);
-      }
-    });
-  };
+  const onSubmit = (data) => console.log(data);
 
   return (
-    <section className="mx-2 my-4">
+    <section className="mx-2">
       <div className="container flex justify-center">
         <div className="flex-1">
           <div>
@@ -63,7 +29,7 @@ export const Register = () => {
               </Link>
             </span>
           </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="py-5">
+          <form onSubmit={handleSubmit(onSubmit)} action="" className="py-5">
             <div className="grid gap-6 mb-6 md:grid-cols-1 lg:grid-cols-2">
               <Input
                 label="Họ và tên"
@@ -113,10 +79,7 @@ export const Register = () => {
                 errorMessage={errors.confirmPassword?.message}
               />
             </div>
-            <ReCAPTCHA
-              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-              onChange={onChange}
-            />
+
             <button
               type="submit"
               className="px-4 py-2 my-3 bg-blue-700 w-[100%] text-white rounded hover:bg-blue-800"

@@ -7,22 +7,57 @@ const menuItems = {
       icon: "icon-navigation",
       children: [
         {
+          id: "admin",
+          title: "quản trị viên",
+          type: "item",
+          icon: "feather icon-user",
+          url: "/dashboard/welcome",
+        },
+        {
           id: "categories",
           title: "Danh mục",
           type: "collapse",
           icon: "feather icon-list",
           children: [
             {
+              id: "category-list",
+              title: "Danh sách danh mục",
+              type: "item",
+              url: "/dashboard/category",
+            },
+            {
               id: "add-category",
               title: "Thêm danh mục",
               type: "item",
               url: "/dashboard/category/create",
             },
+          ],
+        },
+        {
+          id: "brands",
+          title: "Thương hiệu",
+          type: "collapse",
+          icon: "feather icon-award",
+          children: [
             {
-              id: "category-list",
-              title: "Danh sách danh mục",
+              id: "brand-list",
+              title: "Danh sách thương hiệu",
               type: "item",
-              url: "/dashboard/category",
+              url: "/dashboard/brand",
+            },
+          ],
+        },
+        {
+          id: "collections",
+          title: "Bộ sưu tập",
+          type: "collapse",
+          icon: "feather icon-book",
+          children: [
+            {
+              id: "collection-list",
+              title: "Danh sách bộ sưu tập",
+              type: "item",
+              url: "/dashboard/collection",
             },
           ],
         },
@@ -33,16 +68,23 @@ const menuItems = {
           icon: "feather icon-box",
           children: [
             {
+              id: "product-list",
+              title: "Danh sách sản phẩm",
+              type: "item",
+              url: "/dashboard/product",
+            },
+            {
               id: "add-product",
               title: "Thêm sản phẩm",
               type: "item",
               url: "/dashboard/product/create",
             },
+
             {
-              id: "product-list",
-              title: "Danh sách sản phẩm",
+              id: "variant",
+              title: "Danh sách biến thể",
               type: "item",
-              url: "/dashboard/product",
+              url: "/dashboard/product/variant",
             },
           ],
         },
@@ -58,18 +100,6 @@ const menuItems = {
               type: "item",
               url: "/dashboard/order",
             },
-            {
-              id: "pending-orders",
-              title: "Đơn hàng chờ xử lý",
-              type: "item",
-              url: "/dashboard/order/pending",
-            },
-            {
-              id: "processed-orders",
-              title: "Đơn hàng đã xử lý",
-              type: "item",
-              url: "/dashboard/order/processed",
-            },
           ],
         },
         {
@@ -79,17 +109,16 @@ const menuItems = {
           icon: "feather icon-user",
           children: [
             {
-              id: "add-personnel",
-              title: "Thêm nhân viên",
-              type: "item",
-              // url: "dashboard/staff/create",
-              url: "/dashboard/staff/create",
-            },
-            {
               id: "personnel-list",
               title: "Danh sách nhân viên",
               type: "item",
               url: "/dashboard/staff",
+            },
+            {
+              id: "add-personnel",
+              title: "Thêm nhân viên",
+              type: "item",
+              url: "/dashboard/staff/create",
             },
           ],
         },
@@ -105,18 +134,6 @@ const menuItems = {
               type: "item",
               url: "/dashboard/customer",
             },
-            {
-              id: "new-customers",
-              title: "Khách hàng mới",
-              type: "item",
-              url: "/dashboard/customer/new",
-            },
-            {
-              id: "contacted-customers",
-              title: "Khách hàng đã liên hệ",
-              type: "item",
-              url: "/dashboard/customer/contacted",
-            },
           ],
         },
         {
@@ -124,7 +141,7 @@ const menuItems = {
           title: "Mã giảm giá",
           type: "item",
           icon: "feather icon-tag",
-          url: "/app/coupons",
+          url: "/dashboard/coupons",
         },
         {
           id: "comfig",
@@ -136,19 +153,19 @@ const menuItems = {
               id: "site-config",
               title: "Cấu hình trang web",
               type: "item",
-              url: "/dashboard/config/site-config",
+              url: "/dashboard/webconfig",
             },
             {
               id: "email-config",
-              title: "Cấu hình email",
+              title: "Cấu hình banner",
               type: "item",
-              url: "/dashboard/config/email-config",
+              url: "/dashboard/bannercollection",
             },
             {
               id: "payment-config",
               title: "Cấu hình thanh toán",
               type: "item",
-              url: "/dashboard/config/payment-config",
+              url: "/dashboard/paymentconfig",
             },
             {
               id: "shipping-config",
@@ -180,19 +197,19 @@ const menuItems = {
               id: "add-warehouse",
               title: "Thêm kho hàng",
               type: "item",
-              url: "dashboard/warehouse/create",
+              url: "/dashboard/warehouse/create",
             },
             {
               id: "warehouse-list",
               title: "Danh sách kho hàng",
               type: "item",
-              url: "dashboard/warehouse",
+              url: "/dashboard/warehouse",
             },
           ],
         },
         {
-          id: "Blogs",
-          title: "Bài viết",
+          id: "Post",
+          title: "Bài đăng",
           type: "collapse",
           icon: "feather icon-file-text",
           children: [
@@ -200,13 +217,34 @@ const menuItems = {
               id: "add-blog",
               title: "Thêm bài viết",
               type: "item",
-              url: "dashboard/blog/create",
+              url: "/dashboard/post/create",
             },
             {
-              id: "blog-list",
-              title: "Danh sách bài viết",
+              id: "post-list",
+              title: "Danh sách bài đăng",
               type: "item",
-              url: "dashboard/blog",
+              url: "/dashboard/post",
+            },
+          ],
+        },
+
+        {
+          id: "auth",
+          title: "Tài khoản",
+          type: "collapse",
+          icon: "feather icon-lock",
+          children: [
+            {
+              id: "login",
+              title: "Đăng nhập",
+              type: "item",
+              url: "/dashboard/login",
+            },
+            {
+              id: "register",
+              title: "Đăng ký",
+              type: "item",
+              url: "/dashboard/register",
             },
           ],
         },

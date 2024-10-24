@@ -109,17 +109,16 @@ const menuItems = {
           icon: "feather icon-user",
           children: [
             {
-              id: "add-personnel",
-              title: "Thêm nhân viên",
-              type: "item",
-              // url: "dashboard/staff/create",
-              url: "/dashboard/staff/create",
-            },
-            {
               id: "personnel-list",
               title: "Danh sách nhân viên",
               type: "item",
               url: "/dashboard/staff",
+            },
+            {
+              id: "add-personnel",
+              title: "Thêm nhân viên",
+              type: "item",
+              url: "/dashboard/staff/create",
             },
           ],
         },
@@ -143,13 +142,6 @@ const menuItems = {
           type: "item",
           icon: "feather icon-tag",
           url: "/dashboard/coupons",
-        },
-        {
-          id: "tags",
-          title: "Thẻ",
-          type: "item",
-          icon: "feather icon-tag",
-          url: "/dashboard/tags",
         },
         {
           id: "comfig",
