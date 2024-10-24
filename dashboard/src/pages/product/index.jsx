@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function ProductPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
 
   const columns = [
