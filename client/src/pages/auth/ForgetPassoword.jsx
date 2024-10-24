@@ -1,7 +1,4 @@
-import { Link } from "react-router-dom";
-
 import { useDispatch } from "react-redux";
-import { loginCustomer } from "../../redux/slices/customer";
 import { handleToast } from "../../ultils/toast";
 import { useForm } from "react-hook-form";
 import { Input } from "../../components/Input/Input";
@@ -9,11 +6,8 @@ import { SSOButton } from "../../components/Button/SSOButton";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
-import { useAuth } from "../../context/AuthContext";
 
-export const Login = () => {
-  const { login, setCustomerData } = useAuth();
-
+export const ForgetPassoword = () => {
   const dispatch = useDispatch();
   const [captchaValue, setCaptchaValue] = useState(null);
   const { handleSubmit, register } = useForm();
@@ -29,34 +23,25 @@ export const Login = () => {
       return;
     }
     // console.log(data);
-    dispatch(loginCustomer(data)).then((res) => {
-      if (res.type === "customer/login/fulfilled") {
-        handleToast("success", "Đăng nhập thành công");
-        login();
-        setCustomerData(res.payload.customer);
-      } else {
-        setErrors("Số điện thoại hoặc mật khẩu không đúng");
-      }
-    });
+    // dispatch(login(data)).then((res) => {
+    //   if (res.type === "customer/login/fulfilled") {
+    //     handleToast("success", "Đăng nhập thành công");
+    //   } else {
+    //     setErrors("Số điện thoại hoặc mật khẩu không đúng");
+    //   }
+    // });
   };
 
   return (
-    <section className="mx-2 my-4">
+    <section className="mx-2">
       <div className="container flex justify-center">
         <div className="flex-1">
           <div>
-            <h1 className="text-[32px] font-bold">Chào mừng bạn trở lại</h1>
+            <h1 className="text-[32px] font-bold">
+              Bạn quên mật khẩu của mình
+            </h1>
           </div>
-          <div>
-            <span className="mr-1 text-gray-400">
-              Bạn đã có tài khoản đăng nhập.
-            </span>
-            <span>
-              <Link to={"/register"} className="text-main hover:underline">
-                Đăng Ký
-              </Link>
-            </span>
-          </div>
+
           <form onSubmit={handleSubmit(onSubmit)} action="" className="py-5">
             <div className="grid gap-6 mb-6 grid-flow-col-1 ">
               <Input
@@ -67,20 +52,8 @@ export const Login = () => {
                 errorMessage={errors}
                 {...register("phone")}
               />
-
-              <Input
-                label="Mật khẩu"
-                type="password"
-                id="confirmPassword"
-                placeholder="Nhập lại mật khẩu"
-                iconName={"mdi-light:eye"}
-                {...register("password")}
-                errorMessage={errors}
-              />
             </div>
-            <Link className="underline py-4" to={"/forget-password"}>
-              Bạn quên mật khẩu?
-            </Link>
+
             <ReCAPTCHA
               sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
               onChange={onChange}
@@ -91,7 +64,7 @@ export const Login = () => {
               type="submit"
               className="px-4 py-2 my-3 bg-blue-700 w-[100%] text-white rounded hover:bg-blue-800"
             >
-              Đăng nhập
+              Lấy lại mật khẩu
             </button>
           </form>
           <div className="flex w-full items-center">
