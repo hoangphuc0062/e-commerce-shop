@@ -85,7 +85,9 @@ export default function StaffPage() {
           email: item.email || "",
           commission: item.commissionRate || "",
           base: item.base || "",
-          fixedSalary: formatCurrency(item.fixedSalary, "VND", "vi-VN") || "",
+          fixedSalary: item.fixedSalary
+            ? item.fixedSalary.toLocaleString() + " VNĐ"
+            : "",
           status: item.isBlocked === true ? "blocked" : "active",
           avatar: item.avatar || "",
           startDate: item.startDate || "",
