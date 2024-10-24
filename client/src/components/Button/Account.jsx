@@ -9,7 +9,9 @@ export const Account = ({ name }) => {
           <CiUser />
         </div>
 
-        <div className="text-xs ">{name ? name : "Đăng nhập"}</div>
+        <div className="text-xs ">
+          {name ? "Chào" + " " + name : "Đăng nhập"}
+        </div>
       </div>
     </button>
   );
