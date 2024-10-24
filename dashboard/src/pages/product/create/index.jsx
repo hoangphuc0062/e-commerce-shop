@@ -89,9 +89,9 @@ export default function CreateProduct() {
     priceInMarket: "",
     price: "",
     discount: "",
-    onStock: "",
-    inStock: "",
-    inComing: "",
+    onStock: "", // hàng có thể bán
+    inStock: "", // hàng tồn kho
+    inComing: "", // hàng đang về
     unit: "",
     minInventory: "",
     maxInventory: "",

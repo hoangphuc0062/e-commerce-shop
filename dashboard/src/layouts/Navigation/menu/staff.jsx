@@ -6,7 +6,7 @@ import NavContent from "../NavContent";
 import navigation from "../../data-menu/staff";
 import { ConfigContext } from "../../../contexts/ConfigContext";
 
-export default function NavigationStaff() {
+export default function Staff() {
   const configContext = useContext(ConfigContext);
   const { layoutType, collapseMenu } = configContext.state;
   const windowSize = useWindowSize();

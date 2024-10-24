@@ -27,6 +27,7 @@ export default function SEOInformation({ productData, handleInputChange }) {
           name="descriptionSEO"
           value={productData.descriptionSEO}
           onChange={(e) => handleInputChange("descriptionSEO", e.target.value)}
+          height={500}
         />
       </Grid>
     </Grid>

@@ -1,8 +1,10 @@
 import { PostDB } from "../../data/Forum/PostDB";
+import HeadingSection from "./HeadingSection";
 const PostScroll = () => {
   return (
     <>
       <div className="space-y-4">
+      <HeadingSection title="S-NEWS cuối tuần" />
         {PostDB.slice(0, 3).map((post) => (
           <div key={post.id} className="bg-white overflow-hidden flex">
             <img
