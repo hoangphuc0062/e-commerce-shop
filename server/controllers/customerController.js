@@ -105,7 +105,7 @@ const loginCustomer = asyncHandler(async (req, res) => {
 
   // Check if the phone number exists
   const customer = await Customer.findOne({ phone }).select(
-    "-code -isBlocked -resetPasswordToken -resetPasswordExpires -passwordResetExprires -passwordResetToken -refreshToken "
+    "-code -isBlocked -resetPasswordToken -resetPasswordExpires -passwordResetExprires -passwordResetToken -refreshToken"
   );
   if (!customer) {
     res.status(400);
@@ -122,6 +122,7 @@ const loginCustomer = asyncHandler(async (req, res) => {
   const {
     password: _,
     memberShipType,
+    birthday,
     refreshToken: oldRefreshToken,
     ...customerData
   } = customer.toObject();
@@ -146,7 +147,7 @@ const loginCustomer = asyncHandler(async (req, res) => {
   res.status(200).json({
     mes: "Login success",
     accessToken,
-    customer: customerData,
+    customer: { ...customerData, birthday }, // Include the birthday field in the response
   });
 });
 

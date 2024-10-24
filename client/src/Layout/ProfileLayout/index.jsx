@@ -1,23 +1,25 @@
-import Sidebar from "../../../components/Profile/SidebarProfile";
-import PromotionSlider from "../../../components/Profile/promotionSlider";
-import ProfileUser from "../../../components/Profile/ProfileUser";
-import BannerSlider from "../../../components/Profile/slider";
-
-import { SiGoogleclassroom } from "react-icons/si";
-import { BiSolidDiscount } from "react-icons/bi";
-import { PiNotepadBold } from "react-icons/pi";
-import { PiStudentDuotone } from "react-icons/pi";
-import { MdOutlineWhereToVote } from "react-icons/md";
+import icons from "../../ultils/icon";
+import BannerSlider from "../../components/Profile/slider";
+import PromotionSlider from "../../components/Profile/promotionSlider";
+import { Outlet } from "react-router-dom";
+import SidebarProfile from "../../components/Profile/SidebarProfile";
 import { useSelector } from "react-redux";
+import ProfileUser from "../../components/Profile/ProfileUser";
 
-const Profile = () => {
+export const ProfileLayout = () => {
   const customerData = useSelector((state) => state.customer.data);
-
+  //   const {
+  //     SiGoogleclassroom,
+  //     BiSolidDiscount,
+  //     PiNotepadBold,
+  //     PiStudentDuotone,
+  //     MdOutlineWhereToVote,
+  //   } = icons;
   return (
     <div className="container mx-auto p-2">
       <div className="flex flex-col md:flex-row">
         <div className="md:w-1/4 lg:w-1/5 xl:w-1/6 mb-4 md:mb-0">
-          <Sidebar />
+          <SidebarProfile />
         </div>
 
         <div className="flex-1 p-1 bg-white rounded-lg shadow-md">
@@ -29,6 +31,7 @@ const Profile = () => {
               memberShip={customerData?.memberShip}
             />
           </div>
+          <Outlet />
           <div className="flex justify-center p-3 border border-gray-300 rounded-lg w-full">
             <div className="text-center mx-40">
               <p className="text-2xl font-bold">0</p>
@@ -71,13 +74,13 @@ const Profile = () => {
           </div>
 
           <div className="border border-gray-300 p-4 rounded-lg mt-4">
-            <div className="grid grid-cols-3 gap-4 md:grid-cols-5">
-              <a href="" className="flex flex-col items-center space-y-2">
+            {/* <div className="grid grid-cols-3 gap-4 md:grid-cols-5">
+              <Link href="" className="flex flex-col items-center space-y-2">
                 <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
                   <SiGoogleclassroom className="text-blue-500 w-6 h-6" />
                 </div>
                 <p className="text-sm">Hạng thành viên</p>
-              </a>
+              </Link>
               <a href="" className="flex flex-col items-center space-y-2">
                 <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
                   <BiSolidDiscount className="text-blue-500 w-6 h-6" />
@@ -102,7 +105,7 @@ const Profile = () => {
                 </div>
                 <p className="text-sm">Địa chỉ</p>
               </a>
-            </div>
+            </div> */}
           </div>
 
           <div className="border border-gray-300 p-4 rounded-lg mt-4 bg-[#FFF5E5]">
@@ -126,5 +129,3 @@ const Profile = () => {
     </div>
   );
 };
-
-export default Profile;

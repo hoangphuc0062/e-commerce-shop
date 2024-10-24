@@ -18,6 +18,7 @@ import UserOrder from "../pages/web/profile/UserOrder";
 import Manage from "../pages/web/profile/manage";
 import { ForgetPassoword } from "../pages/auth/ForgetPassoword";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { ProfileLayout } from "../Layout/ProfileLayout";
 export default function RootRouter() {
   const routes = useRoutes([
     {
@@ -58,33 +59,14 @@ export default function RootRouter() {
           path: "/profile",
           element: (
             <ProtectedRoute>
-              <Profile />
+              <ProfileLayout />
             </ProtectedRoute>
           ),
-        },
-        {
-          path: "/profile/account",
-          element: (
-            <ProtectedRoute>
-              <AccountUser />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "/profile/order",
-          element: (
-            <ProtectedRoute>
-              <UserOrder />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "/profile/manage",
-          element: (
-            <ProtectedRoute>
-              <Manage />
-            </ProtectedRoute>
-          ),
+          children: [
+            { path: "account", element: <AccountUser /> },
+            { path: "order", element: <UserOrder /> },
+            { path: "manage", element: <Manage /> },
+          ],
         },
       ],
     },

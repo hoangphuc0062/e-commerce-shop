@@ -1,13 +1,12 @@
-import Sidebar from "../../../components/Profile/SidebarProfile";
 import { VscSaveAs } from "react-icons/vsc";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { formatDay, formatCurrency } from "../../../ultils/helper";
 
 const AccountUser = () => {
   const customerData = useSelector((state) => state.customer.data);
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState("Nguyễn Sỹ");
-  const [gender, setGender] = useState("Nam");
+
   const [showGenderOptions, setShowGenderOptions] = useState(false);
 
   const handleIconClick = () => {
@@ -29,25 +28,7 @@ const AccountUser = () => {
 
   return (
     <div className="container mx-auto p-2 md:flex">
-      {/* Sidebar */}
-      <div className="md:w-1/4 lg:w-1/5 xl:w-1/6 mb-4 md:mb-0">
-        <Sidebar />
-      </div>
-      {/* End Sidebar */}
-
       <div className="md:w-3/4 lg:w-4/5 xl:w-5/6 bg-white p-6 rounded-lg shadow-lg">
-        <div className="text-center mb-4">
-          <img
-            src={customerData?.avatar}
-            width="90"
-            height="90"
-            alt={customerData?.name}
-            className="mx-auto mb-2"
-          />
-          <h2 className="text-2xl font-bold text-gray-500">
-            {customerData?.name}
-          </h2>
-        </div>
         <div className="space-y-4 mx-auto max-w-[750px]">
           <div className="flex items-center justify-between border-b border-gray-300 pb-2 w-full">
             <div className="w-full">
@@ -73,11 +54,13 @@ const AccountUser = () => {
           </div>
           <div className="border-b border-gray-300 pb-4 mb-2">
             <p className="text-gray-600 font-light">
-              Email: ntanh1612k3@gmail.com
+              Email: {customerData?.email ? customerData?.email : "Trống"}
             </p>
           </div>
           <div className="border-b border-gray-300 pb-4 mb-2 flex justify-between items-center">
-            <p className="text-gray-600 font-light">Giới tính: {gender}</p>
+            <p className="text-gray-600 font-light">
+              Giới tính: {customerData?.sex}
+            </p>
             <VscSaveAs
               className="text-gray-500 cursor-pointer"
               onClick={() => setShowGenderOptions(!showGenderOptions)}
@@ -101,24 +84,33 @@ const AccountUser = () => {
           )}
           <div className="border-b border-gray-300 pb-4 mb-2">
             <p className="text-gray-600 font-light">
-              Số điện thoại: 0344484162
+              Số điện thoại: {customerData?.phone}
             </p>
           </div>
           <div className="border-b border-gray-300 pb-4 mb-2">
-            <p className="text-gray-600 font-light">Sinh nhật: 7/11/2004</p>
+            <p className="text-gray-600 font-light">
+              Sinh nhật: {customerData?.birthday || "01/01/1999"}
+            </p>
           </div>
           <div className="border-b border-gray-300 pb-4 mb-2">
-            <p className="text-gray-600 font-light">Ngày tham gia: 8/9/2024</p>
+            <p className="text-gray-600 font-light">
+              Ngày tham gia: {formatDay(customerData?.createdAt)}
+            </p>
           </div>
           <div className="border-b border-gray-300 pb-4 mb-2">
-            <p className="text-gray-600 font-light">Tổng tiền tích lũy: 0đ</p>
+            <p className="text-gray-600 font-light">
+              Tổng tiền tích lũy: {formatCurrency(customerData?.stackMoney)}
+            </p>
           </div>
           <div className="border-b border-gray-300 pb-4 mb-2">
-            <p className="text-gray-600 font-light">Tổng tiền đã mua sắm: 0đ</p>
+            <p className="text-gray-600 font-light">
+              Tổng tiền đã mua sắm:
+              {formatCurrency(customerData?.totalPurchasePrice)}
+            </p>
           </div>
           <div className="border-b border-gray-300 pb-4 mb-2 flex justify-between items-center">
             <p className="text-gray-600 font-light">
-              Địa chỉ: 129 Thôn 5, Xã Ea Bar, Huyện Buôn Đôn, Đắk Lắk
+              Địa chỉ: {customerData?.address}
             </p>
             <VscSaveAs className="text-gray-500 cursor-pointer" />
           </div>

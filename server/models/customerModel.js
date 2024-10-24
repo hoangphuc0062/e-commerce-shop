@@ -106,6 +106,9 @@ var customerSchema = new mongoose.Schema(
       default:
         "https://asset.cloudinary.com/dgthe0zuj/426512c1702396bd962a4de573a60b15",
     },
+    birthday: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
