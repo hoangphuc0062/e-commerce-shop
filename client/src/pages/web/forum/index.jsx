@@ -33,7 +33,7 @@ function ForumPage() {
           shortDescription: item.shortDescription,
           seoKeyWords: item.seoKeyWords,
           content: item.content,
-          author: item.author?.name || "Unknown",  // Kiểm tra nếu author tồn tại
+          author: item.author?.name || "Unknown",
           category: item.category,
           rating: item.rating,
           slug: item.slug,
@@ -77,10 +77,14 @@ function ForumPage() {
 
           <section className="mb-8 p-4">
             <HeadingSection title="xem nhiều tuần qua" />
-            <SliderPost category="S-Games" data={data} />
+            {
+              data && (
+                <SliderPost category="S-Games" data={data} />
+              )
+            }
           </section>
 
-          <section className="mb-8 p-4">
+          <section className="mb-8 p-4"> 
             <div className="md:flex md:space-x-8">
               <div className="md:w-1/2">
                 <HeadingSection title="tin tức mới nhất" />
@@ -90,7 +94,6 @@ function ForumPage() {
               </div>
               <div className="md:w-1/2 space-y-8">
                 <div>
-                  <HeadingSection title="S-NEWS cuối tuần" />
                   <PostScroll />
                 </div>
                 <div>

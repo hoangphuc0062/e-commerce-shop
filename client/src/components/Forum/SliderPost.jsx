@@ -9,7 +9,6 @@ import "./SliderPost.css";
 
 const SliderPost = ({ category, data }) => {
   const sliderRef = useRef(null);
-  console.log(data)
 
   const settings = {
     dots: false,
@@ -42,12 +41,12 @@ const SliderPost = ({ category, data }) => {
     ],
   };
 
-  // const filteredPosts = PostDB.filter((post) => post.category === category);
+  const filteredPosts = data?.filter((post) => post.category === category);
 
   return (
     <div className="relative w-full">
       <Slider ref={sliderRef} {...settings}>
-        {data?.map((post) => (
+        {filteredPosts?.map((post) => (
           <div key={post.id} className="px-1">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <img
