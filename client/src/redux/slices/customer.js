@@ -12,12 +12,33 @@ const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
 };
 
 // login
+<<<<<<< HEAD
 export const login = createAsyncThunk(
+=======
+export const loginCustomer = createAsyncThunk(
+>>>>>>> parent of 59a1a95 (Merge pull request #369 from hoangphuc0062/dev)
   "customer/login",
   async (data, thunkAPI) =>
     handleAsyncThunk(CustomerService.login, [data], thunkAPI)
 );
 
+<<<<<<< HEAD
+=======
+// register
+export const registerCustomer = createAsyncThunk(
+  "customer/register",
+  async (data, thunkAPI) =>
+    handleAsyncThunk(CustomerService.registerCustomer, [data], thunkAPI)
+);
+
+export const logout = createAction("customer/logout");
+
+export const resetPassword = createAsyncThunk(
+  "customer/forgotpassword",
+  async (data, thunkAPI) =>
+    handleAsyncThunk(CustomerService.forgotPassword, [data], thunkAPI)
+);
+>>>>>>> parent of 59a1a95 (Merge pull request #369 from hoangphuc0062/dev)
 // get current customer
 export const getCurrentCustomer = createAsyncThunk(
   "customer/getCurrentCustomer",
@@ -53,6 +74,10 @@ const customerSlice = createSlice({
     statusUpdate: "idle",
     deleteStatus: "idle",
     loginStatus: "idle",
+<<<<<<< HEAD
+=======
+    registerStatus: "idle",
+>>>>>>> parent of 59a1a95 (Merge pull request #369 from hoangphuc0062/dev)
   },
   extraReducers: (builder) => {
     builder
@@ -75,6 +100,7 @@ const customerSlice = createSlice({
           }
         }
       })
+<<<<<<< HEAD
       .addCase(login.pending, (state) => {
         state.loginStatus = "loading";
       })
@@ -84,6 +110,28 @@ const customerSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.loginStatus = "failed";
+=======
+      .addCase(loginCustomer.pending, (state) => {
+        state.loginStatus = "loading";
+      })
+      .addCase(loginCustomer.fulfilled, (state, action) => {
+        state.loginStatus = "success";
+        state.data = action.payload;
+      })
+      .addCase(loginCustomer.rejected, (state, action) => {
+        state.loginStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(registerCustomer.pending, (state) => {
+        state.registerStatus = "loading";
+      })
+      .addCase(registerCustomer.fulfilled, (state, action) => {
+        state.registerStatus = "success";
+        state.data = action.payload;
+      })
+      .addCase(registerCustomer.rejected, (state, action) => {
+        state.registerStatus = "failed";
+>>>>>>> parent of 59a1a95 (Merge pull request #369 from hoangphuc0062/dev)
         state.error = action.payload;
       });
   },
