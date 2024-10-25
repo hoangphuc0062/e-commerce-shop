@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Tabs, Tab, Box, Grid, Paper, styled } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -6,11 +6,11 @@ import ReusableTable from "../../components/Table";
 import {
   deleteCategory,
   getCategory,
+  resetState,
   updatePosition,
 } from "../../redux/slices/category";
-import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
 import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
-import { resetState } from "../../redux/slices/icon";
+import Iconify from "./Iconify";
 
 // Style cho Item
 const Item = styled(Paper)(({ theme }) => ({
@@ -58,7 +58,7 @@ function CategoryPage() {
           id: item._id,
           name: item.name,
           slug: item.slug,
-          icon: <Icon icon={`eva:${item.icon?.className}`} />,
+          icon: item.icon,
           type: item.type,
           position: item.position,
         }));
@@ -70,7 +70,7 @@ function CategoryPage() {
           id: item._id,
           name: item.name,
           slug: item.slug,
-          icon: <Icon icon={`eva:${item.icon?.className}`} />,
+          icon: item.icon,
           type: item.type,
           position: item.position,
         }));
@@ -182,7 +182,7 @@ function CategoryPage() {
                     cursor: "move",
                   }}
                 >
-                  {item.icon} - {item.name}
+                  {<Iconify icon={item.icon} />} - {item.name}
                 </div>
               ))}
             </Item>
@@ -206,7 +206,7 @@ function CategoryPage() {
                     cursor: "move",
                   }}
                 >
-                  {item.icon} - {item.name}
+                  {<Iconify icon={item.icon} />} - {item.name}
                 </div>
               ))}
             </Item>

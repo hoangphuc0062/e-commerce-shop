@@ -12,8 +12,7 @@ const categorySchema = new mongoose.Schema(
       unique: true,
     },
     icon: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Icons",
+      type: String,
     },
     type: {
       type: String,

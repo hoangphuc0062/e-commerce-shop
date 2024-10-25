@@ -23,6 +23,7 @@ import { createProduct } from "../../../redux/slices/product";
 import { handleToast } from "./../../../utils/toast";
 
 export default function CreateProduct() {
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const dispatch = useDispatch();
   const [mainTabValue, setMainTabValue] = useState(0);
   const [subTabValue, setSubTabValue] = useState(0);
@@ -32,6 +33,7 @@ export default function CreateProduct() {
   const [seriesSelect, setSeriesSelect] = useState([]);
   const [tagsSelect, setTagsSelect] = useState([]);
   const [warehouseSelect, setWarehouseSelect] = useState([]);
+  const [errors, setErrors] = useState({});
 
   const handleMainTabChange = (event, newValue) => setMainTabValue(newValue);
   const handleSubTabChange = (event, newValue) => setSubTabValue(newValue);
@@ -114,6 +116,7 @@ export default function CreateProduct() {
 
   const handleInputChange = (field, value) => {
     setProductData({ ...productData, [field]: value });
+    setErrors({ ...errors, [name]: "" });
   };
 
   const handleAttributeChange = (field, value) =>
@@ -157,6 +160,7 @@ export default function CreateProduct() {
 
   // Lưu sản phẩm
   const handleSaveProduct = () => {
+    setIsSubmitted(true);
     console.log(productData);
     dispatch(createProduct(productData)).then((result) => {
       if (result.type === "product/createProduct/fulfilled") {
@@ -305,6 +309,7 @@ export default function CreateProduct() {
               productData={productData}
               handleInputChange={handleInputChange}
               warehouseSelect={warehouseSelect}
+              isSubmitted={isSubmitted}
             />
           </Grid>
         </Grid>

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 // src/components/SEOInformation.js
 import { Grid, TextField } from "@mui/material";
 import Textarea from "../../../components/textarea";

@@ -10,6 +10,7 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import { StatusChip, StatusOrderChip, StatustPostChip } from "../StatusColor";
 import propTypes from "prop-types";
 import { extractTextFromHtml } from "../../utils/extractTextFromHtml";
+import Iconify from "../../pages/category/Iconify";
 
 const TableRowComponent = ({
   row,
@@ -93,6 +94,8 @@ const TableRowComponent = ({
             />
           ) : column.field === "priceInMarket" ? (
             <span>{row[column.field].toLocaleString()} VNĐ</span>
+          ) : column.field === "icon" ? (
+            <Iconify icon={row[column.field]} width={30} />
           ) : column.field === "priceInStore" ? (
             <span>{row[column.field].toLocaleString()} VNĐ</span>
           ) : column.field === "priceOnline" ? (
