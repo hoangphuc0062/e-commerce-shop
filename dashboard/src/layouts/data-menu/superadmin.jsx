@@ -144,6 +144,13 @@ const menuItems = {
           url: "/dashboard/coupons",
         },
         {
+          id: "tags",
+          title: "Tag",
+          type: "item",
+          icon: "feather icon-tag",
+          url: "/dashboard/tags",
+        },
+        {
           id: "comfig",
           title: "Cấu hình",
           type: "collapse",
@@ -171,7 +178,7 @@ const menuItems = {
               id: "shipping-config",
               title: "Cấu hình vận chuyển",
               type: "item",
-              url: "/dashboard/config/shipping-config",
+              url: "/dashboard/shippingConfig",
             },
             {
               id: "social-config",

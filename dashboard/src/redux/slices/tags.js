@@ -19,9 +19,27 @@ export const resetState = createAsyncThunk(
   }
 );
 
+export const createTag = createAsyncThunk(
+  "tags/createTag",
+  (data, thunkAPI) =>
+    handleAsyncThunk(TagsService.create, [data], thunkAPI)
+)
+
+export const updateTag = createAsyncThunk(
+  "tags/updateTag",
+  ({ tagId, data }, thunkAPI) =>
+    handleAsyncThunk(TagsService.update, [tagId, data], thunkAPI)
+);
+
 export const getAllTags = createAsyncThunk("tags/getAllTags", (_, thunkAPI) =>
   handleAsyncThunk(TagsService.getAll, [null], thunkAPI)
 );
+
+export const deleteTag = createAsyncThunk(
+  "tags/deleteTag",
+  (id, thunkAPI) => handleAsyncThunk(TagsService.delete, [id], thunkAPI)
+);
+
 
 const tags = createSlice({
   name: "tags",
@@ -51,7 +69,34 @@ const tags = createSlice({
       .addCase(getAllTags.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-      });
+
+      }).addCase(createTag.pending, (state) => {
+        state.statusCreate = "loading";
+      })
+      .addCase(createTag.fulfilled, (state) => {
+        state.statusCreate = "success";
+      })
+      .addCase(createTag.rejected, (state) => {
+        state.statusCreate = "failed";
+      })
+      .addCase(updateTag.pending, (state) => {
+        state.updateStatus = "loading";
+      })
+      .addCase(updateTag.fulfilled, (state) => {
+        state.updateStatus = "success";
+      })
+      .addCase(updateTag.rejected, (state) => {
+        state.updateStatus = "failed";
+      })
+      .addCase(deleteTag.pending, (state) => {
+        state.deleteStatus = "loading";
+      })
+      .addCase(deleteTag.fulfilled, (state) => {
+        state.deleteStatus = "success";
+      })
+      .addCase(deleteTag.rejected, (state) => {
+        state.deleteStatus = "failed";
+      })
   },
 });
 
