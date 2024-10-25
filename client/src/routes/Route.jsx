@@ -11,14 +11,16 @@ import ProductList from "../pages/web/product/ProductList";
 import CartProduct from "../pages/web/payment/CartProduct";
 import Checkout_info from "../pages/web/payment/checkout_info";
 import Checkout from "../pages/web/payment/Checkout";
-import Profile from "../pages/web/profile/Profile";
-import AccountUser from "../pages/web/profile/AccountUser";
 import ProductDetail from "../pages/web/product/ProductDetail";
-import UserOrder from "../pages/web/profile/UserOrder";
-import Manage from "../pages/web/profile/manage";
 import { ForgetPassoword } from "../pages/auth/ForgetPassoword";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { ProfileLayout } from "../Layout/ProfileLayout";
+import { Account } from "../pages/web/member/Account";
+import { Order } from "../pages/web/member/Order";
+import { Address } from "../pages/web/member/Address";
+import { HomeProfile } from "../pages/web/member/Home";
+import { Coupon } from "../pages/web/member/Coupon";
+import { HistoryOrder } from "../pages/web/member/HistoryOrder";
 export default function RootRouter() {
   const routes = useRoutes([
     {
@@ -58,14 +60,18 @@ export default function RootRouter() {
         {
           path: "/profile",
           element: (
-            <ProtectedRoute>
-              <ProfileLayout />
-            </ProtectedRoute>
+            // <ProtectedRoute>
+            //   <ProfileLayout />
+            // </ProtectedRoute>
+            <ProfileLayout />
           ),
           children: [
-            { path: "account", element: <AccountUser /> },
-            { path: "order", element: <UserOrder /> },
-            { path: "manage", element: <Manage /> },
+            { path: "", element: <HomeProfile /> },
+            { path: "account", element: <Account /> },
+            { path: "coupon", element: <Coupon /> },
+            { path: "address", element: <Address /> },
+            { path: "order", element: <Order /> },
+            { path: "history-order", element: <HistoryOrder /> },
           ],
         },
       ],

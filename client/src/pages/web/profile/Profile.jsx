@@ -1,4 +1,4 @@
-import Sidebar from "../../../components/Profile/SidebarProfile";
+// import Sidebar from "../../../components/Profile/SidebarProfile";
 import PromotionSlider from "../../../components/Profile/promotionSlider";
 import ProfileUser from "../../../components/Profile/ProfileUser";
 import BannerSlider from "../../../components/Profile/slider";
@@ -17,7 +17,7 @@ const Profile = () => {
     <div className="container mx-auto p-2">
       <div className="flex flex-col md:flex-row">
         <div className="md:w-1/4 lg:w-1/5 xl:w-1/6 mb-4 md:mb-0">
-          <Sidebar />
+          {/* <Sidebar /> */}
         </div>
 
         <div className="flex-1 p-1 bg-white rounded-lg shadow-md">
