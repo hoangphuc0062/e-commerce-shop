@@ -34,6 +34,8 @@ import EditBannerCollection from "../pages/bannercollection/edit";
 import CreateProduct from "../pages/product/create";
 import EditProduct from "../pages/product/update";
 import WelcomeDashboard from "../pages/admin";
+import ShippingPage from "../pages/shippingConfig";
+import TagPage from "../pages/tags";
 
 const SuperAdminRoute = () => {
   return (
@@ -331,6 +333,24 @@ const SuperAdminRoute = () => {
         element={
           <PrivateRoute
             element={<UpdateCoupons />}
+            roles={["admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="tags"
+        element={
+          <PrivateRoute
+            element={<TagPage />}
+            roles={["admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="shippingConfig"
+        element={
+          <PrivateRoute
+            element={<ShippingPage />}
             roles={["admin", "superadmin"]}
           />
         }
