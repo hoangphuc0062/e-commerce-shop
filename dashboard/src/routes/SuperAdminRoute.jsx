@@ -33,9 +33,9 @@ import AddBannerConllection from "../pages/bannercollection/create";
 import EditBannerCollection from "../pages/bannercollection/edit";
 import CreateProduct from "../pages/product/create";
 import EditProduct from "../pages/product/update";
-import TagPage from "../pages/tags";
+import WelcomeDashboard from "../pages/admin";
 
-const AdminRoute = () => {
+const SuperAdminRoute = () => {
   return (
     <>
       {/* Home Page route */}
@@ -46,6 +46,15 @@ const AdminRoute = () => {
       <Route
         path="history"
         element={<PrivateRoute element={<History />} roles={["superadmin"]} />}
+      />
+      <Route
+        path="welcome"
+        element={
+          <PrivateRoute
+            element={<WelcomeDashboard />}
+            roles={["admin", "superadmin"]}
+          />
+        }
       />
 
       {/* Category Page route */}
@@ -133,7 +142,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<UserPage />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["admin", "superadmin"]}
           />
         }
       />
@@ -142,7 +151,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<UserPage />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["admin", "superadmin"]}
           />
         }
       />
@@ -152,7 +161,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<WarehousePage />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["staff", "admin", "superadmin"]}
           />
         }
       />
@@ -162,7 +171,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<AddWarehouse />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["staff", "admin", "superadmin"]}
           />
         }
       />
@@ -173,7 +182,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<ProductPage />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["staff", "admin", "superadmin"]}
           />
         }
       />
@@ -182,7 +191,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<CreateProduct />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["staff", "admin", "superadmin"]}
           />
         }
       />
@@ -191,7 +200,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<EditProduct />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["staff", "admin", "superadmin"]}
           />
         }
       />
@@ -200,7 +209,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<VariantPage />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["staff", "admin", "superadmin"]}
           />
         }
       />
@@ -209,7 +218,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<VariantForm />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["staff", "admin", "superadmin"]}
           />
         }
       />
@@ -221,7 +230,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<OrderPage />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["staff", "admin", "superadmin"]}
           />
         }
       />
@@ -230,7 +239,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<SiteConfig />}
-            roles={["admin", "superadmin"]}
+            roles={["staff", "admin", "superadmin"]}
           />
         }
       />
@@ -239,7 +248,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<PaymentConfig />}
-            roles={["admin", "superadmin"]}
+            roles={["staff", "admin", "superadmin"]}
           />
         }
       />
@@ -248,7 +257,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<BannerCollection />}
-            roles={["admin", "superadmin"]}
+            roles={["staff", "admin", "superadmin"]}
           />
         }
       />
@@ -257,7 +266,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<AddBannerConllection />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["staff", "admin", "superadmin"]}
           />
         }
       />
@@ -266,7 +275,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<EditBannerCollection />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["staff", "admin", "superadmin"]}
           />
         }
       />
@@ -276,7 +285,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<PostList />}
-            roles={["admin", "superadmin"]}
+            roles={["author", "staff", "admin", "superadmin"]}
           />
         }
       />
@@ -285,7 +294,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<AddPost />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["author", "staff", "admin", "superadmin"]}
           />
         }
       />
@@ -294,7 +303,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<EditPost />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["author", "staff", "admin", "superadmin"]}
           />
         }
       />
@@ -313,7 +322,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<AddCoupond />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["admin", "superadmin"]}
           />
         }
       />
@@ -322,16 +331,7 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<UpdateCoupons />}
-            roles={["customer", "staff", "admin", "superadmin"]}
-          />
-        }
-      />
-      <Route
-        path="tags"
-        element={
-          <PrivateRoute
-            element={<TagPage />}
-            roles={["customer", "staff", "admin", "superadmin"]}
+            roles={["admin", "superadmin"]}
           />
         }
       />
@@ -339,4 +339,4 @@ const AdminRoute = () => {
   );
 };
 
-export default AdminRoute;
+export default SuperAdminRoute;

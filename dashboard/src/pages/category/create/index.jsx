@@ -8,6 +8,11 @@ import {
   Stack,
   Grid,
   Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
@@ -159,16 +164,29 @@ function CategoryCreate() {
           </Grid>
 
           <Grid item xs={4}>
-            <TextField
+            <FormControl
               fullWidth
-              label="Loại"
-              name="type"
-              value={formik.values.type}
-              onChange={formik.handleChange}
-              margin="normal"
+              sx={{ mt: 2 }}
               error={formik.touched.type && Boolean(formik.errors.type)}
-              helperText={formik.touched.type && formik.errors.type}
-            />
+            >
+              <InputLabel id="category">Loại</InputLabel>
+              <Select
+                labelId="category"
+                id="category"
+                name="type"
+                label="Loại"
+                value={formik.values.type}
+                onChange={formik.handleChange}
+              >
+                <MenuItem value="product">Sản phẩm</MenuItem>
+                <MenuItem value="post">Bài đăng</MenuItem>
+              </Select>
+              {formik.touched.type && formik.errors.type && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {formik.errors.type}
+                </FormHelperText>
+              )}
+            </FormControl>
           </Grid>
           <Grid item xs={12}>
             <Textarea
