@@ -1,45 +1,74 @@
 const Coupon = require("../models/couponModel");
 const asyncHandler = require("express-async-handler");
 const createNewCoupon = asyncHandler(async (req, res) => {
-  const { name, discount, expiry } = req.body;
-  if (!name || !discount || !expiry) throw new Error("Missing inputs");
-  const response = await Coupon.create({
-    ...req.body,
-    expiry: Date.now() + +expiry * 24 * 60 * 60 * 1000,
+  const {
+    name,
+    code,
+    discount,
+    description,
+    startDate,
+    endDate,
+    type,
+    categoryApply,
+    brandApply,
+    collectionApply,
+    productApply,
+    productNotApply,
+    brandNotApply,
+    collectionNotApply,
+    categoryNotApply,
+    quantity,
+    quantityMin,
+    quantityMax,
+    quantityUsed,
+    status,
+  } = req.body;
+  const coupon = new Coupon({
+    name,
+    code,
+    discount,
+    description,
+    startDate,
+    endDate,
+    type,
+    categoryApply,
+    brandApply,
+    collectionApply,
+    productApply,
+    productNotApply,
+    brandNotApply,
+    collectionNotApply,
+    categoryNotApply,
+    quantity,
+    quantityMin,
+    quantityMax,
+    quantityUsed,
+    status,
   });
-  return res.json({
-    success: response ? true : false,
-    createdCoupon: response ? response : "Cannot create new coupon",
-  });
+  const createdCoupon = await coupon.save();
+  res.status(201).json(createdCoupon);
 });
 const getCoupon = asyncHandler(async (req, res) => {
-  const response = await Coupon.find().select("-createAt -updateAt");
-  return res.json({
-    success: response ? true : false,
-    coupon: response ? response : "Cannot get new coupon",
-  });
+  const coupons = await Coupon.find({});
+  res.json(coupons);
 });
 const updateCoupon = asyncHandler(async (req, res) => {
   const { cid } = req.params;
-  if (Object.keys(req.body.length === 0)) throw new Error("Missing inputs");
-  const response = await Coupon.create({
-    ...req.body,
-    expiry: Date.now() + +expiry * 24 * 60 * 60 * 1000,
-  });
-  return res.json({
-    success: response ? true : false,
-    updateCoupon: response ? response : "Cannot create new coupon",
-  });
+  if (!cid) {
+    res.status(400);
+    throw new Error("Invalid id");
+  }
+  const reponse = await Coupon.findByIdAndUpdate(cid, req.body);
+  return res.json(reponse);
 });
 const deleteCoupon = asyncHandler(async (req, res) => {
   const { cid } = req.params;
-  if (Object.keys(req.body).length === 0) throw new Error("Missing inputs");
-
-  const response = await Coupon.findByIdAndDelete(cid);
-  return res.json({
-    success: response ? true : false,
-    deleteCoupon: response ? response : "Cannot delete coupon",
-  });
+  if (!cid) {
+    res.status(400);
+    throw new Error("Invalid id");
+  }
+  const reponse = await Coupon.findByIdAndDelete(cid);
+  return res.json(reponse);
 });
 module.exports = {
   createNewCoupon,

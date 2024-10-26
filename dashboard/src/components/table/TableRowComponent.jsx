@@ -78,7 +78,7 @@ const TableRowComponent = ({
                 <span>Không có dữ liệu</span>
               )}
             </div>
-          ) : column.field === "image" ? (
+          ) : column.field === "image" || column.field === "logo" ? (
             <Avatar
               alt={row[column.name]}
               variant="rounded"
@@ -106,10 +106,8 @@ const TableRowComponent = ({
             ) : (
               row[column.field] || "Không có dữ liệu"
             )
-          ) : row[column.field] && row[column.field].length > 0 ? (
-            row[column.field]
           ) : (
-            "Không có dữ liệu"
+            row[column.field]
           )}
         </TableCell>
       ))}
