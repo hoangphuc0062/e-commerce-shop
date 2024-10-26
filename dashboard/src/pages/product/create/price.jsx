@@ -1,7 +1,11 @@
 /* eslint-disable react/prop-types */
 import { TextField, Grid, InputAdornment } from "@mui/material";
 
-export default function PriceProduct({ productData, handleInputChange }) {
+export default function PriceProduct({
+  productData,
+  handleInputChange,
+  isSubmitted,
+}) {
   return (
     <Grid container spacing={2}>
       <Grid item xs={4}>
@@ -13,6 +17,10 @@ export default function PriceProduct({ productData, handleInputChange }) {
           InputProps={{
             endAdornment: <InputAdornment position="end">đ</InputAdornment>,
           }}
+          error={isSubmitted && !productData.historicalPrice}
+          helperText={
+            isSubmitted && !productData.historicalPrice && "Giá gốc là bắt buộc"
+          }
         />
       </Grid>
       <Grid item xs={4}>
@@ -24,6 +32,12 @@ export default function PriceProduct({ productData, handleInputChange }) {
           InputProps={{
             endAdornment: <InputAdornment position="end">đ</InputAdornment>,
           }}
+          error={isSubmitted && !productData.priceInMarket}
+          helperText={
+            isSubmitted &&
+            !productData.priceInMarket &&
+            "Giá thị trường là bắt buộc"
+          }
         />
       </Grid>
       <Grid item xs={4}>
@@ -35,6 +49,8 @@ export default function PriceProduct({ productData, handleInputChange }) {
           InputProps={{
             endAdornment: <InputAdornment position="end">đ</InputAdornment>,
           }}
+          error={isSubmitted && !productData.price}
+          helperText={isSubmitted && !productData.price && "Giá là bắt buộc"}
         />
       </Grid>
     </Grid>

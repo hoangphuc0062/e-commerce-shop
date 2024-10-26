@@ -21,12 +21,12 @@ import SEOInformation from "./SEOInformation";
 import AttributesSection from "./attributes/AttributesSection";
 import { getAttribute } from "../../../redux/slices/attribute";
 import { handleToast } from "./../../../utils/toast";
+import { validationProductSchema } from "./validate";
 
 export default function EditProduct() {
   const dispatch = useDispatch();
   const [mainTabValue, setMainTabValue] = useState(0);
   const [subTabValue, setSubTabValue] = useState(0);
-  const [subTabValue2, setSubTabValue2] = useState(0);
   const [dataProduct, setDataProduct] = useState([]);
   const [warehouseSelect, setWarehouseSelect] = useState([]);
   const [categorySelect, setCategorySelect] = useState([]);
@@ -36,7 +36,6 @@ export default function EditProduct() {
   const [attributesSelect, setAttributesSelect] = useState([]);
   const handleMainTabChange = (event, newValue) => setMainTabValue(newValue);
   const handleSubTabChange = (event, newValue) => setSubTabValue(newValue);
-  const handleSubTabChange2 = (event, newValue) => setSubTabValue2(newValue);
   const { id } = useParams();
 
   const statusGetById = useSelector((state) => state.product.statusGetById);
@@ -186,6 +185,7 @@ export default function EditProduct() {
       gifts: [],
       views: 0,
     },
+    validationSchema: validationProductSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
       dispatch(updateProduct({ productId: id, data: values })).then((res) => {
