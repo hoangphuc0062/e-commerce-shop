@@ -109,16 +109,17 @@ const menuItems = {
           icon: "feather icon-user",
           children: [
             {
+              id: "add-personnel",
+              title: "Thêm nhân viên",
+              type: "item",
+              // url: "dashboard/staff/create",
+              url: "/dashboard/staff/create",
+            },
+            {
               id: "personnel-list",
               title: "Danh sách nhân viên",
               type: "item",
               url: "/dashboard/staff",
-            },
-            {
-              id: "add-personnel",
-              title: "Thêm nhân viên",
-              type: "item",
-              url: "/dashboard/staff/create",
             },
           ],
         },
@@ -145,7 +146,7 @@ const menuItems = {
         },
         {
           id: "tags",
-          title: "Tag",
+          title: "Thẻ",
           type: "item",
           icon: "feather icon-tag",
           url: "/dashboard/tags",
@@ -178,7 +179,7 @@ const menuItems = {
               id: "shipping-config",
               title: "Cấu hình vận chuyển",
               type: "item",
-              url: "/dashboard/shippingConfig",
+              url: "/dashboard/config/shipping-config",
             },
             {
               id: "social-config",

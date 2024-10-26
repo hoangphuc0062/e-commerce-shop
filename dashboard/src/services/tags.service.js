@@ -6,4 +6,5 @@ const TagsService = {
   update: (id, data) => sendRequest("put", `/tags/${id}`, data),
   delete: (id) => sendRequest("delete", `/tags/${id}`),
 };
+
 export default TagsService;

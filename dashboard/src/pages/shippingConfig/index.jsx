@@ -1,35 +1,21 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, TextField, Grid, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import ReusableTable from "../../components/table";
 import { Card } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllShipping, createShipping, updateShipping, deleteShipping } from "../../redux/slices/shipping";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
 
+// Cấu hình các cột cho bảng hiển thị phương thức giao hàng
 const columns = [
     { label: "Phương thức giao hàng", field: "name" },
     { label: "Địa chỉ", field: "address" },
     { label: "Ghi chú", field: "note" },
 ];
 
-const initialData = [
-    {
-        id: 19189091231,
-        name: "Giao hàng tiết kiệm",
-        address: "28 ywang thành phố BMT",
-        note: "Hàng dễ vỡ"
-    },
-    {
-        id: 19189091232,
-        name: "Giao hàng nhanh",
-        address: "120/2 ymoan thành phố BMT",
-        note: "Thiết bị điện tử"
-    },
-    {
-        id: 19189091233,
-        name: "Giao hàng hỏa tốc",
-        address: "120/2 ymoan thành phố BMT",
-        note: "Thiết bị điện tử"
-    }
-];
-
+// Danh sách các phương thức giao hàng
 const shippingMethods = [
     "Giao hàng tiết kiệm",
     "Giao hàng nhanh",
@@ -38,61 +24,130 @@ const shippingMethods = [
     "Bưu điện"
 ];
 
+// Khởi tạo validation schema cho Formik
+const validationSchema = Yup.object().shape({
+    name: Yup.string().required("Vui lòng chọn phương thức giao hàng"),
+    address: Yup.string()
+        .min(5, "Địa chỉ phải có ít nhất 5 ký tự")
+        .required("Vui lòng nhập địa chỉ")
+        .max(200, "Ghi chú không vượt quá 200 ký tự")
+        .required("Vui lòng nhập địa chỉ"),
+    note: Yup.string().max(200, "Ghi chú không vượt quá 200 ký tự"),
+});
+
 export default function ShippingPage() {
-    const [data, setData] = useState(initialData);
-    const [newShipping, setNewShipping] = useState({ name: "", address: "", note: "" });
+    // Trạng thái chỉnh sửa và id đang được chỉnh sửa
     const [isEditing, setIsEditing] = useState(false);
-    const [editingIndex, setEditingIndex] = useState(null);
+    const [editingId, setEditingId] = useState(null);
 
-    const handleAddNewShipping = () => {
-        if (isEditing && editingIndex !== null) {
-            // Cập nhật phương thức giao hàng đã chỉnh sửa
-            const updatedData = [...data];
-            updatedData[editingIndex] = { ...newShipping, id: updatedData[editingIndex].id }; // Giữ nguyên ID
-            setData(updatedData);
-            setIsEditing(false);
-            setEditingIndex(null);
-        } else {
-            // Thêm phương thức giao hàng mới
-            setData([...data, { id: Date.now(), ...newShipping }]);
-        }
-        setNewShipping({ name: "", address: "", note: "" });
-    };
+    const dispatch = useDispatch();
 
-    const handleEdit = (rowData, index) => {
-        setNewShipping(rowData);
+    // Gọi API lấy danh sách phương thức giao hàng khi component được tải
+    useEffect(() => {
+        dispatch(getAllShipping());
+    }, [dispatch]);
+
+    const status = useSelector((state) => state.shippingUnits.status);
+    const dataShipping = useSelector((state) => state.shippingUnits.data);
+
+    // Khởi tạo form với Formik và tích hợp validation schema
+    const formik = useFormik({
+        initialValues: {
+            name: "",
+            address: "",
+            note: "",
+        },
+        validationSchema: validationSchema,
+        onSubmit: (values, { resetForm }) => {
+            if (isEditing) {
+                // Gọi API cập nhật phương thức giao hàng
+                dispatch(updateShipping({ shippingId: editingId, data: { ...values } })).then((res) => {
+                    if (res.type === "shippingUnits/updateShippingUnits/fulfilled") {
+                        handleToast("success", "Cập nhật phương thức giao hàng thành công");
+                        resetForm();
+                        setIsEditing(false);
+                        setEditingId(null);
+                        dispatch(getAllShipping());
+                    } else {
+                        handleToast("error", "Cập nhật phương thức giao hàng thất bại");
+                    }
+                });
+            } else {
+                // Gọi API thêm mới phương thức giao hàng
+                dispatch(createShipping(values)).then((res) => {
+                    if (res.type === "shippingUnits/createShipping/fulfilled") {
+                        handleToast("success", "Phương thức giao hàng thêm thành công");
+                        resetForm();
+                        dispatch(getAllShipping());
+                    } else {
+                        handleToast("error", "Thêm phương thức giao hàng thất bại");
+                    }
+                });
+            }
+        },
+    });
+    // Xử lý sự kiện khi nhấn nút chỉnh sửa
+    const handleEdit = (rowData) => {
+        formik.setValues(rowData);
         setIsEditing(true);
-        setEditingIndex(index);
+        setEditingId(rowData._id);
     };
-
-    const handleDelete = (index) => {
-        const updatedData = data.filter((_, i) => i !== index);
-        setData(updatedData);
+    // Xử lý sự kiện khi nhấn nút xóa
+    const handleDelete = useCallback(
+        (index) => {
+            DeleteConfirmationModal({
+                title: "Xác nhận xóa",
+                content: "Bạn có chắc chắn muốn xóa phương thức này?",
+                okText: "Xóa",
+                cancelText: "Hủy",
+                icon: "warning",
+                confirmButtonText: "Xóa",
+                onConfirm: () =>
+                    dispatch(deleteShipping(index._id)).then((res) => {
+                        if (res.type === "shippingUnits/deleteShippingUnits/fulfilled") {
+                            handleToast("success", "Xóa phương thức thành công");
+                            dispatch(getAllShipping());
+                        } else {
+                            handleToast("error", "Xóa phương thức thất bại");
+                        }
+                    }),
+            });
+        },
+        [dispatch]
+    );
+    // Hủy chỉnh sửa và đặt lại form
+    const handleCancel = () => {
+        formik.resetForm();
+        setIsEditing(false);
+        setEditingId(null);
     };
 
     return (
         <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: '20px' }}>
             <div>
-                <ReusableTable
-                    data={data}
-                    columns={columns}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
-                />
+                {dataShipping && (
+                    <ReusableTable
+                        data={dataShipping}
+                        columns={columns}
+                        handleEdit={handleEdit}
+                        handleDelete={handleDelete}
+                    />
+                )}
             </div>
             <div>
                 <Card style={{ padding: '30px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', borderRadius: '10px' }}>
                     <h4 style={{ marginBottom: '20px', textAlign: 'center', fontWeight: 'bold' }}>
                         {isEditing ? "Chỉnh sửa phương thức giao hàng" : "Thêm phương thức giao hàng mới"}
                     </h4>
-                    <form>
+                    <form onSubmit={formik.handleSubmit}>
                         <Grid container spacing={3}>
                             <Grid item xs={12}>
-                                <FormControl fullWidth>
+                                <FormControl fullWidth error={formik.touched.name && Boolean(formik.errors.name)}>
                                     <InputLabel>Phương thức giao hàng</InputLabel>
                                     <Select
-                                        value={newShipping.name}
-                                        onChange={(e) => setNewShipping({ ...newShipping, name: e.target.value })}
+                                        value={formik.values.name}
+                                        onChange={formik.handleChange}
+                                        name="name"
                                     >
                                         {shippingMethods.map((method, index) => (
                                             <MenuItem key={index} value={method}>
@@ -100,6 +155,9 @@ export default function ShippingPage() {
                                             </MenuItem>
                                         ))}
                                     </Select>
+                                    {formik.touched.name && formik.errors.name && (
+                                        <div style={{ color: "red", fontSize: "12px" }}>{formik.errors.name}</div>
+                                    )}
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12}>
@@ -107,8 +165,11 @@ export default function ShippingPage() {
                                     label="Địa chỉ"
                                     fullWidth
                                     variant="outlined"
-                                    value={newShipping.address}
-                                    onChange={(e) => setNewShipping({ ...newShipping, address: e.target.value })}
+                                    name="address"
+                                    value={formik.values.address}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.address && Boolean(formik.errors.address)}
+                                    helperText={formik.touched.address && formik.errors.address}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -116,19 +177,39 @@ export default function ShippingPage() {
                                     label="Ghi chú"
                                     fullWidth
                                     variant="outlined"
-                                    value={newShipping.note}
-                                    onChange={(e) => setNewShipping({ ...newShipping, note: e.target.value })}
+                                    name="note"
+                                    value={formik.values.note}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.note && Boolean(formik.errors.note)}
+                                    helperText={formik.touched.note && formik.errors.note}
                                 />
                             </Grid>
                         </Grid>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleAddNewShipping}
-                            style={{ marginTop: '20px', width: '100%', padding: '10px 0', fontWeight: 'bold' }}
-                        >
-                            {isEditing ? "Cập nhật" : "Thêm"}
-                        </Button>
+                        <Grid container spacing={2} style={{ marginTop: '10px', justifyContent: 'flex-end' }}>
+                            <Grid item xs={3}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    fullWidth
+                                    style={{ padding: '10px 0', fontWeight: 'bold' }}
+                                >
+                                    {isEditing ? "Cập nhật" : "Thêm"}
+                                </Button>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    onClick={handleCancel}
+                                    fullWidth
+                                    style={{ padding: '10px 0', fontWeight: 'bold' }}
+                                >
+                                    Hủy
+                                </Button>
+                            </Grid>
+                        </Grid>
+
                     </form>
                 </Card>
             </div>

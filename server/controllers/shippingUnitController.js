@@ -4,10 +4,7 @@ const ShippingUnit = require("../models/shippingUnitModel");
 
 const getShippingUnits = asyncHandler(async (req, res) => {
   const shippingUnits = await ShippingUnit.find({});
-  return res.status(200).json({
-    mes: "Get all shipping units successfully",
-    shippingUnits,
-  });
+  return res.status(200).json(shippingUnits);
 });
 
 const createShippingUnit = asyncHandler(async (req, res) => {

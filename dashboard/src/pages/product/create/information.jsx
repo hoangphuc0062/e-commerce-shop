@@ -4,7 +4,6 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
-  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -21,7 +20,6 @@ export default function Information({
   productData,
   handleInputChange,
   warehouseSelect,
-  isSubmitted,
 }) {
   const [isSlugEdited, setIsSlugEdited] = useState(false);
   useEffect(() => {
@@ -55,10 +53,6 @@ export default function Information({
                 setIsSlugEdited(false);
                 handleInputChangeSlug("name", e.target.value);
               }}
-              error={isSubmitted && !productData.name}
-              helperText={
-                isSubmitted && !productData.name && "Tên sản phẩm là bắt buộc"
-              }
             />
           </Grid>
           <Grid item xs={4}>
@@ -67,10 +61,6 @@ export default function Information({
               fullWidth
               value={productData.slug}
               onChange={(e) => handleInputChangeSlug("slug", e.target.value)}
-              error={isSubmitted && !productData.slug}
-              helperText={
-                isSubmitted && !productData.slug && "Slug là bắt buộc"
-              }
             />
           </Grid>
           <Grid item xs={4}>
@@ -79,8 +69,6 @@ export default function Information({
               fullWidth
               value={productData.SKU}
               onChange={(e) => handleInputChange("SKU", e.target.value)}
-              error={isSubmitted && !productData.SKU}
-              helperText={isSubmitted && !productData.SKU && "SKU là bắt buộc"}
             />
           </Grid>
           <Grid item xs={6}>
@@ -89,28 +77,16 @@ export default function Information({
               fullWidth
               value={productData.weight}
               onChange={(e) => handleInputChange("weight", e.target.value)}
-              error={isSubmitted && !productData.weight}
-              helperText={
-                isSubmitted && !productData.weight && "Trọng lượng là bắt buộc"
-              }
             />
           </Grid>
           <Grid item xs={6}>
             <FormControl fullWidth>
-              {isSubmitted && !productData.unit ? (
-                <InputLabel error id="unit">
-                  Đơn vị
-                </InputLabel>
-              ) : (
-                <InputLabel id="unit">Đơn vị</InputLabel>
-              )}
-
+              <InputLabel id="unit">Đơn vị</InputLabel>
               <Select
                 labelId="unit"
                 value={productData.unit}
                 label="Đơn vị"
                 onChange={(e) => handleInputChange("unit", e.target.value)}
-                error={isSubmitted && !productData.unit}
               >
                 <MenuItem value="kg">Kilogram (kg)</MenuItem>
                 <MenuItem value="g">Gram (g)</MenuItem>
@@ -118,9 +94,6 @@ export default function Information({
                 <MenuItem value="l">Lít (l)</MenuItem>
                 <MenuItem value="ml">Mililit (ml)</MenuItem>
               </Select>
-              <FormHelperText error>
-                {isSubmitted && !productData.unit && "Đơn vị là bắt buộc"}
-              </FormHelperText>
             </FormControl>
           </Grid>
           <Grid item xs={4}>
@@ -129,10 +102,6 @@ export default function Information({
               fullWidth
               value={productData.onStock}
               onChange={(e) => handleInputChange("onStock", e.target.value)}
-              error={isSubmitted && !productData.onStock}
-              helperText={
-                isSubmitted && !productData.onStock && "Số lượng là bắt buộc"
-              }
             />
           </Grid>
           <Grid item xs={4}>
@@ -141,10 +110,6 @@ export default function Information({
               fullWidth
               value={productData.inStock}
               onChange={(e) => handleInputChange("inStock", e.target.value)}
-              error={isSubmitted && !productData.inStock}
-              helperText={
-                isSubmitted && !productData.inStock && "Số lượng là bắt buộc"
-              }
             />
           </Grid>
           <Grid item xs={4}>
@@ -153,10 +118,6 @@ export default function Information({
               fullWidth
               value={productData.inComing}
               onChange={(e) => handleInputChange("inComing", e.target.value)}
-              error={isSubmitted && !productData.inComing}
-              helperText={
-                isSubmitted && !productData.inComing && "Số lượng là bắt buộc"
-              }
             />
           </Grid>
 
@@ -168,12 +129,6 @@ export default function Information({
               onChange={(e) =>
                 handleInputChange("minInventory", e.target.value)
               }
-              error={isSubmitted && !productData.minInventory}
-              helperText={
-                isSubmitted &&
-                !productData.minInventory &&
-                "Số lượng là bắt buộc"
-              }
             />
           </Grid>
           <Grid item xs={4}>
@@ -184,30 +139,16 @@ export default function Information({
               onChange={(e) =>
                 handleInputChange("maxInventory", e.target.value)
               }
-              error={isSubmitted && !productData.maxInventory}
-              helperText={
-                isSubmitted &&
-                !productData.maxInventory &&
-                "Số lượng là bắt buộc"
-              }
             />
           </Grid>
           <Grid item xs={4}>
             <FormControl fullWidth>
-              {isSubmitted && !productData.warehouse ? (
-                <InputLabel id="warehouse-label" error>
-                  Kho
-                </InputLabel>
-              ) : (
-                <InputLabel id="warehouse-label">Kho</InputLabel>
-              )}
-
+              <InputLabel id="warehouse-label">Kho</InputLabel>
               <Select
                 labelId="warehouse-label"
                 label="Kho"
                 value={productData.warehouse}
                 onChange={(e) => handleInputChange("warehouse", e.target.value)}
-                error={isSubmitted && !productData.warehouse}
               >
                 {warehouseSelect.map((warehouse) => (
                   <MenuItem key={warehouse.value} value={warehouse.value}>
@@ -215,9 +156,6 @@ export default function Information({
                   </MenuItem>
                 ))}
               </Select>
-              <FormHelperText error>
-                {isSubmitted && !productData.warehouse && "Kho là bắt buộc"}
-              </FormHelperText>
             </FormControl>
           </Grid>
           <Grid item xs={12}>
@@ -257,7 +195,6 @@ export default function Information({
             <PriceProduct
               productData={productData}
               handleInputChange={handleInputChange}
-              isSubmitted={isSubmitted}
             />
           </Grid>
         </Grid>

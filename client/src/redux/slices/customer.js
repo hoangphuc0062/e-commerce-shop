@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import CustomerService from "../../services/customer.service";
 
+// Utility function to handle async actions
 const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
   try {
     const response = await asyncFunction(...args);
@@ -11,49 +12,67 @@ const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
   }
 };
 
-// login
-<<<<<<< HEAD
-export const login = createAsyncThunk(
-=======
+// Login action
 export const loginCustomer = createAsyncThunk(
->>>>>>> parent of 59a1a95 (Merge pull request #369 from hoangphuc0062/dev)
   "customer/login",
-  async (data, thunkAPI) =>
-    handleAsyncThunk(CustomerService.login, [data], thunkAPI)
+  async (data, thunkAPI) => {
+    try {
+      const { accessToken, customer } = await CustomerService.login(data);
+      localStorage.setItem("accessToken", accessToken);
+      return customer;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
 );
 
-<<<<<<< HEAD
-=======
-// register
+// Register action
 export const registerCustomer = createAsyncThunk(
   "customer/register",
-  async (data, thunkAPI) =>
-    handleAsyncThunk(CustomerService.registerCustomer, [data], thunkAPI)
+  async (data, thunkAPI) => {
+    try {
+      const response = await CustomerService.registerCustomer(data);
+      return response.customer;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
 );
 
-export const logout = createAction("customer/logout");
+// Logout action
+export const logout = createAsyncThunk("staff/logout", (_, thunkAPI) =>
+  handleAsyncThunk(CustomerService.logout, [null], thunkAPI)
+);
 
+// Reset password action
 export const resetPassword = createAsyncThunk(
   "customer/forgotpassword",
-  async (data, thunkAPI) =>
+  (data, thunkAPI) =>
     handleAsyncThunk(CustomerService.forgotPassword, [data], thunkAPI)
 );
->>>>>>> parent of 59a1a95 (Merge pull request #369 from hoangphuc0062/dev)
-// get current customer
+
+// Get current customer action
 export const getCurrentCustomer = createAsyncThunk(
-  "customer/getCurrentCustomer",
-  async (payload, thunkAPI) =>
-    handleAsyncThunk(CustomerService.getCustomer, [], thunkAPI)
+  "customer/getCurrent",
+  async (_, thunkAPI) => {
+    try {
+      const response = await CustomerService.getCustomer();
+      return response.customer;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
 );
 
+// Reset state action
 export const resetState = createAsyncThunk(
   "state/resetState",
-  async (payload, thunkAPI) => {
+  async (payload) => {
     return payload;
   }
 );
 
-// update customer
+// Update customer action
 export const updateCustomer = createAsyncThunk(
   "customer/updateCustomer",
   ({ customerId, data }, thunkAPI) =>
@@ -64,77 +83,103 @@ export const updateCustomer = createAsyncThunk(
     )
 );
 
+// Create customer slice
 const customerSlice = createSlice({
   name: "customer",
   initialState: {
-    data: [],
+    data: null,
+    isLoginned: false,
     status: "idle",
     error: null,
-    me: null,
-    statusUpdate: "idle",
-    deleteStatus: "idle",
-    loginStatus: "idle",
-<<<<<<< HEAD
-=======
-    registerStatus: "idle",
->>>>>>> parent of 59a1a95 (Merge pull request #369 from hoangphuc0062/dev)
   },
   extraReducers: (builder) => {
+    // Handle login
     builder
-      .addCase(updateCustomer.pending, (state) => {
-        state.statusUpdate = "loading";
-      })
-      .addCase(updateCustomer.fulfilled, (state, action) => {
-        state.statusUpdate = "success";
-        state.data = action.payload;
-      })
-      .addCase(updateCustomer.rejected, (state, action) => {
-        state.statusUpdate = "failed";
-        state.error = action.payload;
-      })
-      .addCase(resetState.fulfilled, (state, action) => {
-        if (action.payload) {
-          const { key, value } = action.payload;
-          if (key && value !== undefined) {
-            state[key] = value;
-          }
-        }
-      })
-<<<<<<< HEAD
-      .addCase(login.pending, (state) => {
-        state.loginStatus = "loading";
-      })
-      .addCase(login.fulfilled, (state, action) => {
-        state.loginStatus = "success";
-        state.data = action.payload;
-      })
-      .addCase(login.rejected, (state, action) => {
-        state.loginStatus = "failed";
-=======
       .addCase(loginCustomer.pending, (state) => {
-        state.loginStatus = "loading";
+        state.status = "loading";
+        state.error = null;
       })
       .addCase(loginCustomer.fulfilled, (state, action) => {
-        state.loginStatus = "success";
+        state.isLoginned = true;
         state.data = action.payload;
+        state.status = "success";
       })
       .addCase(loginCustomer.rejected, (state, action) => {
-        state.loginStatus = "failed";
+        state.status = "failed";
         state.error = action.payload;
+      });
+
+    // Handle logout
+
+    builder
+      .addCase(logout.pending, (state) => {
+        state.status = "loading";
       })
+      .addCase(logout.fulfilled, (state) => {
+        state.status = "success";
+        state.data = null;
+        state.isLoginned = false;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      });
+
+    // Handle register
+    builder
       .addCase(registerCustomer.pending, (state) => {
-        state.registerStatus = "loading";
+        state.status = "loading";
       })
       .addCase(registerCustomer.fulfilled, (state, action) => {
-        state.registerStatus = "success";
+        state.status = "success";
         state.data = action.payload;
       })
       .addCase(registerCustomer.rejected, (state, action) => {
-        state.registerStatus = "failed";
->>>>>>> parent of 59a1a95 (Merge pull request #369 from hoangphuc0062/dev)
+        state.status = "failed";
         state.error = action.payload;
       });
+
+    // Handle get current customer
+    builder
+      .addCase(getCurrentCustomer.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getCurrentCustomer.fulfilled, (state, action) => {
+        state.status = "success";
+        state.data = action.payload;
+        state.isLoginned = true;
+      })
+      .addCase(getCurrentCustomer.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      });
+
+    // Handle update customer
+    builder
+      .addCase(updateCustomer.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(updateCustomer.fulfilled, (state, action) => {
+        state.status = "success";
+        state.data = action.payload;
+      })
+      .addCase(updateCustomer.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      });
+
+    // Handle reset state
+    builder.addCase(resetState.fulfilled, (state, action) => {
+      if (action.payload) {
+        const { key, value } = action.payload;
+        if (key && value !== undefined) {
+          state[key] = value;
+        }
+      }
+    });
   },
 });
+
+// Export reducer and actions
 export default customerSlice.reducer;
 export const { resetStateCustomer } = customerSlice.actions;
