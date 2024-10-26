@@ -9,7 +9,7 @@ export const ProfileLayout = () => {
           <SideBar />
         </div>
 
-        <div className="w-full h-[100vh] md:w-5/6 ml-1 shadow-lg p-2">
+        <div className="w-full min-h-[500px] md:w-5/6 ml-1 shadow-lg p-2">
           <Outlet />
         </div>
       </div>

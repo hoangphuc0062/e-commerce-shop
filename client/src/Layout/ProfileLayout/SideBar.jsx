@@ -23,19 +23,9 @@ const tabs = [
     link: "address",
   },
   {
-    id: "5",
-    name: "Lịch sử mua hàng",
-    link: "history-order",
-  },
-  {
     id: "6",
     name: "Quản lý đơn hàng",
     link: "order",
-  },
-  {
-    id: "7",
-    name: "Đăng xuất",
-    link: "logout",
   },
 ];
 
@@ -61,6 +51,14 @@ export const SideBar = () => {
               </Link>
             </li>
           ))}
+          <li>
+            <Link
+              to="/"
+              className="flex text-sm items-center gap-2 p-2 text-gray-700 hover:bg-gray-100 hover:text-main"
+            >
+              Đăng xuất
+            </Link>
+          </li>
         </ul>
       </nav>
 
@@ -80,6 +78,14 @@ export const SideBar = () => {
               </Link>
             </li>
           ))}
+          <li>
+            <Link
+              to="/"
+              className="flex flex-col items-center gap-2 p-[5px] text-gray-700 hover:bg-gray-100 rounded hover:text-main"
+            >
+              <span className="text-xs">Đăng xuất</span>
+            </Link>
+          </li>
         </ul>
       </nav>
     </div>
