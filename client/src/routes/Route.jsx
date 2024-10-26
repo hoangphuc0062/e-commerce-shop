@@ -16,11 +16,10 @@ import { ForgetPassoword } from "../pages/auth/ForgetPassoword";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { ProfileLayout } from "../Layout/ProfileLayout";
 import { Account } from "../pages/web/member/Account";
-import { Order } from "../pages/web/member/Order";
+import Order from "../pages/web/member/Order";
 import { Address } from "../pages/web/member/Address";
 import { HomeProfile } from "../pages/web/member/Home";
 import { Coupon } from "../pages/web/member/Coupon";
-import { HistoryOrder } from "../pages/web/member/HistoryOrder";
 export default function RootRouter() {
   const routes = useRoutes([
     {
@@ -71,7 +70,6 @@ export default function RootRouter() {
             { path: "coupon", element: <Coupon /> },
             { path: "address", element: <Address /> },
             { path: "order", element: <Order /> },
-            { path: "history-order", element: <HistoryOrder /> },
           ],
         },
       ],

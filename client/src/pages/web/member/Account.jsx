@@ -3,6 +3,7 @@ import { formatDay, formatCurrency } from "../../../ultils/helper";
 export const Account = () => {
   const customerData = {
     name: "Nguyen Van A",
+    sex: "Nam",
     email: "bmtck0000@gmail.com",
     phone: "077344062",
     birthday: "01/01/1999",
