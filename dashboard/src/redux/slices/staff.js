@@ -47,8 +47,8 @@ export const getStaffById = createAsyncThunk(
   (id, thunkAPI) => handleAsyncThunk(StaffService.getStaffById, [id], thunkAPI)
 );
 
-export const getMe = createAsyncThunk("staff/getMe", (_, thunkAPI) =>
-  handleAsyncThunk(StaffService.fetchMe, [null], thunkAPI)
+export const getMe = createAsyncThunk("staff/getMe", (data, thunkAPI) =>
+  handleAsyncThunk(StaffService.fetchMe, [data], thunkAPI)
 );
 
 export const resetState = createAsyncThunk(

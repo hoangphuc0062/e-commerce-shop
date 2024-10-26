@@ -1,6 +1,6 @@
 import { PostDB } from "../../data/Forum/PostDB";
 
-function SmallPost() {
+function SmallPost( ) {
   return (
     <div className="space-y-4 md:space-y-6">
       {PostDB.slice(0, 3).map((item) => (

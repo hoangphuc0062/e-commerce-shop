@@ -8,7 +8,6 @@ import { Register } from "../pages/auth/Register";
 import ForumPage from "../pages/web/forum";
 import DetailBlog from "../pages/web/forum/DetailBlog";
 import ProductList from "../pages/web/product/ProductList";
-
 import CartProduct from "../pages/web/payment/CartProduct";
 import Checkout_info from "../pages/web/payment/checkout_info";
 import Checkout from "../pages/web/payment/Checkout";
@@ -22,16 +21,15 @@ import { Address } from "../pages/web/member/Address";
 import { HomeProfile } from "../pages/web/member/Home";
 import { Coupon } from "../pages/web/member/Coupon";
 import { HistoryOrder } from "../pages/web/member/HistoryOrder";
-
 export default function RootRouter() {
   const routes = useRoutes([
-    
     {
       path: "/",
       element: <PublicLayout />,
       children: [
         { path: "/", element: <HomePage /> },
-        { path: "login", element: <Login /> },
+        { path: "/login", element: <Login /> },
+        { path: "/forget-password", element: <ForgetPassoword /> },
         { path: "register", element: <Register /> },
         { path: "/phone", element: <ProductList /> },
         { path: "/phone/:slug", element: <ProductDetail /> },
@@ -76,7 +74,6 @@ export default function RootRouter() {
             { path: "history-order", element: <HistoryOrder /> },
           ],
         },
-
       ],
     },
     {
@@ -84,7 +81,7 @@ export default function RootRouter() {
       element: <ForumLayout />,
       children: [
         { path: "", element: <ForumPage /> },
-        { path: "blog/:id", element: <DetailBlog /> },
+        { path: "blog/:slug", element: <DetailBlog /> },
       ],
     },
     {
