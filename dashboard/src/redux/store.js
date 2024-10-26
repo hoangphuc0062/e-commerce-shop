@@ -18,7 +18,6 @@ import webConfigReducer from "./slices/webComfig";
 import paymentReducer from "./slices/paynents";
 import couponReducer from "./slices/coupon";
 
-
 const store = configureStore({
   reducer: {
     loading: loadingReducer,
@@ -33,11 +32,10 @@ const store = configureStore({
     product: productReducer,
     attribute: attributeReducer,
     tag: tagReducer,
-    shippingUnits: shippingUnitsReducer
+    shippingUnits: shippingUnitsReducer,
     webConfig: webConfigReducer,
     payment: paymentReducer,
     coupon: couponReducer,
-
   },
 });
 
