@@ -10,7 +10,7 @@ import warehouseReducer from "./slices/warehouse";
 import productReducer from "./slices/product";
 import attributeReducer from "./slices/attribute";
 import tagReducer from "./slices/tags";
-
+import shippingUnitsReducer from "./slices/shipping";
 const store = configureStore({
   reducer: {
     loading: loadingReducer,
@@ -24,6 +24,7 @@ const store = configureStore({
     product: productReducer,
     attribute: attributeReducer,
     tag: tagReducer,
+    shippingUnits: shippingUnitsReducer
   },
 });
 
