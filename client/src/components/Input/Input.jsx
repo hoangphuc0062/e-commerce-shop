@@ -1,17 +1,60 @@
 /* eslint-disable react/prop-types */
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
-import { useState, forwardRef } from "react";
+import { useState, useRef, forwardRef, useEffect } from "react";
 
 // eslint-disable-next-line react/display-name
 export const Input = forwardRef(
   (
-    { label, type, id, placeholder, iconName, onChange, errorMessage, ...rest },
+    {
+      label,
+      type,
+      value,
+      id,
+      placeholder,
+      iconName,
+      edit,
+      onChange,
+      errorMessage,
+      readOnly = true, // Default to readOnly
+      ...rest
+    },
     ref
   ) => {
     const [showPassword, setShowPassword] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [inputValue, setInputValue] = useState(value);
+    const inputRef = useRef(null);
+
     const handleShowPassword = (e) => {
       e.preventDefault();
       setShowPassword(!showPassword);
+    };
+
+    const handleEdit = (e) => {
+      e.preventDefault();
+      if (isEditing && edit) {
+        onChange(inputValue);
+      }
+      setIsEditing(!isEditing);
+    };
+
+    useEffect(() => {
+      setInputValue(value);
+    }, [value]);
+
+    useEffect(() => {
+      if (isEditing && inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, [isEditing]);
+
+    const handleChange = (e) => {
+      // console.log(onChange(e.target.value));
+      setInputValue(e.target.value);
+
+      if (edit) {
+        onChange(e.target.value); // Only trigger change if editable
+      }
     };
 
     return (
@@ -24,23 +67,36 @@ export const Input = forwardRef(
         <div className="flex relative justify-center items-center">
           <input
             id={id}
+            value={inputValue}
             type={type === "password" && showPassword ? "text" : type}
             className={`w-full p-5 font-medium border rounded-md placeholder:opacity-60 ${
               errorMessage
                 ? "border-red-500 focus:border-red-500"
                 : "border-gray-300"
-            }`}
+            } ${isEditing ? "focus:outline-blue-700 outline-blue-700" : ""}`} // Apply the CSS class conditionally
             placeholder={placeholder}
-            onChange={onChange}
-            ref={ref}
+            onChange={onChange ? handleChange : undefined}
+            ref={inputRef}
+            disabled={!isEditing}
+            aria-readonly={!isEditing ? true : undefined}
             {...rest}
           />
           {iconName && type === "password" && (
-            <button className="absolute right-2 " onClick={handleShowPassword}>
+            <button className="absolute right-2" onClick={handleShowPassword}>
               <Icon
                 icon={showPassword ? "mdi:eye-off" : iconName}
                 width="24px"
                 height="24px"
+              />
+            </button>
+          )}
+          {iconName && edit && (
+            <button className="absolute right-2" onClick={handleEdit}>
+              <Icon
+                icon={iconName}
+                width="24px"
+                height="24px"
+                className="p-3"
               />
             </button>
           )}

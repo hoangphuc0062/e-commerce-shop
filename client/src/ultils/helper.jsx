@@ -6,6 +6,12 @@ export const formatDay = (isoDateString) => {
   return `${day}-${month}-${year}`;
 };
 
+export const convertToISODateString = (dateString) => {
+  const [day, month, year] = dateString.split("/").map(Number);
+  const date = new Date(year, month - 1, day);
+  return date.toISOString();
+};
+
 export const formatCurrency = (number) => {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",

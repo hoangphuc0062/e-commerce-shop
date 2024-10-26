@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import Person from "../../../components/Member/Person";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Order = () => {
   const [activeTab, setActiveTab] = useState("all");
@@ -175,7 +176,7 @@ const Order = () => {
                     {item.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 ">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex justify-center ">
                   <button
                     onClick={() =>
                       setExpandedOrder(
@@ -183,50 +184,60 @@ const Order = () => {
                       )
                     }
                   >
-                    <Icon
-                      icon={`humbleicons:chevron-${
-                        expandedOrder === item.id ? "down" : "right"
-                      }`}
-                      width="2rem"
-                      height="2rem"
-                    />
+                    <motion.div
+                      initial={{ rotate: 0 }}
+                      animate={{ rotate: expandedOrder === item.id ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex justify-center"
+                    >
+                      <Icon
+                        icon="humbleicons:chevron-down"
+                        width="2rem"
+                        height="2rem"
+                      />
+                    </motion.div>
+                    {expandedOrder === item.id ? "Ẩn" : "Xem chi tiết"}
                   </button>
                 </td>
               </tr>
-              {expandedOrder === item.id && (
-                <tr className="text-left">
-                  <td colSpan="5" className="px-6 py-4">
-                    <div className="space-y-4">
-                      {item.products.map((product, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center space-x-4"
-                        >
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="w-16 h-16 object-cover"
-                          />
-                          <div className="flex-1">
-                            <h4 className="text-sm font-medium">
-                              {product.name}
-                            </h4>
-                            <p className="text-sm text-gray-500">
-                              Số lượng: {product.quantity}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              Giá: {product.price}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              Thành tiền: {product.total}
-                            </p>
+              <AnimatePresence>
+                {expandedOrder === item.id && (
+                  <motion.tr
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <td colSpan="5" className="px-6 py-4 text-left">
+                      <div className="space-y-4">
+                        {item.products.map((product, index) => (
+                          <div key={index} className="flex  space-x-4">
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="w-16 h-16 object-cover"
+                            />
+                            <div className="flex-1">
+                              <h4 className="text-sm font-medium">
+                                {product.name}
+                              </h4>
+                              <p className="text-sm text-gray-500">
+                                Số lượng: {product.quantity}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                Giá: {product.price}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                Thành tiền: {product.total}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              )}
+                        ))}
+                      </div>
+                    </td>
+                  </motion.tr>
+                )}
+              </AnimatePresence>
             </>
           ))}
         </tbody>
