@@ -154,7 +154,7 @@ const ImageUploader = ({
             mt: 4,
           }}
         >
-          {downloadURLs?.map((url, index) => (
+          {downloadURLs.map((url, index) => (
             <Box
               key={index}
               sx={{
@@ -208,7 +208,7 @@ ImageUploader.propTypes = {
   error: propTypes.bool,
   helperText: propTypes.string,
   allowedFormats: propTypes.arrayOf(propTypes.string),
-  fooder: propTypes.string.isRequired,
+  fooder: propTypes.string.isRequired, // Required prop for dynamic folder path
   idupload: propTypes.string,
 };
 

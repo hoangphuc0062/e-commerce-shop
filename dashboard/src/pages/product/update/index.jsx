@@ -5,37 +5,28 @@ import { useFormik } from "formik";
 import TabPanel, { a11yProps } from "../tags";
 import InformationEdit from "./information";
 import { useDispatch, useSelector } from "react-redux";
-import { getProductById, updateProduct } from "../../../redux/slices/product";
+import { getProductById } from "../../../redux/slices/product";
 import { getAllWarehouses } from "../../../redux/slices/warehouse";
 import OtherProductEdit from "./other";
 import { getCategory } from "../../../redux/slices/category";
 import { getBrand } from "../../../redux/slices/brand";
 import { getAllCollections } from "../../../redux/slices/collection";
 import { getAllTags } from "../../../redux/slices/tags";
-import ThumbnailProduct from "./image/thumbnail";
-import ImageProduct from "./image/images";
-import VideosProduct from "./image/video";
-import Specifications from "./specifications";
-import Gifts from "./gifts";
-import SEOInformation from "./SEOInformation";
-import AttributesSection from "./attributes/AttributesSection";
-import { getAttribute } from "../../../redux/slices/attribute";
-import { handleToast } from "./../../../utils/toast";
-import { validationProductSchema } from "./validate";
 
 export default function EditProduct() {
   const dispatch = useDispatch();
   const [mainTabValue, setMainTabValue] = useState(0);
   const [subTabValue, setSubTabValue] = useState(0);
+  const [subTabValue2, setSubTabValue2] = useState(0);
   const [dataProduct, setDataProduct] = useState([]);
   const [warehouseSelect, setWarehouseSelect] = useState([]);
   const [categorySelect, setCategorySelect] = useState([]);
   const [brandSelect, setBrandSelect] = useState([]);
   const [seriesSelect, setSeriesSelect] = useState([]);
   const [tagsSelect, setTagsSelect] = useState([]);
-  const [attributesSelect, setAttributesSelect] = useState([]);
   const handleMainTabChange = (event, newValue) => setMainTabValue(newValue);
   const handleSubTabChange = (event, newValue) => setSubTabValue(newValue);
+  const handleSubTabChange2 = (event, newValue) => setSubTabValue2(newValue);
   const { id } = useParams();
 
   const statusGetById = useSelector((state) => state.product.statusGetById);
@@ -50,35 +41,31 @@ export default function EditProduct() {
   const dataSeries = useSelector((state) => state.collection.data);
   const statusTag = useSelector((state) => state.tag.status);
   const dataTag = useSelector((state) => state.tag.data.tags);
-  const statusGetAttribute = useSelector((state) => state.attribute.status);
-  const dataAttribute = useSelector((state) => state.attribute.data);
   useEffect(() => {
     dispatch(getProductById(id));
-    dispatch(getAllWarehouses());
-    dispatch(getCategory());
-    dispatch(getBrand());
-    dispatch(getAllCollections());
-    dispatch(getAllTags());
-    dispatch(getAttribute());
   }, [dispatch, id]);
-
-  // Update các select khi dữ liệu redux thay đổi
   useEffect(() => {
-    if (statusGetAttribute === "success") {
-      const attributes = dataAttribute.map((item) => ({
-        id: item._id,
-        name: item.name,
-        values: item.values.map((value) => ({
-          name: value,
-          value: value,
-        })),
-      }));
-      setAttributesSelect(attributes);
+    dispatch(getAllWarehouses());
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(getCategory());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getBrand());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getAllCollections());
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(getAllTags());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (statusGetById === "success" && productData) {
+      setDataProduct(productData);
     }
-  }, [dataAttribute, statusGetAttribute]);
-
-  useEffect(() => {
-    if (statusGetById === "success" && productData) setDataProduct(productData);
   }, [statusGetById, productData]);
 
   useEffect(() => {
@@ -90,7 +77,6 @@ export default function EditProduct() {
       setWarehouseSelect(warehouses);
     }
   }, [statusWarehouse, dataWarehouse]);
-
   useEffect(() => {
     if (statusGetCategory === "success") {
       const categories = dataCategory.map((item) => ({
@@ -100,7 +86,6 @@ export default function EditProduct() {
       setCategorySelect(categories);
     }
   }, [statusGetCategory, dataCategory]);
-
   useEffect(() => {
     if (statusBrand === "success") {
       const brands = dataBrand.map((item) => ({
@@ -130,7 +115,6 @@ export default function EditProduct() {
       setTagsSelect(tags);
     }
   }, [statusTag, dataTag]);
-
   const formik = useFormik({
     initialValues: {
       name: dataProduct[0]?.name || "",
@@ -185,16 +169,9 @@ export default function EditProduct() {
       gifts: [],
       views: 0,
     },
-    validationSchema: validationProductSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
-      dispatch(updateProduct({ productId: id, data: values })).then((res) => {
-        if (res.type === "product/updateProduct/fulfilled") {
-          handleToast("success", "Cập nhật sản phẩm thành công");
-        } else {
-          handleToast("error", "Cập nhật sản phẩm thất bại");
-        }
-      });
+      console.log(values);
     },
   });
 
@@ -226,50 +203,13 @@ export default function EditProduct() {
               />
             </Grid>
           </Grid>
-          <Card sx={{ mt: 2, p: 3 }}>
-            <Tabs value={subTabValue} onChange={handleSubTabChange}>
-              <Tab label="Hình và video" {...a11yProps(0)} />
-              <Tab label="Thông số" {...a11yProps(1)} />
-              <Tab label="Quà tặng" {...a11yProps(2)} />
-            </Tabs>
-
-            <TabPanel value={subTabValue} index={0}>
-              <Grid container spacing={3}>
-                <Grid item xs={12}></Grid>
-                <Grid item xs={4}>
-                  <ThumbnailProduct formik={formik} />
-                </Grid>
-                <Grid item xs={4}>
-                  <ImageProduct formik={formik} />
-                </Grid>
-                <Grid item xs={4}>
-                  <VideosProduct formik={formik} />
-                </Grid>
-              </Grid>
-            </TabPanel>
-
-            <TabPanel value={subTabValue} index={1}>
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <Typography variant="h6">Thông số</Typography>
-                  <Specifications formik={formik} />
-                </Grid>
-              </Grid>
-            </TabPanel>
-            <TabPanel value={subTabValue} index={2}>
-              <Gifts formik={formik} />
-            </TabPanel>
-          </Card>
         </TabPanel>
 
         <TabPanel value={mainTabValue} index={1}>
           <Card sx={{ mt: 2, p: 3 }}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <Typography sx={{ mb: 3 }} variant="h6">
-                  Thông tin Seo
-                </Typography>
-                <SEOInformation formik={formik} />
+                <Typography variant="h6">Thông tin Seo</Typography>
               </Grid>
             </Grid>
           </Card>
@@ -280,10 +220,6 @@ export default function EditProduct() {
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Typography variant="h6">Biến thể</Typography>
-                <AttributesSection
-                  formik={formik}
-                  attributesSelect={attributesSelect}
-                />
               </Grid>
             </Grid>
           </Card>

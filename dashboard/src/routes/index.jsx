@@ -1,11 +1,12 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "../layouts";
+import AdminRoute from "./AdminRoute";
 import ErrorRoute from "./ErrorRoute";
+import EditorRoute from "./EditorRoute";
 import PrivateRoute from "./PrivateRoute";
 import { useAuth } from "../contexts/AuthContext";
 import SignIn from "../pages/auth/login";
 import ResetPassword from "../pages/auth/ResetPassword";
-import SuperAdminRoute from "./SuperAdminRoute";
 
 export default function RootRouter() {
   const { islogin } = useAuth();
@@ -26,7 +27,8 @@ export default function RootRouter() {
           )
         }
       >
-        {islogin && SuperAdminRoute()}
+        {islogin && AdminRoute()}
+        {islogin && EditorRoute()}
       </Route>
 
       {/* Error routes */}
