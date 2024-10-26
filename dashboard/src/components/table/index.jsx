@@ -165,7 +165,7 @@ const ReusableTable = ({
 };
 
 ReusableTable.propTypes = {
-  handleDelete: propTypes.func.isRequired,
+  handleDelete: propTypes.func,
   handleEdit: propTypes.func.isRequired,
   data: propTypes.array.isRequired,
   columns: propTypes.array.isRequired,
