@@ -2,7 +2,6 @@
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import CustomerService from "../../services/customer.service";
 
-// Utility function to handle async actions
 const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
   try {
     const response = await asyncFunction(...args);
@@ -12,67 +11,51 @@ const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
   }
 };
 
-// Login action
+// login
+
 export const loginCustomer = createAsyncThunk(
+
   "customer/login",
-  async (data, thunkAPI) => {
-    try {
-      const { accessToken, customer } = await CustomerService.login(data);
-      localStorage.setItem("accessToken", accessToken);
-      return customer;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
-  }
+  async (data, thunkAPI) =>
+    handleAsyncThunk(CustomerService.login, [data], thunkAPI)
 );
 
-// Register action
+
+// register
 export const registerCustomer = createAsyncThunk(
   "customer/register",
-  async (data, thunkAPI) => {
-    try {
-      const response = await CustomerService.registerCustomer(data);
-      return response.customer;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
-  }
+  async (data, thunkAPI) =>
+    handleAsyncThunk(CustomerService.registerCustomer, [data], thunkAPI)
 );
+
 
 // Logout action
 export const logout = createAsyncThunk("staff/logout", (_, thunkAPI) =>
   handleAsyncThunk(CustomerService.logout, [null], thunkAPI)
 );
 
-// Reset password action
+
 export const resetPassword = createAsyncThunk(
   "customer/forgotpassword",
-  (data, thunkAPI) =>
+  async (data, thunkAPI) =>
     handleAsyncThunk(CustomerService.forgotPassword, [data], thunkAPI)
 );
 
-// Get current customer action
+// get current customer
 export const getCurrentCustomer = createAsyncThunk(
-  "customer/getCurrent",
-  async (_, thunkAPI) => {
-    try {
-      const response = await CustomerService.getCustomer();
-      return response.customer;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
-  }
+  "customer/getCurrentCustomer",
+  async (payload, thunkAPI) =>
+    handleAsyncThunk(CustomerService.getCustomer, [], thunkAPI)
 );
 
-// Reset state action
 export const resetState = createAsyncThunk(
   "state/resetState",
-  async (payload) => {
+  async (payload, thunkAPI) => {
     return payload;
   }
 );
 
-// Update customer action
+// update customer
 export const updateCustomer = createAsyncThunk(
   "customer/updateCustomer",
   ({ customerId, data }, thunkAPI) =>
@@ -83,30 +66,33 @@ export const updateCustomer = createAsyncThunk(
     )
 );
 
-// Create customer slice
 const customerSlice = createSlice({
   name: "customer",
   initialState: {
-    data: null,
-    isLoginned: false,
+    data: [],
     status: "idle",
     error: null,
+    me: null,
+    statusUpdate: "idle",
+    deleteStatus: "idle",
+    loginStatus: "idle",
+
+    registerStatus: "idle",
+
   },
   extraReducers: (builder) => {
-    // Handle login
     builder
-      .addCase(loginCustomer.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+      .addCase(updateCustomer.pending, (state) => {
+        state.statusUpdate = "loading";
       })
-      .addCase(loginCustomer.fulfilled, (state, action) => {
-        state.isLoginned = true;
+      .addCase(updateCustomer.fulfilled, (state, action) => {
+        state.statusUpdate = "success";
         state.data = action.payload;
-        state.status = "success";
       })
-      .addCase(loginCustomer.rejected, (state, action) => {
-        state.status = "failed";
+      .addCase(updateCustomer.rejected, (state, action) => {
+        state.statusUpdate = "failed";
         state.error = action.payload;
+
       });
 
     // Handle logout
@@ -129,57 +115,42 @@ const customerSlice = createSlice({
     builder
       .addCase(registerCustomer.pending, (state) => {
         state.status = "loading";
+
+      })
+      .addCase(resetState.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { key, value } = action.payload;
+          if (key && value !== undefined) {
+            state[key] = value;
+          }
+        }
+      })
+te.loginStatus = "failed";
+=======
+      .addCase(loginCustomer.pending, (state) => {
+        state.loginStatus = "loading";
+      })
+      .addCase(loginCustomer.fulfilled, (state, action) => {
+        state.loginStatus = "success";
+        state.data = action.payload;
+      })
+      .addCase(loginCustomer.rejected, (state, action) => {
+        state.loginStatus = "failed";
+        state.error = action.payload;
+      })
+      .addCase(registerCustomer.pending, (state) => {
+        state.registerStatus = "loading";
       })
       .addCase(registerCustomer.fulfilled, (state, action) => {
-        state.status = "success";
+        state.registerStatus = "success";
         state.data = action.payload;
       })
       .addCase(registerCustomer.rejected, (state, action) => {
-        state.status = "failed";
+        state.registerStatus = "failed";
+
         state.error = action.payload;
       });
-
-    // Handle get current customer
-    builder
-      .addCase(getCurrentCustomer.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(getCurrentCustomer.fulfilled, (state, action) => {
-        state.status = "success";
-        state.data = action.payload;
-        state.isLoginned = true;
-      })
-      .addCase(getCurrentCustomer.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
-      });
-
-    // Handle update customer
-    builder
-      .addCase(updateCustomer.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(updateCustomer.fulfilled, (state, action) => {
-        state.status = "success";
-        state.data = action.payload;
-      })
-      .addCase(updateCustomer.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
-      });
-
-    // Handle reset state
-    builder.addCase(resetState.fulfilled, (state, action) => {
-      if (action.payload) {
-        const { key, value } = action.payload;
-        if (key && value !== undefined) {
-          state[key] = value;
-        }
-      }
-    });
   },
 });
-
-// Export reducer and actions
 export default customerSlice.reducer;
 export const { resetStateCustomer } = customerSlice.actions;

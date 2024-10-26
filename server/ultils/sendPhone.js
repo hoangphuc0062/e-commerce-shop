@@ -34,8 +34,8 @@ const sendSMS = async (phone, messages) => {
   var postData = JSON.stringify({
     messages: [
       {
-        destinations: [{ to: phone }],
-        from: "Shop Điện Máy",
+        destinations: [{ to: "84" + phone }],
+        from: "Shop Điện máy",
         text: messages,
       },
     ],

@@ -29,22 +29,26 @@ const AccountUser = () => {
   return (
     <div className="container mx-auto p-2 md:flex">
       <div className="md:w-3/4 lg:w-4/5 xl:w-5/6 bg-white p-6 rounded-lg shadow-lg">
+
         <div className="space-y-4 mx-auto max-w-[750px]">
           <div className="flex items-center justify-between border-b border-gray-300 pb-2 w-full">
             <div className="w-full">
+
               {isEditing ? (
                 <input
                   type="text"
                   value={customerData?.name}
                   onChange={handleInputChange}
                   onBlur={handleBlur}
-                  className="border-b border-red-500 focus:outline-none w-full"
+                  className="border-b border-red-500 focus:outline-none"
                   autoFocus
                 />
               ) : (
+
                 <p className="text-gray-600 font-light w-full">
                   Họ và tên: {customerData?.name}
                 </p>
+
               )}
             </div>
             <VscSaveAs
@@ -52,6 +56,7 @@ const AccountUser = () => {
               onClick={handleIconClick}
             />
           </div>
+
           <div className="border-b border-gray-300 pb-4 mb-2">
             <p className="text-gray-600 font-light">
               Email: {customerData?.email ? customerData?.email : "Trống"}
@@ -65,6 +70,7 @@ const AccountUser = () => {
               className="text-gray-500 cursor-pointer"
               onClick={() => setShowGenderOptions(!showGenderOptions)}
             />
+
           </div>
           {showGenderOptions && (
             <div className="border-b border-gray-300 pb-2">
@@ -82,6 +88,7 @@ const AccountUser = () => {
               </p>
             </div>
           )}
+
           <div className="border-b border-gray-300 pb-4 mb-2">
             <p className="text-gray-600 font-light">
               Số điện thoại: {customerData?.phone}
@@ -112,16 +119,19 @@ const AccountUser = () => {
             <p className="text-gray-600 font-light">
               Địa chỉ: {customerData?.address}
             </p>
+
             <VscSaveAs className="text-gray-500 cursor-pointer" />
           </div>
-          <div className="border-b border-gray-300 pb-4 mb-2 cursor-pointer">
+          <div className="border-b border-gray-300 pb-2 cursor-pointer">
             <p className="text-gray-600 font-light">Đổi mật khẩu</p>
           </div>
+
           <div className="flex justify-center mt-4 max-w-[600px] mx-auto ">
             <button className="bg-main text-white font-semibold py-2 px-4 rounded hover:bg-main">
               Cập nhật thông tin
             </button>
           </div>
+
         </div>
       </div>
     </div>

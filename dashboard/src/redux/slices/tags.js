@@ -40,15 +40,13 @@ export const deleteTag = createAsyncThunk(
   (id, thunkAPI) => handleAsyncThunk(TagsService.delete, [id], thunkAPI)
 );
 
+
 const tags = createSlice({
   name: "tags",
   initialState: {
     data: [],
     status: "idle",
     error: null,
-    statusCreate: "idle",
-    updateStatus: "idle",
-    deleteStatus: "idle"
   },
 
   extraReducers: (builder) => {
@@ -71,6 +69,7 @@ const tags = createSlice({
       .addCase(getAllTags.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+
       }).addCase(createTag.pending, (state) => {
         state.statusCreate = "loading";
       })

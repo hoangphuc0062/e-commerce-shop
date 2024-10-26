@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button, TextField, Grid, Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import ReusableTable from "../../components/table";
 import { Card } from "react-bootstrap";
-import DetailShipping from "./deails";
 
 const columns = [
     { label: "Phương thức giao hàng", field: "name" },
@@ -31,7 +30,6 @@ const initialData = [
     }
 ];
 
-// Các phương thức giao hàng có thể lựa chọn
 const shippingMethods = [
     "Giao hàng tiết kiệm",
     "Giao hàng nhanh",
@@ -41,16 +39,16 @@ const shippingMethods = [
 ];
 
 export default function ShippingPage() {
-    const [data, setData] = useState(initialData); // State quản lý dữ liệu
-    const [newShipping, setNewShipping] = useState({ name: "", address: "", note: "" }); // Dữ liệu mới hoặc chỉnh sửa
-    const [isEditing, setIsEditing] = useState(false); // Trạng thái biết là đang chỉnh sửa hay thêm mới
-    const [editingIndex, setEditingIndex] = useState(null); // Index của item đang chỉnh sửa
+    const [data, setData] = useState(initialData);
+    const [newShipping, setNewShipping] = useState({ name: "", address: "", note: "" });
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingIndex, setEditingIndex] = useState(null);
 
     const handleAddNewShipping = () => {
         if (isEditing && editingIndex !== null) {
             // Cập nhật phương thức giao hàng đã chỉnh sửa
             const updatedData = [...data];
-            updatedData[editingIndex] = { ...newShipping, id: updatedData[editingIndex].id };
+            updatedData[editingIndex] = { ...newShipping, id: updatedData[editingIndex].id }; // Giữ nguyên ID
             setData(updatedData);
             setIsEditing(false);
             setEditingIndex(null);
@@ -58,14 +56,13 @@ export default function ShippingPage() {
             // Thêm phương thức giao hàng mới
             setData([...data, { id: Date.now(), ...newShipping }]);
         }
-        // Reset form sau khi thêm hoặc chỉnh sửa
         setNewShipping({ name: "", address: "", note: "" });
     };
 
     const handleEdit = (rowData, index) => {
-        setNewShipping(rowData); // Lấy dữ liệu của phương thức giao hàng để chỉnh sửa
-        setIsEditing(true); // Chuyển sang chế độ chỉnh sửa
-        setEditingIndex(index); // Lưu index của phương thức đang chỉnh sửa
+        setNewShipping(rowData);
+        setIsEditing(true);
+        setEditingIndex(index);
     };
 
     const handleDelete = (index) => {
@@ -77,7 +74,7 @@ export default function ShippingPage() {
         <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: '20px' }}>
             <div>
                 <ReusableTable
-                    data={data} // Sử dụng state `data` thay vì `initialData`
+                    data={data}
                     columns={columns}
                     handleEdit={handleEdit}
                     handleDelete={handleDelete}

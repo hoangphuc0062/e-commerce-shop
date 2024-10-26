@@ -1,9 +1,11 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import {
   Autocomplete,
   Card,
   Checkbox,
   FormControl,
+  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -21,7 +23,7 @@ export default function OtherProductEdit({
   tagsProduct,
 }) {
   return (
-    <Card sx={{ mt: 2, p: 3 }}>
+    <Card sx={{ p: 3 }}>
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Typography variant="h6">Thông tin danh mục</Typography>
@@ -36,6 +38,7 @@ export default function OtherProductEdit({
               onChange={formik.handleChange}
               name="category"
               onBlur={formik.handleBlur}
+              error={formik.touched.category && Boolean(formik.errors.category)}
             >
               {categorySelect.map((item, index) => (
                 <MenuItem key={index} value={item.value}>
@@ -43,6 +46,9 @@ export default function OtherProductEdit({
                 </MenuItem>
               ))}
             </Select>
+            <FormHelperText>
+              {formik.touched.category && formik.errors.category}
+            </FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={6}>
@@ -55,6 +61,7 @@ export default function OtherProductEdit({
               onChange={formik.handleChange}
               name="brand"
               onBlur={formik.handleBlur}
+              error={formik.touched.brand && Boolean(formik.errors.brand)}
             >
               {brandSelect.map((item, index) => (
                 <MenuItem key={index} value={item.value}>
@@ -62,6 +69,9 @@ export default function OtherProductEdit({
                 </MenuItem>
               ))}
             </Select>
+            <FormHelperText>
+              {formik.touched.brand && formik.errors.brand}
+            </FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={6}>
@@ -73,6 +83,7 @@ export default function OtherProductEdit({
               label="Dòng sản phẩm"
               onChange={formik.handleChange}
               name="series"
+              error={formik.touched.series && Boolean(formik.errors.series)}
             >
               {seriesSelect.map((item, index) => (
                 <MenuItem key={index} value={item.value}>
@@ -80,6 +91,9 @@ export default function OtherProductEdit({
                 </MenuItem>
               ))}
             </Select>
+            <FormHelperText>
+              {formik.touched.series && formik.errors.series}
+            </FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={6}>
@@ -98,7 +112,7 @@ export default function OtherProductEdit({
                 .filter(Boolean)}
               onChange={(event, newValue) => {
                 const values = newValue.map((item) => item.value);
-                handleInputChange("tagsProduct", values);
+                formik.setFieldValue("tagsProduct", values);
               }}
               renderInput={(params) => <TextField {...params} label="Tags" />}
               renderOption={(props, option, { selected }) => {

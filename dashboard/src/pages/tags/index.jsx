@@ -3,7 +3,6 @@ import {
     Button,
     Grid,
     Box,
-    Card,
     Typography,
 } from "@mui/material";
 import ReusableTable from "../../components/table";
@@ -12,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createTag, deleteTag, getAllTags, updateTag } from "../../redux/slices/tags"; // Added updateTag action
 import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
 import { useFormik } from "formik";
+import { Card } from "react-bootstrap";
 
 const columns = [
     { label: "Tên tag", field: "name" },
@@ -108,26 +108,44 @@ export default function TagPage() {
                 )}
             </div>
             <div>
-                <Card sx={{ p: 3 }}>
-                    <Typography sx={{ mb: 2 }} variant="h6">
+                <Card
+                    style={{ padding: '30px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', borderRadius: '10px' }}
+
+                >
+                    <h4 style={{ marginBottom: '20px', textAlign: 'center', fontWeight: 'bold' }}>
+                        {editTag ? "Chỉnh sửa Tags" : "Thêm Tags"}
+                    </h4>
+                    {/* <Typography
+                        sx={{
+                            mb: 2,
+                            fontWeight: 'bold',
+                            fontSize: '1.25rem',
+                            color: '#333'
+                        }}
+                        variant="h6"
+                    >
                         {editTag ? "Cập nhật tag" : "Thêm tag"}
-                    </Typography>
+                    </Typography> */}
                     <form onSubmit={formik.handleSubmit}>
                         <CustomInputField
                             label="Tên Tag"
                             name="name"
                             value={formik.values.name}
                             onChange={formik.handleChange}
-                            error={!!error} // Error status
-                            helperText={error} // Error message
+                            error={!!error} // Trạng thái lỗi
+                            helperText={error} // Thông báo lỗi
                         />
                         <Box mt={3} textAlign="right">
                             <Button
                                 variant="contained"
                                 type="submit"
                                 color="success"
-                                aria-label={editTag ? "Update Tag" : "Add Tag"} // Change button label based on mode
+                                aria-label={editTag ? "Update Tag" : "Add Tag"}
                                 disabled={!formik.values.name}
+                                sx={{
+                                    fontWeight: 'bold',
+                                    padding: '8px 16px',
+                                }}
                             >
                                 {editTag ? "Cập nhật" : "Thêm tag"}
                             </Button>
@@ -138,7 +156,11 @@ export default function TagPage() {
                                 aria-label="Cancel"
                                 onClick={() => {
                                     formik.resetForm();
-                                    setEditTag(null);  // Exit edit mode
+                                    setEditTag(null);
+                                }}
+                                sx={{
+                                    fontWeight: 'bold',
+                                    padding: '8px 16px',
                                 }}
                             >
                                 Hủy
@@ -146,7 +168,9 @@ export default function TagPage() {
                         </Box>
                     </form>
                 </Card>
+
             </div>
         </div>
+
     );
 }
