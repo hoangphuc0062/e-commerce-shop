@@ -1,5 +1,5 @@
-const ProfileUser = ({ name, phone, avatar, role }) => {
-  // console.log(name, phone, avatar);
+// eslint-disable-next-line react/prop-types
+const Person = ({ name, phone, avatar, role }) => {
   return (
     <div className="flex items-center space-x-4 mb-4">
       <img
@@ -21,4 +21,4 @@ const ProfileUser = ({ name, phone, avatar, role }) => {
   );
 };
 
-export default ProfileUser;
+export default Person;
