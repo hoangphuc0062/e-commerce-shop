@@ -34,6 +34,7 @@ import EditBannerCollection from "../pages/bannercollection/edit";
 import CreateProduct from "../pages/product/create";
 import EditProduct from "../pages/product/update";
 import TagPage from "../pages/tags";
+import ShippingPage from "../pages/shippingConfig";
 
 const AdminRoute = () => {
   return (
@@ -331,6 +332,15 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<TagPage />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="shippingConfig"
+        element={
+          <PrivateRoute
+            element={<ShippingPage />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
