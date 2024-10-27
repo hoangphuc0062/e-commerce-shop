@@ -40,7 +40,9 @@ export const registerCustomer = createAsyncThunk(
 );
 
 // Logout action
-export const logout = createAction("customer/logout");
+export const logout = createAsyncThunk("staff/logout", (_, thunkAPI) =>
+  handleAsyncThunk(CustomerService.logout, [null], thunkAPI)
+);
 
 // Reset password action
 export const resetPassword = createAsyncThunk(
@@ -109,10 +111,19 @@ const customerSlice = createSlice({
 
     // Handle logout
 
-    builder.addCase(logout, (state) => {
-      state.data = null;
-      state.isLoginned = false;
-    });
+    builder
+      .addCase(logout.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.status = "success";
+        state.data = null;
+        state.isLoginned = false;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      });
 
     // Handle register
     builder

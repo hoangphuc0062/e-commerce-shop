@@ -146,7 +146,7 @@ const menuItems = {
         },
         {
           id: "tags",
-          title: "Thẻ",
+          title: "Tags",
           type: "item",
           icon: "feather icon-tag",
           url: "/dashboard/tags",
@@ -179,20 +179,9 @@ const menuItems = {
               id: "shipping-config",
               title: "Cấu hình vận chuyển",
               type: "item",
-              url: "/dashboard/config/shipping-config",
+              url: "/dashboard/shippingConfig",
             },
-            {
-              id: "social-config",
-              title: "Cấu hình mạng xã hội",
-              type: "item",
-              url: "/dashboard/config/social-config",
-            },
-            {
-              id: "other-config",
-              title: "Cấu hình khác",
-              type: "item",
-              url: "/dashboard/config/other-config",
-            },
+
           ],
         },
         {
