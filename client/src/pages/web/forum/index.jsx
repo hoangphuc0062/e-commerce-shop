@@ -44,7 +44,6 @@ function ForumPage() {
       );
     }
   }, [status, postData]);
-  console.log(data);
 
   return (
     <div className="container w-full">
@@ -65,18 +64,18 @@ function ForumPage() {
 
           <section className="mb-8 p-4">
             <HeadingSection title="xem nhiều tuần qua" />
-            {/* {data && <SliderPost category="S-Games" data={data} />} */}
+            {data && <SliderPost data={data} category={null} />}
           </section>
 
-          {/* <PostScroll data={data} /> */}
+          <PostScroll data={data} />
 
           <section className="mb-8 px-4 bg-gray-100 w-full rounded-lg">
             <HeadingSection title="S-GAMES" />
-            <SliderPost category="S-Games" />
+            {data && <SliderPost data={data} category={null} />}
             <div className="mt-4 text-right">
               <Link
                 to="#"
-                className="text-red-500 text-sm font-semibold hover:underline"
+                className="text-main text-sm font-semibold hover:underline"
               >
                 Xem thêm
               </Link>
@@ -84,20 +83,20 @@ function ForumPage() {
           </section>
           <section className="mb-8 p-4">
             <div className="flex overflow-x-auto space-x-4">
-              {/* <PostTag category="Trên Tay" data={data} />
-              <PostTag category="Tin Công Nghệ" data={data} />
-              <PostTag category="Đánh Giá" data={data} /> */}
+              <PostTag category={null} data={data} />
+              <PostTag category={null} data={data} />
+              <PostTag category={null} data={data} />
             </div>
           </section>
 
           <section className="mb-8 p-4">
             <HeadingSection title="thủ thuật - mẹo hay" />
-            <SliderPost category="Thủ Thuật - Mẹo Hay" />
+            {data && <SliderPost data={data} category={null} />}
           </section>
 
           <section className="mb-8 p-4">
             <HeadingSection title="Sự kiện" />
-            <SliderPost category="Sự Kiện" />
+            {data && <SliderPost data={data} category={null} />}
           </section>
         </div>
       </div>

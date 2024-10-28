@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import "./SliderPost.css";
+import { formatDay } from "../../../ultils/helper";
 
 const SliderPost = ({ category, data }) => {
   const sliderRef = useRef(null);
@@ -27,7 +28,7 @@ const SliderPost = ({ category, data }) => {
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 3,
           slidesToScroll: 1,
         },
       },
@@ -44,7 +45,7 @@ const SliderPost = ({ category, data }) => {
   const filteredPosts = data?.filter((post) => post.category === category);
 
   return (
-    <div className="relative w-full">
+    <div className="w-full">
       <Slider ref={sliderRef} {...settings}>
         {filteredPosts?.map((post) => (
           <div key={post.id} className="px-1">
@@ -55,7 +56,7 @@ const SliderPost = ({ category, data }) => {
                 className="w-full h-36 object-cover md:h-48 lg:h-60 cursor-pointer"
               />
               <div className="p-3">
-                <Link to={`blog/${post.slug}`}>
+                <Link key={post.id} to={`blog/${post.slug}`}>
                   <h3 className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main">
                     {post.postTitle}
                   </h3>
@@ -66,7 +67,7 @@ const SliderPost = ({ category, data }) => {
                   </p>
                 </Link>
                 <p className="text-xs text-gray-600 cursor-pointer">
-                  {post.date}
+                  {formatDay(post.date)}
                 </p>
               </div>
             </div>

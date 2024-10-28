@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import CategoryPost from "../../../data/Forum/CategoryPost";
+import "./Sidebar.css";
 
 const SideBar = () => {
   return (
@@ -8,7 +9,7 @@ const SideBar = () => {
       <div className="hidden md:block md:sticky md:overflow-y-auto md:pt-1 md:h-screen fixed top-0 left-0">
         <nav className="p-4">
           <ul className="space-y-2">
-            {CategoryPost.map((category) => (
+            {CategoryPost?.map((category) => (
               <li key={category.id}>
                 <Link
                   to={category.link}
@@ -24,10 +25,10 @@ const SideBar = () => {
       </div>
 
       {/* Sidebar cho màn hình nhỏ */}
-      <div className="md:hidden bg-white p-4 z-50 overflow-x-auto whitespace-nowrap">
+      <div className="md:hidden bg-white p-4 z-50 overflow-x-auto whitespace-nowrap scrollbar-hide">
         <nav>
           <ul className="flex space-x-4">
-            {CategoryPost.map((category) => (
+            {CategoryPost?.map((category) => (
               <li key={category.id} className="inline-block shrink-0">
                 <Link
                   to={category.link}

@@ -10,8 +10,8 @@ const DetailBlog = () => {
   const [data, setData] = useState(null); // Use null as initial state
 
   // Lấy trạng thái và dữ liệu bài viết từ Redux
-  const status = useSelector((state) => state.postReducer.getBySlugStatus);
-  const post = useSelector((state) => state.postReducer.data);
+  const status = useSelector((state) => state.postReducer?.getBySlugStatus);
+  const post = useSelector((state) => state.postReducer?.data);
 
   useEffect(() => {
     dispatch(GetBySlug(slug));

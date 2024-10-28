@@ -1,5 +1,7 @@
-import { PostDB } from "../../../data/Forum/PostDB";
+// import { PostDB } from "../../../data/Forum/PostDB";
+import { formatDay } from "../../../ultils/helper";
 import HeadingSection from "../Heading/HeadingSection";
+import { Link } from "react-router-dom"; // Added import for Link
 const PostScroll = ({ data }) => {
   return (
     <>
@@ -8,19 +10,19 @@ const PostScroll = ({ data }) => {
           <div className="md:w-1/2">
             <HeadingSection title="tin tức mới nhất" />
             <div className="space-y-4">
-              {PostDB.slice(0, 6).map((post) => (
+              {data?.slice(0, 6).map((post) => (
                 <div key={post.id} className="bg-white overflow-hidden flex">
                   <img
-                    src={post.imageUrl}
-                    alt={post.title}
+                    src={post.thumbnail}
+                    alt={post.postTitle}
                     className="w-1/3 h-32 object-cover hover:scale-105 transition duration-300"
                   />
                   <div className="p-4 w-2/3">
                     <h3 className="text-lg font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">
-                      {post.title}
+                      <Link to={`blog/${post.slug}`}>{post.postTitle}</Link>
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {post.author} - {post.date}
+                      {post.author} - {formatDay(post.date)}
                     </p>
                   </div>
                 </div>
@@ -36,19 +38,19 @@ const PostScroll = ({ data }) => {
             <div>
               <div className="space-y-4">
                 <HeadingSection title="S-new Cuối Tuần" />
-                {PostDB.slice(0, 3).map((post) => (
+                {data?.slice(0, 3).map((post) => (
                   <div key={post.id} className="bg-white overflow-hidden flex">
                     <img
-                      src={post.imageUrl}
-                      alt={post.title}
+                      src={post.thumbnail}
+                      alt={post.postTitle}
                       className="w-1/3 h-32 object-cover"
                     />
                     <div className="p-4 w-2/3">
                       <h3 className="text-sm font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">
-                        {post.title}
+                        <Link to={`blog/${post.slug}`}>{post.postTitle}</Link>
                       </h3>
                       <p className="text-xs text-gray-600">
-                        {post.author} - {post.date}
+                        {post.author} - {formatDay(post.date)}
                       </p>
                     </div>
                   </div>
@@ -66,19 +68,19 @@ const PostScroll = ({ data }) => {
             <div>
               <HeadingSection title="khám phá - TRENDING" />
               <div className="space-y-4">
-                {PostDB.slice(0, 3).map((post) => (
+                {data?.slice(0, 3).map((post) => (
                   <div key={post.id} className="bg-white overflow-hidden flex">
                     <img
-                      src={post.imageUrl}
-                      alt={post.title}
+                      src={post.thumbnail}
+                      alt={post.postTitle}
                       className="w-1/3 h-32 object-cover"
                     />
                     <div className="p-4 w-2/3">
                       <h3 className="text-sm font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">
-                        {post.title}
+                        <Link to={`blog/${post.slug}`}>{post.postTitle}</Link>
                       </h3>
                       <p className="text-xs text-gray-600">
-                        {post.author} - {post.date}
+                        {post.author} - {formatDay(post.date)}
                       </p>
                     </div>
                   </div>
