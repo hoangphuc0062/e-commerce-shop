@@ -64,11 +64,46 @@ export default function RootRouter() {
             </ProtectedRoute>
           ),
           children: [
-            { path: "", element: <HomeProfile /> },
-            { path: "account", element: <Account /> },
-            { path: "coupon", element: <Coupon /> },
-            { path: "address", element: <Address /> },
-            { path: "order", element: <Order /> },
+            {
+              path: "",
+              element: (
+                <ProtectedRoute>
+                  <HomeProfile />
+                </ProtectedRoute>
+              ),
+            },
+            {
+              path: "account",
+              element: (
+                <ProtectedRoute>
+                  <Account />
+                </ProtectedRoute>
+              ),
+            },
+            {
+              path: "coupon",
+              element: (
+                <ProtectedRoute>
+                  <Coupon />
+                </ProtectedRoute>
+              ),
+            },
+            {
+              path: "address",
+              element: (
+                <ProtectedRoute>
+                  <Address />
+                </ProtectedRoute>
+              ),
+            },
+            {
+              path: "order",
+              element: (
+                <ProtectedRoute>
+                  <Order />
+                </ProtectedRoute>
+              ),
+            },
           ],
         },
       ],
