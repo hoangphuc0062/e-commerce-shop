@@ -1,5 +1,8 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { handleToast } from "../../ultils/toast";
+import { logoutCustomer, setStatus } from "../../redux/slices/customer";
 
 const tabs = [
   {
@@ -31,6 +34,33 @@ const tabs = [
 
 export const SideBar = () => {
   const [activeTab, setActiveTab] = useState(tabs[0].id);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const status = useSelector((state) => state.customer.statusLogout);
+
+  const handleLogout = () => {
+    dispatch(logoutCustomer());
+  };
+
+  useEffect(() => {
+    if (status === "success") {
+      handleToast("success", "Đăng xuất thành công");
+      dispatch(
+        setStatus({
+          key: "status",
+          value: "idle",
+        })
+      );
+      dispatch(
+        setStatus({
+          key: "customer",
+          value: null,
+        })
+      );
+      navigate("/");
+    }
+  }, [status]);
+
   return (
     <div>
       {/* vertical tabs */}
@@ -53,7 +83,7 @@ export const SideBar = () => {
           ))}
           <li>
             <Link
-              to="/"
+              onClick={handleLogout}
               className="flex text-sm items-center gap-2 p-2 text-gray-700 hover:bg-gray-100 hover:text-main"
             >
               Đăng xuất
@@ -80,7 +110,7 @@ export const SideBar = () => {
           ))}
           <li>
             <Link
-              to="/"
+              onClick={handleLogout}
               className="flex flex-col items-center gap-2 p-[5px] text-gray-700 hover:bg-gray-100 rounded hover:text-main"
             >
               <span className="text-xs">Đăng xuất</span>

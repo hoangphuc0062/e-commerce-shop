@@ -1,12 +1,10 @@
-import { logout } from "../redux/slices/customer";
 import sendRequest from "../ultils/request";
 
 const CustomerService = {
-  getCustomer: () => sendRequest("get", "/customers/get-current"),
+  getCustomerByCookie: () => sendRequest("get", "/customers/get-cookie"),
   login: (data) => sendRequest("post", "/customers/login", data),
   logout: () => {
-    sendRequest("post", "/customers/logout");
-    logout();
+    sendRequest("get", "/customers/logout");
   },
   forgotPassword: (data) =>
     sendRequest("post", "/customers/forgot-password", data),

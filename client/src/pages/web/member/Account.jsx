@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Input } from "../../../components/Input/Input";
 import { Select } from "../../../components/Input/Select";
 import { formatCurrency, convertToISODateString } from "../../../ultils/helper";
-import AvatarEditor from "react-avatar-edit";
+
 import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
 
 const initialCustomerData = {
@@ -21,9 +21,6 @@ const initialCustomerData = {
 
 export const Account = () => {
   const [customerData, setCustomerData] = useState(initialCustomerData);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [isAvatarVisible, setIsAvatarVisible] = useState(false);
-  const fileInputRef = useRef(null);
 
   const extractCustomerData = (data) => {
     let { name, birthday, sex, email } = data;
@@ -47,35 +44,6 @@ export const Account = () => {
     console.log(filteredData);
   };
 
-  const renderAvatar = () => {
-    if (!isAvatarVisible) return null;
-    const avatarSrc = selectedFile
-      ? URL.createObjectURL(selectedFile)
-      : customerData.avatar;
-
-    return (
-      <div className="text-center font-bold">
-        <h2 className="mx-2">Ảnh tải lên</h2>
-        <img
-          src={avatarSrc}
-          alt={customerData.name}
-          className="w-32 h-32 object-cover rounded-full mx-auto p-2 outline outline-main"
-        />
-      </div>
-    );
-  };
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      setIsAvatarVisible(true);
-      // console.log("Selected file:", file);
-    }
-  };
-  const handleClick = () => {
-    fileInputRef.current.click();
-  };
-
   return (
     <div className="">
       <div className="space-y-4 mx-auto">
@@ -90,21 +58,7 @@ export const Account = () => {
                 alt={customerData.name}
                 className="w-32 h-32 object-cover rounded-full  mx-auto p-2"
               />
-              <span
-                className="absolute bottom-0 right-0 bg-white rounded-full h-10 w-10 p-2 cursor-pointer"
-                onClick={handleClick}
-              >
-                <Icon icon="mdi:camera" width="1.5rem" height="1.5rem" />
-              </span>
-
-              <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                onChange={handleFileUpload}
-              />
             </div>
-            {renderAvatar()}
           </div>
           <Input
             label={"Họ và tên"}

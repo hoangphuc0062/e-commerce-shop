@@ -7,31 +7,26 @@ import { BottomNavigation } from "./BottonNavigation";
 import { Link } from "react-router-dom";
 import Category from "../Button/Category";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getCurrentCustomer } from "../../redux/slices/customer";
+import { getCurrentCustomerByCookie } from "../../redux/slices/customer";
+import Cookies from "js-cookie";
+import { useAuth } from "../../context/AuthContext";
 
 const Navbar = () => {
   const { AiOutlinePhone, BsGeoAlt, BsTruck } = icons;
+  const { islogin } = useAuth();
   const dispatch = useDispatch();
-  const customerData = useSelector((state) => state.customer.data);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  const customerData = useSelector((state) => state.customer.customer);
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      dispatch(getCurrentCustomer());
-      setIsLoggedIn(true);
+    const accessToken = Cookies.get("access_token");
+    if (accessToken && !islogin) {
+      dispatch(getCurrentCustomerByCookie());
     } else {
-      setIsLoggedIn(false);
+      console.log("no token");
     }
-  }, [dispatch]);
+  }, [dispatch, islogin]);
 
-  // useEffect(() => {
-  //   if (customerData) {
-  //     console.log(customerData);
-  //   }
-  // }, [customerData]);
   return (
     <header className="bg-main sticky top-0 z-50">
       <div className="container text-semi p-3 w-full">
@@ -66,7 +61,7 @@ const Navbar = () => {
               <Cart />
             </Link>
 
-            {isLoggedIn ? (
+            {islogin ? (
               <Link to={"/profile"}>
                 <Account name={customerData?.name} />
               </Link>

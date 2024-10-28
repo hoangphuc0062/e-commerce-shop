@@ -59,10 +59,9 @@ export default function RootRouter() {
         {
           path: "/profile",
           element: (
-            // <ProtectedRoute>
-            //   <ProfileLayout />
-            // </ProtectedRoute>
-            <ProfileLayout />
+            <ProtectedRoute>
+              <ProfileLayout />
+            </ProtectedRoute>
           ),
           children: [
             { path: "", element: <HomeProfile /> },
