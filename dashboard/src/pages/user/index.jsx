@@ -4,6 +4,7 @@ import CartDialog from "./details";
 import EditStatusDialog from "./edit";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  createCustomer,
   deleteCustomer,
   getCustomer,
   resetState,
@@ -11,6 +12,7 @@ import {
 } from "../../redux/slices/customer";
 import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
 import LoadingWrapper from "../../components/loading/LoadingWrapper";
+import CreatePageUser from "./create";
 
 export default function UserPage() {
   const dispatch = useDispatch();
@@ -21,6 +23,7 @@ export default function UserPage() {
   const [statusOptions, setStatusOptions] = useState([]);
   const [items, setItems] = useState([]);
   const [index, setIndex] = useState(null);
+  const [openCreate, setOpenCreate] = useState(false);
 
   // Redux selectors
   const statusGetCustomer = useSelector((state) => state.customer.status);
@@ -40,14 +43,14 @@ export default function UserPage() {
     if (statusGetCustomer === "success") {
       dispatch(resetState({ key: "status", value: "idle" }));
     } else if (statusGetCustomer === "failed") {
-      handleToast("error", "Get customer failed", "top-right");
+      handleToast("error", "Hiện thị người dùng thất bại", "top-right");
     }
   }, [statusGetCustomer, dispatch]);
 
   // Handle customer update status
   useEffect(() => {
     if (statusUpdateCustomer === "success") {
-      handleToast("success", "Update customer success", "top-right");
+      handleToast("success", "Cập nhật người dùng thành công", "top-right");
       dispatch(resetState({ key: "statusUpdate", value: "idle" }));
       dispatch(getCustomer()); // Refetch customer list after update
     }
@@ -56,11 +59,11 @@ export default function UserPage() {
   // Handle customer deletion
   useEffect(() => {
     if (deleteStatus === "success") {
-      handleToast("success", "Delete customer success", "top-right");
+      handleToast("success", "Xóa người dùng thành công", "top-right");
       dispatch(resetState({ key: "deleteStatus", value: "idle" }));
       dispatch(getCustomer()); // Refetch customer list after deletion
     } else if (deleteStatus === "failed") {
-      handleToast("error", "Delete customer failed", "top-right");
+      handleToast("error", "Xóa người dùng thất bại", "top-right");
     }
   }, [deleteStatus, dispatch]);
 
@@ -153,6 +156,18 @@ export default function UserPage() {
     { value: "blocked", label: "Bị chặn" },
   ];
 
+  const handleCreate = (data) => {
+    setOpenCreate(false);
+    dispatch(createCustomer(data)).then((res) => {
+      if (res.type === "customer/createCustomer/fulfilled") {
+        handleToast("success", "Tạo người dùng thành công", "top-right");
+        dispatch(getCustomer());
+      } else {
+        handleToast("error", "Tạo người dùng thất bại", "top-right");
+      }
+    });
+  };
+
   return (
     <>
       <LoadingWrapper>
@@ -163,6 +178,7 @@ export default function UserPage() {
           columns={columns}
           handleEye={handleEye}
           optionStatus={optionStatus}
+          buttonAdd={() => setOpenCreate(true)}
         />
       </LoadingWrapper>
       <CartDialog
@@ -178,6 +194,12 @@ export default function UserPage() {
         onSubmit={handleSubmit}
         statusOptions={statusOptions}
         data={index}
+      />
+
+      <CreatePageUser
+        open={openCreate}
+        handleClose={() => setOpenCreate(false)}
+        onSaved={handleCreate}
       />
     </>
   );

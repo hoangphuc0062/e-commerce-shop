@@ -189,7 +189,7 @@ export default function SignIn() {
                   variant="body2"
                   sx={{ alignSelf: "baseline" }}
                 >
-                  Quyên mật khẩu?
+                  Quên mật khẩu?
                 </Link>
               </Box>
               <TextField

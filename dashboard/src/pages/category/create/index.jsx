@@ -2,31 +2,27 @@ import { useEffect, useState } from "react";
 import {
   Button,
   TextField,
-  Modal,
-  IconButton,
-  InputAdornment,
-  Stack,
   Grid,
-  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
 import { useFormik } from "formik";
 import * as Yup from "yup"; // Import Yup for validation
 import slugify from "../../../utils/slugify";
 import Textarea from "../../../components/textarea";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getIcon } from "../../../redux/slices/icon";
 import { createCategory, resetState } from "../../../redux/slices/category";
 import { handleToast } from "../../../utils/toast";
+import IconModal from "../IconModal";
+import Iconify from "../Iconify";
 
 function CategoryCreate() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [iconList, setIconList] = useState([]);
-  const [isIconModalOpen, setIsIconModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false); // Loading state
 
   const formik = useFormik({
@@ -45,47 +41,18 @@ function CategoryCreate() {
       // icon: Yup.string().required("Icon là bắt buộc"),
     }),
     onSubmit: (values) => {
-      const { name, slug, type, description, iconId } = values;
+      const { name, slug, type, description, icon } = values;
       setIsSubmitting(true); // Set loading state
-      dispatch(createCategory({ name, slug, type, description, icon: iconId }));
+      dispatch(createCategory({ name, slug, type, description, icon }));
     },
   });
 
   const toggleIconModal = () => {
-    setIsIconModalOpen(!isIconModalOpen);
+    setOpen(true);
   };
-
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const handleIconSelect = (id, iconData) => {
-    formik.setFieldValue("icon", iconData.className);
-    formik.setFieldValue("iconId", id);
-    toggleIconModal();
-  };
-
-  const status = useSelector((state) => state.icon.status);
-  const data = useSelector((state) => state.icon.data);
   const createStatus = useSelector(
     (state) => state.category.createCategoryStatus
   );
-
-  useEffect(() => {
-    dispatch(getIcon());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (status === "success" && data) {
-      setIconList(
-        data.map((item) => ({
-          id: item._id,
-          name: item.name,
-          className: item.className, // Ensure you're using the correct property
-        }))
-      );
-    }
-  }, [status, data]);
 
   useEffect(() => {
     if (createStatus === "success") {
@@ -98,16 +65,17 @@ function CategoryCreate() {
       handleToast("error", "Thêm danh mục thất bại");
       setIsSubmitting(false); // Reset loading state
     }
-  }, [createStatus, dispatch]);
-
-  // Filter icons based on search query
-  const filteredIcons = iconList.filter((icon) =>
-    icon.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  }, [createStatus, dispatch, navigate]);
 
   const handleChangeName = (e) => {
     formik.setFieldValue("name", e.target.value);
     formik.setFieldValue("slug", slugify(e.target.value));
+  };
+  const [open, setOpen] = useState(false);
+
+  const handleSubmit = (icon) => {
+    formik.setFieldValue("icon", icon);
+    setOpen(false);
   };
 
   return (
@@ -123,15 +91,13 @@ function CategoryCreate() {
       >
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            {formik.values.icon && (
-              <Icon icon={`eva:${formik.values.icon}`} width={24} height={24} />
-            )}
+            <IconModal
+              open={open && true}
+              onClose={() => setOpen(false)}
+              onSubmit={handleSubmit}
+            />
+            <Iconify icon={formik.values.icon} width={30} />
             <Button onClick={toggleIconModal}>Chọn Icon</Button>
-            {formik.errors.icon && (
-              <div style={{ color: "red", fontSize: "12px" }}>
-                {formik.errors.icon}
-              </div>
-            )}
           </Grid>
           <Grid item xs={4}>
             <TextField
@@ -159,16 +125,29 @@ function CategoryCreate() {
           </Grid>
 
           <Grid item xs={4}>
-            <TextField
+            <FormControl
               fullWidth
-              label="Loại"
-              name="type"
-              value={formik.values.type}
-              onChange={formik.handleChange}
-              margin="normal"
+              sx={{ mt: 2 }}
               error={formik.touched.type && Boolean(formik.errors.type)}
-              helperText={formik.touched.type && formik.errors.type}
-            />
+            >
+              <InputLabel id="category">Loại</InputLabel>
+              <Select
+                labelId="category"
+                id="category"
+                name="type"
+                label="Loại"
+                value={formik.values.type}
+                onChange={formik.handleChange}
+              >
+                <MenuItem value="product">Sản phẩm</MenuItem>
+                <MenuItem value="post">Bài đăng</MenuItem>
+              </Select>
+              {formik.touched.type && formik.errors.type && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {formik.errors.type}
+                </FormHelperText>
+              )}
+            </FormControl>
           </Grid>
           <Grid item xs={12}>
             <Textarea
@@ -210,52 +189,6 @@ function CategoryCreate() {
           </Grid>
         </Grid>
       </form>
-
-      <Modal open={isIconModalOpen} onClose={toggleIconModal}>
-        <Box
-          sx={{
-            padding: 4,
-            backgroundColor: "white",
-            margin: "100px auto",
-            width: "400px",
-            boxShadow: 24,
-            borderRadius: 2,
-          }}
-        >
-          <h2>Chọn Icon</h2>
-
-          <TextField
-            fullWidth
-            placeholder="Tìm kiếm icon"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            margin="normal"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-          />
-
-          <Stack direction="row" flexWrap="wrap">
-            {filteredIcons.map((icon, i) => (
-              <IconButton
-                key={i}
-                onClick={() =>
-                  handleIconSelect(icon.id, {
-                    name: icon.name,
-                    className: icon.className,
-                  })
-                }
-              >
-                <Icon icon={`eva:${icon.className}`} />
-              </IconButton>
-            ))}
-          </Stack>
-        </Box>
-      </Modal>
     </>
   );
 }

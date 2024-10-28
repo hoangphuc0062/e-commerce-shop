@@ -23,6 +23,13 @@ export const resetState = createAsyncThunk(
   }
 );
 
+// create customer
+export const createCustomer = createAsyncThunk(
+  "customer/createCustomer",
+  (data, thunkAPI) =>
+    handleAsyncThunk(CustomerService.createCustomer, [data], thunkAPI)
+);
+
 // update customer
 export const updateCustomer = createAsyncThunk(
   "customer/updateCustomer",
@@ -51,6 +58,7 @@ const customerSlice = createSlice({
     me: null,
     statusUpdate: "idle",
     deleteStatus: "idle",
+    createStatus: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -92,6 +100,15 @@ const customerSlice = createSlice({
             state[key] = value;
           }
         }
+      })
+      .addCase(createCustomer.pending, (state) => {
+        state.createStatus = "loading";
+      })
+      .addCase(createCustomer.fulfilled, (state) => {
+        state.createStatus = "success";
+      })
+      .addCase(createCustomer.rejected, (state) => {
+        state.createStatus = "failed";
       });
   },
 });
