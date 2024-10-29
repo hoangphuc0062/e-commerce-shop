@@ -113,11 +113,9 @@ staffSchema.methods = {
     return resetToken;
   },
 };
-staffSchema.statics.getStaffByToken = async function (refreshToken) {
-  return this.findOne({
-    refreshToken,
-  });
-};
+// staffSchema.statics.getByToken = async function (refreshToken) {
+//   return await this.findOne({ refreshToken });
+// };
 
 //Export the model
 module.exports = mongoose.model("Staff", staffSchema);
