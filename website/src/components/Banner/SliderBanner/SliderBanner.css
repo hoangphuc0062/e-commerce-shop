@@ -1,9 +1,9 @@
-.swiperContainer {
+.swiper {
   width: 100%;
   height: 100%;
 }
 
-.swiperSlide {
+.swiper-slide {
   text-align: center;
   font-size: 18px;
   display: flex;
@@ -11,66 +11,67 @@
   align-items: center;
 }
 
-.swiperSlide:hover {
+.swiper-slide:hover {
   background-color: #f3f4f6;
 }
 
-.swiperSlideLink {
+.swiper-slide a {
   display: block;
   width: 100%;
   height: 100%;
   text-decoration: none;
 }
-
-.swiperSlideImage {
+.swiper-slide img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: fill;
 }
 
-.swiperContainer {
+.swiper {
   width: 100%;
   height: 300px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.swiperSlideBackground {
+.swiper-slide {
   background-size: cover;
   background-position: center;
 }
 
-.mySwiperLarge {
-  height: 80%;
+.contentSwiper {
   width: 100%;
-  position: relative;
 }
 
-.mySwiperSmall {
+.bannerSwiper {
   height: 20%;
   box-sizing: border-box;
 }
 
-.mySwiperSmall .swiperSlide {
+.bannerSwiper .swiper-slide {
   width: 25%;
   height: 100%;
 }
 
-.swiperSlideThumbActive {
+.bannerSwiper .swiper-slide-thumb-active {
   opacity: 1;
   border-bottom: 3px solid #1e40af;
   font-weight: 700;
 }
 
-.swiperButtonPrev,
-.swiperButtonNext {
+.contentSwiper {
+  position: relative;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
   opacity: 0;
   transition: opacity 0.3s;
 }
 
-.mySwiperLarge:hover .swiperButtonPrev,
-.mySwiperLarge:hover .swiperButtonNext {
+.contentSwiper:hover .swiper-button-prev,
+.contentSwiper:hover .swiper-button-next {
   color: #1e40af;
   opacity: 1;
 }
