@@ -32,6 +32,7 @@ export default function CreateProduct() {
   const [seriesSelect, setSeriesSelect] = useState([]);
   const [tagsSelect, setTagsSelect] = useState([]);
   const [warehouseSelect, setWarehouseSelect] = useState([]);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleMainTabChange = (event, newValue) => setMainTabValue(newValue);
   const handleSubTabChange = (event, newValue) => setSubTabValue(newValue);
@@ -157,7 +158,18 @@ export default function CreateProduct() {
 
   // Lưu sản phẩm
   const handleSaveProduct = () => {
-    console.log(productData);
+    setIsSubmitted(true);
+    if (
+      !productData ||
+      !productData.name ||
+      !productData.category ||
+      !productData.brand ||
+      !productData.series ||
+      !productData.warehouse
+    ) {
+      handleToast("error", "Vui lòng nhập thông tin sản phẩm");
+      return;
+    }
     dispatch(createProduct(productData)).then((result) => {
       if (result.type === "product/createProduct/fulfilled") {
         handleToast("success", "Thêm sản phẩm thành công");
@@ -305,6 +317,7 @@ export default function CreateProduct() {
               productData={productData}
               handleInputChange={handleInputChange}
               warehouseSelect={warehouseSelect}
+              isSubmitted={isSubmitted}
             />
           </Grid>
         </Grid>
@@ -323,6 +336,7 @@ export default function CreateProduct() {
                 brandSelect={brandSelect}
                 seriesSelect={seriesSelect}
                 tagsProduct={tagsSelect}
+                isSubmitted={isSubmitted}
               />
             </Grid>
           </Grid>

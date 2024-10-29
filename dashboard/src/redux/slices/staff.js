@@ -47,8 +47,8 @@ export const getStaffById = createAsyncThunk(
   (id, thunkAPI) => handleAsyncThunk(StaffService.getStaffById, [id], thunkAPI)
 );
 
-export const getMe = createAsyncThunk("staff/getMe", (data, thunkAPI) =>
-  handleAsyncThunk(StaffService.fetchMe, [data], thunkAPI)
+export const getMe = createAsyncThunk("staff/getMe", (_, thunkAPI) =>
+  handleAsyncThunk(StaffService.fetchMe, [null], thunkAPI)
 );
 
 export const resetState = createAsyncThunk(
@@ -176,7 +176,7 @@ const staffSlice = createSlice({
       })
       .addCase(getMe.fulfilled, (state, action) => {
         state.getMeStatus = "success";
-        state.me = action.payload;
+        state.data = action.payload;
       })
       .addCase(getMe.rejected, (state, action) => {
         state.getMeStatus = "failed";

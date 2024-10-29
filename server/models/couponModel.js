@@ -52,7 +52,7 @@ var couponSchema = new mongoose.Schema(
     collectionApply: [
       {
         type: mongoose.Types.ObjectId,
-        ref: "Collections",
+        ref: "Series",
       },
     ],
     productApply: [
@@ -76,7 +76,7 @@ var couponSchema = new mongoose.Schema(
     collectionNotApply: [
       {
         type: mongoose.Types.ObjectId,
-        ref: "Collections",
+        ref: "Series",
       },
     ],
     categoryNotApply: [
@@ -99,7 +99,6 @@ var couponSchema = new mongoose.Schema(
     },
     quantityUsed: {
       type: Number,
-      required: true,
     },
     status: {
       type: String,
