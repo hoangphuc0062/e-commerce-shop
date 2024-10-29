@@ -3,7 +3,7 @@ import ReusableTable from "../../components/table";
 import EyeCoupons from "./deails";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllCoupon } from "../../redux/slices/coupon";
+import { getAllCoupon, resetState } from "../../redux/slices/coupon";
 import { fDateVN } from "../../utils/format-time";
 const columns = [
   { label: "Mã giảm giá", field: "code" },
@@ -22,47 +22,49 @@ export default function CouponsList() {
   const [selectedData, setSelectedData] = useState(null);
   const navigate = useNavigate();
   const [initialData, setInitialData] = useState([]);
-
+  useEffect(() => {
+    dispatch(getAllCoupon());
+  }, [dispatch]);
   const status = useSelector((state) => state.coupon.status);
   const data = useSelector((state) => state.coupon.data);
 
   useEffect(() => {
     if (status === "success") {
       setInitialData(
-        data.map((item) => {
-          return {
-            id: item._id,
-            name: item.name,
-            code: item.code,
-            discount: item.discount,
-            description: item.description,
-            startDate: fDateVN(item.startDate),
-            endDate: fDateVN(item.endDate),
-            type: item.type,
-            categoryApply: item.categoryApply,
-            brandApply: item.brandApply,
-            collectionApply: item.collectionApply,
-            productApply: item.productApply,
-            productNotApply: item.productNotApply,
-            brandNotApply: item.brandNotApply,
-            collectionNotApply: item.collectionNotApply,
-            categoryNotApply: item.categoryNotApply,
-            quantity: item.quantity,
-            quantityMin: item.quantityMin,
-            quantityMax: item.quantityMax,
-            quantityUsed: item.quantityUsed,
-            status: item.status,
-          };
-        })
+        data &&
+          data.map((item) => {
+            return {
+              id: item._id,
+              name: item.name,
+              code: item.code,
+              discount: item.discount,
+              description: item.description,
+              startDate: fDateVN(item.startDate),
+              endDate: fDateVN(item.endDate),
+              type: item.type,
+              categoryApply: item.categoryApply,
+              brandApply: item.brandApply,
+              collectionApply: item.collectionApply,
+              productApply: item.productApply,
+              productNotApply: item.productNotApply,
+              brandNotApply: item.brandNotApply,
+              collectionNotApply: item.collectionNotApply,
+              categoryNotApply: item.categoryNotApply,
+              quantity: item.quantity,
+              quantityMin: item.quantityMin,
+              quantityMax: item.quantityMax,
+              quantityUsed: item.quantityUsed,
+              status: item.status,
+            };
+          })
       );
     }
-  }, [status, data]);
+    dispatch(resetState({ key: "status", value: "idle" }));
+  }, [status, data, dispatch]);
 
-  useEffect(() => {
-    dispatch(getAllCoupon());
-  }, [dispatch]);
   const handleEdit = (id) => {
-    navigate(`/dashboard/coupons/edit/${id}`);
+    const Coupon = id.id;
+    navigate(`/dashboard/coupons/edit/${Coupon}`);
   };
 
   const handleDelete = (index) => {
@@ -80,7 +82,6 @@ export default function CouponsList() {
 
   return (
     <>
-      {" "}
       <ReusableTable
         handleEdit={handleEdit}
         handleDelete={handleDelete}
