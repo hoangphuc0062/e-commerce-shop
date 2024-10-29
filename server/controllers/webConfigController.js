@@ -3,24 +3,22 @@ const asyncHandler = require("express-async-handler");
 const WebConfig = require("../models/webConfigModel");
 
 const getWebConfig = asyncHandler(async (req, res) => {
-  const webConfig = await WebConfig.findOne();
-  res.status(200).json({
-    mes: "Get success",
-    webConfig,
-  });
+  const webConfig = await WebConfig.find();
+  res.status(200).json(webConfig);
 });
 
 const updateWebConfig = asyncHandler(async (req, res) => {
-  const { wid, ...data } = req.body;
+  const { wid } = req.params;
   if (!wid) {
     res.status(400);
     throw new Error("Missing inputs");
   }
 
-  const webConfig = await WebConfig.findByIdAndUpdate(wid, data, { new: true });
+  const webConfig = await WebConfig.findByIdAndUpdate(wid, req.body, {
+    new: true,
+  });
   res.status(200).json({
     mes: "Update success",
-    webConfig,
   });
 });
 

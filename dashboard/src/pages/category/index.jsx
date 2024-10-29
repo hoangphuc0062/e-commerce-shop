@@ -1,17 +1,18 @@
-import ReusableTable from "../../components/Table";
-import { Box, Paper, styled, Grid } from "@mui/material";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { Tabs, Tab, Box, Grid, Paper, styled } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import ReusableTable from "../../components/Table";
 import {
   deleteCategory,
   getCategory,
+  resetState,
   updatePosition,
 } from "../../redux/slices/category";
-import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
 import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
-import { resetState } from "../../redux/slices/icon";
-import { useNavigate } from "react-router-dom";
+import Iconify from "./Iconify";
 
+// Style cho Item
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#fff",
   ...theme.typography.body2,
@@ -26,8 +27,11 @@ function CategoryPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [draggedItem, setDraggedItem] = useState(null);
-  const [items, setItems] = useState([]);
+  const [productItems, setProductItems] = useState([]);
+  const [postItems, setPostItems] = useState([]);
+  const [mainTabValue, setMainTabValue] = useState(0); // Quản lý tab hiện tại
 
+  // Cột của bảng
   const columns = [
     { label: "Tên danh mục", field: "name" },
     { label: "Slug", field: "slug" },
@@ -47,19 +51,32 @@ function CategoryPage() {
 
   useEffect(() => {
     if (status === "success" && data) {
-      setItems(
-        data
-          ?.filter((item) => item.position !== undefined)
-          .sort((a, b) => a.position - b.position)
-          .map((item) => ({
-            id: item._id,
-            name: item.name,
-            slug: item.slug,
-            icon: <Icon icon={`eva:${item.icon?.className}`} />,
-            type: item.type,
-            position: item.position,
-          }))
-      );
+      const products = data
+        ?.filter((item) => item.type === "product")
+        .sort((a, b) => a.position - b.position)
+        .map((item) => ({
+          id: item._id,
+          name: item.name,
+          slug: item.slug,
+          icon: item.icon,
+          type: item.type,
+          position: item.position,
+        }));
+
+      const posts = data
+        ?.filter((item) => item.type === "post")
+        .sort((a, b) => a.position - b.position)
+        .map((item) => ({
+          id: item._id,
+          name: item.name,
+          slug: item.slug,
+          icon: item.icon,
+          type: item.type,
+          position: item.position,
+        }));
+
+      setProductItems(products);
+      setPostItems(posts);
     }
     dispatch(resetState({ key: "status", value: "idle" }));
   }, [status, data, dispatch]);
@@ -72,6 +89,9 @@ function CategoryPage() {
     }
   }, [deleteStatus, dispatch]);
 
+  // Hàm thay đổi tab
+  const handleMainTabChange = (event, newValue) => setMainTabValue(newValue);
+
   const onDragStart = useCallback((e, index) => {
     setDraggedItem(index);
   }, []);
@@ -81,7 +101,7 @@ function CategoryPage() {
   }, []);
 
   const onDrop = useCallback(
-    (e, index) => {
+    (e, index, items, setItems) => {
       const newItems = [...items];
       const [removed] = newItems.splice(draggedItem, 1);
       newItems.splice(index, 0, removed);
@@ -94,7 +114,7 @@ function CategoryPage() {
 
       saveCategoryOrder(categories);
     },
-    [draggedItem, items] // Dependency array includes draggedItem and items
+    [draggedItem]
   );
 
   const saveCategoryOrder = useCallback(
@@ -135,34 +155,71 @@ function CategoryPage() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
+      {/* Tabs để chuyển đổi giữa Product và Post */}
+      <Tabs value={mainTabValue} onChange={handleMainTabChange}>
+        <Tab label="Sản phẩm" />
+        <Tab label="Bài đăng" />
+      </Tabs>
+
       <Grid container spacing={2}>
-        <Grid item xs={3}>
-          <Item>
-            {items.map((item, index) => (
-              <div
-                key={item.id}
-                draggable
-                onDragStart={(e) => onDragStart(e, index)}
-                onDragOver={onDragOver}
-                onDrop={(e) => onDrop(e, index)}
-                style={{
-                  padding: "8px",
-                  margin: "4px",
-                  backgroundColor: "#f0f0f0",
-                  cursor: "move",
-                }}
-              >
-                {item.icon} - {item.name}
-              </div>
-            ))}
-          </Item>
-        </Grid>
+        {/* Hiển thị nội dung theo tab được chọn */}
+        {mainTabValue === 0 && (
+          <Grid item xs={3}>
+            <Item>
+              {productItems.map((item, index) => (
+                <div
+                  key={item.id}
+                  draggable
+                  onDragStart={(e) => onDragStart(e, index)}
+                  onDragOver={onDragOver}
+                  onDrop={(e) =>
+                    onDrop(e, index, productItems, setProductItems)
+                  }
+                  style={{
+                    padding: "10px",
+                    margin: "6px",
+                    backgroundColor: "#f0f0f0",
+                    cursor: "move",
+                  }}
+                >
+                  {<Iconify icon={item.icon} />} - {item.name}
+                </div>
+              ))}
+            </Item>
+          </Grid>
+        )}
+
+        {mainTabValue === 1 && (
+          <Grid item xs={3}>
+            <Item>
+              {postItems.map((item, index) => (
+                <div
+                  key={item.id}
+                  draggable
+                  onDragStart={(e) => onDragStart(e, index)}
+                  onDragOver={onDragOver}
+                  onDrop={(e) => onDrop(e, index, postItems, setPostItems)}
+                  style={{
+                    padding: "10px",
+                    margin: "6px",
+                    backgroundColor: "#f0f0f0",
+                    cursor: "move",
+                  }}
+                >
+                  {<Iconify icon={item.icon} />} - {item.name}
+                </div>
+              ))}
+            </Item>
+          </Grid>
+        )}
+
+        {/* Bảng hiển thị cả Product và Post */}
         <Grid item xs={9}>
           <ReusableTable
             columns={columns}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
-            data={items}
+            data={[...productItems, ...postItems]}
             navigate={"/dashboard/category/create"}
           />
         </Grid>

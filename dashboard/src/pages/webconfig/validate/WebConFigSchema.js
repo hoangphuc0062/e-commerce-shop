@@ -1,5 +1,5 @@
 import * as Yup from "yup";
 export const WebconFigValidate = Yup.object({
-    name: Yup.string().required("Name is required"),
-    email: Yup.string().email("Invalid email").required("Email is required"),
+  title: Yup.string().required("title is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
 });

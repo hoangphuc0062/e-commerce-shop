@@ -11,13 +11,15 @@ import ProductList from "../pages/web/product/ProductList";
 import CartProduct from "../pages/web/payment/CartProduct";
 import Checkout_info from "../pages/web/payment/checkout_info";
 import Checkout from "../pages/web/payment/Checkout";
-import Profile from "../pages/web/profile/Profile";
-import AccountUser from "../pages/web/profile/AccountUser";
 import ProductDetail from "../pages/web/product/ProductDetail";
-import UserOrder from "../pages/web/profile/UserOrder";
-import Manage from "../pages/web/profile/manage";
 import { ForgetPassoword } from "../pages/auth/ForgetPassoword";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { ProfileLayout } from "../Layout/ProfileLayout";
+import { Account } from "../pages/web/member/Account";
+import Order from "../pages/web/member/Order";
+import { Address } from "../pages/web/member/Address";
+import { HomeProfile } from "../pages/web/member/Home";
+import { Coupon } from "../pages/web/member/Coupon";
 export default function RootRouter() {
   const routes = useRoutes([
     {
@@ -57,34 +59,18 @@ export default function RootRouter() {
         {
           path: "/profile",
           element: (
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
+            // <ProtectedRoute>
+            //   <ProfileLayout />
+            // </ProtectedRoute>
+            <ProfileLayout />
           ),
-        },
-        {
-          path: "/profile/account",
-          element: (
-            <ProtectedRoute>
-              <AccountUser />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "/profile/order",
-          element: (
-            <ProtectedRoute>
-              <UserOrder />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "/profile/manage",
-          element: (
-            <ProtectedRoute>
-              <Manage />
-            </ProtectedRoute>
-          ),
+          children: [
+            { path: "", element: <HomeProfile /> },
+            { path: "account", element: <Account /> },
+            { path: "coupon", element: <Coupon /> },
+            { path: "address", element: <Address /> },
+            { path: "order", element: <Order /> },
+          ],
         },
       ],
     },

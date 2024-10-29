@@ -17,6 +17,7 @@ const globalSeoRouter = require("./globalSeoRoute");
 const postRouter = require("./postRoute");
 const attributeRouter = require("./attributeRoute");
 const iconRoute = require("./iconRoute");
+const paymentrouter = require("./paymentConfigRoute");
 
 const { notFound, errHandler } = require("../middlewares/errHandler");
 const initRoutes = (app) => {
@@ -41,7 +42,7 @@ const initRoutes = (app) => {
   app.use("/api/blogs", postRouter);
   app.use("/api/attributes", attributeRouter);
   app.use("/api/icon-class", iconRoute);
-
+  app.use("/api/paynents", paymentrouter);
   app.use(notFound);
   app.use(errHandler);
 };
