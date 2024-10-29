@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Grid,
   Box,
@@ -17,19 +17,22 @@ import CustomInputField from "../../../components/InputField";
 import Textarea from "../../../components/textarea";
 import { useNavigate } from "react-router-dom";
 import { CouponSchema } from "../validate";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createCoupon } from "../../../redux/slices/coupon";
 import { handleToast } from "./../../../utils/toast";
-
-const categoryOptions = ["Category1", "Category2", "Category3", "Category4"];
-const brandOptions = ["Brand1", "Brand2", "Brand3"];
-const collectionOptions = ["Collection1", "Collection2"];
-const productOptions = ["Product1", "Product2", "Product3"];
+import { getCategory } from "../../../redux/slices/category";
+import { getBrand } from "../../../redux/slices/brand";
+import { getAllCollections } from "../../../redux/slices/collection";
+import { getProduct } from "../../../redux/slices/product";
 
 function AddCoupon() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [showAdvanced, setShowAdvanced] = useState(false); // State for advanced fields
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [brandOptions, setBrandOptions] = useState([]);
+  const [collectionOptions, setCollectionOptions] = useState([]);
+  const [productOptions, setProductOptions] = useState([]);
 
   const formik = useFormik({
     initialValues: {
@@ -65,10 +68,77 @@ function AddCoupon() {
       });
     },
   });
+  const statusCtegory = useSelector((state) => state.category.status);
+  const statusBrand = useSelector((state) => state.brand.status);
+  const statusCollection = useSelector((state) => state.collection.status);
+  const statusProduct = useSelector((state) => state.product.status);
+  const categories = useSelector((state) => state.category.data);
+  const brands = useSelector((state) => state.brand.data);
+  const collections = useSelector((state) => state.collection.data);
+  const products = useSelector((state) => state.product.data);
+
+  useEffect(() => {
+    dispatch(getCategory());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getBrand());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getAllCollections());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getProduct());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (statusCtegory === "success") {
+      setCategoryOptions(
+        categories.map((category) => ({
+          value: category._id,
+          option: category.name,
+        }))
+      );
+    }
+  }, [statusCtegory, categories]);
+
+  useEffect(() => {
+    if (statusBrand === "success") {
+      setBrandOptions(
+        brands.map((brand) => ({
+          value: brand._id,
+          option: brand.name,
+        }))
+      );
+    }
+  }, [statusBrand, brands]);
+
+  useEffect(() => {
+    if (statusCollection === "succeeded") {
+      setCollectionOptions(
+        collections.map((collection) => ({
+          value: collection._id,
+          option: collection.name,
+        }))
+      );
+    }
+  }, [statusCollection, collections]);
+
+  useEffect(() => {
+    if (statusProduct === "success") {
+      setProductOptions(
+        products.products.map((product) => ({
+          value: product._id,
+          option: product.name,
+        }))
+      );
+    }
+  }, [statusProduct, products]);
 
   const handleAdvancedToggle = () => {
     setShowAdvanced(!showAdvanced);
-    // Mark advanced fields as touched when toggling
     formik.setTouched({
       ...formik.touched,
       collectionApply: true,
@@ -89,14 +159,12 @@ function AddCoupon() {
                   Thêm mã giảm giá
                 </Typography>
                 <Grid container spacing={2}>
-                  {/* Primary Fields */}
                   <Grid item xs={12} md={6}>
                     <CustomInputField
                       label="Tên Mã Giảm Giá"
                       name="name"
                       value={formik.values.name}
                       onChange={formik.handleChange}
-                      //   {...getErrorProps("name")}
                       error={formik.touched.name && Boolean(formik.errors.name)}
                       helperText={formik.touched.name && formik.errors.name}
                       onBlur={formik.handleBlur}
@@ -270,14 +338,12 @@ function AddCoupon() {
                   </Grid>
                 </Grid>
 
-                {/* Advanced Toggle Button */}
                 <Box mt={2}>
                   <Button variant="outlined" onClick={handleAdvancedToggle}>
                     {showAdvanced ? "Ẩn Nâng Cao" : "Hiển Thị Nâng Cao"}
                   </Button>
                 </Box>
 
-                {/* Advanced Fields */}
                 {showAdvanced && (
                   <Grid container spacing={2} mt={2}>
                     <Grid item xs={12} md={6}>
@@ -301,8 +367,8 @@ function AddCoupon() {
                           multiple
                         >
                           {collectionOptions.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.option}
                             </MenuItem>
                           ))}
                         </Select>
@@ -335,8 +401,8 @@ function AddCoupon() {
                           multiple
                         >
                           {productOptions.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.option}
                             </MenuItem>
                           ))}
                         </Select>
@@ -369,8 +435,8 @@ function AddCoupon() {
                           multiple
                         >
                           {categoryOptions.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.option}
                             </MenuItem>
                           ))}
                         </Select>
@@ -403,8 +469,8 @@ function AddCoupon() {
                           multiple
                         >
                           {brandOptions.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.option}
                             </MenuItem>
                           ))}
                         </Select>
@@ -431,8 +497,8 @@ function AddCoupon() {
                           multiple
                         >
                           {productOptions.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.option}
                             </MenuItem>
                           ))}
                         </Select>
@@ -453,8 +519,8 @@ function AddCoupon() {
                           multiple
                         >
                           {brandOptions.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.option}
                             </MenuItem>
                           ))}
                         </Select>
@@ -475,8 +541,8 @@ function AddCoupon() {
                           multiple
                         >
                           {collectionOptions.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.option}
                             </MenuItem>
                           ))}
                         </Select>
@@ -497,8 +563,8 @@ function AddCoupon() {
                           multiple
                         >
                           {categoryOptions.map((option) => (
-                            <MenuItem key={option} value={option}>
-                              {option}
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.option}
                             </MenuItem>
                           ))}
                         </Select>
