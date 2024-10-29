@@ -234,23 +234,16 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 
-const getStaffByToken = asyncHandler(async (req, res) => {
-  try {
-    const { token } = req.body;
-
-    // Call the static method directly on the Staff model
-    const staffData = await Staff.getStaffByToken(token);
-
-    if (!staffData) {
-      return res.status(404).json({ message: "Staff not found" });
-    }
-
-    return res.status(200).json({
-      mes: "Get staff by token success",
-      staffData,
-    });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+const getStaffCurrent = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const staff = await Staff.findById(_id).select(
+    "-password -passwordResetExprires -passwordResetToken -refreshToken"
+  );
+  if (staff) {
+    return res.status(200).json(staff);
+  } else {
+    res.status(404);
+    throw new Error("Staff not found");
   }
 });
 
@@ -265,5 +258,5 @@ module.exports = {
   refreshAccessToken,
   forgotPassword,
   resetPassword,
-  getStaffByToken,
+  getStaffCurrent,
 };
