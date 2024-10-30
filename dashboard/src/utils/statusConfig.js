@@ -20,6 +20,8 @@ export const statusColors = {
   waiting: { label: "Chờ đợi", color: "warning" },
   blocked: { label: "Bị chặn", color: "error" },
   available: { label: "Có sẵn", color: "success" },
+  Show: { label: "Hiển thị", color: "success" },
+  Hide: { label: "Ẩn", color: "error" },
 };
 
 export const statusOrder = {
