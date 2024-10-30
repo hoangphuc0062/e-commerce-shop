@@ -1,10 +1,15 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ReusableTable from "../../components/table";
 import EyeCoupons from "./deails";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllCoupon, resetState } from "../../redux/slices/coupon";
+import {
+  deleteCoupon,
+  getAllCoupon,
+  resetState,
+} from "../../redux/slices/coupon";
 import { fDateVN } from "../../utils/format-time";
+import { DeleteConfirmationModal, handleToast } from "./../../utils/toast";
 const columns = [
   { label: "Mã giảm giá", field: "code" },
   { label: "Giảm giá", field: "discount" },
@@ -67,18 +72,36 @@ export default function CouponsList() {
     navigate(`/dashboard/coupons/edit/${Coupon}`);
   };
 
-  const handleDelete = (index) => {
-    console.log("Delete", index);
-  };
-
   const handleEye = (index) => {
     setSelectedData(index);
     setOpen(true);
   };
-
   const handleClose = () => {
     setOpen(false);
   };
+  const handleDelete = useCallback(
+    (index) => {
+      console.log(index);
+      DeleteConfirmationModal({
+        title: "Xác nhận xóa mã giảm giá",
+        content: "Bạn có chắc chắn muốn xóa mã giảm  này không?",
+        okText: "Xóa",
+        cancelText: "Hủy",
+        icon: "warning",
+        confirmButtonText: "Xóa",
+        onConfirm: () =>
+          dispatch(deleteCoupon(index.id)).then((res) => {
+            if (res.type === "coupon/deleteCoupon/fulfilled") {
+              handleToast("success", "Xóa mã giảm thành công");
+              dispatch(getAllCoupon());
+            } else {
+              handleToast("error", "Xóa mã giảm thất bại");
+            }
+          }),
+      });
+    },
+    [dispatch]
+  );
 
   return (
     <>
