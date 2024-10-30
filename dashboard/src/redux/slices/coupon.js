@@ -46,6 +46,13 @@ export const updateCoupon = createAsyncThunk(
     handleAsyncThunk(CouponService.updateCoupon, [couponId, data], thunkAPI)
 );
 
+// delete coupon
+
+export const deleteCoupon = createAsyncThunk(
+  "coupon/deleteCoupon",
+  (id, thunkAPI) => handleAsyncThunk(CouponService.deleteCoupon, [id], thunkAPI)
+);
+
 const coupon = createSlice({
   name: "coupon",
   initialState: {
@@ -55,6 +62,7 @@ const coupon = createSlice({
     statusCreate: "idle",
     statusGetById: "idle",
     statusUpdate: "idle",
+    statusDelete: "idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -112,6 +120,20 @@ const coupon = createSlice({
       })
       .addCase(updateCoupon.rejected, (state, action) => {
         state.statusUpdate = "failed";
+        state.error = action.payload;
+      });
+    builder
+      .addCase(deleteCoupon.pending, (state) => {
+        state.statusDelete = "loading";
+      })
+      .addCase(deleteCoupon.fulfilled, (state, action) => {
+        state.statusDelete = "success";
+        state.data = state.data.filter(
+          (coupon) => coupon.id !== action.payload
+        );
+      })
+      .addCase(deleteCoupon.rejected, (state, action) => {
+        state.statusDelete = "failed";
         state.error = action.payload;
       });
   },

@@ -1,27 +1,49 @@
 const mongoose = require("mongoose");
 
 const bannerCollectionSchema = new mongoose.Schema({
-  series_id: {
-    type: mongoose.Types.ObjectId,
+  title: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+  },
+  series: {
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Series",
   },
-  banner: {
-    type: Array,
-    default: [],
+  brand: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Brands",
   },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Categories",
+  },
+  banner: [
+    {
+      urlImage: {
+        type: String,
+        required: true,
+      },
+      refUrl: {
+        type: String,
+        default: "",
+      },
+      position: {
+        type: Number,
+        default: 0,
+      },
+    },
+  ],
   status: {
     type: Boolean,
     default: true,
   },
-  priorty_level: {
-    type: Number,
-    default: 0,
-  },
   startDate: {
     type: Date,
-    default: Date.now,
   },
-  end_Date: {
+  endDate: {
     type: Date,
   },
 });
