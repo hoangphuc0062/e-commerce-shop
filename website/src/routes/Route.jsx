@@ -7,6 +7,8 @@ import {
   Register,
   Error,
 } from "../pages/web";
+import { ProfileLayout } from "../layouts/profileLayout";
+import { HomeProfile, Address, Order } from "../pages/web/member";
 
 export default function RootRouter() {
   const routes = useRoutes([
@@ -18,6 +20,36 @@ export default function RootRouter() {
         { path: "/login", element: <Login /> },
         { path: "/forget-password", element: <ForgetPassoword /> },
         { path: "register", element: <Register /> },
+      ],
+    },
+    {
+      path: "/profile",
+      element: <ProfileLayout />,
+      children: [
+        {
+          path: "",
+          element: <HomeProfile />,
+        },
+        // {
+        //   path: "account",
+        //   element: (
+        //       <Account />
+        //   ),
+        // },
+        // {
+        //   path: "coupon",
+        //   element: (
+        //       <Coupon />
+        //   ),
+        // },
+        {
+          path: "address",
+          element: <Address />,
+        },
+        {
+          path: "order",
+          element: <Order />,
+        },
       ],
     },
     {
