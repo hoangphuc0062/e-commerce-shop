@@ -64,6 +64,7 @@ export const Login = () => {
                 id="phone"
                 type="text"
                 placeholder="Nhập số điện thoại"
+                readOnly={false}
                 errorMessage={errors}
                 {...register("phone")}
               />
@@ -74,6 +75,7 @@ export const Login = () => {
                 id="confirmPassword"
                 placeholder="Nhập lại mật khẩu"
                 iconName={"mdi-light:eye"}
+                readOnly={false}
                 {...register("password")}
                 errorMessage={errors}
               />
