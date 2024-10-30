@@ -25,7 +25,7 @@ const PostTag = ({ category, data }) => {
               />
             )}
             <div className="p-4">
-              <Link to={`blog/${post.slug}`}  >
+              <Link to={`${post.slug}`}  >
                 <h2
                   className={`text-lg ${
                     index === 0

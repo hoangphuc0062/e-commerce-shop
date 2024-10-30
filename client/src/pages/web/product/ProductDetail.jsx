@@ -28,7 +28,6 @@ import ProductColors from "../../../components/Products/ProductColors";
 import Reviews from "../../../components/Products/Reviews";
 import WarrantyProduct from "../../../components/Products/WarrantyProduct";
 import { reviewProducts } from "../../../data/Product/ReviewProducts";
-import { SmallPost } from "../../../components/Forum";
 
 const ProductDetail = () => {
   const [product, setProduct] = useState(null);
@@ -131,12 +130,6 @@ const ProductDetail = () => {
 
       <div className="flex gap-4 w-full lg:flex-row flex-col lg:w-full">
         <Reviews reviews={reviewProducts} product={product} />
-
-        {/* Tin Tức */}
-        <div className="p-4 rounded-lg shadow-md w-full lg:w-[30%] lg:flex hidden flex-col gap-4">
-          <Heading title="Tin Tức Về Sản Phẩm" />
-          <SmallPost />
-        </div>
       </div>
       <div className="w-full pt-4">
         <QnASection />

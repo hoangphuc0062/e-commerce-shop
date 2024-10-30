@@ -1,33 +1,38 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { FaArrowTrendUp } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { GetBySlug } from "../../../redux/slices/post";
-import { Sidebar, HeadingSection, SmallPost } from "../../../components/Forum";
+import {
+  Sidebar
+} from "../../../components/Forum";
+import { formatDay } from "../../../ultils/helper";
 const DetailBlog = () => {
   const { slug } = useParams();
   const dispatch = useDispatch();
   const [data, setData] = useState(null); // Use null as initial state
 
   // Lấy trạng thái và dữ liệu bài viết từ Redux
-  const status = useSelector((state) => state.postReducer?.getBySlugStatus);
-  const post = useSelector((state) => state.postReducer?.data);
+  const status = useSelector((state) => state.post.getBySlugStatus);
+  // const post = useSelector((state) => state.postReducer?.data);
+  const post = useSelector((state) => state.post.data);
 
   useEffect(() => {
     dispatch(GetBySlug(slug));
   }, [slug, dispatch]);
 
   useEffect(() => {
-    if (status === "success" && post) {
+    if (status === "success") {
       setData({
-        id: post.id,
-        postTitle: post.title,
+        status: post.status,
+        id: post._id,
+        postTitle: post.postTitle,
         shortDescription: post.shortDescription,
         seoKeyWords: post.seoKeyWords,
         content: post.content,
         author: post.author?.name || "Unknown",
         authorImageUrl: post.author?.imageUrl || "/path/to/default-image.jpg",
-        category: post.category.name,
+        category: post?.category?.name,
         rating: post.rating,
         slug: post.slug,
         date: post.createdAt,
@@ -49,7 +54,7 @@ const DetailBlog = () => {
       <div className="md:w-3/4 lg:w-4/5 w-full">
         <div className="bg-gray-100 min-h-screen p-4">
           <div className="flex items-center mb-4 overflow-x-auto whitespace-nowrap">
-            <span className="text-sm flex items-center text-red-500 px-3">
+            <span className="text-sm flex items-center text-main px-3">
               <FaArrowTrendUp className="mr-1" /> Xu hướng:
             </span>
             {/* Render trending tags dynamically if needed */}
@@ -74,13 +79,13 @@ const DetailBlog = () => {
           </div>
 
           {/* Đường dẫn breadcrumb */}
-          <div className="text-sm text-gray-600 mb-4">
-            <a href="/" className="text-red-500">
+          <div className="text-sm mb-4">
+            <Link href="/" className="text-main">
               Trang chủ
-            </a>{" "}
+            </Link>{" "}
             &raquo;{" "}
             <a href="#" className="text-gray-600">
-              {data.category}
+              {data?.category}
             </a>{" "}
             &raquo; {data.postTitle}
           </div>
@@ -90,13 +95,13 @@ const DetailBlog = () => {
             <img
               src={data.thumbnail}
               alt={data.postTitle}
-              className="w-full h-auto rounded-lg"
+              className="w-full max-h-[400px] rounded-lg"
             />
           </div>
 
           <div className="blog-content">
             <div className="flex items-center justify-between mb-4">
-              <div className="inline-block bg-red-500 text-white px-3 py-1 rounded-full text-sm">
+              <div className="inline-block bg-main text-white px-3 py-1 rounded-full text-sm">
                 {data.category}
               </div>
               <div className="flex items-center">
@@ -125,7 +130,7 @@ const DetailBlog = () => {
                 <div className="text-sm">
                   <span className="block font-semibold">{data.author}</span>
                   <span className="block text-gray-500">
-                    Ngày đăng: {data.date}
+                    Ngày đăng: {formatDay(data.date)}
                   </span>
                 </div>
               </div>
@@ -195,15 +200,6 @@ const DetailBlog = () => {
               </div>
             </div>
           </div>
-
-          {/* Bài viết liên quan */}
-          <section className="mb-8 p-4">
-            <HeadingSection title="Bài viết liên quan" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <SmallPost />
-              <SmallPost />
-            </div>
-          </section>
         </div>
       </div>
     </div>

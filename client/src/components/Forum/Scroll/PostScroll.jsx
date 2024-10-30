@@ -10,7 +10,7 @@ const PostScroll = ({ data }) => {
           <div className="md:w-1/2">
             <HeadingSection title="tin tức mới nhất" />
             <div className="space-y-4">
-              {data?.slice(0, 6).map((post) => (
+              {data.slice(0, 6).map((post) => (
                 <div key={post.id} className="bg-white overflow-hidden flex">
                   <img
                     src={post.thumbnail}
@@ -19,7 +19,7 @@ const PostScroll = ({ data }) => {
                   />
                   <div className="p-4 w-2/3">
                     <h3 className="text-lg font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">
-                      <Link to={`blog/${post.slug}`}>{post.postTitle}</Link>
+                      <Link to={`${post.slug}`}>{post.postTitle}</Link>
                     </h3>
                     <p className="text-sm text-gray-600">
                       {post.author} - {formatDay(post.date)}

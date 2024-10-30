@@ -12,7 +12,7 @@ function FeaturedPost({ data }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="w-full">
           <Link
-            to={`blog/${featuredPost?.slug}`}
+            to={`${featuredPost?.slug}`}
             className="relative rounded-lg overflow-hidden cursor-pointer h-full"
           >
             <img
@@ -43,7 +43,7 @@ function FeaturedPost({ data }) {
                   className="w-20 h-20 object-cover rounded sm:w-24 sm:h-24 md:w-32 md:h-32"
                 />
                 <div className="flex flex-col">
-                  <Link to={`blog/${post.slug}`}>
+                  <Link to={`${post.slug}`}>
                     <h3 className="text-sm sm:text-base md:text-lg font-semibold hover:text-main line-clamp-2">
                       {post?.postTitle}
                     </h3>

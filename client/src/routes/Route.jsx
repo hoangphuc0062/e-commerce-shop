@@ -20,6 +20,7 @@ import Order from "../pages/web/member/Order";
 import { Address } from "../pages/web/member/Address";
 import { HomeProfile } from "../pages/web/member/Home";
 import { Coupon } from "../pages/web/member/Coupon";
+import CategoryPost from "../pages/web/forum/CategoryPost";
 export default function RootRouter() {
   const routes = useRoutes([
     {
@@ -79,7 +80,8 @@ export default function RootRouter() {
       element: <ForumLayout />,
       children: [
         { path: "", element: <ForumPage /> },
-        { path: "blog/:slug", element: <DetailBlog /> },
+        { path: ":slug", element: <DetailBlog /> },
+        {path:"category", element: <CategoryPost/>}
       ],
     },
     {

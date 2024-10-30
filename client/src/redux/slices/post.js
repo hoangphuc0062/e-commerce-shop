@@ -13,8 +13,9 @@ const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
 export const getPosts = createAsyncThunk("post/getPost", (_, thunkAPI) =>
   handleAsyncThunk(PostSevice.getPost, [null], thunkAPI)
 );
-export const GetBySlug = createAsyncThunk("post/getBySlug", (slug, thunkAPI) =>
-  handleAsyncThunk(PostSevice.getBySlug, [slug], thunkAPI)
+export const GetBySlug = createAsyncThunk(
+  "post/getBySlug",
+  (slug, thunkAPI) => handleAsyncThunk(PostSevice.getBySlug, [slug], thunkAPI),
 );
 
 export const resetState = createAsyncThunk(

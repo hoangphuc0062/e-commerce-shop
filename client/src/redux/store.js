@@ -3,7 +3,9 @@ import { configureStore } from "@reduxjs/toolkit";
 import loadingReducer from "./slices/loading";
 import customerReducer from "./slices/customer";
 import postReducer from "./slices/post";
+import categoryReducer from "./slices/category";
 import storage from "redux-persist/lib/storage"; // sử dụng localStorage
+
 
 import { combineReducers } from "redux";
 import {
@@ -29,6 +31,7 @@ const rootReducer = combineReducers({
   loading: loadingReducer,
   customer: customerReducer,
   post: postReducer,
+  category: categoryReducer,
 });
 
 // Tạo persisted reducer
