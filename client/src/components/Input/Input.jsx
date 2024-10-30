@@ -33,7 +33,7 @@ export const Input = forwardRef(
     const handleEdit = (e) => {
       e.preventDefault();
       if (isEditing && edit) {
-        onChange(inputValue);
+        onChange && onChange(inputValue);
       }
       setIsEditing(!isEditing);
     };
@@ -49,11 +49,10 @@ export const Input = forwardRef(
     }, [isEditing]);
 
     const handleChange = (e) => {
-      // console.log(onChange(e.target.value));
-      setInputValue(e.target.value);
-
-      if (edit) {
-        onChange(e.target.value); // Only trigger change if editable
+      const newValue = e.target.value;
+      setInputValue(newValue);
+      if (onChange) {
+        onChange(e); // Để react-hook-form có thể quản lý onChange
       }
     };
 
@@ -73,12 +72,11 @@ export const Input = forwardRef(
               errorMessage
                 ? "border-red-500 focus:border-red-500"
                 : "border-gray-300"
-            } ${isEditing ? "focus:outline-blue-700 outline-blue-700" : ""}`} // Apply the CSS class conditionally
+            } ${isEditing ? "focus:outline-blue-700 outline-blue-700" : ""}`}
             placeholder={placeholder}
-            onChange={onChange ? handleChange : undefined}
-            ref={inputRef}
-            disabled={!isEditing}
-            aria-readonly={!isEditing ? true : undefined}
+            onChange={handleChange}
+            ref={ref} // Để react-hook-form có thể quản lý ref
+            readOnly={!isEditing && readOnly} // Đúng cách để xử lý readOnly
             {...rest}
           />
           {iconName && type === "password" && (

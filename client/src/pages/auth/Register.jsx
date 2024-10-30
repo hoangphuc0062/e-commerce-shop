@@ -68,6 +68,7 @@ export const Register = () => {
               <Input
                 label="Họ và tên"
                 id="name"
+                readOnly={false}
                 placeholder="Nhập họ và tên"
                 {...register("name", {
                   required: "Bạn cần nhập họ và tên để đăng ký",
@@ -79,6 +80,7 @@ export const Register = () => {
                 label="Số điện thoại"
                 id="phone"
                 type="text"
+                readOnly={false}
                 placeholder="Nhập số điện thoại"
                 {...register("phone", {
                   required: "Bạn cần điên thoại để đăng ký",
@@ -90,6 +92,7 @@ export const Register = () => {
               <Input
                 label="Mật khẩu"
                 type="password"
+                readOnly={false}
                 id="confirmPassword"
                 placeholder="Nhập lại mật khẩu"
                 iconName={"mdi-light:eye"}
@@ -103,6 +106,7 @@ export const Register = () => {
                 label="Xác nhận mật khẩu"
                 type="password"
                 id="confirmPassword"
+                readOnly={false}
                 placeholder="Nhập lại mật khẩu"
                 iconName={"mdi-light:eye"}
                 {...register("confirmPassword", {

@@ -100,6 +100,21 @@ const getCurrentCustomer = asyncHandler(async (req, res) => {
     .json({ rs: customer ? customer : "Customer is not founded" });
 });
 
+const getCustomerByCookie = asyncHandler(async (req, res) => {
+  const { refreshToken } = req.cookies;
+  if (!refreshToken) {
+    return res.status(400).json({
+      message: "Missing refresh token",
+    });
+  }
+
+  const customer = await Customer.findOne({ refreshToken }).select(
+    "-role -refreshToken -password -passwordResetToken -passwordResetExprires "
+  );
+
+  return res.status(200).json(customer);
+});
+
 const loginCustomer = asyncHandler(async (req, res) => {
   const { phone, password } = req.body;
 
@@ -326,4 +341,5 @@ module.exports = {
   resetPassword,
   updateCustomer,
   updateCustomerBYAdmin,
+  getCustomerByCookie,
 };

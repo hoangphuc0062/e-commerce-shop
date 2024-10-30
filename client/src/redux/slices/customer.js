@@ -1,32 +1,32 @@
-/* eslint-disable no-unused-vars */
+// slices/customer.js
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import CustomerService from "../../services/customer.service";
+import Cookies from "js-cookie";
 
-// Utility function to handle async actions
-const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
-  try {
-    const response = await asyncFunction(...args);
-    return response;
-  } catch (err) {
-    return rejectWithValue(err.response.data);
-  }
-};
-
-// Login action
+// Thunk để xử lý các thao tác bất đồng bộ
 export const loginCustomer = createAsyncThunk(
   "customer/login",
   async (data, thunkAPI) => {
     try {
-      const { accessToken, customer } = await CustomerService.login(data);
-      localStorage.setItem("accessToken", accessToken);
-      return customer;
+      const response = await CustomerService.login(data);
+
+      // Lưu token vào cookie
+      Cookies.set("access_token", response.accessToken, {
+        expires: 30 / (24 * 60), // Token lưu trong 30 phút
+        secure: true,
+      });
+      return response.customer;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
+      const errorMessage =
+        error.response && error.response.data
+          ? error.response.data
+          : error.message;
+
+      return thunkAPI.rejectWithValue(errorMessage);
     }
   }
 );
 
-// Register action
 export const registerCustomer = createAsyncThunk(
   "customer/register",
   async (data, thunkAPI) => {
@@ -39,147 +39,108 @@ export const registerCustomer = createAsyncThunk(
   }
 );
 
-// Logout action
-export const logout = createAsyncThunk("staff/logout", (_, thunkAPI) =>
-  handleAsyncThunk(CustomerService.logout, [null], thunkAPI)
+export const logoutCustomer = createAsyncThunk("customer/logout", async () => {
+  await CustomerService.logout();
+  // Xóa token khỏi cookie
+  Cookies.remove("access_token");
+});
+
+export const getCurrentCustomerByCookie = createAsyncThunk(
+  "customer/getCurrentByCookie",
+  async () => {
+    const response = await CustomerService.getCustomerByCookie();
+    return response;
+  }
 );
 
-// Reset password action
-export const resetPassword = createAsyncThunk(
-  "customer/forgotpassword",
-  (data, thunkAPI) =>
-    handleAsyncThunk(CustomerService.forgotPassword, [data], thunkAPI)
-);
-
-// Get current customer action
-export const getCurrentCustomer = createAsyncThunk(
-  "customer/getCurrent",
-  async (_, thunkAPI) => {
+export const updateCustomer = createAsyncThunk(
+  "customer/updateCustomer",
+  async ({ customerId, data }, thunkAPI) => {
     try {
-      const response = await CustomerService.getCustomer();
-      return response.customer;
+      const response = await CustomerService.updateCustomer(customerId, data);
+      return response;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
     }
   }
 );
 
-// Reset state action
-export const resetState = createAsyncThunk(
-  "state/resetState",
-  async (payload) => {
-    return payload;
-  }
-);
+export const setStatus = createAction("users/setStatus");
 
-// Update customer action
-export const updateCustomer = createAsyncThunk(
-  "customer/updateCustomer",
-  ({ customerId, data }, thunkAPI) =>
-    handleAsyncThunk(
-      CustomerService.updateCustomer,
-      [customerId, data],
-      thunkAPI
-    )
-);
-
-// Create customer slice
+// Slice
 const customerSlice = createSlice({
   name: "customer",
   initialState: {
-    data: null,
+    customer: null,
     isLoginned: false,
     status: "idle",
     error: null,
+    statusLogout: "idle",
+  },
+  reducers: {
+    resetCustomerState: (state) => {
+      state.customer = null;
+      state.isLoginned = false;
+      state.status = "idle";
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
-    // Handle login
     builder
       .addCase(loginCustomer.pending, (state) => {
         state.status = "loading";
-        state.error = null;
       })
       .addCase(loginCustomer.fulfilled, (state, action) => {
         state.isLoginned = true;
-        state.data = action.payload;
+        state.customer = action.payload;
         state.status = "success";
       })
       .addCase(loginCustomer.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-      });
-
-    // Handle logout
-
-    builder
-      .addCase(logout.pending, (state) => {
-        state.status = "loading";
       })
-      .addCase(logout.fulfilled, (state) => {
-        state.status = "success";
-        state.data = null;
+
+      .addCase(logoutCustomer.pending, (state) => {
+        state.statusLogout = "loading";
+      })
+      .addCase(logoutCustomer.fulfilled, (state) => {
+        state.customer = null;
         state.isLoginned = false;
-      })
-      .addCase(logout.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
-      });
-
-    // Handle register
-    builder
-      .addCase(registerCustomer.pending, (state) => {
-        state.status = "loading";
+        state.status = "idle";
+        state.statusLogout = "success";
       })
       .addCase(registerCustomer.fulfilled, (state, action) => {
         state.status = "success";
-        state.data = action.payload;
+        state.customer = action.payload;
       })
-      .addCase(registerCustomer.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
-      });
 
-    // Handle get current customer
-    builder
-      .addCase(getCurrentCustomer.pending, (state) => {
+      .addCase(getCurrentCustomerByCookie.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(getCurrentCustomer.fulfilled, (state, action) => {
-        state.status = "success";
-        state.data = action.payload;
+      .addCase(getCurrentCustomerByCookie.fulfilled, (state, action) => {
+        state.customer = action.payload;
         state.isLoginned = true;
-      })
-      .addCase(getCurrentCustomer.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
-      });
-
-    // Handle update customer
-    builder
-      .addCase(updateCustomer.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(updateCustomer.fulfilled, (state, action) => {
         state.status = "success";
-        state.data = action.payload;
       })
-      .addCase(updateCustomer.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
-      });
+      .addCase(getCurrentCustomerByCookie.rejected, (state, payload) => {
+        state.customer = null;
+        state.isLoginned = false;
+        state.status = "idle";
+        state.error = payload.error;
+      })
 
-    // Handle reset state
-    builder.addCase(resetState.fulfilled, (state, action) => {
-      if (action.payload) {
+      .addCase(updateCustomer.fulfilled, (state, action) => {
+        state.customer = action.payload;
+        state.status = "success";
+      })
+      .addCase(setStatus, (state, action) => {
         const { key, value } = action.payload;
-        if (key && value !== undefined) {
-          state[key] = value;
+        if (state[key] !== undefined) {
+          state[key] = value; // Update the status field dynamically
         }
-      }
-    });
+      });
   },
 });
 
-// Export reducer and actions
+export const { setCustomer } = customerSlice.actions;
 export default customerSlice.reducer;
-export const { resetStateCustomer } = customerSlice.actions;
