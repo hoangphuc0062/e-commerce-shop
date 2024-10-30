@@ -43,6 +43,22 @@
 .contentSwiper {
   width: 100%;
 }
+.contentSwiper img {
+  width: 100%;
+  object-fit: cover;
+}
+
+@media screen and (min-width: 320px) {
+  .contentSwiper {
+    width: 100%;
+    height: fit-content;
+  }
+  .contentSwiper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
 
 .bannerSwiper {
   height: 20%;

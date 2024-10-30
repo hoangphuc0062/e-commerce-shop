@@ -69,7 +69,7 @@ export default function SliderBanner() {
           delay: 2500,
           disableOnInteraction: false,
         }}
-        className="bannerSwiper"
+        className="bannerSwiper hidden lg:block"
       >
         {imgs.map((img, index) => (
           <SwiperSlide key={index}>
