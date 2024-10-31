@@ -55,9 +55,24 @@ export default function Information({
                 setIsSlugEdited(false);
                 handleInputChangeSlug("name", e.target.value);
               }}
-              error={isSubmitted && !productData.name}
+              error={
+                isSubmitted &&
+                (!productData.name ||
+                  productData.name.length < 3 ||
+                  productData.name.length > 250 ||
+                  /^\s|\s$/.test(productData.name))
+              }
               helperText={
-                isSubmitted && !productData.name && "Tên sản phẩm là bắt buộc"
+                isSubmitted &&
+                (!productData.name
+                  ? "Tên sản phẩm là bắt buộc"
+                  : productData.name.length < 3
+                    ? "Tên sản phẩm phải có ít nhất 3 ký tự"
+                    : productData.name.length > 250
+                      ? "Tên sản phẩm không được vượt quá 250 ký tự"
+                      : /^\s|\s$/.test(productData.name)
+                        ? "Tên sản phẩm không được chứa khoảng trắng ở đầu hoặc cuối"
+                        : "")
               }
             />
           </Grid>
@@ -67,9 +82,24 @@ export default function Information({
               fullWidth
               value={productData.slug}
               onChange={(e) => handleInputChangeSlug("slug", e.target.value)}
-              error={isSubmitted && !productData.slug}
+              error={
+                isSubmitted && (
+                  !productData.slug ||
+                  !/^[a-z0-9-]+$/.test(productData.slug) ||
+                  productData.slug.length < 3 ||
+                  productData.slug.length > 250
+                )
+              }
               helperText={
-                isSubmitted && !productData.slug && "Slug là bắt buộc"
+                isSubmitted && (
+                  !productData.slug
+                    ? "Slug là bắt buộc"
+                    : productData.slug.length < 3
+                      ? "Slug phải có ít nhất 3 ký tự"
+                      : productData.slug.length > 250
+                        ? "Slug không được vượt quá 250 ký tự"
+                        : "Slug chỉ chứa chữ thường, số và dấu gạch ngang"
+                )
               }
             />
           </Grid>

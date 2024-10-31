@@ -83,7 +83,6 @@ export default function BrandPage() {
       setInitialValues({
         name: "",
         image: "",
-        category: "",
         description: "",
         slug: "",
       });
@@ -91,8 +90,23 @@ export default function BrandPage() {
   };
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required("Tên thương hiệu không được để trống"),
-    description: Yup.string(),
+    name: Yup.string()
+      .required("Tên thương hiệu không được để trống")
+      .min(3, "Tên thương hiệu phải có ít nhất 3 ký tự")
+      .max(50, "Tên thương hiệu không được vượt quá 50 ký tự"),
+
+    image: Yup.string()
+      .url("Hình ảnh phải là một URL hợp lệ")
+      .required("Hình ảnh không được để trống"),
+
+    description: Yup.string()
+      .max(250, "Mô tả không được vượt quá 250 ký tự"),
+
+    slug: Yup.string()
+      .required("Slug không được để trống")
+      .matches(/^[a-z0-9-]+$/, "Slug chỉ chứa chữ thường, số và dấu gạch ngang")
+      .min(3, "Slug phải có ít nhất 3 ký tự")
+      .max(50, "Slug không được vượt quá 50 ký tự"),
   });
 
   const status = useSelector((state) => state.brand.status);
