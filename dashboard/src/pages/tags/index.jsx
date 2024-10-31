@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createTag, deleteTag, getAllTags, updateTag } from "../../redux/slices/tags"; // Added updateTag action
 import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
 import { useFormik } from "formik";
+import * as Yup from "yup"; // Import Yup for validation
 
 const columns = [
     { label: "Tên tag", field: "name" },
@@ -20,7 +21,6 @@ const columns = [
 export default function TagPage() {
     const dispatch = useDispatch();
     const [editTag, setEditTag] = useState(null);  // To track if we are in edit mode
-    const [error, setError] = useState("");
     const [data, setData] = useState([]);
 
     const status = useSelector((state) => state.tag.status);  // Adjust state path to 'tags'
@@ -41,10 +41,17 @@ export default function TagPage() {
         formik.setFieldValue("name", tag.name); // Populate the form with selected tag data
     };
 
+    const validationSchema = Yup.object({
+        name: Yup.string()
+            .required("Tên tag không được để trống") // Required validation
+            .max(250, "Tên tag không được vượt quá 250 ký tự"), // Max length validation
+    });
+
     const formik = useFormik({
         initialValues: {
             name: "",
         },
+        validationSchema, // Integrate validation schema
         onSubmit: (values, { resetForm }) => {
             if (editTag) {
                 // If edit mode, dispatch update action
@@ -95,6 +102,7 @@ export default function TagPage() {
         },
         [dispatch]
     );
+
     return (
         <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: '20px' }}>
             <div>
@@ -118,8 +126,8 @@ export default function TagPage() {
                             name="name"
                             value={formik.values.name}
                             onChange={formik.handleChange}
-                            error={!!error} // Error status
-                            helperText={error} // Error message
+                            error={formik.touched.name && Boolean(formik.errors.name)} // Show error status
+                            helperText={formik.touched.name ? formik.errors.name : ""} // Show error message
                         />
                         <Box mt={3} textAlign="right">
                             <Button

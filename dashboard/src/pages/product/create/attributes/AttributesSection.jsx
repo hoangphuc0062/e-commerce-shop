@@ -262,7 +262,7 @@ export default function AttributesSection({
 
                   <TableCell>Giá trị</TableCell>
                   <TableCell>SKU</TableCell>
-                  <TableCell>Giá Giá lịch sử</TableCell>
+                  <TableCell>Giá lịch sử</TableCell>
                   <TableCell>Giá thị trường</TableCell>
                   <TableCell>Giá</TableCell>
                   <TableCell>Hành động</TableCell>
