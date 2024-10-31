@@ -34,11 +34,26 @@ function CategoryCreate() {
       description: "",
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Tên danh mục là bắt buộc"),
-      slug: Yup.string().required("Slug là bắt buộc"),
-      type: Yup.string().required("Loại là bắt buộc"),
-      description: Yup.string().required("Mô tả là bắt buộc"),
-      // icon: Yup.string().required("Icon là bắt buộc"),
+      name: Yup.string()
+        .required("Tên danh mục là bắt buộc")
+        .min(3, "Tên danh mục phải có ít nhất 3 ký tự")
+        .max(50, "Tên danh mục không được vượt quá 50 ký tự"),
+
+      slug: Yup.string()
+        .required("Slug là bắt buộc")
+        .min(3, "Slug phải có ít nhất 3 ký tự")
+        .max(50, "Slug không được vượt quá 50 ký tự"),
+
+      type: Yup.string()
+        .required("Loại là bắt buộc"),
+      description: Yup.string()
+        .required("Mô tả là bắt buộc")
+        .min(10, "Mô tả phải có ít nhất 10 ký tự")
+        .max(250, "Mô tả không được vượt quá 250 ký tự"),
+
+      icon: Yup.string()
+        .notRequired()
+        .url("Icon phải là một URL hợp lệ")
     }),
     onSubmit: (values) => {
       const { name, slug, type, description, icon } = values;
