@@ -9,5 +9,6 @@ router.use([verifyAccessToken, isAdmin]);
 router.post("/", ctrl.createNewCoupon);
 router.put("/:cid", ctrl.updateCoupon);
 router.delete("/:cid", ctrl.deleteCoupon);
+router.get("/:cid", ctrl.getCouponById);
 
 module.exports = router;

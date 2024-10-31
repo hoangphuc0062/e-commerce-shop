@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 
 import BrandService from "../../services/brand.service";

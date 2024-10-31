@@ -32,6 +32,27 @@ export const createCoupon = createAsyncThunk(
     handleAsyncThunk(CouponService.createCoupon, [data], thunkAPI)
 );
 
+// get coupon by id
+export const getCouponById = createAsyncThunk(
+  "coupon/getCouponById",
+  (id, thunkAPI) =>
+    handleAsyncThunk(CouponService.getCouponById, [id], thunkAPI)
+);
+
+// update coupon
+export const updateCoupon = createAsyncThunk(
+  "coupon/updateCoupon",
+  ({ couponId, data }, thunkAPI) =>
+    handleAsyncThunk(CouponService.updateCoupon, [couponId, data], thunkAPI)
+);
+
+// delete coupon
+
+export const deleteCoupon = createAsyncThunk(
+  "coupon/deleteCoupon",
+  (id, thunkAPI) => handleAsyncThunk(CouponService.deleteCoupon, [id], thunkAPI)
+);
+
 const coupon = createSlice({
   name: "coupon",
   initialState: {
@@ -39,6 +60,9 @@ const coupon = createSlice({
     status: "idle",
     error: null,
     statusCreate: "idle",
+    statusGetById: "idle",
+    statusUpdate: "idle",
+    statusDelete: "idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -72,6 +96,44 @@ const coupon = createSlice({
       })
       .addCase(createCoupon.rejected, (state, action) => {
         state.statusCreate = "failed";
+        state.error = action.payload;
+      });
+    builder
+      .addCase(getCouponById.pending, (state) => {
+        state.statusGetById = "loading";
+      })
+      .addCase(getCouponById.fulfilled, (state, action) => {
+        state.statusGetById = "success";
+        state.data = action.payload;
+      })
+      .addCase(getCouponById.rejected, (state, action) => {
+        state.statusGetById = "failed";
+        state.error = action.payload;
+      });
+    builder
+      .addCase(updateCoupon.pending, (state) => {
+        state.statusUpdate = "loading";
+      })
+      .addCase(updateCoupon.fulfilled, (state, action) => {
+        state.statusUpdate = "success";
+        state.data = action.payload;
+      })
+      .addCase(updateCoupon.rejected, (state, action) => {
+        state.statusUpdate = "failed";
+        state.error = action.payload;
+      });
+    builder
+      .addCase(deleteCoupon.pending, (state) => {
+        state.statusDelete = "loading";
+      })
+      .addCase(deleteCoupon.fulfilled, (state, action) => {
+        state.statusDelete = "success";
+        state.data = state.data.filter(
+          (coupon) => coupon.id !== action.payload
+        );
+      })
+      .addCase(deleteCoupon.rejected, (state, action) => {
+        state.statusDelete = "failed";
         state.error = action.payload;
       });
   },

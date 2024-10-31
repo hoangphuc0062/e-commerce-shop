@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Input } from "../../../components/Input/Input";
 import { Select } from "../../../components/Input/Select";
 import { formatCurrency, convertToISODateString } from "../../../ultils/helper";
+
+import { Icon } from "@iconify-icon/react/dist/iconify.mjs";
 
 const initialCustomerData = {
   name: "Nguyen Van A",
@@ -14,7 +16,7 @@ const initialCustomerData = {
   totalPurchasePrice: 1000000,
   address: "Ha Noi",
   avatar:
-    "https://res.cloudinary.com/dgthe0zuj/image/upload/fl_preserve_transparency/v1717730182/0d64989794b1a4c9d89bff571d3d5842_xytb2b.jpg?_s=public-apps",
+    "https://scontent.fsgn2-11.fna.fbcdn.net/v/t39.30808-6/449064390_2414483542094432_6673220414551968639_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=RL1utjliNoAQ7kNvgHfL7Ha&_nc_zt=23&_nc_ht=scontent.fsgn2-11.fna&_nc_gid=ASknwc48-eYa-gCpFeRmDPG&oh=00_AYBGm9yS3VKoqWJi5i9kqvsRa0yZqnxQrBvcl3rMf9_aeA&oe=6723C9DB",
 };
 
 export const Account = () => {
@@ -49,11 +51,15 @@ export const Account = () => {
           Thông tin cá nhân
         </h2>
         <form className="flex flex-col gap-5">
-          <img
-            src={customerData.avatar}
-            alt={customerData.name}
-            className="w-24 h-24 object-cover rounded-full mx-auto"
-          />
+          <div className="flex flex-col justify-center items-center">
+            <div className="flex justify-center w-fit rounded-full relative">
+              <img
+                src={customerData.avatar}
+                alt={customerData.name}
+                className="w-32 h-32 object-cover rounded-full  mx-auto p-2"
+              />
+            </div>
+          </div>
           <Input
             label={"Họ và tên"}
             type="text"

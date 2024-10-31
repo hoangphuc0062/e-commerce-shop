@@ -5,9 +5,8 @@ const {
   isSuperAdmin,
   isAdmin,
 } = require("../middlewares/vertifyToken");
-const crypto = require("crypto");
-const makeToken = require("uniquid");
-const jwt = require("jsonwebtoken");
+
+router.get("/get-current", verifyAccessToken, ctrl.getStaffCurrent);
 
 router.post("/register", verifyAccessToken, isSuperAdmin, ctrl.registerStaff);
 router.post("/login", ctrl.login);
@@ -16,10 +15,10 @@ router.post("/refreshtoken", ctrl.refreshAccessToken);
 router.post("/forgotpassword", ctrl.forgotPassword);
 router.post("/resetpassword", ctrl.resetPassword);
 
-router.get("/", verifyAccessToken, isAdmin, ctrl.getStaff);
-router.get("/:sid", verifyAccessToken, isAdmin, ctrl.getStaffById);
-router.put("/:sid", verifyAccessToken, isAdmin, ctrl.updateStaff);
-router.delete("/:sid", verifyAccessToken, isAdmin, ctrl.deleteStaff);
-router.post("/getstaffbytoken", ctrl.getStaffByToken);
+router.use(verifyAccessToken, isAdmin);
+router.get("/", ctrl.getStaff);
+router.get("/:sid", ctrl.getStaffById);
+router.put("/:sid", ctrl.updateStaff);
+router.delete("/:sid", ctrl.deleteStaff);
 
 module.exports = router;
