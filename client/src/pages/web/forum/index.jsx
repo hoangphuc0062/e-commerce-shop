@@ -1,29 +1,28 @@
+import HeadingSection from "../../../components/Forum/HeadingSection";
+import TopicCard from "../../../components/Forum/TopicCard";
+import FeaturedPost from "../../../components/Forum/FeaturedPost";
+import SliderPost from "../../../components/Forum/SliderPost";
+import Sidebar from "../../../components/Forum/Sidebar";
+import PostScroll from "../../../components/Forum/PostScroll";
+import PostList from "../../../components/Forum/PostList";
+import SmallPost from "../../../components/Forum/SmallPost";
+import PostTag from "../../../components/Forum/PostTag";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-
-import {
-  Sidebar,
-  HeadingSection,
-  TopicCard,
-  FeaturedPost,
-  SliderPost,
-  PostTag,
-  PostScroll,
-} from "../../../components/Forum";
-
 import { getPosts } from "../../../redux/slices/post";
+
 
 function ForumPage() {
   const dispatch = useDispatch();
-  const status = useSelector((state) => state.post.status);
-  const postData = useSelector((state) => state.post.data);
+  const status = useSelector((state) => state.postReducer.status);
+  const postData = useSelector((state) => state.postReducer.data);
   const [data, setData] = useState([]);
-
+  
   useEffect(() => {
     dispatch(getPosts());
   }, [dispatch]);
-
+  
   useEffect(() => {
     if (status === "success" && Array.isArray(postData)) {
       setData(
@@ -39,11 +38,15 @@ function ForumPage() {
           rating: item.rating,
           slug: item.slug,
           date: item.createdAt,
-          thumbnail: item.thumbnail,
+          thumbnail: item.thumbnail
         }))
       );
     }
   }, [status, postData]);
+  
+  
+
+
 
   return (
     <div className="container w-full">
@@ -59,23 +62,55 @@ function ForumPage() {
               <TopicCard />
             </section>
 
-            {data && <FeaturedPost data={data} />}
+            <section className="mb-8">
+              <HeadingSection title="Nổi bật nhất" />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="w-full">
+                  <FeaturedPost />
+                </div>
+                <div className="space-y-4">
+                  <SmallPost />
+                </div>
+              </div>
+            </section>
           </section>
 
           <section className="mb-8 p-4">
             <HeadingSection title="xem nhiều tuần qua" />
-            {data && <SliderPost data={data} category={null} />}
+            {
+              data && (
+                <SliderPost category="S-Games" data={data} />
+              )
+            }
           </section>
 
-          <PostScroll data={data} />
+          <section className="mb-8 p-4"> 
+            <div className="md:flex md:space-x-8">
+              <div className="md:w-1/2">
+                <HeadingSection title="tin tức mới nhất" />
+                <div className="space-y-4">
+                  <PostList />
+                </div>
+              </div>
+              <div className="md:w-1/2 space-y-8">
+                <div>
+                  <PostScroll />
+                </div>
+                <div>
+                  <HeadingSection title="khám phá - TRENDING" />
+                  <PostScroll />
+                </div>
+              </div>
+            </div>
+          </section>
 
           <section className="mb-8 px-4 bg-gray-100 w-full rounded-lg">
             <HeadingSection title="S-GAMES" />
-            {data && <SliderPost data={data} category={null} />}
+            <SliderPost category="S-Games" />
             <div className="mt-4 text-right">
               <Link
-                to="#"
-                className="text-main text-sm font-semibold hover:underline"
+                to=""
+                className="text-red-500 text-sm font-semibold hover:underline"
               >
                 Xem thêm
               </Link>
@@ -83,20 +118,20 @@ function ForumPage() {
           </section>
           <section className="mb-8 p-4">
             <div className="flex overflow-x-auto space-x-4">
-              <PostTag category={null} data={data} />
-              <PostTag category={null} data={data} />
-              <PostTag category={null} data={data} />
+              <PostTag category="Trên Tay" />
+              <PostTag category="Tin Công Nghệ" />
+              <PostTag category="Đánh Giá" />
             </div>
           </section>
 
           <section className="mb-8 p-4">
             <HeadingSection title="thủ thuật - mẹo hay" />
-            {data && <SliderPost data={data} category={null} />}
+            <SliderPost category="Thủ Thuật - Mẹo Hay" />
           </section>
 
           <section className="mb-8 p-4">
             <HeadingSection title="Sự kiện" />
-            {data && <SliderPost data={data} category={null} />}
+            <SliderPost category="Sự Kiện" />
           </section>
         </div>
       </div>

@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-// import { PostDB } from "../../../data/Forum/PostDB";
+import { PostDB } from "../../data/Forum/PostDB";
+import PropTypes from "prop-types";
 
-const PostTag = ({ category, data }) => {
+const PostTag = ({ category }) => {
   // Lọc bài viết theo category
-  const filteredPosts = data?.filter((post) => post.category === category);
+  const filteredPosts = PostDB.filter((post) => post.category === category);
   // Giới hạn số lượng bài viết tối đa là 3
   const postsToDisplay = filteredPosts.slice(0, 3);
 
@@ -19,13 +20,13 @@ const PostTag = ({ category, data }) => {
           >
             {index === 0 && (
               <img
-                src={post.thumbnail}
-                alt={post.postTitle}
+                src={post.imageUrl}
+                alt={post.title}
                 className="w-full h-48 object-cover"
               />
             )}
             <div className="p-4">
-              <Link to={`${post.slug}`}  >
+              <Link to={`/post/${post.id}`}>
                 <h2
                   className={`text-lg ${
                     index === 0
@@ -33,7 +34,7 @@ const PostTag = ({ category, data }) => {
                       : "text-md font-thin"
                   } line-clamp-2 hover:text-main cursor-pointer`}
                 >
-                  {post.postTitle}
+                  {post.title}
                 </h2>
               </Link>
             </div>
@@ -44,6 +45,10 @@ const PostTag = ({ category, data }) => {
       )}
     </div>
   );
+};
+
+PostTag.propTypes = {
+  category: PropTypes.string.isRequired,
 };
 
 export default PostTag;

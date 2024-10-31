@@ -2,8 +2,8 @@ import { HorizonBanner } from "@/components/Banner/HorizonBanner";
 import { MainSection } from "@/components/HomeSections/MainSection";
 import Featured from "../../../components/Products/Featured";
 import CategoriesProduct from "../../../components/Products/CategoriesProduct";
+import SliderPost from "../../../components/Forum/SliderPost";
 import HeadingIndex from "../../../components/Heading/HeadingIndex";
-import { SliderPost } from "../../../components/Forum";
 function HomePage() {
   return (
     <div className="container w-full p-3">

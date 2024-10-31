@@ -6,7 +6,6 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import "./SliderPost.css";
-import { formatDay } from "../../../ultils/helper";
 
 const SliderPost = ({ category, data }) => {
   const sliderRef = useRef(null);
@@ -28,7 +27,7 @@ const SliderPost = ({ category, data }) => {
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 3,
+          slidesToShow: 2,
           slidesToScroll: 1,
         },
       },
@@ -45,7 +44,7 @@ const SliderPost = ({ category, data }) => {
   const filteredPosts = data?.filter((post) => post.category === category);
 
   return (
-    <div className="w-full">
+    <div className="relative w-full">
       <Slider ref={sliderRef} {...settings}>
         {filteredPosts?.map((post) => (
           <div key={post.id} className="px-1">
@@ -56,21 +55,18 @@ const SliderPost = ({ category, data }) => {
                 className="w-full h-36 object-cover md:h-48 lg:h-60 cursor-pointer"
               />
               <div className="p-3">
-                <Link
-                  to={`${post.slug}`}
-                  className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main"
-                >
-                  {post.postTitle}
+                <Link to={`blog/${post.slug}`}>
+                  <h3 className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main">
+                    {post.postTitle}
+                  </h3>
                 </Link>
-                <Link
-                  to={`${post.slug}`}
-                  className="text-xs text-blue-500 pb-1 cursor-pointer"
-                >
-                  {post.author}
+                <Link to={`blog/${post.slug}`}>
+                  <p className="text-xs text-blue-500 pb-1 cursor-pointer">
+                    {post.author}
+                  </p>
                 </Link>
-
                 <p className="text-xs text-gray-600 cursor-pointer">
-                  {formatDay(post.date)}
+                  {post.date}
                 </p>
               </div>
             </div>

@@ -3,7 +3,7 @@ import BrandPhone from "../../../components/Brand/BrandPhone";
 import CategorySelector from "../../../components/Card/CategorySelector";
 import { ProductCard } from "../../../components/Card/ProductCard";
 import QnASection from "../../../components/Form/QnAForm";
-import {PostTag} from '../../../components/Forum';
+import PostTag from "../../../components/Forum/PostTag";
 import Heading from "../../../components/Heading/Heading";
 import CriteriaSelector from "../../../components/Products/CriteriaSelector";
 import { products } from "../../../data/Product/Products";

@@ -1,13 +1,418 @@
-import { Banner } from "../../layouts/publicLayout/Banner/Banner";
+import { SingleBanner } from "../../components/Banner/SingleBanner/SingleBanner";
+import SliderBanner from "../../components/Banner/SliderBanner/SliderBanner";
+import { FeatureBlockProduct } from "../../components/FeatureBlockProduct/FeatureBlockProduct";
+import MenuTree from "../../components/Banner/MenuTree/MenuTree";
+
+const products = [
+  {
+    id: 1,
+    name: "iPhone 14 Pro Max",
+    type: "Smartphone",
+    brand: "Apple",
+    screen: "7.6 inches",
+    options: [
+      {
+        ram: "8GB",
+        rom: "256GB",
+        price: 5500000,
+        salePrice: 6200000,
+        colors: "Đen",
+        icon: "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/b/_/b_c_1_9.png",
+      },
+      {
+        ram: "12GB",
+        rom: "1TB",
+        price: 6000000,
+        salePrice: 6500000,
+        colors: "Vàng",
+        icon: "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/v/_/v_ng_18.png",
+      },
+      {
+        ram: "16GB",
+        rom: "2TB",
+        price: 7000000,
+        salePrice: 7500000,
+        colors: "Trắng",
+        icon: "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/b/_/b_c_1_9.png",
+      },
+    ],
+    description: "Latest iPhone with A16 chip and Pro camera system",
+    category: "Điện Thoại",
+    review: 50,
+    discount: 4,
+    images: [
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/b/_/b_c_1_9.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/_/x_m_24.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/v/_/v_ng_18.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/b/_/b_c_1_9.png",
+    ],
+    slug: "iphone-14-pro-max",
+  },
+  {
+    id: 2,
+    name: "Samsung Galaxy S24 Ultra",
+    type: "Smartphone",
+    brand: "Samsung",
+    screen: "6.8 inches",
+    options: [
+      {
+        ram: "6GB",
+        rom: "128GB",
+        price: 4500000,
+        salePrice: 4990000,
+        colors: "Black",
+      },
+      {
+        ram: "6GB",
+        rom: "128GB",
+        price: 4500000,
+        salePrice: 4990000,
+        colors: "Black",
+      },
+      {
+        ram: "8GB",
+        rom: "256GB",
+        price: 5000000,
+        salePrice: 5490000,
+        colors: "Silver",
+      },
+      {
+        ram: "12GB",
+        rom: "512GB",
+        price: 6000000,
+        salePrice: 6500000,
+        colors: "Gold",
+      },
+    ],
+    description: "Flagship Samsung phone with high-end features",
+    category: "Điện Thoại",
+    review: 70,
+    discount: 5,
+    images: [
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/s/ss-s24-ultra-vang-222.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/s/ss-s24-ultra-xam-222.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/s/ss-s24-ultra-den-600.png",
+    ],
+    slug: "samsung-galaxy-s24-ultra",
+  },
+  {
+    id: 3,
+    name: "Google Pixel 7",
+    type: "Smartphone",
+    brand: "Google",
+    screen: "6.3 inches",
+    options: [
+      {
+        ram: "6GB",
+        rom: "128GB",
+        price: 4500000,
+        salePrice: 4990000,
+        colors: "Black",
+      },
+      {
+        ram: "8GB",
+        rom: "256GB",
+        price: 5000000,
+        salePrice: 5490000,
+        colors: "Silver",
+      },
+      {
+        ram: "12GB",
+        rom: "512GB",
+        price: 6000000,
+        salePrice: 6500000,
+        colors: "Gold",
+      },
+      {
+        ram: "16GB",
+        rom: "1TB",
+        price: 7000000,
+        salePrice: 7500000,
+        colors: "White",
+      },
+    ],
+    description: "Google’s latest smartphone with Google Tensor chip",
+    category: "Điện Thoại",
+    review: 60,
+    discount: 6,
+    images: [
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/v/_/v_by6.jpg",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/h/r/hrgjrrh.jpg",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/_/v/_vc.jpg",
+    ],
+    slug: "google-pixel-7",
+  },
+  {
+    id: 4,
+    name: "Xiaomi Redmi Note 13 Pro Plus 5G",
+    type: "Smartphone",
+    options: [
+      {
+        ram: "6GB",
+        rom: "128GB",
+        price: 4500000,
+        salePrice: 4990000,
+        colors: "Black",
+      },
+      {
+        ram: "8GB",
+        rom: "256GB",
+        price: 5000000,
+        salePrice: 5490000,
+        colors: "Silver",
+      },
+      {
+        ram: "12GB",
+        rom: "512GB",
+        price: 6000000,
+        salePrice: 6500000,
+        colors: "Gold",
+      },
+      {
+        ram: "16GB",
+        rom: "1TB",
+        price: 7000000,
+        salePrice: 7500000,
+        colors: "White",
+      },
+    ],
+    screen: "7.6 inches",
+    description: "High-end Xiaomi phone with 108MP camera",
+    category: "Điện Thoại",
+    review: 40,
+    discount: 7,
+    brand: "Xiaomi",
+    images: [
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/i/xiaomi-redmi-note-13-pro-plus_9_.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/i/xiaomi-redmi-note-13-pro-plus_1.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/i/xiaomi-redmi-note-13-pro-plus_2_.png",
+    ],
+    slug: "xiaomi-redmi-note-13-pro-plus-5g",
+  },
+  {
+    id: 5,
+    name: "OPPO Find X5 Pro",
+    type: "Smartphone",
+    options: [
+      {
+        ram: "6GB",
+        rom: "128GB",
+        price: 4500000,
+        salePrice: 4990000,
+        colors: "Black",
+      },
+      {
+        ram: "8GB",
+        rom: "256GB",
+        price: 5000000,
+        salePrice: 5490000,
+        colors: "Silver",
+      },
+      {
+        ram: "12GB",
+        rom: "512GB",
+        price: 6000000,
+        salePrice: 6500000,
+        colors: "Gold",
+      },
+      {
+        ram: "16GB",
+        rom: "1TB",
+        price: 7000000,
+        salePrice: 7500000,
+        colors: "White",
+      },
+    ],
+    screen: "7.6 inches",
+    description: "OPPO flagship with Hasselblad camera system",
+    category: "Điện Thoại",
+    review: 45,
+    discount: 8,
+    brand: "OPPO",
+    images: [
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/d/o/download_3__4_1.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/o/p/oppo-find-x5-pro-1.png",
+    ],
+    slug: "oppo-find-x5-pro",
+  },
+  {
+    id: 6,
+    name: "Vivo X70 Pro",
+    type: "Smartphone",
+    options: [
+      {
+        ram: "12GB",
+        rom: "1TB",
+        price: 54990000,
+        salePrice: 5490000,
+        colors: "Black",
+      },
+    ],
+    screen: "7.6 inches",
+    description: "Vivo phone with Zeiss optics and gimbal stabilization",
+    category: "Điện Thoại",
+    review: 65,
+    discount: 9,
+    brand: "Vivo",
+    images: [
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/7/7/77725f642649329d8a5ea716e86d9027.jpg",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/6/3/637677310894938336_vivo-x70-pro-den-1_1.jpg",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/6/3/637677310895406938_vivo-x70-pro-den-4.jpg",
+    ],
+    slug: "vivo-x70-pro",
+  },
+  {
+    id: 7,
+    name: "Sony Xperia 1 VI",
+    type: "Smartphone",
+    options: [
+      {
+        ram: "12GB",
+        rom: "1TB",
+        price: 54990000,
+        salePrice: 5490000,
+        colors: "Black",
+      },
+    ],
+    screen: "7.6 inches",
+    description: "Sony flagship with 4K OLED display",
+    category: "Điện Thoại",
+    review: 35,
+    discount: 10,
+    brand: "Sony",
+    images: [
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/m/image_1184_2.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/1/0/10_1_.png",
+    ],
+    slug: "sony-xperia-1-vi",
+  },
+  {
+    id: 8,
+    name: "Realme GT Neo 3",
+    type: "Smartphone",
+    options: [
+      {
+        ram: "12GB",
+        rom: "1TB",
+        price: 54990000,
+        salePrice: 5490000,
+        colors: "Black",
+      },
+    ],
+    screen: "7.6 inches",
+    description: "Realme’s premium phone with Snapdragon 8 Gen 1",
+    category: "Điện Thoại",
+    review: 70,
+    discount: 11,
+    brand: "Realme",
+    images: [
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/r/e/realme-gt-neo-3.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/r/e/realme-gt-neo-3_2_.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/r/e/realme-gt-neo-3_1_.png",
+    ],
+    slug: "realme-gt-neo-3",
+  },
+  {
+    id: 9,
+    name: "ASUS ROG Phone 6",
+    type: "Gaming Smartphone",
+    options: [
+      {
+        ram: "12GB",
+        rom: "1TB",
+        price: 9990000,
+        salePrice: 5490000,
+        colors: "Black",
+      },
+    ],
+    screen: "7.6 inches",
+    description: "Gaming-focused phone with 165Hz AMOLED display",
+    category: "Điện Thoại",
+    review: 30,
+    discount: 12,
+    brand: "Asus",
+    images: [
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/a/s/asus-rog-phone-6-12gb-256gb-den_2.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/a/s/asus-rog-phone-6-12gb-256gb_2.png",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/1/1/11_8_4.png",
+    ],
+    slug: "asus-rog-phone-6",
+  },
+  {
+    id: 10,
+    name: "iPhone 13 128GB",
+    type: "Smartphone",
+    options: [
+      {
+        ram: "12GB",
+        rom: "1TB",
+        price: 6990000,
+        salePrice: 5490000,
+        colors: "Black",
+      },
+    ],
+    screen: "7.6 inches",
+    description: "Compact iPhone with A15 Bionic chip",
+    category: "Điện Thoại",
+    review: 90,
+    discount: 13,
+    brand: "Apple",
+    images: [
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/1/2/12_3_8_2_8.jpg",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/1/5/15_2_7_2_5.jpg",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/1/3/13_4_7_2_7.jpg",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/1/1/11_3_12_2_1_5.jpg",
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-13_2_.png",
+    ],
+    slug: "iphone-13-128gb",
+  },
+  {
+    id: 11,
+    name: "Huawei P50 Pro",
+    type: "Smartphone",
+    options: [
+      {
+        ram: "12GB",
+        rom: "1TB",
+        price: 10990000,
+        salePrice: 5490000,
+        colors: "Black",
+      },
+    ],
+    screen: "7.6 inches",
+    discount: 15,
+    description: "Huawei flagship with advanced camera technology",
+    category: "Điện Thoại",
+    review: 40,
+    brand: "Huawei",
+    images: [
+      "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/h/u/huawei-p50-pro.jpg",
+    ],
+    slug: "huawei-p50-pro",
+  },
+];
 
 const HomePage = () => {
   return (
-    <>
-      <Banner />
-      <section>Feature</section>
+    <div className="flex flex-col gap-3">
+      <section className="flex gap-3">
+        <div className="hidden w-1/6 lg:block">
+          <MenuTree />
+        </div>
+        <div className="w-full  lg:w-4/6 bg-whiteColor drop-shadow-main">
+          <SliderBanner />
+        </div>
+
+        <div className="hidden w-1/6 lg:block ">
+          <SingleBanner />
+        </div>
+      </section>
+      <section>
+        <FeatureBlockProduct products={products} />
+      </section>
       <section>Phụ kiện</section>
       <section>Blogs</section>
-    </>
+    </div>
   );
 };
 
