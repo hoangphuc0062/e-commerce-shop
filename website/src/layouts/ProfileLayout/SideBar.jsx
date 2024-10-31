@@ -1,3 +1,4 @@
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { useEffect, useState } from "react";
 // import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,26 +10,31 @@ const tabs = [
     id: "1",
     name: "Trang chủ",
     link: "",
+    icon: "bx:bx-home",
   },
   {
     id: "2",
     name: "Tài khoản của bạn",
     link: "account",
+    icon: "bx:bx-user",
   },
   {
     id: "3",
     name: "Coupon",
     link: "coupon",
+    icon: "bx:bx-bookmark",
   },
   {
     id: "4",
     name: "Địa chỉ",
     link: "address",
+    icon: "bx:bx-map",
   },
   {
     id: "6",
     name: "Quản lý đơn hàng",
     link: "order",
+    icon: "bx:bx-list-ul",
   },
 ];
 
@@ -77,6 +83,7 @@ export const SideBar = () => {
                 }`}
                 onClick={() => setActiveTab(tab.id)}
               >
+                {<Icon icon={tab.icon} width={20} />}
                 {tab.name}
               </Link>
             </li>
@@ -86,6 +93,7 @@ export const SideBar = () => {
               onClick={() => console.log("logout")}
               className="flex text-sm items-center gap-2 p-2 text-gray-700 hover:bg-gray-100 hover:text-main"
             >
+              <Icon icon="bx:bx-log-out" />
               Đăng xuất
             </Link>
           </li>
@@ -104,7 +112,10 @@ export const SideBar = () => {
                 className={`flex flex-col items-center gap-2 p-[5px] text-gray-700 hover:bg-gray-100 rounded hover:text-main
                 `}
               >
-                <span className="text-xs">{tab.name}</span>
+                <span className="text-xs flex ">
+                  <Icon icon={tab.icon} width={16} />
+                  {<p className="text-xs ml-1 line-clamp-1">{tab.name}</p>}
+                </span>
               </Link>
             </li>
           ))}
@@ -113,7 +124,10 @@ export const SideBar = () => {
               onClick={() => console.log("logout")}
               className="flex flex-col items-center gap-2 p-[5px] text-gray-700 hover:bg-gray-100 rounded hover:text-main"
             >
-              <span className="text-xs">Đăng xuất</span>
+              <div className="flex">
+                <Icon icon="bx:bx-log-out" />
+                <span className="text-xs ml-1">Đăng xuất</span>
+              </div>
             </Link>
           </li>
         </ul>

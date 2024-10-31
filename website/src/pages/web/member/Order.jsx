@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Icon } from "@iconify/react";
 import Person from "../../../components/Person";
 import { motion, AnimatePresence } from "framer-motion";
-export const Order = () => {
+
+export default function Order() {
   const [activeTab, setActiveTab] = useState("all");
   const [expandedOrder, setExpandedOrder] = useState(null);
 
@@ -153,7 +154,7 @@ export const Order = () => {
             </th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="bg-white divide-y divide-gray-200 overflow-x-scroll">
           {filteredData.map((item) => (
             <>
               <tr key={item.id}>
@@ -248,12 +249,12 @@ export const Order = () => {
     <div>
       <Person name="Phúc" phone="0773440062" role="Vip" />
       <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
-        <ul className="flex flex-wrap -mb-px">
+        <ul className="flex overflow-x-auto">
           {tabs.map((tab) => (
             <li key={tab.id} className="me-2">
               <button
                 onClick={() => setActiveTab(tab.id)}
-                className={`inline-block p-4 border-b-2 rounded-t-lg ${
+                className={`inline-block pb-3 mr-3 border-b-2 rounded-t-lg min-w-[100px] ${
                   activeTab === tab.id
                     ? "text-blue-600 border-blue-600 dark:text-blue-500 dark:border-blue-500"
                     : "border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
@@ -265,7 +266,7 @@ export const Order = () => {
           ))}
         </ul>
       </div>
-      <div className="p-4">{renderContent()}</div>
+      <div className="overflow-x-auto">{renderContent()}</div>
     </div>
   );
-};
+}
