@@ -19,11 +19,29 @@ export default function CreateCollection({ open, handleClose, handleCreate }) {
   const [isSlugEdited, setIsSlugEdited] = useState(false);
 
   const validationSchema = Yup.object({
-    name: Yup.string().required("Tên bộ sưu tập không được để trống"),
-    titleSEO: Yup.string().required("Tiêu đề SEO không được để trống"),
-    keywordsSEO: Yup.string().required("Từ khóa SEO không được để trống"),
-    descriptionSEO: Yup.string().required("Mô tả SEO không được để trống"),
-    slug: Yup.string().required("Slug không được để trống"),
+    name: Yup.string()
+      .required("Tên bộ sưu tập không được để trống")
+      .min(3, "Tên bộ sưu tập phải có ít nhất 3 ký tự")
+      .max(100, "Tên bộ sưu tập không được vượt quá 100 ký tự"),
+
+    titleSEO: Yup.string()
+      .required("Tiêu đề SEO không được để trống")
+      .min(3, "Tiêu đề SEO phải có ít nhất 3 ký tự")
+      .max(60, "Tiêu đề SEO không được vượt quá 60 ký tự"),
+    // .matches(/^[a-zA-Z0-9\s]+$/, "Tiêu đề SEO không được chứa ký tự đặc biệt"),
+
+    keywordsSEO: Yup.string()
+      .required("Từ khóa SEO không được để trống")
+      .max(100, "Từ khóa SEO không được vượt quá 100 ký tự"),
+
+    descriptionSEO: Yup.string()
+      .required("Mô tả SEO không được để trống")
+      .max(160, "Mô tả SEO không được vượt quá 160 ký tự"),
+
+    slug: Yup.string()
+      .required("Slug không được để trống")
+      .min(3, "Slug phải có ít nhất 3 ký tự")
+      .max(50, "Slug không được vượt quá 50 ký tự"),
   });
 
   const formik = useFormik({

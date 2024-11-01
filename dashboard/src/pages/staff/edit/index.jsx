@@ -9,6 +9,7 @@ import ImageUploader from "../../../components/upload";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getStaffById, updateStaff } from "../../../redux/slices/staff";
+import { StaffSchema } from "../validade/create";
 
 // Static options for dropdowns
 const roles = [
@@ -78,7 +79,7 @@ const EditStaff = () => {
 
   const formik = useFormik({
     initialValues: staffData,
-    // validationSchema: StaffSchema,
+    validationSchema: StaffSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
       await dispatch(updateStaff({ staffId: id, data: values })).then((res) => {

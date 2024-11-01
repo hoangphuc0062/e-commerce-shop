@@ -5,28 +5,10 @@ import loadingReducer from "./slices/loading";
 import customerReducer from "./slices/customer";
 import postReducer from "./slices/post";
 
-import categoryReducer from "./slices/category";
-import storage from "redux-persist/lib/storage"; // sử dụng localStorage
-
-
-import { combineReducers } from "redux";
-import {
-  persistReducer,
-  persistStore,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from "redux-persist";
-
-
 const rootReducer = combineReducers({
   loading: loadingReducer,
   customer: customerReducer,
   post: postReducer,
-  category: categoryReducer,
 });
 
 // Cấu hình store

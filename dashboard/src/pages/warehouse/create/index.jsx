@@ -18,9 +18,18 @@ function AddWarehouse() {
       description: "",
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Tên kho là bắt buộc"),
-      address: Yup.string().required("Địa chỉ là bắt buộc"),
-      description: Yup.string().required("Mô tả là bắt buộc"),
+      name: Yup.string()
+        .required("Tên kho là bắt buộc")
+        .min(3, "Tên kho phải có ít nhất 3 ký tự")
+        .max(250, "Tên kho không được vượt quá 250 ký tự"),
+      address: Yup.string()
+        .required("Địa chỉ là bắt buộc")
+        .min(10, "Địa chỉ phải có ít nhất 10 ký tự")
+        .max(250, "Địa chỉ không được vượt quá 250 ký tự"),
+      description: Yup.string()
+        .required("Mô tả là bắt buộc")
+        .min(20, "Mô tả phải có ít nhất 20 ký tự")
+        .max(500, "Mô tả không được vượt quá 500 ký tự"),
     }),
     onSubmit: (values) => {
       dispatch(createWarehouse(values)).then((res) => {
@@ -78,9 +87,7 @@ function AddWarehouse() {
                       formik.touched.description &&
                       Boolean(formik.errors.description)
                     }
-                    helperText={
-                      formik.touched.description && formik.errors.description
-                    }
+                    errorMessage={formik.errors.description}
                     height={300}
                   />
                 </Grid>

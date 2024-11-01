@@ -6,9 +6,9 @@ export const PublicLayout = () => {
   return (
     <>
       <Header />
-      <main className="container font-roboto ">
+      <div className="container p-0 font-roboto ">
         <Outlet />
-      </main>
+      </div>
       <Footer />
     </>
   );

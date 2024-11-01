@@ -13,7 +13,7 @@ const Footer = () => {
             </h2>
             <div className="flex space-x-4">
               {ContactForum.map((item) => (
-                <Link to={item.link} key={item.id}>
+                <Link to={item.link} key={item.link}>
                   <item.icon className="text-2xl text-gray-300 hover:text-white" />
                 </Link>
               ))}
@@ -62,8 +62,7 @@ const Footer = () => {
             {["Điều khoản dịch vụ", "Chính sách bảo mật"].map((item) => (
               <li key={item}>
                 <Link
-                  to="#"
-                  onClick={(e) => e.preventDefault()}
+                  to="javascript:void(0)"
                   className="hover:text-white text-gray-300 text-sm"
                 >
                   {item}
@@ -71,7 +70,6 @@ const Footer = () => {
               </li>
             ))}
           </ul>
-
           <p className="text-gray-300 text-sm md:ml-auto">
             © Team Voi Tây Nguyên 2024
           </p>

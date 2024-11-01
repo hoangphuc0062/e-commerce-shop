@@ -22,10 +22,18 @@ export default function EditWarehouse({
 }) {
   // Validation schema using Yup
   const validationSchema = Yup.object({
-    name: Yup.string().required("Tên kho không được để trống"),
-    address: Yup.string().required("Địa chỉ không được để trống"),
-    description: Yup.string().required("Mô tả không được để trống"),
-    isBlocked: Yup.boolean().required("Trạng thái không được để trống"),
+    name: Yup.string()
+      .required("Tên kho là bắt buộc")
+      .min(3, "Tên kho phải có ít nhất 3 ký tự")
+      .max(250, "Tên kho không được vượt quá 250 ký tự"),
+    address: Yup.string()
+      .required("Địa chỉ là bắt buộc")
+      .min(10, "Địa chỉ phải có ít nhất 10 ký tự")
+      .max(250, "Địa chỉ không được vượt quá 250 ký tự"),
+    description: Yup.string()
+      .required("Mô tả là bắt buộc")
+      .min(20, "Mô tả phải có ít nhất 20 ký tự")
+      .max(500, "Mô tả không được vượt quá 500 ký tự"),
   });
 
   return (
@@ -104,16 +112,16 @@ export default function EditWarehouse({
                   )}
                 </Grid>
               </Grid>
+              <DialogActions>
+                <Button onClick={handleClose} variant="contained" color="error">
+                  Hủy
+                </Button>
+                <Button type="submit" variant="contained" color="success">
+                  Cập nhật
+                </Button>
+              </DialogActions>
             </DialogContent>
 
-            <DialogActions>
-              <Button onClick={handleClose} variant="contained" color="error">
-                Hủy
-              </Button>
-              <Button type="submit" variant="contained" color="success">
-                Cập nhật
-              </Button>
-            </DialogActions>
           </Form>
         )}
       </Formik>

@@ -7,6 +7,7 @@ import AddToCart from "../../../components/Button/AddToCart";
 import ProductInfo from "../../../components/Products/ProductInfo";
 import StoreList from "../../../components/Products/StoreList";
 import QnASection from "../../../components/Form/QnAForm";
+import SmallPost from "../../../components/Forum/SmallPost";
 import Heading from "../../../components/Heading/Heading";
 import Ratings from "../../../components/Products/Ratings";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -26,8 +27,8 @@ import ProductDecripton from "../../../components/Products/ProductDecripton";
 import ProductOptions from "../../../components/Products/ProductOptions";
 import ProductColors from "../../../components/Products/ProductColors";
 import Reviews from "../../../components/Products/Reviews";
-import WarrantyProduct from "../../../components/Products/WarrantyProduct";
 import { reviewProducts } from "../../../data/Product/ReviewProducts";
+import WarrantyProduct from "../../../components/Products/WarrantyProduct";
 
 const ProductDetail = () => {
   const [product, setProduct] = useState(null);
@@ -104,6 +105,7 @@ const ProductDetail = () => {
               <StoreList />
               <ProductInfo />
             </div>
+    
           </div>
           {/* Product Info Section */}
           <div className="w-full lg:w-1/2">
@@ -118,7 +120,7 @@ const ProductDetail = () => {
               />
               <AddToCart />
             </div>
-            <WarrantyProduct />
+            <WarrantyProduct/>
           </div>
         </div>
       </div>
@@ -130,6 +132,12 @@ const ProductDetail = () => {
 
       <div className="flex gap-4 w-full lg:flex-row flex-col lg:w-full">
         <Reviews reviews={reviewProducts} product={product} />
+
+        {/* Tin Tức */}
+        <div className="p-4 rounded-lg shadow-md w-full lg:w-[30%] lg:flex hidden flex-col gap-4">
+          <Heading title="Tin Tức Về Sản Phẩm" />
+          <SmallPost />
+        </div>
       </div>
       <div className="w-full pt-4">
         <QnASection />
