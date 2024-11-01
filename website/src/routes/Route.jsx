@@ -15,6 +15,7 @@ import {
   Account,
   Coupon,
 } from "../pages/web/member";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 export default function RootRouter() {
   const routes = useRoutes([
@@ -32,23 +33,43 @@ export default function RootRouter() {
           children: [
             {
               path: "",
-              element: <HomeProfile />,
+              element: (
+                <ProtectedRoute>
+                  <HomeProfile />
+                </ProtectedRoute>
+              ),
             },
             {
               path: "account",
-              element: <Account />,
+              element: (
+                <ProtectedRoute>
+                  <Account />
+                </ProtectedRoute>
+              ),
             },
             {
               path: "coupon",
-              element: <Coupon />,
+              element: (
+                <ProtectedRoute>
+                  <Coupon />
+                </ProtectedRoute>
+              ),
             },
             {
               path: "address",
-              element: <Address />,
+              element: (
+                <ProtectedRoute>
+                  <Address />
+                </ProtectedRoute>
+              ),
             },
             {
               path: "order",
-              element: <Order />,
+              element: (
+                <ProtectedRoute>
+                  <Order />
+                </ProtectedRoute>
+              ),
             },
           ],
         },

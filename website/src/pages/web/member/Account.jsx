@@ -1,26 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../../../components/Input/Input";
 import { Select } from "../../../components/Input/Select";
 import { formatCurrency, convertToISODateString } from "../../../ultils/helper";
-import { Icon } from "@iconify/react"; // Add this line
-
-const initialCustomerData = {
-  name: "Nguyen Van A",
-  sex: "Nam",
-  email: "bmtck0000@gmail.com",
-  phone: "077344062",
-  birthday: "01/01/1999",
-  createdAt: "01/01/2021",
-  stackMoney: 1000000,
-  totalPurchasePrice: 1000000,
-  address: "Ha Noi",
-  avatar:
-    "https://scontent.fsgn2-11.fna.fbcdn.net/v/t39.30808-6/449064390_2414483542094432_6673220414551968639_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=RL1utjliNoAQ7kNvgHfL7Ha&_nc_zt=23&_nc_ht=scontent.fsgn2-11.fna&_nc_gid=ASknwc48-eYa-gCpFeRmDPG&oh=00_AYBGm9yS3VKoqWJi5i9kqvsRa0yZqnxQrBvcl3rMf9_aeA&oe=6723C9DB",
-};
+import { useSelector } from "react-redux";
 
 export default function Account() {
-  const [customerData, setCustomerData] = useState(initialCustomerData);
+  const [customerData, setCustomerData] = useState([]);
+  const status = useSelector((state) => state.auth.statusGetMe);
+  const data = useSelector((state) => state.auth.data.rs);
 
+  useEffect(() => {
+    if (status === "success") {
+      setCustomerData(data);
+    }
+  }, [status, data]);
   const extractCustomerData = (data) => {
     let { name, birthday, sex, email } = data;
     birthday = convertToISODateString(birthday);
@@ -28,7 +21,6 @@ export default function Account() {
   };
 
   const handleChange = (field, value) => {
-    // Only update the fields that are marked as editable
     setCustomerData((prevData) => ({
       ...prevData,
       [field]: value,
@@ -42,6 +34,7 @@ export default function Account() {
 
     console.log(filteredData);
   };
+  console.log(customerData);
 
   return (
     <div className="">
@@ -112,7 +105,7 @@ export default function Account() {
             <button
               type="button"
               className="bg-gray-500 hover:bg-blue-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-md flex items-center justify-center w-1/4"
-              onClick={() => setCustomerData(initialCustomerData)}
+              onClick={() => setCustomerData(data)}
             >
               Hủy
             </button>

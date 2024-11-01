@@ -130,7 +130,13 @@ export const CustomInputField = ({
       <div className="flex relative justify-center items-center">
         <input
           id={id}
-          type={showPassword ? "text" : "password"}
+          type={
+            id === "password" && showPassword
+              ? "text"
+              : id === "password"
+              ? "password"
+              : "text"
+          }
           name={name}
           placeholder={placeholder}
           value={inputValue}
