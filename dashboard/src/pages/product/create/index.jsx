@@ -351,7 +351,7 @@ export default function CreateProduct() {
           >
             <Grid item xs={12}>
               <Typography sx={{ mb: 2 }} variant="h6">
-                hình ảnh và thông số
+                Hình ảnh và thông số
               </Typography>
             </Grid>
 

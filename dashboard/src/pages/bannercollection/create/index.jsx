@@ -161,32 +161,40 @@ function AddBannerCollection() {
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
                       <ImageUploader
-                        onUploadComplete={(url) =>
-                          handleUploadComplete(url, index)
-                        }
+                        onUploadComplete={(url) => handleUploadComplete(url, index)}
                         onDelete={() => handleDelete(index)}
                         avatarSize={100}
                         idupload={`banner[${index}].urlImage`}
                         value={bannerItem.urlImage}
-                        {...getErrorProps(`banner[${index}].urlImage`)}
+                        {...getErrorProps(`banner[${index}].urlImage`)} // This includes error handling
                         onBlur={formik.handleBlur}
                       />
+                      {formik.touched.banner?.[index]?.urlImage && formik.errors.banner?.[index]?.urlImage && (
+                        <FormHelperText error>{formik.errors.banner[index].urlImage}</FormHelperText>
+                      )}
                     </Grid>
                     <TextField
                       label="Ref URL"
                       name={`banner[${index}].refUrl`}
                       value={bannerItem.refUrl}
                       onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                       fullWidth
                       sx={{ mt: 1, ml: 2 }}
+                      error={formik.touched.banner && formik.touched.banner[index]?.refUrl && Boolean(formik.errors.banner?.[index]?.refUrl)}
+                      helperText={formik.touched.banner && formik.touched.banner[index]?.refUrl && formik.errors.banner?.[index]?.refUrl}
                     />
+
                     <TextField
                       label="Position"
                       name={`banner[${index}].position`}
                       value={bannerItem.position}
                       onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                       fullWidth
                       sx={{ mt: 1, ml: 2 }}
+                      error={formik.touched.banner && formik.touched.banner[index]?.position && Boolean(formik.errors.banner?.[index]?.position)}
+                      helperText={formik.touched.banner && formik.touched.banner[index]?.position && formik.errors.banner?.[index]?.position}
                     />
                     <Button
                       variant="outlined"

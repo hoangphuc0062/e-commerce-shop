@@ -31,7 +31,7 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm" aria-labelledby="dialog-title" aria-describedby="dialog-description">
         <DialogTitle sx={{ fontSize: "1.5rem" }}>
           Chỉnh sửa thông tin
         </DialogTitle>
@@ -51,7 +51,7 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
               onBlur={formik.handleBlur}
               error={formik.touched.title && Boolean(formik.errors.title)}
               helperText={formik.touched.title && formik.errors.title}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, fontSize: '0.875rem', '& .MuiInputBase-input': { fontSize: '0.875rem', padding: '8px' } }} // Adjust font size and padding
             />
             <TextField
               label="Email"
@@ -62,7 +62,7 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
               onBlur={formik.handleBlur}
               error={formik.touched.email && Boolean(formik.errors.email)}
               helperText={formik.touched.email && formik.errors.email}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, fontSize: '0.875rem', '& .MuiInputBase-input': { fontSize: '0.875rem', padding: '8px' } }} // Adjust font size and padding
             />
             <TextField
               label="Số điện thoại"
@@ -73,7 +73,7 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
               onBlur={formik.handleBlur}
               error={formik.touched.phone && Boolean(formik.errors.phone)}
               helperText={formik.touched.phone && formik.errors.phone}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, fontSize: '0.875rem', '& .MuiInputBase-input': { fontSize: '0.875rem', padding: '8px' } }} // Adjust font size and padding
             />
             <TextField
               label="Địa chỉ"
@@ -84,10 +84,10 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
               onBlur={formik.handleBlur}
               error={formik.touched.address && Boolean(formik.errors.address)}
               helperText={formik.touched.address && formik.errors.address}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, fontSize: '0.875rem', '& .MuiInputBase-input': { fontSize: '0.875rem', padding: '8px' } }} // Adjust font size and padding
             />
             <TextField
-              label="facebook"
+              label="Facebook"
               fullWidth
               name="facebook"
               value={formik.values.facebook}
@@ -95,9 +95,8 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
               onBlur={formik.handleBlur}
               error={formik.touched.facebook && Boolean(formik.errors.facebook)}
               helperText={formik.touched.facebook && formik.errors.facebook}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, fontSize: '0.875rem', '& .MuiInputBase-input': { fontSize: '0.875rem', padding: '8px' } }} // Adjust font size and padding
             />
-
             <TextField
               label="TikTok"
               fullWidth
@@ -107,24 +106,20 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
               onBlur={formik.handleBlur}
               error={formik.touched.tiktok && Boolean(formik.errors.tiktok)}
               helperText={formik.touched.tiktok && formik.errors.tiktok}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, fontSize: '0.875rem', '& .MuiInputBase-input': { fontSize: '0.875rem', padding: '8px' } }} // Adjust font size and padding
             />
             <DialogActions>
               <Button onClick={onClose} size="large">
                 Hủy
               </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                size="large"
-              >
+              <Button type="submit" variant="contained" color="primary">
                 Lưu
               </Button>
             </DialogActions>
           </DialogContent>
         </form>
       </Dialog>
+
     </>
   );
 };
