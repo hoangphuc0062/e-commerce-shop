@@ -22,7 +22,9 @@ export const getCategory = createAsyncThunk(
   "category/getCategory",
   (_, thunkAPI) => handleAsyncThunk(CategoryService.getAll, [null], thunkAPI)
 );
-
+export const GetBySlug = createAsyncThunk("category/getBySlug", (slug, thunkAPI) =>
+  handleAsyncThunk(CategoryService.getBySlug, [slug], thunkAPI)
+);
 
 const category = createSlice({
   name: "category",
@@ -52,7 +54,7 @@ const category = createSlice({
       .addCase(getCategory.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-      });
+      })
   },
 });
 

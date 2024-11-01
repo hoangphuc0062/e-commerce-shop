@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import { formatDay } from "../../../ultils/helper";
@@ -8,7 +8,7 @@ import { getPosts } from "../../../redux/slices/post";
 
 const SlidePost = () => {
   const settings = {
-    dots: false,
+    dots: true,
     infinite: false,
     speed: 500,
     slidesToShow: 1,
@@ -18,7 +18,7 @@ const SlidePost = () => {
   const status = useSelector((state) => state.post.status);
   const postData = useSelector((state) => state.post.data);
   const [data, setData] = useState([]);
-
+  const [categoryFilter, setCategoryFilter] = useState("");
   useEffect(() => {
     dispatch(getPosts());
   }, [dispatch]);
@@ -34,7 +34,7 @@ const SlidePost = () => {
           seoKeyWords: item.seoKeyWords,
           content: item.content,
           author: item.author?.name || "Unknown",
-          category: item.category,
+          category: item?.category?.name,
           rating: item.rating,
           slug: item.slug,
           date: item.createdAt,
@@ -44,17 +44,19 @@ const SlidePost = () => {
     }
   }, [status, postData]);
 
+  const filteredData = data.filter((post) => post.category === categoryFilter);
+  
   return (
     <div className="w-full">
       <HeadingSection title="Nổi bật nhất" />
       <Slider {...settings}>
-        {data?.map((post) => (
+        {filteredData?.map((post) => (
           <div key={post.id} className="px-1">
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="bg-white rounded-lg overflow-hidden flex">
               <img
                 src={post.thumbnail}
                 alt={post.postTitle}
-                className="w-full h-36 object-cover md:h-48 lg:h-60 cursor-pointer"
+                className="w-full h-full lg:max-w-[180px] lg:max-h-[180px] object-cover"
               />
               <div className="p-3">
                 <Link
@@ -63,16 +65,15 @@ const SlidePost = () => {
                 >
                   {post.postTitle}
                 </Link>
-                <Link
-                  to={`${post.slug}`}
-                  className="text-xs text-blue-500 pb-1 cursor-pointer"
-                >
-                  {post.author}
-                </Link>
-
-                <p className="text-xs text-gray-600 cursor-pointer">
-                  {formatDay(post.date)}
-                </p>
+                <span className="text-md line-clamp-3">
+                  {post.shortDescription}
+                </span>
+                <div className="flex items-center pt-16">
+                  <span className="text-sm">
+                    Ngày đăng {formatDay(post.date)}
+                  </span>
+                  <Link className="text-main pl-5">{post.category}</Link>
+                </div>
               </div>
             </div>
           </div>

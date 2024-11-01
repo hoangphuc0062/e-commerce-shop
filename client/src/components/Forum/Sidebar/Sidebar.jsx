@@ -1,16 +1,12 @@
 import { Link } from "react-router-dom";
-// import CategoryPost from "../../../data/Forum/CategoryPost";
 import "./Sidebar.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getCategory } from "../../../redux/slices/category";
 
-import icons from "../../../ultils/icon";
 import Iconify from "./Iconify";
 
 const SideBar = () => {
-  const { CiHome } = icons;
-
   const dispatch = useDispatch();
   const status = useSelector((state) => state.category.status);
   const categoryData = useSelector((state) => state.category.data);
@@ -40,22 +36,14 @@ const SideBar = () => {
   return (
     <>
       {/* Sidebar cho màn hình lớn */}
-      <div className="hidden md:block md:sticky md:overflow-y-auto md:pt-1 md:h-screen fixed top-0 left-0">
+      <div className="lg:block fixed">
         <nav className="p-4">
           <ul className="space-y-2">
-            <li>
-              <Link
-                to="/forum"
-                className="flex text-sm items-center gap-2 p-2 text-gray-700 hover:bg-hv rounded hover:text-main"
-              >
-                <CiHome className="w-[20px]" /> Trang chủ
-              </Link>
-            </li>
             {data &&
-              categoryPostData?.map((category) => (
-                <li key={category.id}>
+              categoryPostData?.map((category, index) => (
+                <li key={index}>
                   <Link
-                    to={category.slug}
+                    to={`/forum/category/${category.slug}`}
                     className="flex text-sm items-center gap-2 p-2 text-gray-700 hover:bg-hv rounded hover:text-main"
                   >
                     <Iconify icon={category.icon} />
@@ -72,10 +60,10 @@ const SideBar = () => {
         <nav>
           <ul className="flex space-x-4">
             {data &&
-              categoryPostData?.map((category) => (
-                <li key={category.id}>
+              categoryPostData?.map((category, index) => (
+                <li key={index}>
                   <Link
-                    to={category.slug}
+                    to={`forum/category/${category.slug}`}
                     className="flex text-sm items-center gap-2 p-2 text-gray-700 hover:bg-hv rounded hover:text-main"
                   >
                     <Iconify icon={category.icon} />

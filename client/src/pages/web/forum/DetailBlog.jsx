@@ -3,9 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { FaArrowTrendUp } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { GetBySlug } from "../../../redux/slices/post";
-import {
-  Sidebar
-} from "../../../components/Forum";
+import { Sidebar } from "../../../components/Forum";
 import { formatDay } from "../../../ultils/helper";
 const DetailBlog = () => {
   const { slug } = useParams();
@@ -24,20 +22,20 @@ const DetailBlog = () => {
   useEffect(() => {
     if (status === "success") {
       setData({
-        status: post.status,
-        id: post._id,
-        postTitle: post.postTitle,
-        shortDescription: post.shortDescription,
-        seoKeyWords: post.seoKeyWords,
-        content: post.content,
-        author: post.author?.name || "Unknown",
-        authorImageUrl: post.author?.imageUrl || "/path/to/default-image.jpg",
+        status: post?.status,
+        id: post?._id,
+        postTitle: post?.postTitle,
+        shortDescription: post?.shortDescription,
+        seoKeyWords: post?.seoKeyWords,
+        content: post?.content,
+        author: post?.author?.name || "Unknown",
+        authorImageUrl: post?.author?.imageUrl || "/path/to/default-image.jpg",
         category: post?.category?.name,
-        rating: post.rating,
-        slug: post.slug,
-        date: post.createdAt,
-        thumbnail: post.thumbnail,
-        tags: post.tags || [],
+        rating: post?.rating,
+        slug: post?.slug,
+        date: post?.createdAt,
+        thumbnail: post?.thumbnail,
+        tags: post?.tags || [],
       });
     }
   }, [status, post]);
@@ -64,30 +62,18 @@ const DetailBlog = () => {
             >
               # Apple iOS 18
             </a>
-            <a
-              href="#"
-              className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 hover:bg-red-500 hover:text-white transition-colors duration-300"
-            >
-              # Apple iPhone 16 Series
-            </a>
-            <a
-              href="#"
-              className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 hover:bg-red-500 hover:text-white transition-colors duration-300"
-            >
-              # Black Myth: Wukong
-            </a>
           </div>
 
           {/* Đường dẫn breadcrumb */}
           <div className="text-sm mb-4">
-            <Link href="/" className="text-main">
+            <Link to="/forum" className="text-main">
               Trang chủ
             </Link>{" "}
             &raquo;{" "}
             <a href="#" className="text-gray-600">
               {data?.category}
             </a>{" "}
-            &raquo; {data.postTitle}
+            {data.postTitle}
           </div>
 
           {/* Hình ảnh bài viết */}

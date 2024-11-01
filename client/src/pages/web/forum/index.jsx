@@ -35,7 +35,7 @@ function ForumPage() {
           seoKeyWords: item.seoKeyWords,
           content: item.content,
           author: item.author?.name || "Unknown",
-          category: item.category,
+          category: item.category || "Unknown",
           rating: item.rating,
           slug: item.slug,
           date: item.createdAt,
@@ -64,14 +64,14 @@ function ForumPage() {
 
           <section className="mb-8 p-4">
             <HeadingSection title="xem nhiều tuần qua" />
-            {data && <SliderPost data={data} category={null} />}
+            {data && <SliderPost data={data} category={data?.category} />}
           </section>
 
           <PostScroll data={data} />
 
           <section className="mb-8 px-4 bg-gray-100 w-full rounded-lg">
             <HeadingSection title="S-GAMES" />
-            {data && <SliderPost data={data} category={null} />}
+            {data && <SliderPost data={data} category={data?.category} />}
             <div className="mt-4 text-right">
               <Link
                 to="#"
@@ -83,20 +83,20 @@ function ForumPage() {
           </section>
           <section className="mb-8 p-4">
             <div className="flex overflow-x-auto space-x-4">
-              <PostTag category={null} data={data} />
-              <PostTag category={null} data={data} />
-              <PostTag category={null} data={data} />
+              <PostTag category={data?.category} data={data} />
+              <PostTag category={data?.category} data={data} />
+              <PostTag category={data?.category} data={data} />
             </div>
           </section>
 
           <section className="mb-8 p-4">
             <HeadingSection title="thủ thuật - mẹo hay" />
-            {data && <SliderPost data={data} category={null} />}
+            {data && <SliderPost data={data} category={data?.category} />}
           </section>
 
           <section className="mb-8 p-4">
             <HeadingSection title="Sự kiện" />
-            {data && <SliderPost data={data} category={null} />}
+            {data && <SliderPost data={data} category={data?.category} />}
           </section>
         </div>
       </div>

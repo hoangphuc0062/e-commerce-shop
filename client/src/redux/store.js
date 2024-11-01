@@ -8,8 +8,6 @@ import postReducer from "./slices/post";
 import categoryReducer from "./slices/category";
 import storage from "redux-persist/lib/storage"; // sử dụng localStorage
 
-
-import { combineReducers } from "redux";
 import {
   persistReducer,
   persistStore,
@@ -20,7 +18,6 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-
 
 const rootReducer = combineReducers({
   loading: loadingReducer,
