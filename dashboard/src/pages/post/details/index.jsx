@@ -20,11 +20,25 @@ export default function EyePost({
   handleDelete,
   handleEdit,
 }) {
+  // const truncateContent = (content, maxLength) => {
+  //   if (!content) return "";
+  //   return content.length > maxLength
+  //     ? content.slice(0, maxLength) + "..."
+  //     : content;
+  // };
   const truncateContent = (content, maxLength) => {
     if (!content) return "";
-    return content.length > maxLength
-      ? content.slice(0, maxLength) + "..."
-      : content;
+
+    // Loại bỏ các thẻ HTML bằng cách sử dụng regex
+    const plainTextContent = content.replace(/<[^>]*>/g, '');
+
+    // Rút ngắn nội dung nếu vượt quá độ dài tối đa
+    return plainTextContent.length > maxLength
+      ? plainTextContent.slice(0, maxLength) + "..."
+      : plainTextContent;
+  };
+  const removePTags = (text) => {
+    return text ? text.replace(/<\/?p>/g, '') : '';
   };
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
@@ -51,8 +65,9 @@ export default function EyePost({
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             {selectedData?.post_title}
           </Typography>
-          <Typography variant="body2" color="textSecondary" paragraph>
-            {selectedData?.postShortDescription}
+          <Typography variant="body1">
+            {/* <strong>Short SEO Description:</strong>{" "} */}
+            {removePTags(selectedData?.postShortDescription)}
           </Typography>
         </Box>
 
@@ -75,7 +90,7 @@ export default function EyePost({
           <Grid item xs={12}>
             <Typography variant="body1">
               <strong>Short SEO Description:</strong>{" "}
-              {selectedData?.postShortDescription}
+              {removePTags(selectedData?.postShortDescription)}
             </Typography>
           </Grid>
           <Grid item xs={12}>
