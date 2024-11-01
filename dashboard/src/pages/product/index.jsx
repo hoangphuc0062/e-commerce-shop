@@ -18,12 +18,12 @@ export default function ProductPage() {
   const [data, setData] = useState([]);
 
   const columns = [
-    { label: "mã", field: "SKU" },
+    { label: "Mã", field: "SKU" },
     { label: "Tên sản phẩm", field: "name" },
-    { label: "hình ảnh", field: "images" },
-    { label: "giá thị trường", field: "priceInMarket" },
-    { label: "giá cửa hàng", field: "priceInStore" },
-    { label: "giá trên website", field: "priceOnline" },
+    { label: "Hình ảnh", field: "images" },
+    { label: "Giá thị trường", field: "priceInMarket" },
+    { label: "Giá cửa hàng", field: "priceInStore" },
+    { label: "Giá trên website", field: "priceOnline" },
     { label: "Số lượng", field: "onStock" },
     { label: "Trạng thái", field: "status" },
   ];

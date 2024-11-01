@@ -30,9 +30,9 @@ const validationSchema = Yup.object().shape({
     address: Yup.string()
         .min(5, "Địa chỉ phải có ít nhất 5 ký tự")
         .required("Vui lòng nhập địa chỉ")
-        .max(200, "Ghi chú không vượt quá 200 ký tự")
+        .max(200, "Ghi chú không vượt quá 250 ký tự")
         .required("Vui lòng nhập địa chỉ"),
-    note: Yup.string().max(200, "Ghi chú không vượt quá 200 ký tự"),
+    note: Yup.string().max(200, "Ghi chú không vượt quá 250 ký tự"),
 });
 
 export default function ShippingPage() {
