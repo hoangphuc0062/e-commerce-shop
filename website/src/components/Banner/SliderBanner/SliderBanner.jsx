@@ -51,7 +51,7 @@ export default function SliderBanner() {
           swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
         }}
         modules={[FreeMode, Navigation, Thumbs, Autoplay]}
-        className="contentSwiper"
+        className="contentSwiper "
       >
         {imgs.map((img, index) => (
           <SwiperSlide key={index}>
@@ -61,6 +61,7 @@ export default function SliderBanner() {
           </SwiperSlide>
         ))}
       </Swiper>
+
       <Swiper
         onSwiper={setThumbsSwiper}
         spaceBetween={10}
