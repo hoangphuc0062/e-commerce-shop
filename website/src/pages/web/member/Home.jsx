@@ -1,11 +1,25 @@
+import { useSelector } from "react-redux";
 import Person from "../../../components/Person";
+import { useEffect, useState } from "react";
 
 export default function HomeProfile() {
+  const [customerData, setCustomerData] = useState([]);
+  const status = useSelector((state) => state.auth.statusGetMe);
+  const data = useSelector((state) => state.auth.data.rs);
+  useEffect(() => {
+    if (status === "success") {
+      setCustomerData(data);
+    }
+  }, [status, data]);
   return (
     <div>
       <div className="flex-1 ">
         <div className="w-full md:w-3/4 lg:w-4/5 xl:w-5/6 p-4">
-          <Person name="Phúc" phone="0773440062" role="Vip" />
+          <Person
+            name={customerData.name}
+            phone={customerData.phone}
+            role="Vip"
+          />
         </div>
         <div className="flex justify-center p-3 border border-gray-300 rounded-lg w-full">
           <div className="text-center mx-40">
