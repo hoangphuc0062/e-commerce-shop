@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { handleToast } from "../../../ultils/toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { SSOButton } from "../../../components/Button";
@@ -13,6 +13,8 @@ import { UserContext } from "../../../context/AuthContext";
 export default function Login() {
   const { setUser, setLoginAuth } = useContext(UserContext);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [captchaValue, setCaptchaValue] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -48,12 +50,13 @@ export default function Login() {
       handleToast("success", "Đăng nhập thành công.");
       setLoginAuth(true);
       setUser(data);
+      navigate("/");
       dispatch(resetState({ key: "status", value: "idle" }));
     }
     if (status === "failed") {
       handleToast("error", error.mes);
     }
-  }, [status, error, data, setUser, setLoginAuth, dispatch]);
+  }, [status, error, data, setUser, setLoginAuth, dispatch, navigate]);
 
   return (
     <section className="mx-2 my-4">

@@ -1,9 +1,10 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useEffect, useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// import { handleToast } from "../../ultils/toast";
-// import { logoutCustomer, setStatus } from "../../redux/slices/customer";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/slices/auth";
+import { handleToast } from "./../../ultils/toast";
+import { UserContext } from "../../context/AuthContext";
 
 const tabs = [
   {
@@ -40,32 +41,21 @@ const tabs = [
 
 export const SideBar = () => {
   const [activeTab, setActiveTab] = useState(tabs[0].id);
-  // const navigate = useNavigate();
-  // const dispatch = useDispatch();
-  // const status = useSelector((state) => state.customer.statusLogout);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const status = useSelector((state) => state.auth.statusLogout);
+  const { setLoginAuth } = useContext(UserContext);
 
-  // const handleLogout = () => {
-  //   dispatch(logoutCustomer());
-  // };
-
-  // useEffect(() => {
-  //   if (status === "success") {
-  //     handleToast("success", "Đăng xuất thành công");
-  //     dispatch(
-  //       setStatus({
-  //         key: "status",
-  //         value: "idle",
-  //       })
-  //     );
-  //     dispatch(
-  //       setStatus({
-  //         key: "customer",
-  //         value: null,
-  //       })
-  //     );
-  //     navigate("/");
-  //   }
-  // }, [status]);
+  useEffect(() => {
+    if (status === "success") {
+      setLoginAuth(false);
+      navigate("/");
+      handleToast("success", "Đăng xuất thành công");
+    }
+  }, [status, navigate, setLoginAuth]);
+  const handleLogout = () => {
+    dispatch(logout());
+  };
 
   return (
     <div>
@@ -90,7 +80,7 @@ export const SideBar = () => {
           ))}
           <li>
             <Link
-              onClick={() => console.log("logout")}
+              onClick={handleLogout}
               className="flex text-sm items-center gap-2 p-2 text-gray-700 hover:bg-gray-100 hover:text-main"
             >
               <Icon icon="bx:bx-log-out" />
@@ -121,7 +111,7 @@ export const SideBar = () => {
           ))}
           <li>
             <Link
-              onClick={() => console.log("logout")}
+              onClick={handleLogout}
               className="flex flex-col items-center gap-2 p-[5px] text-gray-700 hover:bg-gray-100 rounded hover:text-main"
             >
               <div className="flex">

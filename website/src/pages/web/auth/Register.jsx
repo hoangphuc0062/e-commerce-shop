@@ -1,12 +1,18 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { handleToast } from "../../../ultils/toast";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { CustomInputField } from "../../../components/Input/Input";
-
+import { register, resetState } from "../../../redux/slices/auth";
+import { UserContext } from "../../../context/AuthContext";
+import { useDispatch } from "react-redux";
 const Register = () => {
+  const { setUser, setLoginAuth } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
 
   const [captchaValue, setCaptchaValue] = useState(null);
@@ -33,7 +39,15 @@ const Register = () => {
         handleToast("error", "Vui lòng xác nhận bạn không phải là robot.");
         return;
       }
-      console.log(values);
+      dispatch(register(values)).then((res) => {
+        if (res.type === "auth/register/fulfilled") {
+          handleToast("success", "Đăng ký tài khoản thành công.");
+          navigate("/");
+          setLoginAuth(true);
+          setUser(res.payload.customer);
+          dispatch(resetState({ key: "statusRegister", value: "idle" }));
+        }
+      });
     },
   });
 
