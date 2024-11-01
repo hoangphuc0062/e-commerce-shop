@@ -10,7 +10,11 @@ const port = process.env.PORT || 8888;
 
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL, process.env.DASHBOARD_URL].filter(Boolean),
+    origin: [
+      process.env.CLIENT_URL,
+      process.env.DASHBOARD_URL,
+      process.env.WEB_URL,
+    ].filter(Boolean),
     methods: ["POST", "GET", "PUT", "DELETE"],
     credentials: true,
   })

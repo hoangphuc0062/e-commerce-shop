@@ -1,45 +1,46 @@
 import * as Yup from "yup";
 
 export const validationProductSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
-  slug: Yup.string().required("Slug is required"),
-  SKU: Yup.string().required("SKU is required"),
+  name: Yup.string().required("Tên là bắt buộc"),
+  slug: Yup.string().required("Slug là bắt buộc"),
+  SKU: Yup.string().required("SKU là bắt buộc"),
   historicalPrice: Yup.number()
-    .required("Historical price is required")
-    .min(0, "Must be greater than or equal to 0"),
+    .required("Giá lịch sử là bắt buộc")
+    .min(0, "Phải lớn hơn hoặc bằng 0"),
   priceInMarket: Yup.number()
-    .required("Price in market is required")
-    .min(0, "Must be greater than or equal to 0"),
+    .required("Giá thị trường là bắt buộc")
+    .min(0, "Phải lớn hơn hoặc bằng 0"),
   price: Yup.number()
-    .required("Price is required")
-    .min(0, "Must be greater than or equal to 0"),
+    .required("Giá là bắt buộc")
+    .min(0, "Phải lớn hơn hoặc bằng 0"),
   discount: Yup.number()
-    .required("Discount is required")
-    .min(0, "Must be greater than or equal to 0"),
+    .required("Giảm giá là bắt buộc")
+    .min(0, "Phải lớn hơn hoặc bằng 0"),
   onStock: Yup.number()
-    .required("On stock is required")
-    .min(0, "Must be greater than or equal to 0"),
+    .required("Số lượng có thể bán là bắt buộc")
+    .min(0, "Phải lớn hơn hoặc bằng 0"),
   inStock: Yup.number()
-    .required("In stock is required")
-    .min(0, "Must be greater than or equal to 0"),
+    .required("Số lượng tồn kho là bắt buộc")
+    .min(0, "Phải lớn hơn hoặc bằng 0"),
   inComing: Yup.number()
-    .required("In coming is required")
-    .min(0, "Must be greater than or equal to 0"),
-  unit: Yup.string().required("Unit is required"),
+    .required("Số lượng hàng đang về là bắt buộc")
+    .min(0, "Phải lớn hơn hoặc bằng 0"),
+  unit: Yup.string().required("Đơn vị là bắt buộc"),
   minInventory: Yup.number()
-    .required("Min inventory is required")
-    .min(0, "Must be greater than or equal to 0"),
+    .required("Số lượng tối thiểu là bắt buộc")
+    .min(0, "Phải lớn hơn hoặc bằng 0"),
   maxInventory: Yup.number()
-    .required("Max inventory is required")
-    .min(0, "Must be greater than or equal to 0"),
+    .required("Số lượng tối đa là bắt buộc")
+    .min(0, "Phải lớn hơn hoặc bằng 0"),
   weight: Yup.number()
-    .required("Weight is required")
-    .min(0, "Must be greater than or equal to 0"),
-  isBattery: Yup.boolean().required("Battery status is required"),
-  isStopSelling: Yup.boolean().required("Stop selling status is required"),
-  description: Yup.string().required("Description is required"),
-  series: Yup.string().required("Series is required"),
-  brand: Yup.string().required("Brand is required"),
-  category: Yup.string().required("Category is required"),
-  warehouse: Yup.string().required("Warehouse is required"),
+    .required("Khối lượng là bắt buộc")
+    .min(0, "Phải lớn hơn hoặc bằng 0"),
+  isBattery: Yup.boolean().required("Trạng thái pin là bắt buộc"),
+  isStopSelling: Yup.boolean().required("Trạng thái ngừng bán là bắt buộc"),
+  description: Yup.string().required("Mô tả là bắt buộc"),
+  series: Yup.string().required("Series là bắt buộc"),
+  brand: Yup.string().required("Thương hiệu là bắt buộc"),
+  category: Yup.string().required("Danh mục là bắt buộc"),
+  warehouse: Yup.string().required("Kho là bắt buộc"),
+
 });
