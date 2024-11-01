@@ -13,6 +13,7 @@ import "./SliderBanner.css";
 
 // import required modules
 import { Autoplay, FreeMode, Navigation, Thumbs } from "swiper/modules";
+import { Link } from "react-router-dom";
 
 export default function SliderBanner() {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -54,7 +55,9 @@ export default function SliderBanner() {
       >
         {imgs.map((img, index) => (
           <SwiperSlide key={index}>
-            <img src={img.src} alt={img.title} />
+            <Link to={img.link}>
+              <img src={img.src} alt={img.title} />
+            </Link>
           </SwiperSlide>
         ))}
       </Swiper>

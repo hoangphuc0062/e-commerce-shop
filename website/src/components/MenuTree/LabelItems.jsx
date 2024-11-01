@@ -1,32 +1,27 @@
-import { Icon } from "@iconify-icon/react/dist/iconify.js";
-
 import { Link } from "react-router-dom";
-
-import "./MenuTree.css";
 import propTypes from "prop-types";
-
-export const Labeltem = ({ icon, links }) => {
+import { Icon } from "@iconify/react/dist/iconify.js";
+export const LabelItem = ({ icon, links }) => {
   return (
-    <div className="label-item">
-      <div className="right-content">
-        <div className="icon-left">
-          <Icon icon={icon} className="label__ico mr-2" />
-          {links &&
-            links.map((link, index) => (
-              <Link key={index} to={link.url} className="label--item__link">
-                {link.name}
-              </Link>
-            ))}
-        </div>
+    <div className="flex justify-between items-center p-2 cursor-pointer transition-colors duration-300 text-lg font-medium hover:bg-gray-100 w-full">
+      <div className="flex items-center">
+        <Icon icon={icon} className="pr-1" />
+        <span className="text-sm">
+          {links.map((link, index) => (
+            <Link key={index} to={link.url} className="hover:text-main">
+              {link.name}
+            </Link>
+          ))}
+        </span>
       </div>
-      <div className="icon-right">
-        <Icon icon="akar-icons:chevron-right" />
+      <div>
+        <Icon icon="akar-icons:chevron-right" className="text-xs" />
       </div>
     </div>
   );
 };
 
-Labeltem.propTypes = {
+LabelItem.propTypes = {
   icon: propTypes.string.isRequired,
   links: propTypes.array.isRequired,
 };
