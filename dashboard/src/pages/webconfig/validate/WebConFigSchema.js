@@ -18,9 +18,6 @@ export const WebconFigValidate = Yup.object({
     .min(10, "Địa chỉ phải ít nhất 10 ký tự")
     .max(200, "Địa chỉ không được vượt quá 200 ký tự"),
 
-  logo: Yup.string()
-    .url("URL logo không hợp lệ")
-    .nullable(),
 
   facebook: Yup.string()
     .url("URL Facebook không hợp lệ")

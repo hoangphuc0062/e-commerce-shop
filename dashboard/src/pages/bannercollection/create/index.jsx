@@ -186,7 +186,7 @@ function AddBannerCollection() {
                     />
 
                     <TextField
-                      label="Position"
+                      label="Mức độ ưu tiên"
                       name={`banner[${index}].position`}
                       value={bannerItem.position}
                       onChange={formik.handleChange}

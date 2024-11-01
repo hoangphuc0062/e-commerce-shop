@@ -28,16 +28,24 @@ export default function EyePost({
   };
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
-      <DialogContent sx={{ padding: 4, maxHeight: "80vh", overflowY: "auto" }}>
-        <Box sx={{ textAlign: "center", mb: 2 }}>
+      <DialogContent sx={{
+        padding: 4,
+        maxHeight: "80vh",
+        overflowY: "auto",
+        backgroundColor: "#f9f9f9", // Background color for better contrast
+        borderRadius: "8px", // Rounded corners
+        boxShadow: 3, // Add some shadow for depth
+      }}>
+        <Box sx={{ textAlign: "center", mb: 3 }}>
           <Avatar
             src={selectedData.thumbnail}
             alt="Thumbnail"
             sx={{
-              width: { xs: 400, md: 400 }, // Set width to 400
-              height: { xs: 400, md: 400 }, // Set height to 400
+              width: { xs: 100, md: 150 }, // Adjusted width
+              height: { xs: 100, md: 150 }, // Adjusted height
               margin: "0 auto",
               mb: 2,
+              border: "2px solid #007BFF", // Border to highlight avatar
             }}
           />
           <Typography variant="h6" fontWeight="bold" gutterBottom>
@@ -89,12 +97,12 @@ export default function EyePost({
           </Grid>
           <Grid item xs={12}>
             <Typography variant="body1">
-              <strong>Đánh ghá:</strong> {selectedData?.rating}
+              <strong>Đánh giá:</strong> {selectedData?.rating}
             </Typography>
           </Grid>
         </Grid>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ padding: 2, justifyContent: 'center' }}>
         <IconButton
           aria-label="edit"
           onClick={() => handleEdit(selectedData.id)}
@@ -107,11 +115,12 @@ export default function EyePost({
         >
           <Delete color="error" />
         </IconButton>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleClose} color="primary" variant="contained" sx={{ marginLeft: 2 }}>
           Đóng
         </Button>
       </DialogActions>
     </Dialog>
+
   );
 }
 
