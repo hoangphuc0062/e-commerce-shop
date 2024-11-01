@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { handleToast } from "../../../ultils/toast";
 import { Link } from "react-router-dom";
@@ -6,10 +6,14 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { SSOButton } from "../../../components/Button";
 import { CustomInputField } from "../../../components/Input/Input";
+import { useDispatch, useSelector } from "react-redux";
+import { login, resetState } from "../../../redux/slices/auth";
+import { UserContext } from "../../../context/AuthContext";
 
 export default function Login() {
+  const { setUser, setLoginAuth } = useContext(UserContext);
+  const dispatch = useDispatch();
   const [captchaValue, setCaptchaValue] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const formik = useFormik({
@@ -30,18 +34,27 @@ export default function Login() {
         handleToast("error", "Vui lòng xác nhận bạn không phải là robot.");
         return;
       }
-      setIsSubmitting(true);
-      try {
-        console.log(values);
-        // Additional async calls can be placed here
-      } finally {
-        setIsSubmitting(false);
-      }
+      dispatch(login(values));
     },
   });
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  const status = useSelector((state) => state.auth.status);
+  const error = useSelector((state) => state.auth.error);
+  const data = useSelector((state) => state.auth.data.rs);
+  useEffect(() => {
+    if (status === "success") {
+      handleToast("success", "Đăng nhập thành công.");
+      setLoginAuth(true);
+      setUser(data);
+      dispatch(resetState({ key: "status", value: "idle" }));
+    }
+    if (status === "failed") {
+      handleToast("error", error.mes);
+    }
+  }, [status, error, data, setUser, setLoginAuth, dispatch]);
+
   return (
     <section className="mx-2 my-4">
       <div className="container flex justify-center">
@@ -57,29 +70,33 @@ export default function Login() {
           </div>
           <form className="py-5" onSubmit={formik.handleSubmit}>
             <div className="grid gap-6 mb-6">
-              <CustomInputField
-                label={"Số điện thoại hoặc email"}
-                name={"phone"}
-                inputValue={formik.values.phone}
-                onChange={formik.handleChange}
-                errorMessage={formik.errors.phone}
-                onBlur={formik.handleBlur}
-                id={"phone"}
-                placeholder={"Số điện thoại hoặc email"}
-              />
-              <CustomInputField
-                label={"Mật khẩu"}
-                name={"password"}
-                inputValue={formik.values.password}
-                onChange={formik.handleChange}
-                errorMessage={formik.errors.password}
-                onBlur={formik.handleBlur}
-                id={"password"}
-                placeholder={"Mật khẩu"}
-                type={"password"}
-                showPassword={showPassword}
-                togglePasswordVisibility={togglePasswordVisibility}
-              />
+              <div>
+                <CustomInputField
+                  id={"phone"}
+                  label={"Số điện thoại hoặc email"}
+                  name={"phone"}
+                  inputValue={formik.values.phone}
+                  onChange={formik.handleChange}
+                  errorMessage={formik.errors.phone}
+                  onBlur={formik.handleBlur}
+                  placeholder={"Số điện thoại hoặc email"}
+                />
+              </div>
+              <div>
+                <CustomInputField
+                  label={"Mật khẩu"}
+                  name={"password"}
+                  inputValue={formik.values.password}
+                  onChange={formik.handleChange}
+                  errorMessage={formik.errors.password}
+                  onBlur={formik.handleBlur}
+                  id={"password"}
+                  placeholder={"Mật khẩu"}
+                  type={"password"}
+                  showPassword={showPassword}
+                  togglePasswordVisibility={togglePasswordVisibility}
+                />
+              </div>
             </div>
             <Link className="underline py-4" to="/forget-password">
               Bạn quên mật khẩu?
@@ -92,9 +109,8 @@ export default function Login() {
             <button
               type="submit"
               className="px-4 py-2 my-3 bg-blue-700 w-full text-white rounded hover:bg-blue-800"
-              disabled={isSubmitting}
             >
-              {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
+              Đăng nhập
             </button>
           </form>
           <div className="flex w-full items-center">
