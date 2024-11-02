@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react";
+
+import Skeleton from "@mui/material/Skeleton";
+import { Box } from "@mui/system";
 import { faker } from "@faker-js/faker";
+
 import SimpleSlide from "../../../components/Banner/SliderBanner/SimpleSlide";
 import ProductCard from "../../../components/FeatureBlockProduct/Card";
-import { useEffect, useState } from "react";
-import { Box } from "@mui/system";
-import Skeleton from "@mui/material/Skeleton";
 
 const imgs = [
   {
@@ -35,16 +37,49 @@ function createRandomProduct() {
     images: [faker.image.url(300, 300, "tech", true)],
   };
 }
+const apiProducts = Array.from({ length: 100 }, createRandomProduct);
 
 const Product = () => {
   const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [firstLoading, setfirstLoading] = useState(true);
+  const [productPerPage, setProductPerPage] = useState(15);
+  const [page, setPage] = useState(1);
+
+  function loading() {
+    return (
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
+        {Array.from({ length: 15 }).map((_, index) => (
+          <Box sx={{ pt: 0.5 }} key={index}>
+            <Skeleton variant="rectangular" height={300} />
+            <Skeleton height={40} />
+            <Skeleton width="80%" />
+            <Skeleton width="60%" />
+          </Box>
+        ))}
+      </div>
+    );
+  }
+
+  const handleLoadMore = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setProducts([
+        ...products,
+        ...apiProducts.slice(0, page * productPerPage),
+      ]);
+      setIsLoading(false);
+    }, 2000);
+  };
+
+  useEffect(() => {
+    setProducts(apiProducts.slice(0, page * productPerPage));
+  }, [page]);
 
   useEffect(() => {
     setTimeout(() => {
-      setProducts(Array.from({ length: 15 }, createRandomProduct));
-      setIsLoading(false);
-    }, 15000);
+      setfirstLoading(false);
+    }, 2000);
   }, []);
 
   return (
@@ -61,19 +96,26 @@ const Product = () => {
       <section>brands here</section>
       <section>filter here</section>
       <section>sort here</section>
-      <section className="grid grid-cols-2 lg:grid-cols-5 gap-2">
-        {isLoading
-          ? Array.from({ length: 15 }).map((_, index) => (
-              <Box sx={{ pt: 0.5 }} key={index}>
-                <Skeleton variant="rectangular" height={300} />
-                <Skeleton height={40} />
-                <Skeleton width="80%" />
-                <Skeleton width="60%" />
-              </Box>
-            ))
-          : products.map((product, index) => (
+      <section>
+        {firstLoading ? (
+          loading()
+        ) : (
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
+            {products.map((product, index) => (
               <ProductCard key={index} data={product} />
             ))}
+          </div>
+        )}
+
+        <div>{isLoading && loading()}</div>
+        <div className="flex justify-center my-2">
+          <button
+            className="bg-main text-white p-2 rounded-lg"
+            onClick={handleLoadMore}
+          >
+            Xem thêm sản phẩm
+          </button>
+        </div>
       </section>
     </div>
   );
