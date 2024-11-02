@@ -2,6 +2,10 @@ import { Link } from "react-router-dom";
 import { ButtonContact } from "../../../components/Button/ButtonContact";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { SearchInput } from "../../../components/Button/SearchInput";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { UserMenu } from "./UserMenu";
+import CartButton from "./CartButton";
 
 const bottonContacts = [
   {
@@ -19,17 +23,46 @@ const bottonContacts = [
   },
 ];
 
+const datacard = [
+  {
+    id: 1,
+    name: "Áo thun nam",
+    size: "M",
+    color: "Đen",
+    price: 100000,
+    quantity: 1,
+    image: "https://pos.nvncdn.com/778773-105877/ps/20240914_4K1dgEuJzN.jpeg",
+  },
+  {
+    id: 2,
+    name: "Áo thun nữ",
+    size: "S",
+    color: "Trắng",
+    price: 120000,
+    quantity: 1,
+    image: "https://pos.nvncdn.com/778773-105877/ps/20240914_4K1dgEuJzN.jpeg",
+  },
+];
+
 export const Header = () => {
+  const [data, setData] = useState(null);
+  const status = useSelector((state) => state.auth?.statusGetMe || "idle");
+  const user = useSelector((state) => state.auth?.data?.rs || null);
+
+  useEffect(() => {
+    setData(status === "success" ? user : null);
+  }, [status, user]);
+
   return (
     <>
       {/* desktop header */}
       <header className="hidden lg:block bg-main sticky top-0 z-50">
         <div className="container text-semi p-3 w-full">
           <nav className="grid grid-flow-col gap-4 items-center">
+            {/* Logo */}
             <div>
-              {/* logo area */}
               <Link
-                to={"/"}
+                to="/"
                 className="flex items-center space-x-3 rtl:space-x-reverse"
               >
                 <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
@@ -37,6 +70,8 @@ export const Header = () => {
                 </span>
               </Link>
             </div>
+
+            {/* Danh mục và Vị trí */}
             <div className="justify-center flex gap-2">
               <button className="flex items-center justify-center text-[12px] bg-hv p-2 rounded-lg">
                 <Icon
@@ -69,60 +104,50 @@ export const Header = () => {
                 </div>
               </button>
             </div>
+
+            {/* Search Input */}
             <div>
               <SearchInput />
             </div>
 
-            <div className="flex gap-1">
+            {/* Contacts và User */}
+            <div className="flex gap-1 items-center">
               {bottonContacts.map((item, index) => (
                 <ButtonContact key={index} {...item} />
               ))}
-              <button className="flex items-center justify-center text-[12px] w-[80px] hover:bg-hv p-2 rounded-lg">
-                <div className="flex items-center justify-center relative">
-                  <Icon icon="carbon:shopping-bag" width="2rem" height="2rem" />
-                  <span className="absolute text-[12px] ">0</span>
-                </div>
-                <p className=" line-clamp-2">Giỏ hàng</p>
-              </button>
-              <button className="flex flex-col items-center justify-center text-[12px]">
-                <Icon
-                  icon="carbon:user-avatar"
-                  width="1.5rem"
-                  height="1.5rem"
-                />
-                <p className="line-clamp-2">Đăng nhập</p>
-              </button>
+
+              <div>
+                <CartButton data={datacard} />
+              </div>
+              <div>
+                <UserMenu data={data} />
+              </div>
             </div>
           </nav>
-          {/* mobile */}
-          {/* <BottomNavigation /> */}
         </div>
       </header>
-      {/* // mobile header */}
+
+      {/* mobile header */}
       <header className="lg:hidden bg-main sticky top-0 z-50 p-1">
-        <nav className="flex flex-col text-semi ">
-          <Link to={"/"} className="flex justify-center w-full">
+        <nav className="flex flex-col text-semi">
+          <Link to="/" className="flex justify-center w-full">
             Logo
           </Link>
-
           <div className="flex justify-between">
             <div className="w-full">
               <SearchInput />
             </div>
-
             <div className="flex gap-1">
               <button className="flex items-center justify-center text-[12px] w-[80px] hover:bg-hv p-2 rounded-lg">
                 <div className="flex items-center justify-center relative">
                   <Icon icon="carbon:shopping-bag" width="2rem" height="2rem" />
-                  <span className="absolute text-[12px] ">0</span>
+                  <span className="absolute text-[12px]">0</span>
                 </div>
-                <p className=" line-clamp-2">Giỏ hàng</p>
+                <p className="line-clamp-2">Giỏ hàng</p>
               </button>
             </div>
           </div>
         </nav>
-        {/* mobile */}
-        {/* <BottomNavigation /> */}
       </header>
     </>
   );
