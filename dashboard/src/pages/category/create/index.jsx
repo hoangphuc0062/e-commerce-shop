@@ -173,7 +173,7 @@ function CategoryCreate() {
               error={
                 formik.touched.description && Boolean(formik.errors.description)
               }
-              helperText={
+              errorMessage={
                 formik.touched.description && formik.errors.description
               }
             />

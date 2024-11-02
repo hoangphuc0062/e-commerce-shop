@@ -12,6 +12,8 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import PropTypes from "prop-types";
+// thư viện he Giải mã các ký tự HTML như &acirc; và &agrave; thành "â" và "à
+import he from 'he';
 
 export default function EyePost({
   open,
@@ -29,14 +31,17 @@ export default function EyePost({
   const truncateContent = (content, maxLength) => {
     if (!content) return "";
 
-    // Loại bỏ các thẻ HTML bằng cách sử dụng regex
-    const plainTextContent = content.replace(/<[^>]*>/g, '');
+    // Giải mã các ký tự HTML, loại bỏ &nbsp; và các thẻ HTML
+    const plainTextContent = he
+      .decode(content.replace(/&nbsp;/g, ' '))
+      .replace(/<[^>]*>/g, '');
 
     // Rút ngắn nội dung nếu vượt quá độ dài tối đa
     return plainTextContent.length > maxLength
       ? plainTextContent.slice(0, maxLength) + "..."
       : plainTextContent;
   };
+
   const removePTags = (text) => {
     return text ? text.replace(/<\/?p>/g, '') : '';
   };
@@ -67,7 +72,7 @@ export default function EyePost({
           </Typography>
           <Typography variant="body1">
             {/* <strong>Short SEO Description:</strong>{" "} */}
-            {removePTags(selectedData?.postShortDescription)}
+            {removePTags(selectedData?.shortDescription)}
           </Typography>
         </Box>
 
@@ -87,12 +92,12 @@ export default function EyePost({
               <strong>Meta Description:</strong> {selectedData?.metaDescription}
             </Typography>
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Typography variant="body1">
               <strong>Short SEO Description:</strong>{" "}
-              {removePTags(selectedData?.postShortDescription)}
+              {removePTags(selectedData?.shortSeoDescription)}
             </Typography>
-          </Grid>
+          </Grid> */}
           <Grid item xs={12}>
             <Typography variant="body1">
               <strong>Nội dung bài viết:</strong>{" "}
