@@ -22,7 +22,7 @@ export default function PriceProduct({
               !productData.historicalPrice ||
               isNaN(productData.historicalPrice) ||
               Number(productData.historicalPrice) <= 0 ||
-              Number(productData.historicalPrice) > 1000000
+              Number(productData.historicalPrice) > 100000000
             )
           }
           helperText={
@@ -33,8 +33,8 @@ export default function PriceProduct({
                   ? "Giá gốc phải là một số hợp lệ"
                   : Number(productData.historicalPrice) <= 0
                     ? "Giá gốc phải lớn hơn 0"
-                    : Number(productData.historicalPrice) > 1000000
-                      ? "Giá gốc không được vượt quá 1,000,000"
+                    : Number(productData.historicalPrice) > 100000000
+                      ? "Giá gốc không được vượt quá 1,000,000,000"
                       : ""
             )
           }
@@ -55,7 +55,7 @@ export default function PriceProduct({
               !productData.priceInMarket ||
               isNaN(productData.priceInMarket) ||
               Number(productData.priceInMarket) <= 0 ||
-              Number(productData.priceInMarket) > 1000000
+              Number(productData.priceInMarket) > 100000000
             )
           }
           helperText={
@@ -66,8 +66,8 @@ export default function PriceProduct({
                   ? "Giá thị trường phải là một số hợp lệ"
                   : Number(productData.priceInMarket) <= 0
                     ? "Giá thị trường phải lớn hơn 0"
-                    : Number(productData.priceInMarket) > 1000000
-                      ? "Giá thị trường không được vượt quá 1,000,000"
+                    : Number(productData.priceInMarket) > 100000000
+                      ? "Giá thị trường không được vượt quá 1,000,000,000"
                       : ""
             )
           }
@@ -88,7 +88,7 @@ export default function PriceProduct({
               !productData.price ||
               isNaN(productData.price) ||
               Number(productData.price) <= 0 ||
-              Number(productData.price) > 1000000
+              Number(productData.price) > 100000000
             )
           }
           helperText={
@@ -99,8 +99,8 @@ export default function PriceProduct({
                   ? "Giá phải là một số hợp lệ"
                   : Number(productData.price) <= 0
                     ? "Giá phải lớn hơn 0"
-                    : Number(productData.price) > 1000000
-                      ? "Giá không được vượt quá 1,000,000"
+                    : Number(productData.price) > 100000000
+                      ? "Giá không được vượt quá 1,000,000,000"
                       : ""
             )
           }

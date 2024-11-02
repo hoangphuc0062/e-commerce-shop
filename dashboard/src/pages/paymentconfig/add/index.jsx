@@ -18,11 +18,20 @@ import * as Yup from "yup";
 
 const AddPaymentDialog = ({ open, onClose, onSave }) => {
   const validationSchema = Yup.object({
-    name: Yup.string().required("Tên tài khoản không được để trống"),
-    accountNumber: Yup.string().required("Số tài khoản không được để trống"),
+    name: Yup.string()
+      .required("Tên tài khoản không được để trống")
+      .max(255, "Tên tài khoản không được quá 255 ký tự"),
+    accountNumber: Yup.string()
+      .required("Số tài khoản không được để trống")
+      .matches(/^\d+$/, "Số tài khoản chỉ được chứa số")
+      .min(9, "Số tài khoản phải có ít nhất 9 ký tự")
+      .max(12, "Số tài khoản không được vượt quá 12 ký tự"),
     bank: Yup.string().required("Ngân hàng không được để trống"),
     bankBranch: Yup.string().required("Chi nhánh không được để trống"),
-    accountOwner: Yup.string().required("Chủ tài khoản không được để trống"),
+    accountOwner: Yup.string()
+      .required("Chủ tài khoản không được để trống")
+      .max(255, "Chủ tài khoản không được quá 255 ký tự")
+      .matches(/^[a-zA-Z\s]+$/, "Tên chỉ được chứa chữ cái và khoảng trắng"),
   });
   const formik = useFormik({
     initialValues: {

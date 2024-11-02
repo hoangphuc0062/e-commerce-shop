@@ -6,7 +6,7 @@ import {
   Button,
   Box,
 } from "@mui/material";
-
+import "./index.scss";
 export default function DetailWeb({ open, handleClose, selectedData }) {
   return (
     <Dialog
@@ -16,9 +16,9 @@ export default function DetailWeb({ open, handleClose, selectedData }) {
       maxWidth="sm"
       fullWidth
     >
-      <DialogContent>
+      <DialogContent className="dialog-content">
         {selectedData && (
-          <Box sx={{ textAlign: "center", p: 2 }}>
+          <Box className="image-container" sx={{ textAlign: "center" }}>
             <img
               src={
                 selectedData?.logo ||
@@ -29,42 +29,44 @@ export default function DetailWeb({ open, handleClose, selectedData }) {
                 e.target.src =
                   "https://via.placeholder.com/400x300?text=Image+Not+Available";
               }}
-              style={{
-                width: "30%",
-                height: "auto",
-                borderRadius: "8px",
-                objectFit: "cover",
-              }}
+              style={{ marginBottom: "20px" }} // Add margin below the image
             />
 
-            <h2 id="company-details-dialog">{selectedData.title}</h2>
-            {/* <p><strong>ID:</strong> {selectedData.id}</p> */}
-            <p>
+            <h2 id="company-details-dialog" className="dialog-title" style={{ fontSize: "24px", marginBottom: "20px" }}>
+              {selectedData.title}
+            </h2>
+
+            <p className="dialog-text" style={{ fontSize: "18px", marginBottom: "20px" }}>
               <strong>Email:</strong> {selectedData.email}
             </p>
-            <p>
+            <p className="dialog-text" style={{ fontSize: "18px", marginBottom: "20px" }}>
               <strong>SDT:</strong> {selectedData.phone}
             </p>
-            <p>
+            <p className="dialog-text" style={{ fontSize: "18px", marginBottom: "20px" }}>
               <strong>Địa chỉ:</strong> {selectedData.address}
             </p>
-            <p>
-              <strong>Fanpage Facebook:</strong>
+
+            <p className="dialog-text" style={{ fontSize: "18px", marginBottom: "20px" }}>
+              <strong>Fanpage Facebook:</strong>{" "}
               <a
                 href={selectedData.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="dialog-link"
+                style={{ color: "#3b5998" }} // Optional: add a color for Facebook link
               >
                 {selectedData.facebook}
               </a>
             </p>
 
-            <p>
-              <strong>Tiktok:</strong>
+            <p className="dialog-text" style={{ fontSize: "18px", marginBottom: "20px" }}>
+              <strong>Tiktok:</strong>{" "}
               <a
                 href={selectedData.tiktok}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="dialog-link"
+                style={{ color: "#69c9d0" }} // Optional: add a color for TikTok link
               >
                 {selectedData.tiktok}
               </a>
@@ -73,10 +75,12 @@ export default function DetailWeb({ open, handleClose, selectedData }) {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleClose} color="primary" className="dialog-button">
           Đóng
         </Button>
       </DialogActions>
     </Dialog>
+
+
   );
 }

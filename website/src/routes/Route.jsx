@@ -6,6 +6,8 @@ import {
   ForgetPassoword,
   Register,
   Error,
+  Product,
+  Detail,
 } from "../pages/web";
 import { ProfileLayout } from "../layouts/profileLayout";
 import {
@@ -29,6 +31,14 @@ export default function RootRouter() {
         { path: "/forget-password", element: <ForgetPassoword /> },
         { path: "register", element: <Register /> },
         { path: "/cart", element: <Cart /> },
+        {
+          path: "/product",
+          element: <Product />,
+        },
+        {
+          path: "/:category/:slug",
+          element: <Detail />,
+        },
         {
           path: "/profile",
           element: <ProfileLayout />,
