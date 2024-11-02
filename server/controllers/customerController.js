@@ -188,6 +188,10 @@ const logout = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
   });
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: true,
+  });
   return res.status(200).json({
     mes: "Logout is done",
   });

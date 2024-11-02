@@ -16,6 +16,7 @@ import {
   Coupon,
 } from "../pages/web/member";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { Cart } from "../pages/web/cart";
 
 export default function RootRouter() {
   const routes = useRoutes([
@@ -27,6 +28,7 @@ export default function RootRouter() {
         { path: "/login", element: <Login /> },
         { path: "/forget-password", element: <ForgetPassoword /> },
         { path: "register", element: <Register /> },
+        { path: "/cart", element: <Cart /> },
         {
           path: "/profile",
           element: <ProfileLayout />,
