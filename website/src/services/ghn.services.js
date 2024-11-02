@@ -38,9 +38,9 @@ export const fetchService = async (districtId) => {
     "get",
     "/v2/shipping-order/available-services",
     {
-      shop_id: 4868495,
-      from_district: 1788,
-      to_district: districtId,
+      shop_id: 4868495, // Your GHN shop ID
+      from_district: 1552, // Default district ID
+      to_district: districtId, // District ID of the recipient
     }
   );
   return services?.[0]?.service_id || null;
@@ -49,8 +49,9 @@ export const fetchService = async (districtId) => {
 // Calculate shipping fee based on parameters
 export const fetchFee = async (wardCode, districtId, serviceId) => {
   const feeData = await sendRequest("get", "/v2/shipping-order/fee", {
-    from_district_id: 1788,
-    to_district_id: districtId,
+    from_district_id: 1788, // Default district ID
+
+    to_district_id: districtId, // District ID of the recipient
     to_ward_code: wardCode,
     service_id: serviceId,
     height: 50,
@@ -59,5 +60,5 @@ export const fetchFee = async (wardCode, districtId, serviceId) => {
     width: 20,
     insurance_value: 0,
   });
-  return feeData?.total || null;
+  return feeData.total || null;
 };

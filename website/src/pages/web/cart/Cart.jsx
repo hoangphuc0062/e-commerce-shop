@@ -8,6 +8,11 @@ import {
   getProvinces,
   getWards,
 } from "../../../services/ghn.services";
+import CartItem from "./CartItem";
+import { faker } from "@faker-js/faker";
+import Payment from "./Payment";
+import Info from "./info";
+import Discount from "./discount";
 
 export default function Cart() {
   const [selectedMethod, setSelectedMethod] = useState(null);
@@ -86,14 +91,77 @@ export default function Cart() {
       });
     }
   }, [wardID, districtID, ServiceId]);
-  console.log(shippingFee);
+  // console.log(shippingFee);
+  function createRandomProduct() {
+    return {
+      id: faker.string.uuid(),
+      name: faker.commerce.productName(),
+      image: faker.image.avatar(),
+      price: faker.commerce.price(),
+      discountPercent: faker.number.int({ min: 0, max: 50 }),
+      description: faker.commerce.productDescription(),
+      rating: faker.number.int({ min: 1, max: 5 }),
+      review: faker.number.int({ min: 0, max: 1000 }),
+      category: faker.commerce.department(),
+      brand: faker.commerce.department(),
+      discount: faker.number.int({ min: 0, max: 50 }),
+      slug: faker.lorem.slug(),
+      images: [faker.image.url(300, 300, "tech", true)],
+      quantity: faker.number.int({ min: 1, max: 10 }),
+    };
+  }
+  const [products, setProducts] = useState(
+    Array.from({ length: 6 }, createRandomProduct)
+  );
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const handleQuantityChange = (productId, newQuantity) => {
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === productId
+          ? { ...product, quantity: newQuantity }
+          : product
+      )
+    );
+  };
 
-  const product = {
-    name: "PC GVN x ASUS Advanced Ai (Intel Core Ultra 9 285K/ VGA RTX 4090)",
-    originalPrice: 140930000,
-    discountedPrice: 140000000,
-    quantity: 1,
-    imageUrl: "https://via.placeholder.com/80", // Replace with actual image URL
+  const total = products.reduce(
+    (acc, product) =>
+      selectedProducts.includes(product.id)
+        ? acc + product.price * product.quantity
+        : acc,
+    0
+  );
+
+  const subTotal = total + shippingFee;
+
+  const handleRemoveProduct = (productId) => {
+    setProducts((prevProducts) =>
+      prevProducts.filter((product) => product.id !== productId)
+    );
+  };
+
+  const handleSelectAll = () => {
+    setSelectAll(!selectAll);
+    if (!selectAll) {
+      setSelectedProducts(products.map((product) => product.id));
+    } else {
+      setSelectedProducts([]);
+    }
+  };
+
+  const handleCheck = (productId) => {
+    setSelectedProducts((prevSelected) =>
+      prevSelected.includes(productId)
+        ? prevSelected.filter((id) => id !== productId)
+        : [...prevSelected, productId]
+    );
+  };
+  const handleRemoveSelected = () => {
+    setProducts((prevProducts) =>
+      prevProducts.filter((product) => !selectedProducts.includes(product.id))
+    );
+    setSelectedProducts([]);
   };
 
   const discountOptions = [
@@ -144,6 +212,7 @@ export default function Cart() {
   const handleNextStep = () => {
     setCurrentStep((prevStep) => prevStep + 1);
   };
+
   const steps = [
     { label: "Giỏ hàng", icon: "solar:cart-check-outline" },
     {
@@ -215,32 +284,36 @@ export default function Cart() {
         {/* Cart Review Step */}
         {currentStep === 0 && (
           <div>
-            <div className="flex items-center justify-between border-b pb-4 mb-4">
-              <div className="flex items-center">
-                <img
-                  src={product.imageUrl}
-                  alt={product.name}
-                  className="w-20 h-20 object-cover rounded mr-4"
+            <div className="flex items-center mb-4 justify-between">
+              <div>
+                {" "}
+                <input
+                  type="checkbox"
+                  checked={selectAll}
+                  onChange={handleSelectAll}
+                  className="mr-2"
                 />
-                <div>
-                  <p className="font-medium">{product.name}</p>
-                  <p className="text-indigo-600 font-semibold">
-                    {product.discountedPrice.toLocaleString("vi-VN")}₫
-                  </p>
-                  <p className="text-gray-500 line-through">
-                    {product.originalPrice.toLocaleString("vi-VN")}₫
-                  </p>
-                </div>
+                <span>Chọn tất cả</span>
               </div>
-              <div className="flex items-center">
-                <button className="text-gray-500 text-sm mr-4">Xóa</button>
-                <div className="flex items-center border px-2 py-1 rounded-md">
-                  <button className="px-2">-</button>
-                  <p className="px-2">{product.quantity}</p>
-                  <button className="px-2">+</button>
-                </div>
-              </div>
+              {selectedProducts.length > 0 && (
+                <button
+                  className="ml-4 px-4 py-2 bg-red-500 text-white rounded"
+                  onClick={handleRemoveSelected}
+                >
+                  Xóa tất cả
+                </button>
+              )}
             </div>
+            {products.map((product) => (
+              <CartItem
+                key={product.id}
+                product={product}
+                onQuantityChange={handleQuantityChange}
+                onRemove={handleRemoveProduct}
+                isChecked={selectedProducts.includes(product.id)}
+                onCheck={handleCheck}
+              />
+            ))}
 
             <div className=" p-4 ">
               {/* Discount Button */}
@@ -280,39 +353,11 @@ export default function Cart() {
                       Áp dụng
                     </button>
                   </div>
-
                   {/* Discount Options */}
-                  {discountOptions.map((discount) => (
-                    <div
-                      key={discount.id}
-                      className="flex items-center justify-between p-3 border rounded-md mb-2 bg-white"
-                    >
-                      <div className="flex items-center">
-                        <img
-                          src="https://via.placeholder.com/40" // Replace with actual discount image URL
-                          alt="Discount"
-                          className="w-10 h-10 object-cover rounded mr-3"
-                        />
-                        <div>
-                          <p className="font-semibold">
-                            {discount.description}
-                          </p>
-                          <p className="text-gray-500 text-sm">
-                            {discount.minOrder}
-                          </p>
-                          <p className="text-gray-400 text-xs">
-                            Mã: {discount.code} | HSD: {discount.expiry}
-                          </p>
-                        </div>
-                      </div>
-                      <button
-                        className="px-4 py-1 bg-blue-500 text-white text-sm rounded-md"
-                        onClick={() => setDiscountCode(discount.code)}
-                      >
-                        Áp dụng
-                      </button>
-                    </div>
-                  ))}
+                  <Discount
+                    discountOptions={discountOptions}
+                    setDiscountCode={setDiscountCode}
+                  />
                 </div>
               )}
             </div>
@@ -320,7 +365,7 @@ export default function Cart() {
             <div className="flex justify-between items-center text-lg font-semibold mb-4">
               <p>Tổng tiền:</p>
               <p className="text-indigo-600">
-                {product.discountedPrice.toLocaleString("vi-VN")}₫
+                {subTotal.toLocaleString("vi-VN")} VND
               </p>
             </div>
 
@@ -336,101 +381,29 @@ export default function Cart() {
         {/* Customer Information Step */}
         {currentStep === 1 && (
           <div>
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold mb-2">
-                Thông tin khách mua hàng
-              </h2>
-              <div className="flex items-center mb-2">
-                <label className="mr-4">
-                  <input
-                    type="radio"
-                    name="title"
-                    value="Anh"
-                    checked
-                    onChange={() => {}}
-                  />
-                  <span className="ml-1">Anh</span>
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="title"
-                    value="Chị"
-                    onChange={() => {}}
-                  />
-                  <span className="ml-1">Chị</span>
-                </label>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  placeholder="Nhập họ tên"
-                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Nhập số điện thoại"
-                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
-                />
-              </div>
-            </div>
-            <div className="mb-3">
-              <input
-                type="text"
-                placeholder="Nhập gmail"
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <select
-                className="w-full px-3 py-2 border rounded-md"
-                onChange={(e) => setProvinceID(e.target.value)}
-              >
-                <option>Chọn Tỉnh, Thành phố</option>
-                {selectedProvince?.map((province) => (
-                  <option key={province.id} value={province.id}>
-                    {province.name}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="w-full px-3 py-2 border rounded-md"
-                onChange={(e) => setDistrictID(e.target.value)}
-              >
-                <option>Chọn Quận, Huyện</option>
-                {selectedDistrict?.map((district) => (
-                  <option key={district.id} value={district.id}>
-                    {district.name}
-                  </option>
-                ))}
-              </select>
-              <select
-                className="w-full px-3 py-2 border rounded-md"
-                onChange={(e) => setWardID(e.target.value)}
-              >
-                <option>Chọn Phường, Xã</option>
-                {selectedWard?.map((ward) => (
-                  <option key={ward.id} value={ward.id}>
-                    {ward.name}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="text"
-                placeholder="Số nhà, tên đường"
-                className="w-full px-3 py-2 border rounded-md"
-              />
-            </div>
+            <Info
+              selectedProvince={selectedProvince}
+              selectedDistrict={selectedDistrict}
+              selectedWard={selectedWard}
+              setProvinceID={setProvinceID}
+              setDistrictID={setDistrictID}
+              setWardID={setWardID}
+            />
 
             <div className="flex items-center mb-4">
               <input type="checkbox" />
               <span className="ml-2">Xuất hóa đơn cho đơn hàng</span>
             </div>
-
+            <div className="flex justify-between items-center text-lg  mb-4">
+              <p>Tiền ship</p>
+              <p className="text-indigo-600">
+                {shippingFee.toLocaleString("vi-VN")} VND
+              </p>
+            </div>
             <div className="flex justify-between items-center text-lg font-semibold mb-4">
               <p>Tổng tiền:</p>
               <p className="text-indigo-600">
-                {product.discountedPrice.toLocaleString("vi-VN")}₫
+                {subTotal.toLocaleString("vi-VN")} VND
               </p>
             </div>
 
@@ -450,49 +423,17 @@ export default function Cart() {
             </h2>
             <div className="mb-4">
               {/* Payment Options Array to avoid repetition */}
-              {paymentMethods.map((method, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-6 rounded-md shadow-md w-full max-w-[600px] mx-auto mb-5"
-                >
-                  <div
-                    onClick={() => {
-                      setSelectedMethod(method.id);
-                      console.log(selectedMethod);
-                    }}
-                    className="flex items-center justify-between p-4 border border-gray-300 rounded-md"
-                  >
-                    <div className="flex items-center">
-                      <img
-                        src={method.imageSrc}
-                        alt="Payment Method"
-                        className="mr-2 w-12 h-12"
-                      />
-                      <span className="text-red-600 font-bold">
-                        {method.label}
-                      </span>
-                    </div>
-                    <span className="text-sm text-gray-600">
-                      {method.discountText}
-                    </span>
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      className="ml-2 text-gray-400"
-                      checked={selectedMethod === method.id}
-                      onChange={() => {
-                        setSelectedMethod(method.id);
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
+              <Payment
+                paymentMethods={paymentMethods}
+                selectedMethod={selectedMethod}
+                setSelectedMethod={setSelectedMethod}
+              />
             </div>
 
             <div className="flex justify-between items-center text-lg font-semibold mb-4">
               <p>Tổng tiền:</p>
               <p className="text-indigo-600">
-                {product.discountedPrice.toLocaleString("vi-VN")}₫
+                {subTotal.toLocaleString("vi-VN")} VND
               </p>
             </div>
 
