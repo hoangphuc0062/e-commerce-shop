@@ -12,6 +12,8 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import PropTypes from "prop-types";
+// thư viện he Giải mã các ký tự HTML như &acirc; và &agrave; thành "â" và "à
+import he from 'he';
 
 export default function EyePost({
   open,
@@ -20,11 +22,28 @@ export default function EyePost({
   handleDelete,
   handleEdit,
 }) {
+  // const truncateContent = (content, maxLength) => {
+  //   if (!content) return "";
+  //   return content.length > maxLength
+  //     ? content.slice(0, maxLength) + "..."
+  //     : content;
+  // };
   const truncateContent = (content, maxLength) => {
     if (!content) return "";
-    return content.length > maxLength
-      ? content.slice(0, maxLength) + "..."
-      : content;
+
+    // Giải mã các ký tự HTML, loại bỏ &nbsp; và các thẻ HTML
+    const plainTextContent = he
+      .decode(content.replace(/&nbsp;/g, ' '))
+      .replace(/<[^>]*>/g, '');
+
+    // Rút ngắn nội dung nếu vượt quá độ dài tối đa
+    return plainTextContent.length > maxLength
+      ? plainTextContent.slice(0, maxLength) + "..."
+      : plainTextContent;
+  };
+
+  const removePTags = (text) => {
+    return text ? text.replace(/<\/?p>/g, '') : '';
   };
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
@@ -51,8 +70,9 @@ export default function EyePost({
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             {selectedData?.post_title}
           </Typography>
-          <Typography variant="body2" color="textSecondary" paragraph>
-            {selectedData?.postShortDescription}
+          <Typography variant="body1">
+            {/* <strong>Short SEO Description:</strong>{" "} */}
+            {removePTags(selectedData?.shortDescription)}
           </Typography>
         </Box>
 
@@ -72,12 +92,12 @@ export default function EyePost({
               <strong>Meta Description:</strong> {selectedData?.metaDescription}
             </Typography>
           </Grid>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Typography variant="body1">
               <strong>Short SEO Description:</strong>{" "}
-              {selectedData?.postShortDescription}
+              {removePTags(selectedData?.shortSeoDescription)}
             </Typography>
-          </Grid>
+          </Grid> */}
           <Grid item xs={12}>
             <Typography variant="body1">
               <strong>Nội dung bài viết:</strong>{" "}

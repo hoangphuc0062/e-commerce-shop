@@ -53,6 +53,11 @@ export default function PostList() {
   const initialData = useSelector((state) => state.post.posts);
   const deleteStatus = useSelector((state) => state.post.deleteStatus);
 
+  //  Giơi hạn hiển thị
+  const truncateText = (text, maxLength = 50) => {
+    if (!text) return '';
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
   useEffect(() => {
     dispatch(getAll());
   }, [dispatch]);
@@ -64,7 +69,7 @@ export default function PostList() {
           id: item._id,
           name: item.author.name,
           post_title: item.postTitle,
-          postShortDescription: item.shortDescription,
+          postShortDescription: truncateText(item.shortDescription, 50),
           seoKeywords: item.seoKeyWords,
           rating: item.rating,
           content: item.content,
