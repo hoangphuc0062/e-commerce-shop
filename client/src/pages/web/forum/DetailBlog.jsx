@@ -71,7 +71,7 @@ const DetailBlog = () => {
             </Link>{" "}
             &raquo;{" "}
             <a href="#" className="text-gray-600">
-              {data?.category}
+              {data?.category?.name}
             </a>{" "}
             {data.postTitle}
           </div>
@@ -123,8 +123,8 @@ const DetailBlog = () => {
             </div>
 
             {/* Nội dung bài viết */}
-            <div className="text-base text-gray-700 leading-relaxed">
-              {data.content}
+            <div className="text-base text-gray-700">
+              <div dangerouslySetInnerHTML={{ __html: data.content }} />
             </div>
           </div>
 
@@ -176,13 +176,6 @@ const DetailBlog = () => {
                   alt={data.author}
                   className="w-10 h-10 rounded-full mr-3"
                 />
-              </div>
-              <div>
-                <p className="text-gray-700 italic">
-                  &ldquo;Trải qua hành trình hơn 3 năm trong lĩnh vực viết nội
-                  dung về công nghệ, tôi hy vọng rằng những thông tin tôi mang
-                  lại sẽ hữu ích cho bất kỳ ai tìm đến.&rdquo;
-                </p>
               </div>
             </div>
           </div>

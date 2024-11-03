@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Slider from "react-slick";
 import { formatDay } from "../../../ultils/helper";
 import HeadingSection from "../Heading/HeadingSection";
@@ -14,11 +14,13 @@ const SlidePost = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+
   const dispatch = useDispatch();
+  const { categorySlug } = useParams();
   const status = useSelector((state) => state.post.status);
   const postData = useSelector((state) => state.post.data);
   const [data, setData] = useState([]);
-  const [categoryFilter, setCategoryFilter] = useState("");
+
   useEffect(() => {
     dispatch(getPosts());
   }, [dispatch]);
@@ -35,6 +37,7 @@ const SlidePost = () => {
           content: item.content,
           author: item.author?.name || "Unknown",
           category: item?.category?.name,
+          categorySlug: item?.category?.slug,
           rating: item.rating,
           slug: item.slug,
           date: item.createdAt,
@@ -44,40 +47,52 @@ const SlidePost = () => {
     }
   }, [status, postData]);
 
-  const filteredData = data.filter((post) => post.category === categoryFilter);
-  
+  // Lọc dữ liệu theo categorySlug
+  const filteredData = data.filter((post) => post.categorySlug === categorySlug);
+
   return (
     <div className="w-full">
       <HeadingSection title="Nổi bật nhất" />
       <Slider {...settings}>
-        {filteredData?.map((post) => (
-          <div key={post.id} className="px-1">
-            <div className="bg-white rounded-lg overflow-hidden flex">
-              <img
-                src={post.thumbnail}
-                alt={post.postTitle}
-                className="w-full h-full lg:max-w-[180px] lg:max-h-[180px] object-cover"
-              />
-              <div className="p-3">
-                <Link
-                  to={`${post.slug}`}
-                  className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main"
-                >
-                  {post.postTitle}
-                </Link>
-                <span className="text-md line-clamp-3">
-                  {post.shortDescription}
-                </span>
-                <div className="flex items-center pt-16">
-                  <span className="text-sm">
-                    Ngày đăng {formatDay(post.date)}
+        {filteredData.length > 0 ? (
+          filteredData.map((post) => (
+            <div key={post.id} className="px-1">
+              <div className="bg-white rounded-lg overflow-hidden flex">
+                <img
+                  src={post.thumbnail}
+                  alt={post.postTitle}
+                  className="w-full h-full lg:max-w-[180px] lg:max-h-[180px] object-cover"
+                />
+                <div className="p-3">
+                  <Link
+                    to={`/blog/${post.slug}`} // Cập nhật link đến bài viết
+                    className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main"
+                  >
+                    {post.postTitle}
+                  </Link>
+                  <span className="text-md line-clamp-3">
+                    {post.shortDescription}
                   </span>
-                  <Link className="text-main pl-5">{post.category}</Link>
+                  <div className="flex items-center pt-16">
+                    <span className="text-sm">
+                      Ngày đăng {formatDay(post.date)}
+                    </span>
+                    <Link
+                      to={`/forum/category/${post.category}`}
+                      className="text-main pl-5"
+                    >
+                      {post.category}
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
+          ))
+        ) : (
+          <div className="text-center py-4">
+            Không có bài viết nào trong danh mục này.
           </div>
-        ))}
+        )}
       </Slider>
     </div>
   );
