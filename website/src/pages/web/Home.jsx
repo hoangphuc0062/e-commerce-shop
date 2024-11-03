@@ -4,7 +4,6 @@ import { FeatureBlockProduct } from "../../components/FeatureBlockProduct/Featur
 import MenuTree from "../../components/Banner/MenuTree/MenuTree";
 
 import { faker } from "@faker-js/faker";
-import { Link } from "react-router-dom";
 import { Accessories } from "../../components/FeatureBlockProduct/Accessories";
 
 function createRandomProduct() {

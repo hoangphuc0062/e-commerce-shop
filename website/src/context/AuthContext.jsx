@@ -18,6 +18,7 @@ const UserProvider = ({ children }) => {
       dispatch(getMe());
     }
   }, [token, dispatch]);
+
   const value = useMemo(
     () => ({ user, setUser, loginAuth, setLoginAuth }),
     [user, setUser, loginAuth, setLoginAuth]
@@ -25,6 +26,7 @@ const UserProvider = ({ children }) => {
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
+
 UserProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
