@@ -42,7 +42,7 @@ const ProductDetail = () => {
         </div>
         <div className="flex gap-2">
           <div className="block__header--left w-1/2">left here</div>
-          <div className="block__header--right flex flex-col gap-2 w-1/2">
+          <div className="block__header--right flex flex-col gap-3 w-1/2">
             {/* bien the here */}
             <div className="grid grid-cols-3 gap-2">
               <button className="outline outline-gray-300 p-2 text-sm relative">
@@ -116,6 +116,26 @@ const ProductDetail = () => {
                   </div>
                 </button>
               </div>
+            </div>
+
+            {/* Action button */}
+            <div className="flex gap-2">
+              <button className="bg-main outline-main  rounded-lg text-white w-10/12">
+                <span className="text-[18px]">Mua ngay</span>
+                <span className="block">
+                  ( Giao hàng nhanh từ 2 giờ hoặc nhận tại cửa hàng)
+                </span>
+              </button>
+              <button className="flex flex-col justify-center items-center outline outline-main text-main rounded-lg w-1/6 p-1">
+                <span>
+                  <Icon
+                    icon="solar:cart-plus-outline"
+                    width="2rem"
+                    height="2rem"
+                  />
+                </span>
+                <span className="text-sm">Thêm vào giỏ</span>
+              </button>
             </div>
           </div>
         </div>
