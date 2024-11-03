@@ -1,13 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./Sidebar.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getCategory } from "../../../redux/slices/category";
-
 import Iconify from "./Iconify";
 
-const SideBar = () => {
+const Sidebar = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const status = useSelector((state) => state.category.status);
   const categoryData = useSelector((state) => state.category.data);
   const [data, setData] = useState([]);
@@ -19,19 +21,21 @@ const SideBar = () => {
   useEffect(() => {
     if (status === "success" && Array.isArray(categoryData)) {
       setData(
-        categoryData.map((item) => ({
-          status: item.status,
-          id: item._id,
-          name: item?.name,
-          icon: item?.icon,
-          slug: item?.slug,
-          type: item?.type,
-        }))
+        categoryData
+          .filter((item) => item.type === "post")
+          .map((item) => ({
+            id: item._id,
+            name: item.name,
+            icon: item.icon,
+            slug: item.slug,
+          }))
       );
     }
   }, [status, categoryData]);
 
-  const categoryPostData = categoryData.filter((item) => item.type === "post");
+  const handleCategoryClick = (slug) => {
+    navigate(`/forum/category/${slug}`);
+  };
 
   return (
     <>
@@ -39,18 +43,25 @@ const SideBar = () => {
       <div className="lg:block fixed">
         <nav className="p-4">
           <ul className="space-y-2">
-            {data &&
-              categoryPostData?.map((category, index) => (
-                <li key={index}>
-                  <Link
-                    to={`/forum/category/${category.slug}`}
-                    className="flex text-sm items-center gap-2 p-2 text-gray-700 hover:bg-hv rounded hover:text-main"
+            {data.length > 0 ? (
+              data.map((category) => (
+                <li key={category.id}>
+                  <button
+                    onClick={() => handleCategoryClick(category.slug)}
+                    className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main ${
+                      location.pathname === `/forum/category/${category.slug}`
+                        ? "bg-hv text-main"
+                        : "text-gray-700"
+                    }`}
                   >
                     <Iconify icon={category.icon} />
                     {category.name}
-                  </Link>
+                  </button>
                 </li>
-              ))}
+              ))
+            ) : (
+              <p>Đang tải danh mục...</p>
+            )}
           </ul>
         </nav>
       </div>
@@ -59,18 +70,25 @@ const SideBar = () => {
       <div className="md:hidden bg-white p-4 z-50 overflow-x-auto whitespace-nowrap scrollbar-hide">
         <nav>
           <ul className="flex space-x-4">
-            {data &&
-              categoryPostData?.map((category, index) => (
-                <li key={index}>
-                  <Link
-                    to={`forum/category/${category.slug}`}
-                    className="flex text-sm items-center gap-2 p-2 text-gray-700 hover:bg-hv rounded hover:text-main"
+            {data.length > 0 ? (
+              data.map((category) => (
+                <li key={category.id}>
+                  <button
+                    onClick={() => handleCategoryClick(category.slug)}
+                    className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main ${
+                      location.pathname === `/forum/category/${category.slug}`
+                        ? "bg-hv text-main"
+                        : "text-gray-700"
+                    }`}
                   >
                     <Iconify icon={category.icon} />
                     {category.name}
-                  </Link>
+                  </button>
                 </li>
-              ))}
+              ))
+            ) : (
+              <p>Đang tải danh mục...</p>
+            )}
           </ul>
         </nav>
       </div>
@@ -78,4 +96,4 @@ const SideBar = () => {
   );
 };
 
-export default SideBar;
+export default Sidebar;

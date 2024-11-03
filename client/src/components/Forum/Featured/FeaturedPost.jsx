@@ -13,7 +13,7 @@ function FeaturedPost({ data }) {
         <div className="w-full">
           <Link
             to={`${featuredPost?.slug}`}
-            className="relative rounded-lg overflow-hidden cursor-pointer h-full"
+            className="relative rounded-lg overflow-hidden cursor-pointer h-full object-contain"
           >
             <img
               src={featuredPost?.thumbnail}

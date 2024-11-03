@@ -1,5 +1,4 @@
 import Slider from "react-slick";
-// import { PostDB } from "../../data/Forum/PostDB";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useRef } from "react";
@@ -11,6 +10,7 @@ import { formatDay } from "../../../ultils/helper";
 const SliderPost = ({ category, data }) => {
   const sliderRef = useRef(null);
 
+  // Cấu hình cho Slider
   const settings = {
     dots: false,
     infinite: false,
@@ -42,6 +42,7 @@ const SliderPost = ({ category, data }) => {
     ],
   };
 
+  // Lọc các bài viết theo danh mục
   const filteredPosts = data?.filter((post) => post.category === category);
 
   return (
@@ -81,8 +82,10 @@ const SliderPost = ({ category, data }) => {
   );
 };
 
+// Định nghĩa PropTypes để kiểm tra kiểu dữ liệu
 SliderPost.propTypes = {
-  category: PropTypes.string.isRequired,
+  category: PropTypes.string.isRequired, // category là bắt buộc
+  data: PropTypes.array.isRequired, // data cũng là bắt buộc và phải là một mảng
 };
 
 export default SliderPost;

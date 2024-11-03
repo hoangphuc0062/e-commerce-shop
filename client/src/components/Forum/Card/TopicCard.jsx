@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { HagTagDB } from "../../../data/Forum/HagTagDB";
 import "../Sidebar/Sidebar.css";
 function TopicCard() {
+  
   return (
     <div className="flex overflow-x-auto space-x-4 py-4 scrollbar-hide">
       {HagTagDB.map((item) => (
