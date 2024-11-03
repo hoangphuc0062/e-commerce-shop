@@ -45,18 +45,18 @@ const ProductDetail = () => {
           <div className="block__header--right flex flex-col gap-3 w-1/2">
             {/* bien the here */}
             <div className="grid grid-cols-3 gap-2">
-              <button className="outline outline-gray-300 p-2 text-sm relative">
+              <button className="outline outline-gray-300 rounded-lg p-2 text-sm relative">
                 <span className="block font-semibold">12GB 1TB </span>
                 <span className="text-gray-700">52.990.000 đ</span>
               </button>
-              <button className="outline outline-gray-300 p-2 text-sm relative">
+              <button className="outline outline-gray-300 rounded-lg p-2 text-sm relative">
                 <span className="block font-semibold">12GB 1TB </span>
                 <span className="text-gray-700">52.990.000 đ</span>
               </button>
-              <button className="outline outline-main p-2 text-sm relative">
+              <button className="outline outline-main  p-2 rounded-lg text-sm relative">
                 <span className="block font-semibold">12GB 1TB </span>
                 <span className="text-gray-700">52.990.000 đ</span>
-                <span className=" absolute top-0 right-0 bg-main text-white p-1 text-xs">
+                <span className=" absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
                   <Icon
                     icon="akar-icons:check"
                     width="0.8rem"
@@ -70,7 +70,7 @@ const ProductDetail = () => {
             <div className="flex flex-col gap-2">
               <div>Chọn màu sản phẩm</div>
               <div className="grid grid-cols-3 gap-2">
-                <button className="outline outline-gray-300 flex items-center gap-2 p-2 text-sm relative">
+                <button className="outline outline-gray-300 flex items-center gap-2 rounded-lg p-2 text-sm relative">
                   <div>
                     <img
                       src="https://cdn2.cellphones.com.vn/insecure/rs:fill:50:50/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/m/image_1171.png"
@@ -82,7 +82,7 @@ const ProductDetail = () => {
                     <span className="text-gray-700">52.990.000 đ</span>
                   </div>
                 </button>
-                <button className="outline outline-gray-300 flex items-center gap-2 p-2 text-sm relative">
+                <button className="outline outline-gray-300 flex items-center gap-2  rounded-lg p-2 text-sm relative">
                   <div>
                     <img
                       src="https://cdn2.cellphones.com.vn/insecure/rs:fill:50:50/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/m/image_1171.png"
@@ -95,7 +95,7 @@ const ProductDetail = () => {
                   </div>
                 </button>
                 {/* Active */}
-                <button className="outline outline-main flex items-center gap-2 p-2 text-sm relative">
+                <button className="outline outline-main flex items-center rounded-lg gap-2 p-2 text-sm relative">
                   <div>
                     <img
                       src="https://cdn2.cellphones.com.vn/insecure/rs:fill:50:50/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/m/image_1171.png"
@@ -105,7 +105,7 @@ const ProductDetail = () => {
                   <div className="flex flex-col">
                     <span className="font-semibold">12GB 1TB </span>
                     <span className="text-gray-700">52.990.000 đ</span>
-                    <span className=" absolute top-0 right-0 bg-main text-white p-1 text-xs">
+                    <span className=" absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
                       <Icon
                         icon="akar-icons:check"
                         width="0.8rem"
@@ -117,7 +117,10 @@ const ProductDetail = () => {
                 </button>
               </div>
             </div>
-
+            <div>
+              <div>Giá</div>
+              <span className="text-[24px] font-bold">52.990.000 đ</span>
+            </div>
             {/* Action button */}
             <div className="flex gap-2">
               <button className="bg-main outline-main  rounded-lg text-white w-10/12">
