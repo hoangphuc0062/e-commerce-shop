@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
+import * as Yup from "yup";
+import { useFormik } from "formik";
+import { faker } from "@faker-js/faker";
+
 import Error from "../../../components/status/Error";
 import {
   fetchFee,
@@ -8,8 +12,8 @@ import {
   getProvinces,
   getWards,
 } from "../../../services/ghn.services";
+
 import CartItem from "./CartItem";
-import { faker } from "@faker-js/faker";
 import Payment from "./Payment";
 import Info from "./info";
 import Discount from "./discount";
@@ -26,6 +30,38 @@ export default function Cart() {
   const [ServiceId, setServiceId] = useState(null);
   const [wardID, setWardID] = useState(null);
   const [shippingFee, setShippingFee] = useState(0);
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      name: "",
+      phone: "",
+      sex: "",
+      address: [],
+      note: "",
+      paymentMethods: "",
+      status: "",
+      shippingFee: "",
+      discount: "",
+      total: "",
+      products: [],
+    },
+    validationSchema: Yup.object({
+      email: Yup.string().email("Invalid email").required("Required"),
+      name: Yup.string().required("Required"),
+      phone: Yup.string().required("Required"),
+      address: Yup.string().required("Required"),
+      note: Yup.string(),
+      paymentMethods: Yup.string().required("Required"),
+      status: Yup.string().required("Required"),
+      shippingFee: Yup.number().required("Required"),
+      discount: Yup.number().required("Required"),
+      total: Yup.number().required("Required"),
+    }),
+    onSubmit: async (values) => {
+      console.log(values);
+    },
+  });
   useEffect(() => {
     // Fetch provinces
     getProvinces().then((provinces) => {
@@ -163,6 +199,15 @@ export default function Cart() {
     );
     setSelectedProducts([]);
   };
+  const handleUpdateSelected = () => {
+    setProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        selectedProducts.includes(product.id)
+          ? { ...product, quantity: 1 }
+          : product
+      )
+    );
+  };
 
   const discountOptions = [
     {
@@ -296,12 +341,22 @@ export default function Cart() {
                 <span>Chọn tất cả</span>
               </div>
               {selectedProducts.length > 0 && (
-                <button
-                  className="ml-4 px-4 py-2 bg-red-500 text-white rounded"
-                  onClick={handleRemoveSelected}
-                >
-                  Xóa tất cả
-                </button>
+                <>
+                  <div>
+                    <button
+                      className="ml-4 px-4 py-2 bg-indigo-500 text-white rounded"
+                      onClick={handleUpdateSelected}
+                    >
+                      Cập nhật
+                    </button>
+                    <button
+                      className="ml-4 px-4 py-2 bg-red-500 text-white rounded"
+                      onClick={handleRemoveSelected}
+                    >
+                      Xóa tất cả
+                    </button>
+                  </div>
+                </>
               )}
             </div>
             {products.map((product) => (
@@ -388,12 +443,9 @@ export default function Cart() {
               setProvinceID={setProvinceID}
               setDistrictID={setDistrictID}
               setWardID={setWardID}
+              formik={formik}
             />
 
-            <div className="flex items-center mb-4">
-              <input type="checkbox" />
-              <span className="ml-2">Xuất hóa đơn cho đơn hàng</span>
-            </div>
             <div className="flex justify-between items-center text-lg  mb-4">
               <p>Tiền ship</p>
               <p className="text-indigo-600">
