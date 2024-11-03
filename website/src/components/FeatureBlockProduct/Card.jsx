@@ -21,7 +21,7 @@ const ProductCard = ({ data }) => {
             </span>
           </div>
         )}
-        <Link to={`/data/${data.id}`}>
+        <Link to={`/slug/${data.slug}`}>
           <img
             src={data.image}
             alt={data.name}
