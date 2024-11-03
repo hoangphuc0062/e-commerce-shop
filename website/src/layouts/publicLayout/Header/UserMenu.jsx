@@ -56,7 +56,7 @@ export const UserMenu = ({ data }) => {
       ) : (
         <Link
           to="/login"
-          className="flex flex-col items-center justify-center text-[12px] mt-1 hover:bg-hv p-2 rounded-lg"
+          className="flex flex-col items-center justify-center text-[12px] hover:bg-hv p-2 rounded-lg"
         >
           <Icon icon="carbon:user-avatar" width="1.5rem" height="1.5rem" />
           <p className="line-clamp-2">Đăng nhập</p>
