@@ -61,7 +61,7 @@ export default function Login() {
   return (
     <section className="mx-2 my-4">
       <div className="container flex justify-center">
-        <div className="flex-1 max-w-md">
+        <div className="flex-1 ">
           <h1 className="text-[32px] font-bold">Chào mừng bạn trở lại</h1>
           <div>
             <span className="mr-1 text-gray-400">
@@ -132,7 +132,6 @@ export default function Login() {
           <img
             src="https://res.cloudinary.com/dgthe0zuj/image/upload/v1725432318/illustration_atsn9q.png"
             alt="login-img"
-            className="max-w-xs"
           />
         </div>
       </div>

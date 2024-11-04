@@ -1,195 +1,252 @@
-/* eslint-disable react/prop-types */
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { Icon } from "@iconify/react";
+import { Box, List, ListItem, Divider, Drawer, Checkbox } from "@mui/material";
 import { Link } from "react-router-dom";
+import EmptyCart from "../../../components/EmptyCart";
+
+// Example placeholder image URL for the empty cart illustration
+const emptyCartImage =
+  "https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/cart%2Fno-cart-1.png?alt=media&token=dc3dc5e6-ecd8-4b2d-8bc9-e5f6fd887b92";
 
 function CartButton({ data = [] }) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [quantities, setQuantities] = useState(data.map(() => 1));
-  const [selectedItems, setSelectedItems] = useState([]);
-  const dropdownRef = useRef(null);
+  const [state, setState] = useState({ right: false });
+  const [cartData, setCartData] = useState(data);
+  const [checkedItems, setCheckedItems] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
-  const handleQuantityChange = (index, value) => {
-    const newQuantities = [...quantities];
-    newQuantities[index] = Math.max(1, value);
-    setQuantities(newQuantities);
-  };
-
-  const incrementQuantity = (index) => {
-    handleQuantityChange(index, quantities[index] + 1);
-  };
-
-  const decrementQuantity = (index) => {
-    handleQuantityChange(index, quantities[index] - 1);
+  const toggleDrawer = (anchor, open) => (event) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setState({ ...state, [anchor]: open });
   };
 
   const handleCheckboxChange = (index) => {
-    setSelectedItems((prev) =>
-      prev.includes(index)
-        ? prev.filter((item) => item !== index)
-        : [...prev, index]
+    setCheckedItems((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
   };
 
-  const deleteSelectedItems = () => {
-    const filteredQuantities = quantities.filter(
-      (_, index) => !selectedItems.includes(index)
-    );
-    setSelectedItems([]);
-    setQuantities(filteredQuantities);
-  };
-
-  const handleSelectAllChange = (event) => {
-    if (event.target.checked) {
-      setSelectedItems(data.map((_, index) => index)); // Select all items
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setCheckedItems([]);
     } else {
-      setSelectedItems([]); // Deselect all items
+      setCheckedItems(cartData.map((_, index) => index));
     }
+    setSelectAll(!selectAll);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
+  const handleIncrement = (index) => {
+    setCartData((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    );
+  };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const handleDecrement = (index) => {
+    setCartData((prev) =>
+      prev.map((item, i) =>
+        i === index && item.quantity > 1
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
+    );
+  };
+
+  const handleUpdateQuantity = () => {
+    const updatedCartData = cartData.map((item, index) =>
+      checkedItems.includes(index) ? { ...item, quantity: item.quantity } : item
+    );
+    setCartData(updatedCartData);
+    setCheckedItems([]);
+    setSelectAll(false);
+  };
+
+  const handleDelete = () => {
+    const newData = cartData.filter(
+      (_, index) => !checkedItems.includes(index)
+    );
+    setCartData(newData);
+    setCheckedItems([]);
+    setSelectAll(false);
+  };
+
+  const list = (anchor) => (
+    <Box
+      sx={{
+        width: anchor === "top" || anchor === "bottom" ? "auto" : 450,
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+      }}
+      role="presentation"
+    >
+      <Box sx={{ overflowY: "auto", flex: 1, padding: "16px" }}>
+        <List>
+          <ListItem>
+            <Icon
+              icon="carbon:shopping-bag"
+              width={30}
+              style={{ color: " #1e40b0" }}
+            />
+            <h1 className="font-bold text-main">
+              Giỏ hàng của bạn (
+              {cartData.reduce((acc, cur) => acc + cur.quantity, 0)})
+            </h1>
+          </ListItem>
+          <Divider />
+        </List>
+        {cartData.length === 0 ? (
+          <EmptyCart emptyCartImage={emptyCartImage} to="/" />
+        ) : (
+          <>
+            <List>
+              <div>
+                <Checkbox checked={selectAll} onChange={handleSelectAll} />
+                <span className="ml-2">Chọn tất cả</span>
+              </div>
+
+              {cartData.map((item, index) => (
+                <ListItem key={index} disablePadding>
+                  <Checkbox
+                    checked={checkedItems.includes(index)}
+                    onChange={() => handleCheckboxChange(index)}
+                  />
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-20 h-20 object-cover"
+                      />
+                      <div className="ml-2">
+                        <p className="font-bold text-base text-gray-800">
+                          {item.name}
+                        </p>
+
+                        <p className="text-indigo-600 font-semibold text-sm mt-1">
+                          {item.price.toLocaleString()} VND
+                        </p>
+                        <p className="text-gray-400 text-xs line-through mt-1">
+                          {item.priceSale.toLocaleString()} VND
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center border border-gray-300 rounded w-28 justify-between">
+                      <button
+                        onClick={() => handleDecrement(index)}
+                        className="text-lg px-3 focus:outline-none hover:bg-gray-200"
+                      >
+                        -
+                      </button>
+                      <input
+                        className="w-full p-0 bg-transparent border-0 text-gray-800 focus:ring-0 
+                        [&::-webkit-inner-spin-button]:appearance-none 
+                        [&::-webkit-outer-spin-button]:appearance-none dark:text-white
+                        border-l border-r text-center
+                        "
+                        style={{ MozAppearance: "textfield" }}
+                        type="number"
+                        value={item.quantity}
+                        min="1"
+                        onChange={(e) => {
+                          const value = Math.max(
+                            1,
+                            parseInt(e.target.value) || 1
+                          );
+                          setCartData((prev) =>
+                            prev.map((item, i) =>
+                              i === index ? { ...item, quantity: value } : item
+                            )
+                          );
+                        }}
+                      />
+                      <button
+                        onClick={() => handleIncrement(index)}
+                        className="text-lg px-3 focus:outline-none hover:bg-gray-200"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </ListItem>
+              ))}
+            </List>
+            <Divider />
+            <List>
+              <ListItem>
+                <div className="flex justify-between w-full font-bold">
+                  <p>Tổng cộng:</p>
+                  <p className="text-main">
+                    {cartData
+                      .reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
+                      .toLocaleString()}{" "}
+                    VND
+                  </p>
+                </div>
+              </ListItem>
+              {checkedItems.length > 0 && (
+                <div className="flex gap-1">
+                  <button
+                    className="w-full bg-indigo-600 text-white p-2 rounded-lg mr-2 "
+                    onClick={handleUpdateQuantity}
+                  >
+                    Cập nhật
+                  </button>
+
+                  <button
+                    className="w-full bg-red-600 text-white p-2 rounded-lg"
+                    onClick={handleDelete}
+                  >
+                    Xoá
+                  </button>
+                </div>
+              )}
+            </List>
+          </>
+        )}
+      </Box>
+      <Divider />
+      {cartData.length > 0 && (
+        <Box sx={{ padding: "16px" }}>
+          <ListItem>
+            <Link
+              to="/cart"
+              className="w-full bg-indigo-600 text-white p-2 rounded-lg text-center"
+            >
+              Thanh toán
+            </Link>
+          </ListItem>
+        </Box>
+      )}
+    </Box>
+  );
 
   return (
-    <div className="relative inline-block" ref={dropdownRef}>
+    <div>
       <button
         className="flex items-center justify-center text-[12px] w-[80px] hover:bg-hv p-2 rounded-lg"
-        onClick={toggleDropdown}
+        onClick={toggleDrawer("right", true)}
       >
         <div className="flex items-center justify-center relative">
           <Icon icon="carbon:shopping-bag" width="2rem" height="2rem" />
-          <span className="absolute top-0 right-0 bg-white text-black rounded-full px-1 text-[10px]">
-            {data.length || 0}
+          <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full px-1 text-[10px]">
+            {cartData.length || 0}
           </span>
         </div>
         <p className="line-clamp-2">Giỏ hàng</p>
       </button>
-
-      {isDropdownOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-lg border border-gray-300 z-10 ">
-          <div className="p-4">
-            <h2 className="text-lg font-semibold mb-4">Giỏ hàng</h2>
-
-            {/* Select All Checkbox */}
-            {data.length > 0 && (
-              <div className="flex items-center mb-2">
-                <input
-                  type="checkbox"
-                  checked={selectedItems.length === data.length}
-                  onChange={handleSelectAllChange}
-                  className="h-4 w-4 text-gray-600"
-                />
-                <span className="ml-2 text-gray-700">Chọn tất cả</span>
-              </div>
-            )}
-
-            <ul className="space-y-4">
-              {data.length > 0 ? (
-                data.map((item, index) => (
-                  <li key={index} className="flex items-center gap-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.includes(index)}
-                      onChange={() => handleCheckboxChange(index)}
-                      className="h-4 w-4 text-gray-600"
-                    />
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-16 h-16 rounded object-cover"
-                    />
-                    <div>
-                      <h3 className="text-sm text-gray-900">{item.name}</h3>
-                      <dl className="mt-0.5 text-[10px] text-gray-600">
-                        <div>
-                          <dt className="inline">Size:</dt>
-                          <dd className="inline">{item.size}</dd>
-                        </div>
-                        <div>
-                          <dt className="inline">Color:</dt>
-                          <dd className="inline">{item.color}</dd>
-                        </div>
-                      </dl>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => decrementQuantity(index)}
-                        className="h-8 w-8 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 text-gray-600"
-                      >
-                        <Icon
-                          icon="carbon:subtract"
-                          width="1rem"
-                          height="1rem"
-                        />
-                      </button>
-                      <input
-                        type="number"
-                        min="1"
-                        value={quantities[index]}
-                        onChange={(event) =>
-                          handleQuantityChange(
-                            index,
-                            Number(event.target.value)
-                          )
-                        }
-                        className="h-8 w-12 rounded border-gray-200 bg-gray-50 text-center text-xs text-gray-600 no-spinner focus:outline-none"
-                      />
-                      <button
-                        onClick={() => incrementQuantity(index)}
-                        className="h-8 w-8 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 text-gray-600"
-                      >
-                        <Icon icon="carbon:add" width="1rem" height="1rem" />
-                      </button>
-                    </div>
-                  </li>
-                ))
-              ) : (
-                <p className="text-center text-gray-600">
-                  Giỏ hàng của bạn đang trống
-                </p>
-              )}
-            </ul>
-
-            {/* Delete Selected Button */}
-            {selectedItems.length > 0 && (
-              <button
-                onClick={deleteSelectedItems}
-                className="mt-4 w-full rounded bg-red-600 px-4 py-2 text-white hover:bg-red-500"
-              >
-                Xóa mục đã chọn ({selectedItems.length})
-              </button>
-            )}
-
-            {/* Cart Actions */}
-            <div className="mt-4 space-y-4 text-center">
-              <Link
-                to={"/cart"}
-                className="block rounded border border-gray-600 px-5 py-3 text-sm text-gray-600 hover:ring-1 hover:ring-indigo-400 transition"
-              >
-                Xem giỏ hàng ({data.length || 0})
-              </Link>
-              <Link
-                to={"/checkout"}
-                className="block rounded bg-indigo-600 px-5 py-3 text-sm text-white hover:bg-indigo-500 transition"
-              >
-                Thanh toán
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
+      <Drawer
+        anchor="right"
+        open={state.right}
+        onClose={toggleDrawer("right", false)}
+      >
+        {list("right")}
+      </Drawer>
     </div>
   );
 }
