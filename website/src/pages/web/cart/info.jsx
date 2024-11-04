@@ -1,4 +1,6 @@
-import React from "react";
+/* eslint-disable react/prop-types */
+
+import { CustomInputField } from "../../../components/Input/Input";
 
 export default function Info({
   selectedProvince,
@@ -7,6 +9,7 @@ export default function Info({
   setProvinceID,
   setDistrictID,
   setWardID,
+  formik,
 }) {
   return (
     <div>
@@ -19,74 +22,112 @@ export default function Info({
               name="title"
               value="Anh"
               checked
-              onChange={() => {}}
+              onChange={() => {
+                formik.setFieldValue("title", "Anh");
+              }}
             />
             <span className="ml-1">Anh</span>
           </label>
           <label>
-            <input type="radio" name="title" value="Chị" onChange={() => {}} />
+            <input
+              type="radio"
+              name="title"
+              value="Chị"
+              onChange={() => {
+                formik.setFieldValue("title", "Chị");
+              }}
+            />
             <span className="ml-1">Chị</span>
           </label>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <input
-            type="text"
-            placeholder="Nhập họ tên"
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+          <CustomInputField
+            label="Họ và tên"
+            name="name"
+            inputValue={formik.values.name}
+            onChange={formik.handleChange}
+            errorMessage={formik.errors.name}
+            onBlur={formik.handleBlur}
+            placeholder="Nhập họ và tên"
+            id="name"
           />
-          <input
-            type="text"
+          <CustomInputField
+            label="Số điện thoại"
+            name="phone"
+            inputValue={formik.values.phone}
+            onChange={formik.handleChange}
+            errorMessage={formik.errors.phone}
+            onBlur={formik.handleBlur}
             placeholder="Nhập số điện thoại"
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+            id="phone"
           />
         </div>
       </div>
       <div className="mb-3">
-        <input
-          type="text"
-          placeholder="Nhập gmail"
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+        <CustomInputField
+          label="Email"
+          name="email"
+          inputValue={formik.values.email}
+          onChange={formik.handleChange}
+          errorMessage={formik.errors.email}
+          onBlur={formik.handleBlur}
+          placeholder="Nhập email"
+          id="email"
         />
       </div>
       <div className="grid grid-cols-2 gap-4 mb-4">
-        <select
-          className="w-full px-3 py-2 border rounded-md"
-          onChange={(e) => setProvinceID(e.target.value)}
-        >
-          <option>Chọn Tỉnh, Thành phố</option>
-          {selectedProvince?.map((province) => (
-            <option key={province.id} value={province.id}>
-              {province.name}
-            </option>
-          ))}
-        </select>
-        <select
-          className="w-full px-3 py-2 border rounded-md"
-          onChange={(e) => setDistrictID(e.target.value)}
-        >
-          <option>Chọn Quận, Huyện</option>
-          {selectedDistrict?.map((district) => (
-            <option key={district.id} value={district.id}>
-              {district.name}
-            </option>
-          ))}
-        </select>
-        <select
-          className="w-full px-3 py-2 border rounded-md"
-          onChange={(e) => setWardID(e.target.value)}
-        >
-          <option>Chọn Phường, Xã</option>
-          {selectedWard?.map((ward) => (
-            <option key={ward.id} value={ward.id}>
-              {ward.name}
-            </option>
-          ))}
-        </select>
-        <input
-          type="text"
-          placeholder="Số nhà, tên đường"
-          className="w-full px-3 py-2 border rounded-md"
-        />
+        <div>
+          <label className="font-semibold capitalize">Địa chỉ nhận hàng</label>
+          <select
+            className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
+            onChange={(e) => setProvinceID(e.target.value)}
+          >
+            <option>Chọn Tỉnh, Thành phố</option>
+            {selectedProvince?.map((province) => (
+              <option key={province.id} value={province.id}>
+                {province.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="font-semibold capitalize">Địa chỉ nhận hàng</label>
+          <select
+            className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
+            onChange={(e) => setDistrictID(e.target.value)}
+          >
+            <option>Chọn Quận, Huyện</option>
+            {selectedDistrict?.map((district) => (
+              <option key={district.id} value={district.id}>
+                {district.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="font-semibold capitalize">Địa chỉ nhận hàng</label>
+
+          <select
+            className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
+            onChange={(e) => setWardID(e.target.value)}
+          >
+            <option>Chọn Phường, Xã</option>
+            {selectedWard?.map((ward) => (
+              <option key={ward.id} value={ward.id}>
+                {ward.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="font-semibold capitalize">Địa chỉ nhận hàng</label>
+          <input
+            type="text"
+            placeholder="Số nhà, tên đường"
+            className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
+          />
+        </div>
       </div>
     </div>
   );
