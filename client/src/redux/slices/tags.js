@@ -1,40 +1,22 @@
 /* eslint-disable no-unused-vars */
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
-
 import TagsService from "../../services/tags.service";
-
-const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
-  try {
-    const response = await asyncFunction(...args);
-    return response;
-  } catch (err) {
-    return rejectWithValue(err.response.data);
-  }
-};
 
 export const resetState = createAsyncThunk(
   "state/resetState",
-  async (payload, thunkAPI) => {
-    return payload;
+  async (payload) => payload
+);
+
+export const getAllTags = createAsyncThunk(
+  "tags/getAllTags",
+  async (_, thunkAPI) => {
+    try {
+      const response = await TagsService.getAllTags();
+      return response;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
   }
-);
-
-export const createTag = createAsyncThunk("tags/createTag", (data, thunkAPI) =>
-  handleAsyncThunk(TagsService.create, [data], thunkAPI)
-);
-
-export const updateTag = createAsyncThunk(
-  "tags/updateTag",
-  ({ tagId, data }, thunkAPI) =>
-    handleAsyncThunk(TagsService.update, [tagId, data], thunkAPI)
-);
-
-export const getAllTags = createAsyncThunk("tags/getAllTags", (_, thunkAPI) =>
-  handleAsyncThunk(TagsService.getAll, [null], thunkAPI)
-);
-
-export const deleteTag = createAsyncThunk("tags/deleteTag", (id, thunkAPI) =>
-  handleAsyncThunk(TagsService.delete, [id], thunkAPI)
 );
 
 const tags = createSlice({
@@ -43,11 +25,14 @@ const tags = createSlice({
     data: [],
     status: "idle",
     error: null,
-    statusCreate: "idle",
-    updateStatus: "idle",
-    deleteStatus: "idle",
   },
-
+  reducers: {
+    resetTagsState: (state) => {
+      state.data = [];
+      state.status = "idle";
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(resetState.fulfilled, (state, action) => {
@@ -63,12 +48,12 @@ const tags = createSlice({
       })
       .addCase(getAllTags.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.data = action.payload;
+        state.data = action.payload.tags;
       })
       .addCase(getAllTags.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
-      })
+      });
   },
 });
 

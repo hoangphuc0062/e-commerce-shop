@@ -42,8 +42,10 @@ const SliderPost = ({ category, data }) => {
     ],
   };
 
-  // Lọc các bài viết theo danh mục
-  const filteredPosts = data?.filter((post) => post.category === category);
+  // Lọc các bài viết theo danh mục nếu có, nếu không sẽ hiển thị tất cả
+  const filteredPosts = category
+    ? data?.filter((post) => post.category === category)
+    : data;
 
   return (
     <div className="w-full">
@@ -84,8 +86,8 @@ const SliderPost = ({ category, data }) => {
 
 // Định nghĩa PropTypes để kiểm tra kiểu dữ liệu
 SliderPost.propTypes = {
-  category: PropTypes.string.isRequired, // category là bắt buộc
-  data: PropTypes.array.isRequired, // data cũng là bắt buộc và phải là một mảng
+  category: PropTypes.string,
+  data: PropTypes.array.isRequired,
 };
 
 export default SliderPost;
