@@ -13,13 +13,15 @@ import {
   getWards,
 } from "../../../services/ghn.services";
 
-import CartItem from "./CartItem";
 import Payment from "./Payment";
 import Info from "./info";
-import Discount from "./discount";
+import ProgressSteps from "./ProgressSteps";
+import CartReview from "./shopping/CartReview";
+
+const emptyCartImage =
+  "https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/cart%2Fno-cart-1.png?alt=media&token=dc3dc5e6-ecd8-4b2d-8bc9-e5f6fd887b92";
 
 export default function Cart() {
-  const [selectedMethod, setSelectedMethod] = useState(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [discountCode, setDiscountCode] = useState("");
   const [selectedProvince, setSelectedProvince] = useState([]);
@@ -37,9 +39,14 @@ export default function Cart() {
       name: "",
       phone: "",
       sex: "",
-      address: [],
+      address: {
+        province: "",
+        district: "",
+        ward: "",
+        street: "",
+      },
       note: "",
-      paymentMethods: "",
+      paymentMethod: "",
       status: "",
       shippingFee: "",
       discount: "",
@@ -47,16 +54,14 @@ export default function Cart() {
       products: [],
     },
     validationSchema: Yup.object({
-      email: Yup.string().email("Invalid email").required("Required"),
-      name: Yup.string().required("Required"),
-      phone: Yup.string().required("Required"),
-      address: Yup.string().required("Required"),
-      note: Yup.string(),
-      paymentMethods: Yup.string().required("Required"),
-      status: Yup.string().required("Required"),
-      shippingFee: Yup.number().required("Required"),
-      discount: Yup.number().required("Required"),
-      total: Yup.number().required("Required"),
+      // email: Yup.string().email("Invalid email").required("Required"),
+      // name: Yup.string().required("Required"),
+      // phone: Yup.string().required("Required"),
+      // address: Yup.string().required("Required"),
+      // paymentMethods: Yup.string().required("Required"),
+      // shippingFee: Yup.number().required("Required"),
+      // discount: Yup.number().required("Required"),
+      // total: Yup.number().required("Required"),
     }),
     onSubmit: async (values) => {
       console.log(values);
@@ -255,7 +260,55 @@ export default function Cart() {
     // Add logic for applying discount code
   };
   const handleNextStep = () => {
-    setCurrentStep((prevStep) => prevStep + 1);
+    if (currentStep === 0 && selectedProducts.length === 0) {
+      alert("Please select at least one product to proceed.");
+      return;
+    }
+
+    if (currentStep === 1) {
+      formik.validateForm().then((errors) => {
+        if (Object.keys(errors).length === 0) {
+          updateFormValues();
+          setCurrentStep((prev) => prev + 1);
+        } else {
+          alert("Please fill in all required information.");
+        }
+      });
+      return;
+    }
+
+    updateFormValues();
+    setCurrentStep((prev) => prev + 1);
+  };
+
+  const updateFormValues = () => {
+    formik.setFieldValue(
+      "products",
+      selectedProducts.map((id) => {
+        const product = products.find((prod) => prod.id === id);
+        return {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: product.quantity,
+        };
+      })
+    );
+    formik.setFieldValue("shippingFee", shippingFee);
+    formik.setFieldValue("discount", 0); // adjust for discount application
+    formik.setFieldValue("total", subTotal);
+    const province = selectedProvince?.find(
+      (province) => String(province.id) === String(provinceID)
+    );
+    const district = selectedDistrict?.find(
+      (district) => String(district.id) === String(districtID)
+    );
+    const ward = selectedWard?.find(
+      (ward) => String(ward.id) === String(wardID)
+    );
+    formik.setFieldValue("address.province", province?.name);
+    formik.setFieldValue("address.district", district?.name);
+    formik.setFieldValue("address.ward", ward?.name);
   };
 
   const steps = [
@@ -267,236 +320,96 @@ export default function Cart() {
     { label: "Thanh toán", icon: "ion:card-outline" },
     { label: "Hoàn tất", icon: "mdi:success-circle-outline" },
   ];
+
   return (
     <>
-      <div className="max-w-5xl mx-auto p-4 bg-white rounded-md shadow-md">
+      <div className="max-w-5xl mx-auto p-4 bg-white rounded-md shadow-md h-auto">
         {/* Progress Steps */}
-        <div className="pb-5">
-          <ol className="flex items-center w-full text-sm font-medium text-center bg-indigo-100 pt-3 pb-1 text-gray-500 dark:text-gray-400 sm:text-base">
-            {steps.map((step, index) => (
-              <li
-                key={index}
-                className="relative flex items-center w-full justify-center cursor-pointer"
-                onClick={() => setCurrentStep(index)}
-              >
-                {/* Left line for all except the first step */}
-                {index !== 0 && (
-                  <span
-                    className={`absolute left-0 top-[22px] transform -translate-y-1/2 w-[50%] h-[1px] border-t ${
-                      index <= currentStep
-                        ? "border-solid border-indigo-600"
-                        : "border-dotted border-gray-400"
-                    }`}
-                  ></span>
-                )}
-
-                <div className="relative z-10 flex flex-col items-center">
-                  {/* Icon with conditional background for active step */}
-                  <div
-                    className={`flex items-center justify-center w-12 h-12 rounded-full ${
-                      index === currentStep || index < currentStep
-                        ? "bg-indigo-600 text-white"
-                        : "bg-white text-gray-400 border border-gray-400"
-                    }`}
-                  >
-                    <Icon icon={step.icon} width={30} />
-                  </div>
-                  <span
-                    className={`h-8 hidden sm:block ${
-                      index === currentStep || index < currentStep
-                        ? "text-indigo-600 font-semibold"
-                        : "text-gray-500"
-                    }`}
-                  >
-                    {step.label}
-                  </span>
-                </div>
-
-                {/* Right line for all except the last step */}
-                {index < steps.length - 1 && (
-                  <span
-                    className={`absolute right-0 top-[22px] transform -translate-y-1/2 w-[50%] h-[1px] border-t ${
-                      index < currentStep
-                        ? "border-solid border-indigo-600"
-                        : "border-dotted border-gray-400"
-                    }`}
-                  ></span>
-                )}
-              </li>
-            ))}
-          </ol>
-        </div>
+        <ProgressSteps
+          steps={steps}
+          currentStep={currentStep}
+          setCurrentStep={setCurrentStep}
+        />
         {/* Cart Review Step */}
         {currentStep === 0 && (
-          <div>
-            <div className="flex items-center mb-4 justify-between">
-              <div>
-                {" "}
-                <input
-                  type="checkbox"
-                  checked={selectAll}
-                  onChange={handleSelectAll}
-                  className="mr-2"
-                />
-                <span>Chọn tất cả</span>
-              </div>
-              {selectedProducts.length > 0 && (
-                <>
-                  <div>
-                    <button
-                      className="ml-4 px-4 py-2 bg-indigo-500 text-white rounded"
-                      onClick={handleUpdateSelected}
-                    >
-                      Cập nhật
-                    </button>
-                    <button
-                      className="ml-4 px-4 py-2 bg-red-500 text-white rounded"
-                      onClick={handleRemoveSelected}
-                    >
-                      Xóa tất cả
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-            {products.map((product) => (
-              <CartItem
-                key={product.id}
-                product={product}
-                onQuantityChange={handleQuantityChange}
-                onRemove={handleRemoveProduct}
-                isChecked={selectedProducts.includes(product.id)}
-                onCheck={handleCheck}
-              />
-            ))}
-
-            <div className=" p-4 ">
-              {/* Discount Button */}
-              <button
-                onClick={toggleDropdown}
-                className="flex items-center px-4 py-2  text-blue-600  hover:bg-indigo-100 rounded-md"
-              >
-                <Icon
-                  icon="mdi:tag-outline"
-                  className="text-blue-600 mr-2"
-                  width={20}
-                />
-                Sử dụng mã giảm giá
-                <Icon
-                  icon={isDropdownOpen ? "mdi:chevron-up" : "mdi:chevron-down"}
-                  className="text-blue-600 ml-2"
-                  width={20}
-                />
-              </button>
-
-              {/* Dropdown content */}
-              {isDropdownOpen && (
-                <div className="mt-4 border rounded-md p-4 bg-indigo-50">
-                  {/* Discount Code Input */}
-                  <div className="flex items-center mb-4">
-                    <input
-                      type="text"
-                      placeholder="Nhập mã giảm giá/Phiếu mua hàng"
-                      value={discountCode}
-                      onChange={(e) => setDiscountCode(e.target.value)}
-                      className="flex-grow px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
-                    />
-                    <button
-                      onClick={handleApplyCode}
-                      className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md"
-                    >
-                      Áp dụng
-                    </button>
-                  </div>
-                  {/* Discount Options */}
-                  <Discount
-                    discountOptions={discountOptions}
-                    setDiscountCode={setDiscountCode}
-                  />
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-between items-center text-lg font-semibold mb-4">
-              <p>Tổng tiền:</p>
-              <p className="text-indigo-600">
-                {subTotal.toLocaleString("vi-VN")} VND
-              </p>
-            </div>
-
-            <button
-              onClick={handleNextStep}
-              className="w-full py-3 bg-indigo-600 text-white font-semibold rounded text-center"
-            >
-              ĐẶT HÀNG NGAY
-            </button>
-          </div>
+          <CartReview
+            products={products}
+            setProducts={setProducts}
+            selectedProducts={selectedProducts}
+            setSelectedProducts={setSelectedProducts}
+            handleNextStep={handleNextStep}
+            handleQuantityChange={handleQuantityChange}
+            handleRemoveProduct={handleRemoveProduct}
+            handleSelectAll={handleSelectAll}
+            selectAll={selectAll}
+            handleUpdateSelected={handleUpdateSelected}
+            handleRemoveSelected={handleRemoveSelected}
+            handleCheck={handleCheck}
+            toggleDropdown={toggleDropdown}
+            isDropdownOpen={isDropdownOpen}
+            subTotal={subTotal}
+            discountCode={discountCode}
+            setDiscountCode={setDiscountCode}
+            handleApplyCode={handleApplyCode}
+            discountOptions={discountOptions}
+            emptyCartImage={emptyCartImage}
+          />
         )}
 
         {/* Customer Information Step */}
-        {currentStep === 1 && (
-          <div>
-            <Info
-              selectedProvince={selectedProvince}
-              selectedDistrict={selectedDistrict}
-              selectedWard={selectedWard}
-              setProvinceID={setProvinceID}
-              setDistrictID={setDistrictID}
-              setWardID={setWardID}
-              formik={formik}
-            />
-
-            <div className="flex justify-between items-center text-lg  mb-4">
-              <p>Tiền ship</p>
-              <p className="text-indigo-600">
-                {shippingFee.toLocaleString("vi-VN")} VND
-              </p>
-            </div>
-            <div className="flex justify-between items-center text-lg font-semibold mb-4">
-              <p>Tổng tiền:</p>
-              <p className="text-indigo-600">
-                {subTotal.toLocaleString("vi-VN")} VND
-              </p>
-            </div>
-
-            <button
-              onClick={handleNextStep}
-              className="w-full py-3 bg-indigo-600 text-white font-semibold rounded text-center"
-            >
-              ĐẶT HÀNG NGAY
-            </button>
-          </div>
-        )}
-        {/* Payment Step */}
-        {currentStep === 2 && (
-          <div>
-            <h2 className="text-lg font-semibold mb-2">
-              Phương thức thanh toán
-            </h2>
-            <div className="mb-4">
-              {/* Payment Options Array to avoid repetition */}
-              <Payment
-                paymentMethods={paymentMethods}
-                selectedMethod={selectedMethod}
-                setSelectedMethod={setSelectedMethod}
+        <form onSubmit={formik.handleSubmit}>
+          {currentStep === 1 && (
+            <>
+              <Info
+                selectedProvince={selectedProvince}
+                selectedDistrict={selectedDistrict}
+                selectedWard={selectedWard}
+                setProvinceID={setProvinceID}
+                setDistrictID={setDistrictID}
+                setWardID={setWardID}
+                formik={formik}
+                shippingFee={shippingFee}
+                subTotal={subTotal}
               />
-            </div>
 
-            <div className="flex justify-between items-center text-lg font-semibold mb-4">
-              <p>Tổng tiền:</p>
-              <p className="text-indigo-600">
-                {subTotal.toLocaleString("vi-VN")} VND
-              </p>
-            </div>
+              <button
+                onClick={handleNextStep}
+                className={`w-full py-3 font-semibold rounded text-center ${
+                  formik.isValid
+                    ? "bg-indigo-600 text-white"
+                    : "bg-gray-300 cursor-not-allowed"
+                }`}
+              >
+                ĐẶT HÀNG NGAY
+              </button>
+            </>
+          )}
+          {/* Payment Step */}
+          {currentStep === 2 && (
+            <div>
+              <div className="mb-4">
+                {/* Payment Options Array to avoid repetition */}
+                <Payment
+                  paymentMethods={paymentMethods}
+                  formik={formik}
+                  subTotal={subTotal}
+                />
+              </div>
 
-            <button
-              onClick={handleNextStep}
-              className="w-full py-3 bg-indigo-600 text-white font-semibold rounded text-center"
-            >
-              ĐẶT HÀNG NGAY
-            </button>
-          </div>
-        )}
+              <button
+                // onClick={handleNextStep}
+                type="submit"
+                className={`w-full py-3 font-semibold rounded text-center ${
+                  formik.isValid
+                    ? "bg-indigo-600 text-white"
+                    : "bg-gray-300 cursor-not-allowed"
+                }`}
+              >
+                ĐẶT HÀNG NGAY
+              </button>
+            </div>
+          )}
+        </form>
 
         {/* Confirmation Step */}
         {currentStep === 3 && (
