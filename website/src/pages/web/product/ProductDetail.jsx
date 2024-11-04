@@ -1,5 +1,5 @@
-import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import React from "react";
+import { useState, useEffect, useContext } from "react";
 
 // Import Swiper styles
 import "swiper/css";
@@ -7,17 +7,53 @@ import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
 
-import "./ProductDetail.css";
-
 // import required modules
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { SwiperSlide, Swiper } from "swiper/react";
 
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+
+const product = {
+  id: "123e4567-e89b-12d3-a456-426614174000",
+  name: "Awesome Product",
+  price: "49.99",
+  discountPercent: 20,
+  description: "This is a great product that you will love.",
+  shortDescription: "Great product.",
+  rating: 4,
+  review: 150,
+  category: "Electronics",
+  brand: "TechBrand",
+  discount: 20,
+  slug: "awesome-product",
+  images: [
+    "https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/s/ss-s24-ultra-vang-222.png",
+    "https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/s/ss-s24-ultra-xam-222.png",
+  ],
+};
+
+// console.log(product.images);
 const ProductDetail = () => {
-  const { slug } = useParams();
+  // const { slug } = useParams();
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
-    <div className="container p-2 sm:p-4 lg:p-8 w-full flex flex-col">
+    <div className="container p-2 sm:p-4 lg:p-8 w-full flex flex-col gap-4">
       <div>breadcrumb here</div>
       <section className="block__product flex flex-col gap-3">
         <div className="block__header flex items-center text-[24px]  gap-2">
@@ -40,9 +76,102 @@ const ProductDetail = () => {
             <span className="inline">So sánh</span>
           </button>
         </div>
-        <div className="flex gap-2">
-          <div className="block__header--left w-1/2">left here</div>
-          <div className="block__header--right flex flex-col gap-3 w-1/2">
+        <div className="flex gap-4">
+          <div className="block__header--left flex flex-col gap-3 w-1/2 min-h-[400px]">
+            <div className="shadow-custom p-2 rounded-lg">
+              <Swiper
+                style={{
+                  "--swiper-navigation-color": "#fff",
+                  "--swiper-pagination-color": "#fff",
+                  height: "400px",
+                }}
+                loop={true}
+                spaceBetween={10}
+                navigation={true}
+                thumbs={{
+                  swiper:
+                    thumbsSwiper && !thumbsSwiper.destroyed
+                      ? thumbsSwiper
+                      : null,
+                }}
+                modules={[FreeMode, Navigation, Thumbs]}
+                className="product__swiper"
+              >
+                {product &&
+                  product?.images.map((img, index) => (
+                    <SwiperSlide key={index}>
+                      <img className="w-full h-full object-contain" src={img} />
+                    </SwiperSlide>
+                  ))}
+              </Swiper>
+              <Swiper
+                onSwiper={setThumbsSwiper}
+                loop={true}
+                spaceBetween={10}
+                slidesPerView={4}
+                freeMode={true}
+                watchSlidesProgress={true}
+                modules={[FreeMode, Navigation, Thumbs]}
+                style={{ height: "64px" }}
+                className="swiper__thumb"
+              >
+                {product &&
+                  product?.images.map((img, index) => (
+                    <SwiperSlide
+                      key={index}
+                      onSwiper={setThumbsSwiper}
+                      spaceBetween={10}
+                      slidesPerView={10}
+                      freeMode={true}
+                      watchSlidesProgress={true}
+                      modules={[FreeMode, Navigation, Thumbs]}
+                      style={{ maxWidth: "64px", maxHeight: "64px" }}
+                      className="swiper__thumb"
+                    >
+                      <img
+                        className="w-full h-full object-contain "
+                        src={img}
+                      />
+                    </SwiperSlide>
+                  ))}
+              </Swiper>
+            </div>
+            <div className="flex gap-2 p-2 rounded-lg shadow-custom">
+              <div className="w-1/2 text-sm">
+                <div className="box-title font-semibold">
+                  <p>Thông tin sản phẩm</p>
+                </div>
+                <div className="box-content warranty-info">
+                  <div className="flex items-start">
+                    <Icon
+                      icon="fluent:phone-32-light"
+                      width="1.5rem"
+                      height="1.5rem"
+                    />
+                    <div className="description">
+                      Mới, đầy đủ phụ kiện từ nhà sản xuất
+                    </div>
+                  </div>
+
+                  <div className=" flex items-start">
+                    <Icon
+                      icon="system-uicons:box-open"
+                      width="1.5rem"
+                      height="1.5rem"
+                    />
+                    <div className="description">
+                      Điện thoại thông minh <br />
+                      2. Cáp truyền dữ liệu <br />
+                      3. Que lấy sim <br />* Galaxy S24 Ultra không bao gồm củ
+                      sạc.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="w-1/2 text-sm">Chọn vị trí của hàng</div>
+            </div>
+          </div>
+          <div className="block__header--right flex flex-col shadow-custom p-4 rounded-lg gap-3 w-1/2">
             {/* bien the here */}
             <div className="grid grid-cols-3 gap-2">
               <button className="outline outline-gray-300 rounded-lg p-2 text-sm relative">
@@ -140,6 +269,82 @@ const ProductDetail = () => {
                 <span className="text-sm">Thêm vào giỏ</span>
               </button>
             </div>
+          </div>
+        </div>
+      </section>
+      <hr />
+      <section>Sản phẩm tương tự</section>
+      <section className="flex gap-4">
+        <div className="w-4/6 p-2 rounded-lg shadow-custom ">
+          description here
+        </div>
+        <div className="w-2/6 p-2 rounded-lg shadow-custom ">
+          <div>
+            <table className="table-auto text-left">
+              <thead>
+                <tr className="">
+                  <th>Thông số kỹ thuật</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="gap-2 ">
+                  <td className="line-clamp-2">Kích thước màn hình</td>
+                  <td className="px-2">6.8 inches</td>
+                </tr>
+                <tr className="gap-2">
+                  <td className="line-clamp-2">Kích thước màn hình</td>
+                  <td className="px-2">6.8 inches</td>
+                </tr>
+                <tr className="gap-2">
+                  <td className="line-clamp-2">Kích thước màn hình</td>
+                  <td className="px-2">6.8 inches</td>
+                </tr>
+                <tr className="gap-2">
+                  <td className="line-clamp-2">Kích thước màn hình</td>
+                  <td className="px-2">6.8 inches</td>
+                </tr>
+                <tr className="gap-2">
+                  <td className="line-clamp-2">Kích thước màn hình</td>
+                  <td className="px-2">6.8 inches</td>
+                </tr>
+              </tbody>
+            </table>
+            <button
+              onClick={handleClickOpen}
+              className="w-full p-2 text-center shadow-custom rounded-lg hover:outline hover:outline-main hover:text-main hover:bg-blue-100 focus:outline-main focus:bg-blue-100 focus"
+            >
+              Xem chi tiết
+            </button>
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+              PaperProps={{
+                style: {
+                  width: "80%",
+                },
+              }}
+            >
+              <DialogTitle id="alert-dialog-title">
+                Thông số kỹ thuật
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  <div className="flex gap-2">
+                    <td className="line-clamp-2 w-2/3">Kích thước màn hình</td>
+                    <td className="px-2">6.8 inches</td>
+                  </div>
+                  <div className="flex gap-2">
+                    <td className="line-clamp-2  w-2/3">Kích thước màn hình</td>
+                    <td className="px-2">6.8 inches</td>
+                  </div>
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose}>Đóng</Button>
+              </DialogActions>
+            </Dialog>
           </div>
         </div>
       </section>

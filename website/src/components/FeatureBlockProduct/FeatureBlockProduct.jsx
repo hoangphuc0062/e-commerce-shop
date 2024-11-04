@@ -10,7 +10,7 @@ import { formatCurrency } from "../../utils/helper";
 
 export const FeatureBlockProduct = ({ products }) => {
   return (
-    <>
+    <div className="flex flex-col gap-3">
       <div className="">
         <div className="flex justify-between">
           <h1 className="text-2xl font-bold uppercase ">
@@ -18,7 +18,7 @@ export const FeatureBlockProduct = ({ products }) => {
           </h1>
           <Link className=" p-2 rounded hover:underline">Xem tất cả</Link>
         </div>
-        <div className="flex gap-1 overflow-scroll md:overflow-hidden ">
+        <div className="flex gap-1 overflow-scroll scroll-smooth md:overflow-hidden  ">
           {products &&
             products.map((product, index) => (
               <Link
@@ -135,6 +135,6 @@ export const FeatureBlockProduct = ({ products }) => {
           );
         })}
       </Swiper>
-    </>
+    </div>
   );
 };

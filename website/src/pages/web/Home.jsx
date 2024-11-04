@@ -164,10 +164,10 @@ const HomePage = () => {
   return (
     <div className="flex flex-col gap-3">
       <section className="flex gap-3">
-        <div className="hidden w-1/6 lg:block">
+        <div className="hidden w-1/6 lg:block shadow-lg">
           <MenuTree />
         </div>
-        <div className="w-full  lg:w-4/6 bg-whiteColor drop-shadow-main">
+        <div className="w-full  lg:w-4/6 bg-whiteColor shadow-custom">
           <SliderBanner />
         </div>
 
@@ -175,22 +175,22 @@ const HomePage = () => {
           <SingleBanner />
         </div>
       </section>
-      <section className="bg-white shadow-lg">
+      <section className="bg-white  p-2 ">
         <FeatureBlockProduct products={products} />
       </section>
-      <section>
+      <section className="bg-white  p-2 ">
         <FeatureBlockProduct products={products1} />
       </section>
-      <section>
+      <section className="p-2">
         <FeatureBlockProduct products={products2} />
       </section>
-      <section>
+      <section className="p-2">
         <FeatureBlockProduct products={products3} />
       </section>
-      <section>
+      <section className="p-2">
         <FeatureBlockProduct products={products4} />
       </section>
-      <section>
+      <section className="p-2">
         <Accessories datas={datas} title="Phụ kiện" />
       </section>
       <section>Blogs</section>
