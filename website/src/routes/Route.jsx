@@ -7,7 +7,7 @@ import {
   Register,
   Error,
   Product,
-  Detail,
+  ProductDetail,
 } from "../pages/web";
 import { ProfileLayout } from "../layouts/profileLayout";
 import {
@@ -37,7 +37,7 @@ export default function RootRouter() {
         },
         {
           path: "/:category/:slug",
-          element: <Detail />,
+          element: <ProductDetail />,
         },
         {
           path: "/profile",
