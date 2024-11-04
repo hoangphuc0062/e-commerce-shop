@@ -10,7 +10,7 @@ export const Accessories = ({ title, datas }) => {
       >
         {title}
       </Link>
-      <div className="grid grid-cols-3 md:grid-cols-9 md:flex-wrap gap-2 p-2 justify-start w-full overflow-x-auto">
+      <div className="grid grid-cols-3 md:grid-cols-9 md:flex-wrap gap-2 p-2 justify-start w-full  overflow-x-auto">
         {datas.map((item) => (
           <Link
             to={item.link}
