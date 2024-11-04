@@ -13,7 +13,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import PropTypes from "prop-types";
 // thư viện he Giải mã các ký tự HTML như &acirc; và &agrave; thành "â" và "à
-import he from 'he';
+// import he from 'he';
 
 export default function EyePost({
   open,
@@ -33,8 +33,8 @@ export default function EyePost({
 
     // Giải mã các ký tự HTML, loại bỏ &nbsp; và các thẻ HTML
     const plainTextContent = he
-      .decode(content.replace(/&nbsp;/g, ' '))
-      .replace(/<[^>]*>/g, '');
+      .decode(content.replace(/&nbsp;/g, " "))
+      .replace(/<[^>]*>/g, "");
 
     // Rút ngắn nội dung nếu vượt quá độ dài tối đa
     return plainTextContent.length > maxLength
@@ -43,18 +43,20 @@ export default function EyePost({
   };
 
   const removePTags = (text) => {
-    return text ? text.replace(/<\/?p>/g, '') : '';
+    return text ? text.replace(/<\/?p>/g, "") : "";
   };
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
-      <DialogContent sx={{
-        padding: 4,
-        maxHeight: "80vh",
-        overflowY: "auto",
-        backgroundColor: "#f9f9f9", // Background color for better contrast
-        borderRadius: "8px", // Rounded corners
-        boxShadow: 3, // Add some shadow for depth
-      }}>
+      <DialogContent
+        sx={{
+          padding: 4,
+          maxHeight: "80vh",
+          overflowY: "auto",
+          backgroundColor: "#f9f9f9", // Background color for better contrast
+          borderRadius: "8px", // Rounded corners
+          boxShadow: 3, // Add some shadow for depth
+        }}
+      >
         <Box sx={{ textAlign: "center", mb: 3 }}>
           <Avatar
             src={selectedData.thumbnail}
@@ -122,7 +124,7 @@ export default function EyePost({
           </Grid>
         </Grid>
       </DialogContent>
-      <DialogActions sx={{ padding: 2, justifyContent: 'center' }}>
+      <DialogActions sx={{ padding: 2, justifyContent: "center" }}>
         <IconButton
           aria-label="edit"
           onClick={() => handleEdit(selectedData.id)}
@@ -135,12 +137,16 @@ export default function EyePost({
         >
           <Delete color="error" />
         </IconButton>
-        <Button onClick={handleClose} color="primary" variant="contained" sx={{ marginLeft: 2 }}>
+        <Button
+          onClick={handleClose}
+          color="primary"
+          variant="contained"
+          sx={{ marginLeft: 2 }}
+        >
           Đóng
         </Button>
       </DialogActions>
     </Dialog>
-
   );
 }
 
