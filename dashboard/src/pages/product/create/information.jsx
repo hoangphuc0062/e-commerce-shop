@@ -156,17 +156,13 @@ export default function Information({
             />
           </Grid>
           <Grid item xs={6}>
-            <FormControl fullWidth>
-              {isSubmitted && !productData.unit && "Đơn vị là bắt buộc" ? (
-                <InputLabel error id="unit">
-                  Đơn vị
-                </InputLabel>
-              ) : (
-                <InputLabel id="unit">Đơn vị</InputLabel>
-              )}
+            <FormControl fullWidth error={isSubmitted && !productData.unit}>
+              <InputLabel id="unit">
+                {isSubmitted && !productData.unit ? "Đơn vị là bắt buộc" : "Đơn vị"}
+              </InputLabel>
               <Select
                 labelId="unit"
-                value={productData.unit}
+                value={productData.unit || ""}
                 label="Đơn vị"
                 onChange={(e) => handleInputChange("unit", e.target.value)}
                 error={isSubmitted && !productData.unit}
@@ -177,11 +173,14 @@ export default function Information({
                 <MenuItem value="l">Lít (l)</MenuItem>
                 <MenuItem value="ml">Mililit (ml)</MenuItem>
               </Select>
-              <FormHelperText error={isSubmitted && !productData.unit}>
-                {isSubmitted && !productData.unit && "Đơn vị là bắt buộc"}
-              </FormHelperText>
+              {isSubmitted && !productData.unit ? (
+                <FormHelperText>Đơn vị là bắt buộc</FormHelperText>
+              ) : (
+                <FormHelperText>Vui lòng chọn đơn vị phù hợp</FormHelperText>
+              )}
             </FormControl>
           </Grid>
+
           <Grid item xs={4}>
             <TextField
               label="Số lượng có thể bán"

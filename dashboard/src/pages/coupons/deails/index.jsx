@@ -44,6 +44,8 @@ const EyeCoupons = ({ open, handleClose, selectedData }) => {
   const [showMore, setShowMore] = useState(false); // State for showing more info
   //   const displayedCategories = selectedData.categoryApply.slice(0, 3); // Hiển thị tối đa 3 danh mục
   //   const showMoreCategories = selectedData.categoryApply.length > 3;
+  const removePCoupon = (description) =>
+    description?.replace(/&nbsp;/g, ' ').replace(/<\/?p>/g, '') || '';
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
       <DialogContent>
@@ -62,7 +64,7 @@ const EyeCoupons = ({ open, handleClose, selectedData }) => {
             color="rgb(24, 28, 26)"
             sx={{ fontWeight: "bold" }}
           >
-            {selectedData?.description}
+            {removePCoupon(selectedData?.description)}
           </Typography>
           <span className="code-label">MÃ CODE</span>
           <Typography variant="body2" className="codeCoupons">

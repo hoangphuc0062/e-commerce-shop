@@ -36,7 +36,8 @@ export default function CreateCollection({ open, handleClose, handleCreate }) {
 
     descriptionSEO: Yup.string()
       .required("Mô tả SEO không được để trống")
-      .max(160, "Mô tả SEO không được vượt quá 160 ký tự"),
+      // .min(3, "Mô tả SEO tối thiểu 3 ký tự")
+      .max(360, "Mô tả SEO không được vượt quá 360 ký tự"),
 
     slug: Yup.string()
       .required("Slug không được để trống")
@@ -153,7 +154,7 @@ export default function CreateCollection({ open, handleClose, handleCreate }) {
                   formik.touched.descriptionSEO &&
                   Boolean(formik.errors.descriptionSEO)
                 }
-                helperText={
+                errorMessage={
                   formik.touched.descriptionSEO && formik.errors.descriptionSEO
                 }
               />
