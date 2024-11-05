@@ -32,6 +32,7 @@ const CategoryPost = () => {
           date: item.createdAt,
           thumbnail: item.thumbnail,
         }))
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
     : [];
 
   const visibleData = formattedData.slice(0, visibleItemCount);
@@ -65,7 +66,7 @@ const CategoryPost = () => {
                       />
                       <div className="p-4 w-2/3">
                         <h3 className="text-lg font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">
-                          <Link to={`/blog/${post.slug}`}>
+                          <Link to={`/forum/${post.slug}`}>
                             {post.postTitle}
                           </Link>
                         </h3>

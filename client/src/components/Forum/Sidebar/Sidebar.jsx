@@ -1,4 +1,4 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./Sidebar.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -43,12 +43,25 @@ const Sidebar = () => {
       <div className="lg:block fixed">
         <nav className="p-4">
           <ul className="space-y-2">
+            <li>
+              <button
+                onClick={() => navigate("/forum")}
+                className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
+                  location.pathname === "/forum"
+                    ? "bg-hv text-main"
+                    : "text-gray-700"
+                }`}
+              >
+                <Iconify icon="mdi:home" />
+                Trang chủ
+              </button>
+            </li>
             {data.length > 0 ? (
               data.map((category) => (
                 <li key={category.id}>
                   <button
                     onClick={() => handleCategoryClick(category.slug)}
-                    className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main ${
+                    className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
                       location.pathname === `/forum/category/${category.slug}`
                         ? "bg-hv text-main"
                         : "text-gray-700"
@@ -70,12 +83,25 @@ const Sidebar = () => {
       <div className="md:hidden bg-white p-4 z-50 overflow-x-auto whitespace-nowrap scrollbar-hide">
         <nav>
           <ul className="flex space-x-4">
+            <li>
+              <button
+                onClick={() => navigate("/forum")}
+                className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
+                  location.pathname === "/forum"
+                    ? "bg-hv text-main"
+                    : "text-gray-700"
+                }`}
+              >
+                <Iconify icon="mdi:home" />
+                Trang chủ
+              </button>
+            </li>
             {data.length > 0 ? (
               data.map((category) => (
                 <li key={category.id}>
                   <button
                     onClick={() => handleCategoryClick(category.slug)}
-                    className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main ${
+                    className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
                       location.pathname === `/forum/category/${category.slug}`
                         ? "bg-hv text-main"
                         : "text-gray-700"

@@ -12,7 +12,6 @@ const DetailBlog = () => {
 
   // Lấy trạng thái và dữ liệu bài viết từ Redux
   const status = useSelector((state) => state.post.getBySlugStatus);
-  // const post = useSelector((state) => state.postReducer?.data);
   const post = useSelector((state) => state.post.data);
 
   useEffect(() => {
@@ -81,7 +80,7 @@ const DetailBlog = () => {
             <img
               src={data.thumbnail}
               alt={data.postTitle}
-              className="w-full max-h-[400px] rounded-lg"
+              className="w-full max-h-[400px] rounded-lg object-cover"
             />
           </div>
 

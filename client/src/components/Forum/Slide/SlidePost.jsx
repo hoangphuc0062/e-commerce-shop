@@ -28,27 +28,31 @@ const SlidePost = () => {
   useEffect(() => {
     if (status === "success" && Array.isArray(postData)) {
       setData(
-        postData.map((item) => ({
-          status: item.status,
-          id: item._id,
-          postTitle: item.postTitle,
-          shortDescription: item.shortDescription,
-          seoKeyWords: item.seoKeyWords,
-          content: item.content,
-          author: item.author?.name || "Unknown",
-          category: item?.category?.name,
-          categorySlug: item?.category?.slug,
-          rating: item.rating,
-          slug: item.slug,
-          date: item.createdAt,
-          thumbnail: item.thumbnail,
-        }))
+        postData
+          .map((item) => ({
+            status: item.status,
+            id: item._id,
+            postTitle: item.postTitle,
+            shortDescription: item.shortDescription,
+            seoKeyWords: item.seoKeyWords,
+            content: item.content,
+            author: item.author?.name || "Unknown",
+            category: item?.category?.name,
+            categorySlug: item?.category?.slug,
+            rating: item.rating,
+            slug: item.slug,
+            date: item.createdAt,
+            thumbnail: item.thumbnail,
+          }))
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
       );
     }
   }, [status, postData]);
 
   // Lọc dữ liệu theo categorySlug
-  const filteredData = data.filter((post) => post.categorySlug === categorySlug);
+  const filteredData = data.filter(
+    (post) => post.categorySlug === categorySlug
+  );
 
   return (
     <div className="w-full">
@@ -65,13 +69,17 @@ const SlidePost = () => {
                 />
                 <div className="p-3">
                   <Link
-                    to={`/blog/${post.slug}`} // Cập nhật link đến bài viết
+                    to={`/forum/${post.slug}`} // Cập nhật link đến bài viết
                     className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main"
                   >
                     {post.postTitle}
                   </Link>
                   <span className="text-md line-clamp-3">
-                    {post.shortDescription}
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: post.shortDescription,
+                      }}
+                    />
                   </span>
                   <div className="flex items-center pt-16">
                     <span className="text-sm">

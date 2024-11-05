@@ -27,23 +27,27 @@ function ForumPage() {
   useEffect(() => {
     if (status === "success" && Array.isArray(postData)) {
       setData(
-        postData.map((item) => ({
-          status: item.status,
-          id: item._id,
-          postTitle: item.postTitle,
-          shortDescription: item.shortDescription,
-          seoKeyWords: item.seoKeyWords,
-          content: item.content,
-          author: item.author?.name || "Unknown",
-          category: item.category || "Unknown",
-          rating: item.rating,
-          slug: item.slug,
-          date: item.createdAt,
-          thumbnail: item.thumbnail,
-        }))
+        postData
+          .map((item) => ({
+            status: item.status,
+            id: item._id,
+            postTitle: item.postTitle,
+            shortDescription: item.shortDescription,
+            seoKeyWords: item.seoKeyWords,
+            content: item.content,
+            author: item.author?.name || "Unknown",
+            category: item.category?.name || "Unknown",
+            rating: item.rating,
+            slug: item.slug,
+            date: item.createdAt,
+            thumbnail: item.thumbnail,
+          }))
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
       );
     }
   }, [status, postData]);
+
+  const uniqueCategories = [...new Set(data.map((item) => item.category))];
 
   return (
     <div className="container w-full">
@@ -62,10 +66,12 @@ function ForumPage() {
             {data && <FeaturedPost data={data} />}
           </section>
 
-          <section className="mb-8 p-4">
-            <HeadingSection title="xem nhiều tuần qua" />
-            {data && <SliderPost data={data} category={data?.category} />}
-          </section>
+          {uniqueCategories.slice(0, 1).map((category) => (
+            <section key={category} className="mb-8 p-4">
+              <HeadingSection title={category} />
+              {data && <SliderPost data={data} category={category} />}
+            </section>
+          ))}
 
           <PostScroll data={data} />
 
@@ -83,9 +89,9 @@ function ForumPage() {
           </section>
           <section className="mb-8 p-4">
             <div className="flex overflow-x-auto space-x-4">
-              <PostTag category={data?.category} data={data} />
-              <PostTag category={data?.category} data={data} />
-              <PostTag category={data?.category} data={data} />
+              {uniqueCategories.slice(0, 3).map((category) => (
+                <PostTag key={category} category={category} data={data} />
+              ))}
             </div>
           </section>
 
