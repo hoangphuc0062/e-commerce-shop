@@ -22,6 +22,23 @@ import {
 import { handleToast } from "../../../utils/toast";
 import Iconify from "../Iconify";
 import IconModal from "../IconModal";
+import { getBrand } from "../../../redux/slices/brand";
+
+const initialValues = {
+  name: "",
+  icon: "",
+  slug: "",
+  type: "",
+  description: "",
+  brand: "",
+};
+
+const validationSchema = Yup.object({
+  name: Yup.string().required("Tên danh mục là bắt buộc"),
+  slug: Yup.string().required("Slug là bắt buộc"),
+  type: Yup.string().required("Loại là bắt buộc"),
+  description: Yup.string().required("Mô tả là bắt buộc"),
+});
 
 function CategoryEdit() {
   const navigate = useNavigate();
@@ -29,31 +46,36 @@ function CategoryEdit() {
   const { id } = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
+  const brand = useSelector((state) => state.brand.data);
+  const status = useSelector((state) => state.brand.status);
+  const [dataBrand, setDataBrand] = useState([]);
+
+  useEffect(() => {
+    dispatch(getBrand());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (status === "success") {
+      setDataBrand(
+        brand.map((item) => {
+          return { value: item._id, label: item.name };
+        })
+      );
+    }
+  }, [status, brand]);
 
   const formik = useFormik({
-    initialValues: {
-      name: "",
-      icon: "",
-      slug: "",
-      type: "",
-      description: "",
-    },
-    validationSchema: Yup.object({
-      name: Yup.string().required("Tên danh mục là bắt buộc"),
-      slug: Yup.string().required("Slug là bắt buộc"),
-      type: Yup.string().required("Loại là bắt buộc"),
-      description: Yup.string().required("Mô tả là bắt buộc"),
-    }),
+    initialValues,
+    validationSchema,
     onSubmit: (values) => {
-      const { name, slug, type, description, icon } = values;
+      const { name, slug, type, description, icon, brand } = values;
       setIsSubmitting(true);
       dispatch(
         updateCategory({
           categoryId: id,
-          data: { name, slug, type, description, icon },
+          data: { name, slug, type, description, icon, brand },
         })
       ).then((res) => {
-        console.log(res);
         if (res.type === "category/updateCategory/fulfilled") {
           handleToast("success", "Cập nhật danh mục thành công");
           navigate("/dashboard/category");
@@ -84,6 +106,7 @@ function CategoryEdit() {
         type: categoryData.type,
         description: categoryData.description || "",
         icon: categoryData.icon || "",
+        brand: categoryData.brand?._id || "",
       });
     }
   }, [categoryStatus, categoryData]);
@@ -172,6 +195,34 @@ function CategoryEdit() {
               {formik.touched.type && formik.errors.type && (
                 <FormHelperText sx={{ color: "red" }}>
                   {formik.errors.type}
+                </FormHelperText>
+              )}
+            </FormControl>
+          </Grid>
+          <Grid item xs={4}>
+            <FormControl
+              fullWidth
+              sx={{ mt: 2 }}
+              error={formik.touched.brand && Boolean(formik.errors.brand)}
+            >
+              <InputLabel id="brand">Thương hiệu</InputLabel>
+              <Select
+                labelId="brand"
+                id="brand"
+                name="brand"
+                label="Thương hiệu"
+                value={formik.values.brand}
+                onChange={formik.handleChange}
+              >
+                {dataBrand.map((item) => (
+                  <MenuItem key={item.value} value={item.value}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              {formik.touched.brand && formik.errors.brand && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {formik.errors.brand}
                 </FormHelperText>
               )}
             </FormControl>
