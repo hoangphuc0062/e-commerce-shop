@@ -8,6 +8,8 @@ import {
   FormControl,
   MenuItem,
   FormHelperText,
+  Autocomplete,
+  Checkbox,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -30,7 +32,7 @@ const initialValues = {
   slug: "",
   type: "",
   description: "",
-  brand: "",
+  brand: [],
 };
 
 const validationSchema = Yup.object({
@@ -106,7 +108,7 @@ function CategoryEdit() {
         type: categoryData.type,
         description: categoryData.description || "",
         icon: categoryData.icon || "",
-        brand: categoryData.brand?._id || "",
+        brand: categoryData?.brand?.map((item) => item._id),
       });
     }
   }, [categoryStatus, categoryData]);
@@ -200,31 +202,31 @@ function CategoryEdit() {
             </FormControl>
           </Grid>
           <Grid item xs={4}>
-            <FormControl
-              fullWidth
-              sx={{ mt: 2 }}
-              error={formik.touched.brand && Boolean(formik.errors.brand)}
-            >
-              <InputLabel id="brand">Thương hiệu</InputLabel>
-              <Select
-                labelId="brand"
-                id="brand"
-                name="brand"
-                label="Thương hiệu"
-                value={formik.values.brand}
-                onChange={formik.handleChange}
-              >
-                {dataBrand.map((item) => (
-                  <MenuItem key={item.value} value={item.value}>
-                    {item.label}
-                  </MenuItem>
-                ))}
-              </Select>
-              {formik.touched.brand && formik.errors.brand && (
-                <FormHelperText sx={{ color: "red" }}>
-                  {formik.errors.brand}
-                </FormHelperText>
-              )}
+            <FormControl fullWidth>
+              <Autocomplete
+                multiple
+                options={dataBrand}
+                getOptionLabel={(option) => option.label}
+                value={formik.values.brand
+                  .map((tag) => dataBrand.find((item) => item.value === tag))
+                  .filter(Boolean)}
+                onChange={(event, newValue) =>
+                  formik.setFieldValue(
+                    "brand",
+                    newValue.map((item) => item.value)
+                  )
+                }
+                renderInput={(params) => (
+                  <TextField {...params} label="brand" />
+                )}
+                renderOption={(props, option, { selected }) => (
+                  <li key={option.value} {...props}>
+                    {" "}
+                    <Checkbox checked={selected} style={{ marginRight: 8 }} />
+                    {option.label}
+                  </li>
+                )}
+              />
             </FormControl>
           </Grid>
           <Grid item xs={12}>
