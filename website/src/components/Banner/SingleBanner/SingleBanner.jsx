@@ -24,7 +24,7 @@ export const SingleBanner = () => {
   return (
     <div className=" grid grid-rows-3 w-full h-full gap-3 ">
       {banners.map((banner, index) => (
-        <div className="w-full shadow-lg " key={index}>
+        <div className="w-full shadow-custom p-2 " key={index}>
           <Link to={banner.ref}>
             <img
               key={banner.id}
