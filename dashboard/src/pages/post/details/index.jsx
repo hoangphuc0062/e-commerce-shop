@@ -47,6 +47,7 @@ export default function EyePost({
   };
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+
       <DialogContent
         sx={{
           padding: 4,
@@ -58,22 +59,22 @@ export default function EyePost({
         }}
       >
         <Box sx={{ textAlign: "center", mb: 3 }}>
+
           <Avatar
             src={selectedData.thumbnail}
             alt="Thumbnail"
+            variant="square"  // Đảm bảo Avatar không bo tròn
             sx={{
-              width: { xs: 100, md: 150 }, // Adjusted width
-              height: { xs: 100, md: 150 }, // Adjusted height
+              width: { xs: 400, md: 600 },  // Chiều rộng lớn hơn
+              height: { xs: 200, md: 300 },  // Chiều cao nhỏ hơn
               margin: "0 auto",
               mb: 2,
-              border: "2px solid #007BFF", // Border to highlight avatar
             }}
           />
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             {selectedData?.post_title}
           </Typography>
-          <Typography variant="body1">
-            {/* <strong>Short SEO Description:</strong>{" "} */}
+          <Typography variant="body2" color="textSecondary" paragraph>
             {removePTags(selectedData?.shortDescription)}
           </Typography>
         </Box>
@@ -94,12 +95,6 @@ export default function EyePost({
               <strong>Meta Description:</strong> {selectedData?.metaDescription}
             </Typography>
           </Grid>
-          {/* <Grid item xs={12}>
-            <Typography variant="body1">
-              <strong>Short SEO Description:</strong>{" "}
-              {removePTags(selectedData?.shortSeoDescription)}
-            </Typography>
-          </Grid> */}
           <Grid item xs={12}>
             <Typography variant="body1">
               <strong>Nội dung bài viết:</strong>{" "}
@@ -119,12 +114,14 @@ export default function EyePost({
           </Grid>
           <Grid item xs={12}>
             <Typography variant="body1">
-              <strong>Đánh giá:</strong> {selectedData?.rating}
+              <strong>Đánh ghá:</strong> {selectedData?.rating}
             </Typography>
           </Grid>
         </Grid>
       </DialogContent>
+
       <DialogActions sx={{ padding: 2, justifyContent: "center" }}>
+
         <IconButton
           aria-label="edit"
           onClick={() => handleEdit(selectedData.id)}
@@ -137,12 +134,14 @@ export default function EyePost({
         >
           <Delete color="error" />
         </IconButton>
+
         <Button
           onClick={handleClose}
           color="primary"
           variant="contained"
           sx={{ marginLeft: 2 }}
         >
+
           Đóng
         </Button>
       </DialogActions>

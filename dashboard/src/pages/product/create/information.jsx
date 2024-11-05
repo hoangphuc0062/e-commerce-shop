@@ -422,7 +422,7 @@ export default function Information({
                   productData.shortDescription.length < 20 ||
                   productData.shortDescription.length > 200)
               }
-              helperText={
+              errorMessage={
                 isSubmitted && (
                   !productData.shortDescription
                     ? "Mô tả ngắn là bắt buộc"
@@ -445,16 +445,16 @@ export default function Information({
                 isSubmitted &&
                 (!productData.description ||
                   productData.description.length < 50 ||
-                  productData.description.length > 1000)
+                  productData.description.length > 10000)
               }
-              helperText={
+              errorMessage={
                 isSubmitted && (
                   !productData.description
                     ? "Mô tả sản phẩm là bắt buộc"
                     : productData.description.length < 50
                       ? "Mô tả sản phẩm phải có ít nhất 50 ký tự"
-                      : productData.description.length > 1000
-                        ? "Mô tả sản phẩm không được vượt quá 1000 ký tự"
+                      : productData.description.length > 10000
+                        ? "Mô tả sản phẩm không được vượt quá 10000 ký tự"
                         : ""
                 )
               }

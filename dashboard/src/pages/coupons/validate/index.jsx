@@ -4,6 +4,7 @@ export const CouponSchema = Yup.object().shape({
   name: Yup.string().required("Tên mã giảm giá là bắt buộc"),
   code: Yup.string().required("Mã giảm giá là bắt buộc"),
   discount: Yup.number()
+    .typeError("Số tiền giảm giá phải là một số") // Thông báo lỗi nếu discount không phải là số
     .required("Số tiền giảm giá là bắt buộc")
     .min(1, "Số tiền giảm giá phải lớn hơn 0")
     .when("type", {
