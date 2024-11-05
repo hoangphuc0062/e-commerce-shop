@@ -19,11 +19,29 @@ import { createCategory, resetState } from "../../../redux/slices/category";
 import { handleToast } from "../../../utils/toast";
 import IconModal from "../IconModal";
 import Iconify from "../Iconify";
+import { getBrand } from "../../../redux/slices/brand";
 
 function CategoryCreate() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false); // Loading state
+  const [dataBrand, setDataBrand] = useState([]);
+  const brand = useSelector((state) => state.brand.data);
+  const status = useSelector((state) => state.brand.status);
+
+  useEffect(() => {
+    dispatch(getBrand());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (status === "success") {
+      setDataBrand(
+        brand.map((item) => {
+          return { value: item._id, label: item.name };
+        })
+      );
+    }
+  }, [status, brand]);
 
   const formik = useFormik({
     initialValues: {
@@ -31,6 +49,7 @@ function CategoryCreate() {
       icon: "",
       slug: "",
       type: "",
+      brand: "",
       description: "",
     },
     validationSchema: Yup.object({
@@ -44,21 +63,18 @@ function CategoryCreate() {
         .min(3, "Slug phải có ít nhất 3 ký tự")
         .max(50, "Slug không được vượt quá 50 ký tự"),
 
-      type: Yup.string()
-        .required("Loại là bắt buộc"),
+      type: Yup.string().required("Loại là bắt buộc"),
       description: Yup.string()
         .required("Mô tả là bắt buộc")
         .min(10, "Mô tả phải có ít nhất 10 ký tự")
         .max(250, "Mô tả không được vượt quá 250 ký tự"),
 
-      icon: Yup.string()
-        .notRequired()
-        .url("Icon phải là một URL hợp lệ")
+      icon: Yup.string().notRequired().url("Icon phải là một URL hợp lệ"),
     }),
     onSubmit: (values) => {
-      const { name, slug, type, description, icon } = values;
+      const { name, slug, type, description, icon, brand } = values;
       setIsSubmitting(true); // Set loading state
-      dispatch(createCategory({ name, slug, type, description, icon }));
+      dispatch(createCategory({ name, slug, type, description, icon, brand }));
     },
   });
 
@@ -160,6 +176,34 @@ function CategoryCreate() {
               {formik.touched.type && formik.errors.type && (
                 <FormHelperText sx={{ color: "red" }}>
                   {formik.errors.type}
+                </FormHelperText>
+              )}
+            </FormControl>
+          </Grid>
+          <Grid item xs={4}>
+            <FormControl
+              fullWidth
+              sx={{ mt: 2 }}
+              error={formik.touched.type && Boolean(formik.errors.type)}
+            >
+              <InputLabel id="brand">Thương hiệu</InputLabel>
+              <Select
+                labelId="brand"
+                id="brand"
+                name="brand"
+                label="Thương hiệu"
+                value={formik.values.brand}
+                onChange={formik.handleChange}
+              >
+                {dataBrand.map((item) => (
+                  <MenuItem key={item.value} value={item.value}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              {formik.touched.brand && formik.errors.brand && (
+                <FormHelperText sx={{ color: "red" }}>
+                  {formik.errors.brand}
                 </FormHelperText>
               )}
             </FormControl>
