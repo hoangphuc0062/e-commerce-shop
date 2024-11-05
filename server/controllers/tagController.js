@@ -14,10 +14,10 @@ const createTag = asyncHandler(async (req, res) => {
       mes: "Tag already exists",
     });
   }
-  const createdTag = await Tag.create({ name });
-  res.status(201).json({
+  const tag = await Tag.create(req.body);
+  return res.status(200).json({
     mes: "Tag created",
-    createdTag,
+    tag,
   });
 });
 
