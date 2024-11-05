@@ -13,7 +13,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
 import PropTypes from "prop-types";
 // thư viện he Giải mã các ký tự HTML như &acirc; và &agrave; thành "â" và "à
-// import he from 'he';
+import he from "he";
 
 export default function EyePost({
   open,
@@ -47,7 +47,6 @@ export default function EyePost({
   };
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
-
       <DialogContent
         sx={{
           padding: 4,
@@ -59,14 +58,13 @@ export default function EyePost({
         }}
       >
         <Box sx={{ textAlign: "center", mb: 3 }}>
-
           <Avatar
             src={selectedData.thumbnail}
             alt="Thumbnail"
-            variant="square"  // Đảm bảo Avatar không bo tròn
+            variant="square" // Đảm bảo Avatar không bo tròn
             sx={{
-              width: { xs: 400, md: 600 },  // Chiều rộng lớn hơn
-              height: { xs: 200, md: 300 },  // Chiều cao nhỏ hơn
+              width: { xs: 400, md: 600 }, // Chiều rộng lớn hơn
+              height: { xs: 200, md: 300 }, // Chiều cao nhỏ hơn
               margin: "0 auto",
               mb: 2,
             }}
@@ -121,7 +119,6 @@ export default function EyePost({
       </DialogContent>
 
       <DialogActions sx={{ padding: 2, justifyContent: "center" }}>
-
         <IconButton
           aria-label="edit"
           onClick={() => handleEdit(selectedData.id)}
@@ -141,7 +138,6 @@ export default function EyePost({
           variant="contained"
           sx={{ marginLeft: 2 }}
         >
-
           Đóng
         </Button>
       </DialogActions>
