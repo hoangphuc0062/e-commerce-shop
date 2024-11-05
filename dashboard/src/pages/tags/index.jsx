@@ -40,12 +40,12 @@ export default function TagPage() {
         setEditTag(tag);
         formik.setFieldValue("name", tag.name);
     };
-
     const validationSchema = Yup.object({
         name: Yup.string()
             .required("Tên tag không được để trống")
             .max(250, "Tên tag không được vượt quá 250 ký tự")
-            .min(2, "Tên tag không tối thiểu 2 ký tự"),
+            .min(2, "Tên tag phải có tối thiểu 2 ký tự")
+            .matches(/^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+$/, "Tên tag không được chứa khoảng trống hoặc dấu"),
     });
 
     const formik = useFormik({
