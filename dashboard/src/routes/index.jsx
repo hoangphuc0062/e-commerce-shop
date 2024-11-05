@@ -4,12 +4,14 @@ import AdminRoute from "./AdminRoute";
 import ErrorRoute from "./ErrorRoute";
 import EditorRoute from "./EditorRoute";
 import PrivateRoute from "./PrivateRoute";
-import { useAuth } from "../contexts/AuthContext";
 import SignIn from "../pages/auth/login";
 import ResetPassword from "../pages/auth/ResetPassword";
+import React from "react";
+import { UserContext } from "../contexts/AuthContext";
 
 export default function RootRouter() {
-  const { islogin } = useAuth();
+  const { loginAuth } = React.useContext(UserContext);
+
   return (
     <Routes>
       {/* Admin layout wrapper */}
@@ -17,7 +19,7 @@ export default function RootRouter() {
       <Route
         path="/dashboard"
         element={
-          islogin ? (
+          loginAuth ? (
             <PrivateRoute
               element={<AdminLayout />}
               roles={["customer", "staff", "admin", "superadmin"]}
@@ -27,8 +29,8 @@ export default function RootRouter() {
           )
         }
       >
-        {islogin && AdminRoute()}
-        {islogin && EditorRoute()}
+        {loginAuth && AdminRoute()}
+        {loginAuth && EditorRoute()}
       </Route>
 
       {/* Error routes */}
