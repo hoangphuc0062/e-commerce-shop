@@ -61,11 +61,11 @@ const SlidePost = () => {
         {filteredData.length > 0 ? (
           filteredData.map((post) => (
             <div key={post.id} className="px-1">
-              <div className="bg-white rounded-lg overflow-hidden flex">
+              <div className="bg-white overflow-hidden flex">
                 <img
                   src={post.thumbnail}
                   alt={post.postTitle}
-                  className="w-full h-full lg:max-w-[180px] lg:max-h-[180px] object-cover"
+                  className="max-w-[180px] max-h-[180px] object-cover rounded-md"
                 />
                 <div className="p-3">
                   <Link
@@ -74,14 +74,14 @@ const SlidePost = () => {
                   >
                     {post.postTitle}
                   </Link>
-                  <span className="text-md line-clamp-3">
+                  <span className="text-md line-clamp-3 text-gray-500">
                     <div
                       dangerouslySetInnerHTML={{
                         __html: post.shortDescription,
                       }}
                     />
                   </span>
-                  <div className="flex items-center pt-16">
+                  <div className="flex items-center justify-start pt-16">
                     <span className="text-sm">
                       Ngày đăng {formatDay(post.date)}
                     </span>

@@ -49,7 +49,7 @@ const CategoryPost = () => {
         </div>
         <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col">
           <SlidePost />
-          <section className="mb-8 p-4">
+          <section className="mb-8 p-4 w-full">
             <div className="md:flex md:space-x-8">
               <div className="md:w-1/2">
                 <HeadingSection title="Tin Mới Nhất" />
@@ -57,18 +57,25 @@ const CategoryPost = () => {
                   {visibleData.map((post) => (
                     <div
                       key={post.id}
-                      className="bg-white overflow-hidden flex"
+                      className="bg-white overflow-hidden flex "
                     >
                       <img
                         src={post.thumbnail}
                         alt={post.postTitle}
-                        className="w-1/3 h-32 object-cover hover:scale-105 transition duration-300"
+                        className="w-1/3 h-32 object-cover hover:scale-105 transition duration-300 rounded-md"
                       />
                       <div className="p-4 w-2/3">
                         <h3 className="text-lg font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">
                           <Link to={`/forum/${post.slug}`}>
                             {post.postTitle}
                           </Link>
+                        </h3>
+                        <h3 className="text-sm text-gray-600 line-clamp-1 py-1">
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: post.shortDescription,
+                            }}
+                          />
                         </h3>
                         <p className="text-sm text-gray-600">
                           {post.author} - {formatDay(post.date)}
