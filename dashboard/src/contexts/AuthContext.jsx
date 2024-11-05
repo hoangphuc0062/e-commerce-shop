@@ -1,57 +1,35 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import Cookies from "js-cookie";
-import ROLE from "../config/role";
+import { useDispatch } from "react-redux";
+import { getMe } from "../redux/slices/staff";
+import PropTypes from "prop-types";
 
-// Tạo Context
-const AuthContext = createContext();
+const UserContext = React.createContext();
 
-// Provider để bọc ứng dụng của bạn
-export const AuthProvider = ({ children }) => {
-  const [islogin, setIslogin] = useState(false);
-  const [userRole, setUserRole] = useState();
+const UserProvider = ({ children }) => {
+  const [user, setUser] = useState({});
+  const [loginAuth, setLoginAuth] = useState(false);
+  const token = Cookies.get("accessToken");
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    const role = Cookies.get("role");
-    if (role !== undefined) {
-      setUserRole(ROLE[role]);
-      setIslogin(true);
+  useMemo(() => {
+    if (token) {
+      setLoginAuth(true);
+      dispatch(getMe());
     }
-  }, []);
+  }, [token, dispatch]);
 
-  const setRole = (role) => {
-    Cookies.set("role", role, { expires: 7 });
-    setUserRole(ROLE[role]);
-  };
-
-  const login = () => {
-    setIslogin(true);
-  };
-
-  const logout = () => {
-    setIslogin(false);
-    Cookies.remove("role");
-    setUserRole(null);
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        islogin,
-        userRole,
-        setRole,
-        login,
-        logout,
-        setUserRole,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ user, setUser, loginAuth, setLoginAuth }),
+    [user, setUser, loginAuth, setLoginAuth]
   );
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
-// Custom hook để sử dụng AuthContext
-export const useAuth = () => {
-  return useContext(AuthContext);
+UserProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
+export { UserContext, UserProvider };
