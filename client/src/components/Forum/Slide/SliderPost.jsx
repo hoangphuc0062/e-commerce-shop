@@ -43,9 +43,7 @@ const SliderPost = ({ category, data }) => {
   };
 
   // Lọc các bài viết theo danh mục nếu có, nếu không sẽ hiển thị tất cả
-  const filteredPosts = category
-    ? data?.filter((post) => post.category === category)
-    : data;
+  const filteredPosts = data?.filter((post) => post.category === category);
 
   return (
     <div className="w-full">

@@ -95,15 +95,12 @@ function ForumPage() {
             </div>
           </section>
 
-          <section className="mb-8 p-4">
-            <HeadingSection title="thủ thuật - mẹo hay" />
-            {data && <SliderPost data={data} category={data?.category} />}
-          </section>
-
-          <section className="mb-8 p-4">
-            <HeadingSection title="Sự kiện" />
-            {data && <SliderPost data={data} category={data?.category} />}
-          </section>
+          {uniqueCategories.slice(1, 3).map((category) => (
+            <section key={category} className="mb-8 p-4">
+              <HeadingSection title={category} />
+              {data && <SliderPost data={data} category={category} />}
+            </section>
+          ))}
         </div>
       </div>
     </div>

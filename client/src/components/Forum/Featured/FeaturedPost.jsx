@@ -10,15 +10,15 @@ function FeaturedPost({ data }) {
     <section className="mb-8">
       <HeadingSection title="Nổi bật nhất" />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="w-full">
+        <div className="w-full rounded-lg overflow-hidden">
           <Link
             to={`${featuredPost?.slug}`}
-            className="relative rounded-lg overflow-hidden cursor-pointer h-full object-contain"
+            className="relative"
           >
             <img
               src={featuredPost?.thumbnail}
               alt={featuredPost?.postTitle}
-              className="w-full h-80 object-cover"
+              className="w-full h-full object-cover"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
               <h3 className="text-xl font-bold mb-2 line-clamp-2 hover:text-main">
