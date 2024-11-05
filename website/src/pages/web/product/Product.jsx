@@ -6,6 +6,8 @@ import { faker } from "@faker-js/faker";
 
 import SimpleSlide from "../../../components/Banner/SliderBanner/SimpleSlide";
 import ProductCard from "../../../components/FeatureBlockProduct/Card";
+import { Link } from "react-router-dom";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 const imgs = [
   {
@@ -45,7 +47,9 @@ const Product = () => {
   const [firstLoading, setfirstLoading] = useState(true);
   const [productPerPage, setProductPerPage] = useState(15);
   const [page, setPage] = useState(1);
-
+  const [sortedProducts, setSortedProducts] = useState(products);
+  const [sortCriteria, setSortCriteria] = useState("");
+  const [activeButton, setactiveButton] = useState("");
   function loading() {
     return (
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
@@ -64,14 +68,40 @@ const Product = () => {
   const handleLoadMore = () => {
     setIsLoading(true);
     setTimeout(() => {
-      setProducts([
+      const newProducts = [
         ...products,
-        ...apiProducts.slice(0, page * productPerPage),
-      ]);
+        ...apiProducts.slice(
+          page * productPerPage,
+          (page + 1) * productPerPage
+        ),
+      ];
+      setProducts(newProducts);
+      if (sortCriteria) {
+        handleSort(sortCriteria);
+      }
       setIsLoading(false);
+      setPage(page + 1);
     }, 2000);
   };
+  const handleSort = (criteria) => {
+    setSortCriteria(criteria);
+    let sorted = [...products];
 
+    if (criteria === "price-high-low") {
+      sorted.sort((a, b) => b.price - a.price);
+      setactiveButton(1);
+    } else if (criteria === "price-low-high") {
+      sorted.sort((a, b) => a.price - b.price);
+      setactiveButton(2);
+    } else if (criteria === "discount") {
+      sorted.sort((a, b) => b.discountPercent - a.discountPercent);
+      setactiveButton(3);
+    } else if (criteria === "views") {
+      setactiveButton(4);
+      sorted.sort((a, b) => b.views - a.views); // Assuming products have a 'views' property
+    }
+    setSortedProducts(sorted);
+  };
   useEffect(() => {
     setProducts(apiProducts.slice(0, page * productPerPage));
   }, [page]);
@@ -83,7 +113,7 @@ const Product = () => {
   }, []);
 
   return (
-    <div>
+    <div className="flex flex-col gap-3">
       <div>breadcrumb here</div>
       <section className="flex gap-1">
         <div className=" h-[100px] hidden w-full md:block md:w-1/2">
@@ -93,17 +123,93 @@ const Product = () => {
           <SimpleSlide imgs={imgs} />
         </div>
       </section>
-      <section>brands here</section>
+      <section>
+        <div className="grid grid-cols-8 gap-3">
+          {Array.from({ length: 16 }).map((_, i) => (
+            <Link
+              key={i}
+              className="round-lg outline outline-gray-100"
+              to={"/"}
+            >
+              <img
+                src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:50/q:30/plain/https://cellphones.com.vn/media/tmp/catalog/product/f/r/frame_59.png"
+                alt=""
+              />
+            </Link>
+          ))}
+        </div>
+      </section>
       <section>filter here</section>
-      <section>sort here</section>
+      <section>
+        <div>
+          <h1 className="text-[20px] font-semibold">Sắp xếp theo</h1>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleSort("price-high-low")}
+              className={`flex items-center bg-gray-200 p-2 rounded-lg ${
+                activeButton === 1
+                  ? "bg-blue-200 outline outline-main text-main"
+                  : ""
+              }`}
+            >
+              <Icon icon="proicons:filter" width="1rem" height="1rem" />
+              Giá Cao - Thấp
+            </button>
+            <button
+              onClick={() => handleSort("price-low-high")}
+              className={`flex items-center bg-gray-200 p-2 rounded-lg ${
+                activeButton === 2
+                  ? "bg-blue-200 outline outline-main text-main"
+                  : ""
+              }`}
+            >
+              <Icon
+                icon="proicons:filter"
+                width="1rem"
+                height="1rem"
+                className="rotate-180"
+              />
+              Giá Thấp - Cao
+            </button>
+            <button
+              onClick={() => handleSort("discount")}
+              className={`flex items-center bg-gray-200 p-2 rounded-lg ${
+                activeButton === 3
+                  ? "bg-blue-200 outline outline-main text-main"
+                  : ""
+              }`}
+            >
+              <Icon
+                icon="material-symbols-light:percent"
+                width="1rem"
+                height="1rem"
+              />
+              Khuyến Mãi Hot
+            </button>
+            <button
+              onClick={() => handleSort("views")}
+              className={`flex items-center bg-gray-200 p-2 rounded-lg ${
+                activeButton === 4
+                  ? "bg-blue-200 outline outline-main text-main"
+                  : ""
+              }`}
+            >
+              <Icon icon="iconoir:eye" width="1rem" height="1rem" />
+              Xem nhiều
+            </button>
+          </div>
+        </div>
+      </section>
       <section>
         {firstLoading ? (
           loading()
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
-            {products.map((product, index) => (
-              <ProductCard key={index} data={product} />
-            ))}
+            {(sortedProducts.length > 0 ? sortedProducts : products).map(
+              (product, index) => (
+                <ProductCard key={index} data={product} />
+              )
+            )}
           </div>
         )}
 
