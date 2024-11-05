@@ -19,8 +19,11 @@ export const PostSchema = Yup.object().shape({
     .max(200, "Mô tả ngắn không được vượt quá 200 ký tự"),
 
   seoKeyWords: Yup.string()
+    .transform(value => (Array.isArray(value) ? value.join(",") : value))
     .max(200, "SEO Keywords không được vượt quá 200 ký tự"),
-  // .typeError("Giá trị phải là 1 số"), validate báo lỗi
+
+  // .typeError("Từ khóa SEO phải là một chuỗi")
+  // .typeError("Giá trị phải là 1 số"),
 
   metaDescription: Yup.string()
     .max(160, "Meta Description không được vượt quá 160 ký tự"),
@@ -32,7 +35,8 @@ export const PostSchema = Yup.object().shape({
     .required("Nội dung bài viết là bắt buộc"),
 
   category: Yup.string()
-    .required("Danh mục là bắt buộc"),
+    .required("Danh mục là bắt buộc")
+    .typeError(" Danh mục không được để trống"),
 
   // status: Yup.string()
   //   .oneOf(["draft", "published"], "Trạng thái không hợp lệ")

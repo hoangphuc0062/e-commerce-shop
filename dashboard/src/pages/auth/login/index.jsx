@@ -145,10 +145,18 @@ export default function SignIn() {
           <Typography
             component="h1"
             variant="h4"
-            sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
+            sx={{
+              width: "100%", // Full width
+              fontSize: "clamp(2rem, 10vw, 2.15rem)", // Responsive font size
+              textAlign: "center", // Center text horizontally
+              display: "flex", // Use flexbox to center vertically
+              justifyContent: "center", // Center horizontally
+              alignItems: "center", // Center vertically
+            }}
           >
             Đăng nhập
           </Typography>
+
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -168,7 +176,7 @@ export default function SignIn() {
                 id="email"
                 type="email"
                 name="email"
-                placeholder="your@email.com"
+                placeholder="Nhập email của bạn"
                 autoComplete="email"
                 autoFocus
                 required
