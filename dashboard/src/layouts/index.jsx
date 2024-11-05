@@ -37,8 +37,6 @@ const AdminLayout = () => {
     }
   };
 
-  // const role = JSON.parse(localStorage.getItem("role"));
-
   const role = Cookies.get("role");
   const common = getNavigationByRole(ROLE[role]);
 
