@@ -3,9 +3,16 @@ import SliderBanner from "../../components/Banner/SliderBanner/SliderBanner";
 
 import MenuTree from "../../components/Banner/MenuTree/MenuTree";
 
-import { faker } from "@faker-js/faker";
+import { el, faker } from "@faker-js/faker";
 import { Accessories } from "../../components/FeatureBlockProduct/Accessories";
+
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { getAll } from "../../redux/slices/category";
+import { useState } from "react";
+
 import GridProduct from "../../components/FeatureBlockProduct/GridProduct";
+
 
 function createRandomProduct() {
   return {
@@ -162,11 +169,52 @@ const datas = [
 ];
 
 const HomePage = () => {
+  const [dataCategory, setDataCategory] = useState([]);
+
+  const dispatch = useDispatch();
+
+  const status = useSelector((state) => state.category.status);
+  const data = useSelector((state) => state.category.data);
+
+  useEffect(() => {
+    dispatch(getAll());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (status === "success" && Array.isArray(data)) {
+      setDataCategory(
+        data
+          .filter((item) => item.type === "product")
+          .map((item) => ({
+            id: item._id,
+            icon: item.icon,
+            links: [{ url: `/${item.slug}`, name: item.name }],
+            children: [
+              {
+                title: "Hãng sản xuất",
+                queries: [
+                  { url: `/${item.brand?.slug}`, name: item.brand?.name },
+                ],
+              },
+              // {
+              //   title: "Mức giá",
+              //   queries: [
+              //     { url: "/scanner/price/2m", name: "Trên 2 triệu" },
+              //     { url: "/scanner/price/5m", name: "Trên 5 triệu" },
+              //     { url: "/scanner/price/7m", name: "Trên 7 triệu" },
+              //   ],
+              // },
+            ],
+          }))
+      );
+    }
+  }, [status, data]);
+
   return (
     <div className="flex flex-col gap-3">
       <section className="flex gap-3">
         <div className="hidden w-1/6 lg:block shadow-lg">
-          <MenuTree />
+          {dataCategory.length > 0 && <MenuTree dataCategory={dataCategory} />}
         </div>
         <div className="w-full  lg:w-4/6 bg-whiteColor shadow-custom">
           <SliderBanner />
