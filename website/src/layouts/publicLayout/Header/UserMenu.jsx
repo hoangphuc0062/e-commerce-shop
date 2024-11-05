@@ -33,6 +33,7 @@ export const UserMenu = ({ data }) => {
       navigate("/login");
       dispatch(resetState({ key: "statusLogout", value: "idle" }));
       dispatch(resetState({ key: "statusGetMe", value: "idle" }));
+      setDropdownOpen(false);
     }
   }, [status, setLoginAuth, navigate, dispatch]);
 

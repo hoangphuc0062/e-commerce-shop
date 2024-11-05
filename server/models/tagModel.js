@@ -7,6 +7,9 @@ const tagSchema = new mongoose.Schema(
       required: true,
       unique: false,
     },
+    image: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

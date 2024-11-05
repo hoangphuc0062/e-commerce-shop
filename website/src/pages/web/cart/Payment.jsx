@@ -1,12 +1,9 @@
 /* eslint-disable react/prop-types */
 
-export default function Payment({
-  paymentMethods,
-  selectedMethod,
-  setSelectedMethod,
-}) {
+export default function Payment({ paymentMethods, formik, subTotal }) {
   return (
     <div>
+      <h2 className="text-lg font-semibold mb-2">Phương thức thanh toán</h2>
       {paymentMethods.map((method, index) => (
         <div
           key={index}
@@ -14,8 +11,7 @@ export default function Payment({
         >
           <div
             onClick={() => {
-              setSelectedMethod(method.id);
-              console.log(selectedMethod);
+              formik.setFieldValue("paymentMethod", method.id);
             }}
             className="flex items-center justify-between p-4 border border-gray-300 rounded-md"
           >
@@ -32,14 +28,20 @@ export default function Payment({
               type="radio"
               name="paymentMethod"
               className="ml-2 text-gray-400"
-              checked={selectedMethod === method.id}
+              checked={formik.values.paymentMethod === method.id}
               onChange={() => {
-                setSelectedMethod(method.id);
+                formik.setFieldValue("paymentMethod", method.id);
               }}
             />
           </div>
         </div>
       ))}
+      <div className="flex justify-between items-center text-lg font-semibold mb-4">
+        <p>Tổng tiền:</p>
+        <p className="text-indigo-600">
+          {subTotal.toLocaleString("vi-VN")} VND
+        </p>
+      </div>
     </div>
   );
 }
