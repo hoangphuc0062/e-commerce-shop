@@ -116,10 +116,10 @@ const Product = () => {
     <div className="flex flex-col gap-3">
       <div>breadcrumb here</div>
       <section className="flex gap-1">
-        <div className=" h-[100px] hidden w-full md:block md:w-1/2">
+        <div className="hidden w-full md:block md:w-1/2">
           <SimpleSlide imgs={imgs} />
         </div>
-        <div className="w-full h-[100px] md:w-1/2">
+        <div className="w-full md:w-1/2">
           <SimpleSlide imgs={imgs} />
         </div>
       </section>
