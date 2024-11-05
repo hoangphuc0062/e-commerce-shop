@@ -29,20 +29,19 @@ const DetailBlog = () => {
         content: post?.content,
         author: post?.author?.name || "Unknown",
         authorImageUrl: post?.author?.imageUrl || "/path/to/default-image.jpg",
-        category: post?.category?.name,
+        category: post?.category?.name || "Unknown",
+        categorySlug: post?.category?.slug || "Unknown",
         rating: post?.rating,
         slug: post?.slug,
         date: post?.createdAt,
         thumbnail: post?.thumbnail,
-        tags: post?.tags || [],
+        tags: post?.tags?.map((tag) => tag.name) || [],
       });
     }
   }, [status, post]);
-
   if (status !== "success" || !data) {
     return <div>Loading...</div>;
   }
-
   return (
     <div className="flex flex-col md:flex-row w-full pt-16">
       <div className="md:w-1/4 lg:w-1/5 xl:w-1/6">
@@ -55,26 +54,30 @@ const DetailBlog = () => {
               <FaArrowTrendUp className="mr-1" /> Xu hướng:
             </span>
             {/* Render trending tags dynamically if needed */}
-            <a
-              href="#"
-              className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 hover:bg-red-500 hover:text-white transition-colors duration-300"
-            >
-              # Apple iOS 18
-            </a>
+            {data?.tags?.map((tag, index) => (
+              <Link
+                key={index}
+                to={`/forum/tag/${tag}`}
+                className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 hover:bg-main hover:text-white transition-colors duration-300"
+              >
+                #{tag}
+              </Link>
+            ))}
           </div>
-
           {/* Đường dẫn breadcrumb */}
           <div className="text-sm mb-4">
             <Link to="/forum" className="text-main">
               Trang chủ
             </Link>{" "}
             &raquo;{" "}
-            <a href="#" className="text-gray-600">
-              {data?.category?.name}
-            </a>{" "}
-            {data.postTitle}
+            <Link
+              to={`/forum/category/${data?.categorySlug}`}
+              className="text-gray-600"
+            >
+              {data?.category}
+            </Link>{" "}
+            &raquo; {data.postTitle}
           </div>
-
           {/* Hình ảnh bài viết */}
           <div className="mb-6">
             <img
@@ -83,21 +86,10 @@ const DetailBlog = () => {
               className="w-full max-h-[400px] rounded-lg object-cover"
             />
           </div>
-
           <div className="blog-content">
             <div className="flex items-center justify-between mb-4">
               <div className="inline-block bg-main text-white px-3 py-1 rounded-full text-sm">
                 {data.category}
-              </div>
-              <div className="flex items-center">
-                {data.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full text-xs mr-2"
-                  >
-                    {tag}
-                  </span>
-                ))}
               </div>
             </div>
 
@@ -126,21 +118,20 @@ const DetailBlog = () => {
               <div dangerouslySetInnerHTML={{ __html: data.content }} />
             </div>
           </div>
-
           {/* Thẻ */}
           <div className="flex flex-wrap gap-2 mt-4 mb-6">
             <span className="text-sm font-semibold mr-2 py-2">Thẻ:</span>
-            {data?.tags.map((tag, index) => (
-              <span
-                key={index}
-                className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm cursor-pointer transition-colors duration-300 hover:bg-red-500 hover:text-white"
-              >
-                {tag}
-              </span>
-            ))}
+            {Array.isArray(data.tags) &&
+              data.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center transition-colors duration-300 hover:bg-main hover:text-white"
+                >
+                  #{tag}
+                </span>
+              ))}
           </div>
-
-          {/* Đánh giá bài viết */}
+          {/* Đánh giá bài viết */}{" "}
           <div className="flex flex-col items-end">
             <div className="flex flex-col items-center">
               <img
@@ -162,19 +153,6 @@ const DetailBlog = () => {
               </div>
               <div className="text-sm text-gray-500 mt-2">
                 (0 lượt đánh giá - 0/5)
-              </div>
-            </div>
-          </div>
-
-          {/* Thông tin tác giả */}
-          <div className="mt-8 bg-red-100 p-6 rounded-lg">
-            <div className="flex items-start">
-              <div className="mr-4">
-                <img
-                  src={data.authorImageUrl}
-                  alt={data.author}
-                  className="w-10 h-10 rounded-full mr-3"
-                />
               </div>
             </div>
           </div>

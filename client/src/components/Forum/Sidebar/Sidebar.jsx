@@ -40,7 +40,7 @@ const Sidebar = () => {
   return (
     <>
       {/* Sidebar cho màn hình lớn */}
-      <div className="lg:block fixed">
+      <div className="hidden md:block md:sticky md:overflow-y-auto md:pt-1 md:h-screen fixed top-16 left-0 ">
         <nav className="p-4">
           <ul className="space-y-2">
             <li>

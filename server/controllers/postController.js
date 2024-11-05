@@ -5,7 +5,8 @@ const Post = require("../models/postModel");
 const getAllPost = asyncHandler(async (req, res) => {
   const posts = await Post.find()
     .populate("author", "name")
-    .populate("category", "name slug");
+    .populate("category", "name slug")
+    .populate("tags", "name");
   return res.status(200).json(posts);
 });
 
@@ -14,7 +15,10 @@ const getPostBySlug = asyncHandler(async (req, res) => {
   if (!slug) {
     return res.status(400).json({ mes: "Missing slug" });
   }
-  const post = await Post.findOne({ slug }).populate("author", "name").populate("category", "name slug");
+  const post = await Post.findOne({ slug })
+    .populate("author", "name")
+    .populate("category", "name slug")
+    .populate("tags", "name");
   return res.status(200).json(post);
 });
 
@@ -26,7 +30,8 @@ const getPostById = asyncHandler(async (req, res) => {
   }
   const post = await Post.findById(bid)
     .populate("author", "name")
-    .populate("category", "name slug");
+    .populate("category", "name slug")
+    .populate("tags", "name");
   return res.status(200).json(post);
 });
 
@@ -39,6 +44,7 @@ const addPost = asyncHandler(async (req, res) => {
     slug,
     seoKeyWords,
     metaDescription,
+    tags,
   } = req.body;
   const staff_id = req.user._id;
 
@@ -58,6 +64,7 @@ const addPost = asyncHandler(async (req, res) => {
     slug,
     seoKeyWords,
     metaDescription,
+    tags,
   });
   return res.status(200).json({ mes: "Create a post successful", post });
 });

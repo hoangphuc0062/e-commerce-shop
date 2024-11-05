@@ -21,6 +21,7 @@ import { Address } from "../pages/web/member/Address";
 import { HomeProfile } from "../pages/web/member/Home";
 import { Coupon } from "../pages/web/member/Coupon";
 import CategoryPost from "../pages/web/forum/CategoryPost";
+import TagPost from "../pages/web/forum/TagPost";
 export default function RootRouter() {
   const routes = useRoutes([
     {
@@ -123,6 +124,7 @@ export default function RootRouter() {
         },
         { path: ":slug", element: <DetailBlog /> },
         { path: "category/:categorySlug", element: <CategoryPost /> },
+        { path: "tag/:name", element: <TagPost /> },
       ],
     },
     {

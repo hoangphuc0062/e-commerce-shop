@@ -1,13 +1,13 @@
 import { Link, useParams } from "react-router-dom";
-import { HeadingSection, Sidebar, SlidePostCategory } from "../../../components/Forum";
+import { HeadingSection, Sidebar, SlidePostTag } from "../../../components/Forum";
 import { formatDay } from "../../../ultils/helper";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getPosts } from "../../../redux/slices/post";
 
-const CategoryPost = () => {
+const TagPost = () => {
   const dispatch = useDispatch();
-  const { categorySlug } = useParams();
+  const { tag } = useParams();
   const postData = useSelector((state) => state.post.data);
   const [visibleItemCount, setVisibleItemCount] = useState(6);
 
@@ -17,7 +17,7 @@ const CategoryPost = () => {
 
   const formattedData = Array.isArray(postData)
     ? postData
-        .filter((item) => item.category.slug === categorySlug)
+        .filter((item) => item.tags.includes(tag))
         .map((item) => ({
           status: item.status,
           id: item._id,
@@ -31,6 +31,7 @@ const CategoryPost = () => {
           slug: item.slug,
           date: item.createdAt,
           thumbnail: item.thumbnail,
+          tags: item.tags,
         }))
         .sort((a, b) => new Date(b.date) - new Date(a.date))
     : [];
@@ -48,7 +49,7 @@ const CategoryPost = () => {
           <Sidebar />
         </div>
         <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col">
-          <SlidePostCategory />
+          <SlidePostTag />
           <section className="mb-8 p-4 w-full">
             <div className="md:flex md:space-x-8">
               <div className="md:w-1/2">
@@ -103,4 +104,4 @@ const CategoryPost = () => {
   );
 };
 
-export default CategoryPost;
+export default TagPost;

@@ -21,6 +21,7 @@ function TopicCard() {
           status: item.status,
           id: item._id,
           name: item.name,
+          image: item.image,
         }))
       );
     }
@@ -33,15 +34,14 @@ function TopicCard() {
           key={tags.id}
           className="flex-shrink-0 relative w-48 h-32 rounded-lg overflow-hidden cursor-pointer hover:underline"
         >
-          {/*khi có hình ảnh thì thêm: w-48 h-32 */}
-          {/* <img
-            src={item.imageUrl}
-            alt={item.name}
+          <img
+            src={tags.image}
+            alt={tags.name}
             className="w-full h-full object-cover"
-          /> */}
+          />
           <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
             <h3 className="text-sm font-semibold truncate hover:underline">
-              #{tags.name}
+            #{tags.name}
             </h3>
           </div>
         </Link>
