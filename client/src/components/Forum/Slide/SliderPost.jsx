@@ -17,29 +17,6 @@ const SliderPost = ({ category, data }) => {
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
   };
 
   // Lọc các bài viết theo danh mục nếu có, nếu không sẽ hiển thị tất cả
@@ -49,7 +26,7 @@ const SliderPost = ({ category, data }) => {
     <div className="w-full">
       <Slider ref={sliderRef} {...settings}>
         {filteredPosts?.map((post) => (
-          <div key={post.id} className="px-1">
+          <Link to={`${post.slug}`} key={post.id} className="px-1">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <img
                 src={post.thumbnail}
@@ -57,32 +34,29 @@ const SliderPost = ({ category, data }) => {
                 className="w-full h-36 object-cover md:h-48 lg:h-60 cursor-pointer"
               />
               <div className="p-3">
-                <Link
-                  to={`${post.slug}`}
+                <div
                   className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main"
                 >
                   {post.postTitle}
-                </Link>
-                <Link
-                  to={`${post.slug}`}
+                </div>
+                <div
                   className="text-xs text-blue-500 pb-1 cursor-pointer"
                 >
                   {post.author}
-                </Link>
+                </div>
 
                 <p className="text-xs text-gray-600 cursor-pointer">
                   {formatDay(post.date)}
                 </p>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </Slider>
     </div>
   );
 };
 
-// Định nghĩa PropTypes để kiểm tra kiểu dữ liệu
 SliderPost.propTypes = {
   category: PropTypes.string,
   data: PropTypes.array.isRequired,

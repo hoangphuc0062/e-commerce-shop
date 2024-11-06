@@ -11,10 +11,7 @@ function FeaturedPost({ data }) {
       <HeadingSection title="Nổi bật nhất" />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="w-full rounded-lg overflow-hidden">
-          <Link
-            to={`${featuredPost?.slug}`}
-            className="relative"
-          >
+          <Link to={`${featuredPost?.slug}`} className="relative">
             <img
               src={featuredPost?.thumbnail}
               alt={featuredPost?.postTitle}
@@ -33,26 +30,26 @@ function FeaturedPost({ data }) {
         <div className="space-y-4">
           <div className="space-y-4 md:space-y-6">
             {data?.slice(1, 4).map((post) => (
-              <div
+              <Link
+                to={`${post.slug}`}
                 key={post?.id}
-                className="flex posts-center space-x-4 md:space-x-6 cursor-pointer"
+                className="flex space-x-4 cursor-pointer"
               >
                 <img
                   src={post?.thumbnail}
                   alt={post?.postTitle}
-                  className="w-20 h-20 object-cover rounded sm:w-24 sm:h-24 md:w-32 md:h-32"
+                  className="w-48 object-cover rounded"
                 />
+
                 <div className="flex flex-col">
-                  <Link to={`${post.slug}`}>
-                    <h3 className="text-sm sm:text-base md:text-lg font-semibold hover:text-main line-clamp-2">
-                      {post?.postTitle}
-                    </h3>
-                  </Link>
+                  <h3 className="text-sm sm:text-base md:text-lg font-semibold hover:text-main line-clamp-2">
+                    {post?.postTitle}
+                  </h3>
                   <p className="text-xs sm:text-sm text-gray-600">
                     {post?.author} • {formatDay(post?.date)}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
