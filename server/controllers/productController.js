@@ -9,6 +9,7 @@ const asyncHandler = require("express-async-handler");
 const getAllProduct = asyncHandler(async (req, res) => {
   try {
     const queries = { ...req.query };
+
     const excludeFields = ["sort", "page", "limit", "fields"];
     excludeFields.forEach((el) => delete queries[el]); //  xóa từng trường (key) tương ứng trong đối tượng queries nếu trường đó tồn tại trong mảng.
 
@@ -36,6 +37,30 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
     if (queries?.warehouses) {
       formattedQueries.warehouse = queries.warehouses;
+    }
+
+    // query slug category - brand - series
+
+    if (queries?.slug) {
+      const [matchCategory, matchBrand, matchSeries] = queries.slug.split(",");
+
+      const category = await Category.findOne({ slug: matchCategory });
+      const brand = await Brand.findOne({ slug: matchBrand });
+      const series = await Series.findOne({ slug: matchSeries });
+
+      if (category) {
+        formattedQueries.category = category._id;
+      }
+
+      if (brand) {
+        formattedQueries.brand = brand._id;
+      }
+
+      if (series) {
+        formattedQueries.series = series._id;
+      }
+
+      delete formattedQueries.slug;
     }
 
     let queryCommand = Product.find(formattedQueries);
