@@ -8,6 +8,8 @@ import {
   FormControl,
   MenuItem,
   FormHelperText,
+  Autocomplete,
+  Checkbox,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -22,6 +24,23 @@ import {
 import { handleToast } from "../../../utils/toast";
 import Iconify from "../Iconify";
 import IconModal from "../IconModal";
+import { getBrand } from "../../../redux/slices/brand";
+
+const initialValues = {
+  name: "",
+  icon: "",
+  slug: "",
+  type: "",
+  description: "",
+  brand: [],
+};
+
+const validationSchema = Yup.object({
+  name: Yup.string().required("Tên danh mục là bắt buộc"),
+  slug: Yup.string().required("Slug là bắt buộc"),
+  type: Yup.string().required("Loại là bắt buộc"),
+  description: Yup.string().required("Mô tả là bắt buộc"),
+});
 
 function CategoryEdit() {
   const navigate = useNavigate();
@@ -29,31 +48,36 @@ function CategoryEdit() {
   const { id } = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
+  const brand = useSelector((state) => state.brand.data);
+  const status = useSelector((state) => state.brand.status);
+  const [dataBrand, setDataBrand] = useState([]);
+
+  useEffect(() => {
+    dispatch(getBrand());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (status === "success") {
+      setDataBrand(
+        brand.map((item) => {
+          return { value: item._id, label: item.name };
+        })
+      );
+    }
+  }, [status, brand]);
 
   const formik = useFormik({
-    initialValues: {
-      name: "",
-      icon: "",
-      slug: "",
-      type: "",
-      description: "",
-    },
-    validationSchema: Yup.object({
-      name: Yup.string().required("Tên danh mục là bắt buộc"),
-      slug: Yup.string().required("Slug là bắt buộc"),
-      type: Yup.string().required("Loại là bắt buộc"),
-      description: Yup.string().required("Mô tả là bắt buộc"),
-    }),
+    initialValues,
+    validationSchema,
     onSubmit: (values) => {
-      const { name, slug, type, description, icon } = values;
+      const { name, slug, type, description, icon, brand } = values;
       setIsSubmitting(true);
       dispatch(
         updateCategory({
           categoryId: id,
-          data: { name, slug, type, description, icon },
+          data: { name, slug, type, description, icon, brand },
         })
       ).then((res) => {
-        console.log(res);
         if (res.type === "category/updateCategory/fulfilled") {
           handleToast("success", "Cập nhật danh mục thành công");
           navigate("/dashboard/category");
@@ -84,6 +108,7 @@ function CategoryEdit() {
         type: categoryData.type,
         description: categoryData.description || "",
         icon: categoryData.icon || "",
+        brand: categoryData?.brand?.map((item) => item._id),
       });
     }
   }, [categoryStatus, categoryData]);
@@ -174,6 +199,34 @@ function CategoryEdit() {
                   {formik.errors.type}
                 </FormHelperText>
               )}
+            </FormControl>
+          </Grid>
+          <Grid item xs={4}>
+            <FormControl fullWidth>
+              <Autocomplete
+                multiple
+                options={dataBrand}
+                getOptionLabel={(option) => option.label}
+                value={formik.values.brand
+                  .map((tag) => dataBrand.find((item) => item.value === tag))
+                  .filter(Boolean)}
+                onChange={(event, newValue) =>
+                  formik.setFieldValue(
+                    "brand",
+                    newValue.map((item) => item.value)
+                  )
+                }
+                renderInput={(params) => (
+                  <TextField {...params} label="brand" />
+                )}
+                renderOption={(props, option, { selected }) => (
+                  <li key={option.value} {...props}>
+                    {" "}
+                    <Checkbox checked={selected} style={{ marginRight: 8 }} />
+                    {option.label}
+                  </li>
+                )}
+              />
             </FormControl>
           </Grid>
           <Grid item xs={12}>

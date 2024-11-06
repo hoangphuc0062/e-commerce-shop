@@ -1,14 +1,14 @@
 import { ToastContainer } from "react-toastify";
-import { AuthProvider } from "./contexts/AuthContext";
 import "./index.scss";
 import RootRouter from "./routes";
+import { UserProvider } from "./contexts/AuthContext";
 function App() {
   return (
     <>
-      <AuthProvider>
+      <UserProvider>
         <ToastContainer stacked />
         <RootRouter />
-      </AuthProvider>
+      </UserProvider>
     </>
   );
 }

@@ -22,12 +22,6 @@ export default function EyePost({
   handleDelete,
   handleEdit,
 }) {
-  // const truncateContent = (content, maxLength) => {
-  //   if (!content) return "";
-  //   return content.length > maxLength
-  //     ? content.slice(0, maxLength) + "..."
-  //     : content;
-  // };
   const truncateContent = (content, maxLength) => {
     if (!content) return "";
 
@@ -47,17 +41,8 @@ export default function EyePost({
   };
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
-      <DialogContent
-        sx={{
-          padding: 4,
-          maxHeight: "80vh",
-          overflowY: "auto",
-          backgroundColor: "#f9f9f9", // Background color for better contrast
-          borderRadius: "8px", // Rounded corners
-          boxShadow: 3, // Add some shadow for depth
-        }}
-      >
-        <Box sx={{ textAlign: "center", mb: 3 }}>
+      <DialogContent sx={{ padding: 4, maxHeight: "80vh", overflowY: "auto" }}>
+        <Box sx={{ textAlign: "center", mb: 2 }}>
           <Avatar
             src={selectedData.thumbnail}
             alt="Thumbnail"
@@ -118,7 +103,7 @@ export default function EyePost({
         </Grid>
       </DialogContent>
 
-      <DialogActions sx={{ padding: 2, justifyContent: "center" }}>
+      <DialogActions sx={{ padding: 2 }}>
         <IconButton
           aria-label="edit"
           onClick={() => handleEdit(selectedData.id)}
