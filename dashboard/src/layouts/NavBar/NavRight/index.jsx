@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Dropdown, ListGroup } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { handleToast } from "../../../utils/toast";
@@ -13,8 +13,6 @@ const NavRight = () => {
   const data = useSelector((state) => state.staff.data);
   const [profileData, setProfileData] = useState({});
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     if (status === "success") {
       setProfileData(data);
@@ -27,8 +25,9 @@ const NavRight = () => {
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
     Cookies.remove("role");
-    navigate("/");
+
     handleToast("success", "Logout successfully");
+    return <Navigate to="/" />;
   };
 
   return (

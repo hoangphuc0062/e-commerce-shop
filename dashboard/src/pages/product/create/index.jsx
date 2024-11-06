@@ -40,7 +40,7 @@ export default function CreateProduct() {
 
   const [attributesSelect, setAttributesSelect] = useState([]);
   const statusGetAttribute = useSelector((state) => state.attribute.status);
-  const dataAttribute = useSelector((state) => state.attribute.data);
+  const dataAttribute = useSelector((state) => state.attribute.data.attributes);
   useEffect(() => {
     dispatch(getAttribute());
   }, [dispatch]);
@@ -223,7 +223,7 @@ export default function CreateProduct() {
     });
   };
   const statusGetCategory = useSelector((state) => state.category.status);
-  const dataCategory = useSelector((state) => state.category.data);
+  const dataCategory = useSelector((state) => state.category.data.categories);
   const statusBrand = useSelector((state) => state.brand.status);
   const dataBrand = useSelector((state) => state.brand.data);
   const statusSeries = useSelector((state) => state.collection.status);
