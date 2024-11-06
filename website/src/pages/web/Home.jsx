@@ -1,10 +1,18 @@
 import { SingleBanner } from "../../components/Banner/SingleBanner/SingleBanner";
 import SliderBanner from "../../components/Banner/SliderBanner/SliderBanner";
-import { FeatureBlockProduct } from "../../components/FeatureBlockProduct/FeatureBlockProduct";
+
 import MenuTree from "../../components/Banner/MenuTree/MenuTree";
 
-import { faker } from "@faker-js/faker";
+import { el, faker } from "@faker-js/faker";
 import { Accessories } from "../../components/FeatureBlockProduct/Accessories";
+
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { getAll } from "../../redux/slices/category";
+import { useState } from "react";
+
+import GridProduct from "../../components/FeatureBlockProduct/GridProduct";
+
 
 function createRandomProduct() {
   return {
@@ -24,11 +32,11 @@ function createRandomProduct() {
   };
 }
 
-const products = Array.from({ length: 15 }, createRandomProduct);
-const products1 = Array.from({ length: 15 }, createRandomProduct);
-const products2 = Array.from({ length: 15 }, createRandomProduct);
-const products3 = Array.from({ length: 15 }, createRandomProduct);
-const products4 = Array.from({ length: 15 }, createRandomProduct);
+const products = Array.from({ length: 20 }, createRandomProduct);
+const products1 = Array.from({ length: 10 }, createRandomProduct);
+const products2 = Array.from({ length: 10 }, createRandomProduct);
+const products3 = Array.from({ length: 10 }, createRandomProduct);
+const products4 = Array.from({ length: 10 }, createRandomProduct);
 
 const datas = [
   {
@@ -161,11 +169,52 @@ const datas = [
 ];
 
 const HomePage = () => {
+  const [dataCategory, setDataCategory] = useState([]);
+
+  const dispatch = useDispatch();
+
+  const status = useSelector((state) => state.category.status);
+  const data = useSelector((state) => state.category.data);
+
+  useEffect(() => {
+    dispatch(getAll());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (status === "success" && Array.isArray(data)) {
+      setDataCategory(
+        data
+          .filter((item) => item.type === "product")
+          .map((item) => ({
+            id: item._id,
+            icon: item.icon,
+            links: [{ url: `/${item.slug}`, name: item.name }],
+            children: [
+              {
+                title: "Hãng sản xuất",
+                queries: [
+                  { url: `/${item.brand?.slug}`, name: item.brand?.name },
+                ],
+              },
+              // {
+              //   title: "Mức giá",
+              //   queries: [
+              //     { url: "/scanner/price/2m", name: "Trên 2 triệu" },
+              //     { url: "/scanner/price/5m", name: "Trên 5 triệu" },
+              //     { url: "/scanner/price/7m", name: "Trên 7 triệu" },
+              //   ],
+              // },
+            ],
+          }))
+      );
+    }
+  }, [status, data]);
+
   return (
     <div className="flex flex-col gap-3">
       <section className="flex gap-3">
         <div className="hidden w-1/6 lg:block shadow-lg">
-          <MenuTree />
+          {dataCategory.length > 0 && <MenuTree dataCategory={dataCategory} />}
         </div>
         <div className="w-full  lg:w-4/6 bg-whiteColor shadow-custom">
           <SliderBanner />
@@ -175,22 +224,23 @@ const HomePage = () => {
           <SingleBanner />
         </div>
       </section>
-      <section className="bg-white  p-2 ">
-        <FeatureBlockProduct products={products} />
+      <section className="bg-white h-full ">
+        <GridProduct data={products} />
       </section>
-      <section className="bg-white  p-2 ">
-        <FeatureBlockProduct products={products1} />
+      <section className="bg-white h-full ">
+        <GridProduct data={products1} />
       </section>
-      <section className="p-2">
-        <FeatureBlockProduct products={products2} />
+      <section className="bg-white h-full ">
+        <GridProduct data={products2} />
       </section>
-      <section className="p-2">
-        <FeatureBlockProduct products={products3} />
+      <section className="bg-white h-full ">
+        <GridProduct data={products3} />
       </section>
-      <section className="p-2">
-        <FeatureBlockProduct products={products4} />
+      <section className="bg-white h-full ">
+        <GridProduct data={products4} />
       </section>
-      <section className="p-2">
+
+      <section className="">
         <Accessories datas={datas} title="Phụ kiện" />
       </section>
       <section>Blogs</section>
