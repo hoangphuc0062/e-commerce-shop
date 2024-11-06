@@ -22,6 +22,10 @@ const bannerCollectionSchema = new mongoose.Schema({
   },
   banner: [
     {
+      name: {
+        type: String,
+        default: "",
+      },
       urlImage: {
         type: String,
         required: true,
@@ -33,6 +37,10 @@ const bannerCollectionSchema = new mongoose.Schema({
       position: {
         type: Number,
         default: 0,
+      },
+      shotDescription: {
+        type: String,
+        default: "",
       },
     },
   ],

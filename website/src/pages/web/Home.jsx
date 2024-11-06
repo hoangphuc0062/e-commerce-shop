@@ -3,7 +3,7 @@ import SliderBanner from "../../components/Banner/SliderBanner/SliderBanner";
 import { FeatureBlockProduct } from "../../components/FeatureBlockProduct/FeatureBlockProduct";
 import MenuTree from "../../components/Banner/MenuTree/MenuTree";
 
-import { el, faker } from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 import { Accessories } from "../../components/FeatureBlockProduct/Accessories";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
@@ -189,7 +189,10 @@ const HomePage = () => {
               {
                 title: "Hãng sản xuất",
                 queries: [
-                  { url: `/${item.brand?.slug}`, name: item.brand?.name },
+                  ...item.brand.map((child) => ({
+                    url: `/${item.slug}/${child.slug}`,
+                    name: child.name,
+                  })),
                 ],
               },
               // {

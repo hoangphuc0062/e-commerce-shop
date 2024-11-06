@@ -3,10 +3,15 @@ const asyncHandler = require("express-async-handler");
 const Post = require("../models/postModel");
 
 const getAllPost = asyncHandler(async (req, res) => {
+  const sortBy = req.query.sort;
+  const order = req.query.order === "asc" ? 1 : -1;
   const posts = await Post.find()
     .populate("author", "name")
     .populate("category", "name slug");
-  return res.status(200).json(posts);
+  return res
+    .status(200)
+    .json(posts)
+    .sort({ [sortBy]: order });
 });
 
 const getPostBySlug = asyncHandler(async (req, res) => {
@@ -14,7 +19,9 @@ const getPostBySlug = asyncHandler(async (req, res) => {
   if (!slug) {
     return res.status(400).json({ mes: "Missing slug" });
   }
-  const post = await Post.findOne({ slug }).populate("author", "name").populate("category", "name slug");
+  const post = await Post.findOne({ slug })
+    .populate("author", "name")
+    .populate("category", "name slug");
   return res.status(200).json(post);
 });
 

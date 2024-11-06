@@ -2,7 +2,9 @@ const Brand = require("../models/brandModel");
 const asyncHandler = require("express-async-handler");
 
 const getAllBrand = asyncHandler(async (req, res) => {
-  const brands = await Brand.find();
+  const sortBy = req.query.sort;
+  const order = req.query.order === "asc" ? 1 : -1;
+  const brands = await Brand.find().sort({ [sortBy]: order });
   return res.status(200).json(brands);
 });
 

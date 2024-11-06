@@ -93,13 +93,13 @@ const TableRowComponent = ({
               sx={{ width: 50, height: 50 }}
             />
           ) : column.field === "priceInMarket" ? (
-            <span>{row[column.field].toLocaleString()} VNĐ</span>
+            <span>{row[column.field]?.toLocaleString()} VNĐ</span>
           ) : column.field === "icon" ? (
             <Iconify icon={row[column.field]} width={30} />
           ) : column.field === "priceInStore" ? (
-            <span>{row[column.field].toLocaleString()} VNĐ</span>
+            <span>{row[column.field]?.toLocaleString()} VNĐ</span>
           ) : column.field === "priceOnline" ? (
-            <span>{row[column.field].toLocaleString()} VNĐ</span>
+            <span>{row[column.field]?.toLocaleString()} VNĐ</span>
           ) : column.field === "address" ? (
             row[column.field].length > 50 ? (
               row[column.field].slice(0, 50) + "..."
