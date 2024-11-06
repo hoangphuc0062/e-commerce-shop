@@ -36,7 +36,7 @@ export default function RootRouter() {
           element: <Product />,
         },
         {
-          path: "/:product/:brand",
+          path: "/:category/:brand",
           element: <Product />,
         },
         {

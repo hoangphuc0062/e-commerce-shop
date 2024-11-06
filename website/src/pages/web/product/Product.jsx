@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 
 import Skeleton from "@mui/material/Skeleton";
 import { Box } from "@mui/system";
-import { faker } from "@faker-js/faker";
 
 import SimpleSlide from "../../../components/Banner/SliderBanner/SimpleSlide";
 import ProductCard from "../../../components/FeatureBlockProduct/Card";
 import { Link } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { useDispatch } from "react-redux";
+import { getProducts } from "../../../redux/slices/product";
+import { useParams } from "react-router-dom";
 
 const imgs = [
   {
@@ -24,24 +26,12 @@ const imgs = [
   },
 ];
 
-function createRandomProduct() {
-  return {
-    id: faker.string.uuid(),
-    name: faker.commerce.productName(),
-    image: faker.image.avatar(),
-    price: faker.commerce.price(),
-    discountPercent: faker.number.int({ min: 0, max: 50 }),
-    description: faker.commerce.productDescription(),
-    rating: faker.number.int({ min: 1, max: 5 }),
-    review: faker.number.int({ min: 0, max: 1000 }),
-    discount: faker.number.int({ min: 0, max: 50 }),
-    slug: faker.lorem.slug(),
-    images: [faker.image.url(300, 300, "tech", true)],
-  };
-}
-const apiProducts = Array.from({ length: 100 }, createRandomProduct);
-
 const Product = () => {
+  const disapatch = useDispatch();
+  const params = useParams();
+
+  const { category, brand } = params;
+  console.log(category, brand);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [firstLoading, setfirstLoading] = useState(true);
@@ -50,6 +40,17 @@ const Product = () => {
   const [sortedProducts, setSortedProducts] = useState(products);
   const [sortCriteria, setSortCriteria] = useState("");
   const [activeButton, setactiveButton] = useState("");
+
+  useEffect(() => {
+    disapatch(
+      getProducts({
+        page: 1,
+        limit: 15,
+        fields:
+          "name,price,thumbnail,discountPercent,description,rating,review,category,brand,discount,slug",
+      })
+    );
+  }, [disapatch]);
   function loading() {
     return (
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
