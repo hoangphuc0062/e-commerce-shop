@@ -13,6 +13,7 @@ import { useState } from "react";
 
 import GridProduct from "../../components/FeatureBlockProduct/GridProduct";
 
+import { getBanners } from "../../redux/slices/barnner";
 
 function createRandomProduct() {
   return {
@@ -170,11 +171,15 @@ const datas = [
 
 const HomePage = () => {
   const [dataCategory, setDataCategory] = useState([]);
+  const [dataBanner, setDataBanner] = useState([]);
+  const [VerticalBanner, setVerticalBanner] = useState([]);
 
   const dispatch = useDispatch();
 
   const status = useSelector((state) => state.category.status);
-  const data = useSelector((state) => state.category.data);
+  const data = useSelector((state) => state.category.data.categories);
+  const statusBanner = useSelector((state) => state.banner.status);
+  const Banner = useSelector((state) => state.banner.data);
 
   useEffect(() => {
     dispatch(getAll());
@@ -213,6 +218,46 @@ const HomePage = () => {
     }
   }, [status, data]);
 
+  useEffect(() => {
+    dispatch(getBanners());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (statusBanner === "success" && Array.isArray(Banner)) {
+      setDataBanner(
+        Banner.filter((item) => item.title === "Home-banner").map((item) => ({
+          banner: item.banner.map((child) => ({
+            id: item._id,
+            title: child.name,
+            description: child.shotDescription,
+            src: child.urlImage,
+            link: child.refUrl,
+            position: child.position,
+          })),
+        }))
+      );
+    }
+  }, [statusBanner, Banner]);
+
+  useEffect(() => {
+    if (statusBanner === "success" && Array.isArray(Banner)) {
+      setVerticalBanner(
+        Banner.filter((item) => item.title === "Vertical-banner").map(
+          (item) => ({
+            banner: item.banner.map((child) => ({
+              id: item._id,
+              image: child.urlImage,
+              ref: child.refUrl,
+              position: child.position,
+            })),
+          })
+        )
+      );
+    }
+  }, [statusBanner, Banner]);
+
+  console.log(VerticalBanner);
+
   return (
     <div className="flex flex-col gap-3">
       <section className="flex gap-3">
@@ -220,11 +265,11 @@ const HomePage = () => {
           {dataCategory.length > 0 && <MenuTree dataCategory={dataCategory} />}
         </div>
         <div className="w-full  lg:w-4/6 bg-whiteColor shadow-custom">
-          <SliderBanner />
+          {dataBanner.length > 0 && <SliderBanner data={dataBanner} />}
         </div>
 
         <div className="hidden w-1/6 lg:block ">
-          <SingleBanner />
+          {VerticalBanner.length > 0 && <SingleBanner data={VerticalBanner} />}
         </div>
       </section>
       <section className="bg-white h-full ">

@@ -76,7 +76,7 @@ export default function VariantPage() {
   };
 
   const status = useSelector((state) => state.attribute.status);
-  const data = useSelector((state) => state.attribute.data);
+  const data = useSelector((state) => state.attribute.data.attributes);
   const deleteStatus = useSelector((state) => state.attribute.deleteStatus);
 
   useEffect(() => {

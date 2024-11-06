@@ -40,7 +40,7 @@ function CategoryPage() {
   ];
 
   const status = useSelector((state) => state.category.status);
-  const data = useSelector((state) => state.category.data);
+  const data = useSelector((state) => state.category.data.categories);
   const deleteStatus = useSelector(
     (state) => state.category.deleteCategoryStatus
   );
