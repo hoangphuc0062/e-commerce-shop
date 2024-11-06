@@ -7,11 +7,10 @@ const getAllPost = asyncHandler(async (req, res) => {
   const order = req.query.order === "asc" ? 1 : -1;
   const posts = await Post.find()
     .populate("author", "name")
-    .populate("category", "name slug");
-  return res
-    .status(200)
-    .json(posts)
-    .sort({ [sortBy]: order });
+
+    .populate("category", "name slug")
+    .populate("tags", "name");
+  return res.status(200).json(posts);
 });
 
 const getPostBySlug = asyncHandler(async (req, res) => {
@@ -21,7 +20,9 @@ const getPostBySlug = asyncHandler(async (req, res) => {
   }
   const post = await Post.findOne({ slug })
     .populate("author", "name")
-    .populate("category", "name slug");
+    .populate("category", "name slug")
+    .populate("tags", "name");
+
   return res.status(200).json(post);
 });
 
@@ -33,7 +34,8 @@ const getPostById = asyncHandler(async (req, res) => {
   }
   const post = await Post.findById(bid)
     .populate("author", "name")
-    .populate("category", "name slug");
+    .populate("category", "name slug")
+    .populate("tags", "name");
   return res.status(200).json(post);
 });
 
@@ -46,6 +48,7 @@ const addPost = asyncHandler(async (req, res) => {
     slug,
     seoKeyWords,
     metaDescription,
+    tags,
   } = req.body;
   const staff_id = req.user._id;
 
@@ -65,6 +68,7 @@ const addPost = asyncHandler(async (req, res) => {
     slug,
     seoKeyWords,
     metaDescription,
+    tags,
   });
   return res.status(200).json({ mes: "Create a post successful", post });
 });

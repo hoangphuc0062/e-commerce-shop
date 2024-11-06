@@ -30,111 +30,83 @@ export const FeatureBlockProduct = ({ products }) => {
             ))}
         </div>
       </div>
-      <Swiper
-        breakpoints={{
-          1440: {
-            slidesPerView: 5,
-            spaceBetween: 25,
-            grid: { rows: 2 },
-            height: 840,
-          },
-          1024: {
-            slidesPerView: 4,
-            spaceBetween: 10,
-            grid: { rows: 2 },
-            height: 500,
-          },
-          768: {
-            slidesPerView: 4,
-            spaceBetween: 10,
-            grid: { rows: 2 },
-            height: 400,
-          },
-          425: {
-            slidesPerView: 2,
-            spaceBetween: 10,
-            // height: 100,
-            grid: { rows: 2 },
-          },
-          320: {
-            slidesPerView: 2,
-            spaceBetween: 10,
-            height: 100,
-            grid: { rows: 2 },
-          },
-        }}
-        spaceBetween={30}
-        pagination={{ clickable: true }}
-        modules={[Grid, Pagination]}
-        className="w-full h-[900px]"
-      >
-        {products.map((product) => {
-          const discountedPrice =
-            product.price * (1 - product.discountPercent / 100);
+      <div className="">
+        <Swiper
+          grid={{ rows: 2 }}
+          slidesPerView={10}
+          spaceBetween={10}
+          pagination={{ clickable: true }}
+          modules={[Grid, Pagination]}
+          className="w-full h-[900px]"
+        >
+          {products.map((product) => {
+            const discountedPrice =
+              product.price * (1 - product.discountPercent / 100);
 
-          return (
-            <SwiperSlide key={product.id}>
-              <div className="relative rounded-lg shadow-md overflow-auto-hidden">
-                {product.discountPercent > 0 && (
-                  <div className="absolute top-0 left-0 w-24">
+            return (
+              <SwiperSlide key={product.id}>
+                <div className="relative rounded-lg shadow-md overflow-auto-hidden">
+                  {product.discountPercent > 0 && (
+                    <div className="absolute top-0 left-0 w-24">
+                      <img
+                        src="https://firebasestorage.googleapis.com/v0/b/voi-tay-nguyen-datn.appspot.com/o/Nhan_cwuwhd.png?alt=media&token=1c12f273-922f-47db-88d2-09c5b5e0a6fa"
+                        alt="Discount Label"
+                        className="w-full object-cover"
+                      />
+                      <span className="absolute flex items-center justify-center text-white font-bold text-sm top-1.5 left-3">
+                        Giảm {product.discountPercent}%
+                      </span>
+                    </div>
+                  )}
+                  <Link to={`/product/${product.id}`}>
                     <img
-                      src="https://firebasestorage.googleapis.com/v0/b/voi-tay-nguyen-datn.appspot.com/o/Nhan_cwuwhd.png?alt=media&token=1c12f273-922f-47db-88d2-09c5b5e0a6fa"
-                      alt="Discount Label"
+                      src={product.image}
+                      alt={product.name}
                       className="w-full object-cover"
                     />
-                    <span className="absolute flex items-center justify-center text-white font-bold text-sm top-1.5 left-3">
-                      Giảm {product.discountPercent}%
-                    </span>
-                  </div>
-                )}
-                <Link to={`/product/${product.id}`}>
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full object-cover"
-                  />
-                  <div className="p-2 text-start">
-                    <h2 className="text-xl font-semibold line-clamp-1">
-                      {product.name}
-                    </h2>
-                    <div className="flex gap-2">
-                      <span className="text-main font-bold">
-                        {formatCurrency(discountedPrice)}
-                      </span>
-                      {product.discountPercent > 0 && (
-                        <span className="line-through text-gray-500">
-                          {product.price.toLocaleString()}đ
+                    <div className="p-2 text-start">
+                      <h2 className="text-xl font-semibold line-clamp-1">
+                        {product.name}
+                      </h2>
+                      <div className="flex gap-2">
+                        <span className="text-main font-bold">
+                          {formatCurrency(discountedPrice)}
                         </span>
-                      )}
+                        {product.discountPercent > 0 && (
+                          <span className="line-through text-gray-500">
+                            {product.price.toLocaleString()}đ
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                  <div className="flex items-center justify-between p-2">
+                    <div className="flex">
+                      {[...Array(product.rating)].map((_, i) => (
+                        <Icon
+                          key={i}
+                          icon="ic:outline-star"
+                          width="1.5rem"
+                          height="1.5rem"
+                          className="text-yellow-500"
+                        />
+                      ))}
+                    </div>
+                    <div>
+                      <Icon
+                        icon="mdi-light:heart"
+                        width="2rem"
+                        height="2rem"
+                        className="text-blue-800"
+                      />
                     </div>
                   </div>
-                </Link>
-                <div className="flex items-center justify-between p-2">
-                  <div className="flex">
-                    {[...Array(product.rating)].map((_, i) => (
-                      <Icon
-                        key={i}
-                        icon="ic:outline-star"
-                        width="1.5rem"
-                        height="1.5rem"
-                        className="text-yellow-500"
-                      />
-                    ))}
-                  </div>
-                  <div>
-                    <Icon
-                      icon="mdi-light:heart"
-                      width="2rem"
-                      height="2rem"
-                      className="text-blue-800"
-                    />
-                  </div>
                 </div>
-              </div>
-            </SwiperSlide>
-          );
-        })}
-      </Swiper>
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+      </div>
     </div>
   );
 };
