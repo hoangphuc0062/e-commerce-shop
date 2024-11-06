@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Slider from "react-slick";
 import { formatDay } from "../../../ultils/helper";
-import HeadingSection from "../Heading/HeadingSection";
 import { useDispatch, useSelector } from "react-redux";
 import { getPosts } from "../../../redux/slices/post";
+import HeadingSection from "../Heading/HeadingSection";
 
 const SliderPostCategory = () => {
   const settings = {
@@ -58,17 +58,17 @@ const SliderPostCategory = () => {
       <HeadingSection title="Nổi bật nhất" />
       <Slider {...settings}>
         {filteredData.length > 0 ? (
-          filteredData.map((post) => (
+          filteredData.slice(0, 5).map((post) => (
             <div key={post.id} className="px-1">
-              <div className="bg-white overflow-hidden flex">
+              <div className="bg-white overflow-hidden flex flex-row">
                 <img
                   src={post.thumbnail}
                   alt={post.postTitle}
-                  className="max-w-[180px] max-h-[180px] object-cover rounded-md"
+                  className="h-48 object-cover rounded-md"
                 />
                 <div className="p-3">
                   <Link
-                    to={`/forum/${post.slug}`} // Cập nhật link đến bài viết
+                    to={`/forum/${post.slug}`}
                     className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main"
                   >
                     {post.postTitle}
@@ -85,7 +85,7 @@ const SliderPostCategory = () => {
                       Ngày đăng {formatDay(post.date)}
                     </span>
                     <Link
-                      to={`/forum/category/${post.category}`}
+                      to={`/forum/category/${post.categorySlug}`}
                       className="text-main pl-5"
                     >
                       {post.category}

@@ -124,7 +124,7 @@ export default function RootRouter() {
         },
         { path: ":slug", element: <DetailBlog /> },
         { path: "category/:categorySlug", element: <CategoryPost /> },
-        { path: "tag/:name", element: <TagPost /> },
+        { path: "tag/:tagsName", element: <TagPost /> },
       ],
     },
     {

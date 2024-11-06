@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 
@@ -66,27 +65,8 @@ function ForumPage() {
             {data && <FeaturedPost data={data} />}
           </section>
 
-          {uniqueCategories.slice(0, 1).map((category) => (
-            <section key={category} className="mb-8 p-4">
-              <HeadingSection title={category} />
-              {data && <SliderPost data={data} category={category} />}
-            </section>
-          ))}
 
           <PostScroll data={data} />
-
-          <section className="mb-8 px-4 bg-gray-100 w-full rounded-lg">
-            <HeadingSection title="S-GAMES" />
-            {data && <SliderPost data={data} category={data?.category} />}
-            <div className="mt-4 text-right">
-              <Link
-                to="#"
-                className="text-main text-sm font-semibold hover:underline"
-              >
-                Xem thêm
-              </Link>
-            </div>
-          </section>
           <section className="mb-8 p-4">
             <div className="flex overflow-x-auto space-x-4">
               {uniqueCategories.slice(0, 3).map((category) => (

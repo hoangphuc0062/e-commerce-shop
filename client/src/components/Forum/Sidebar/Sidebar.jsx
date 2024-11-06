@@ -56,25 +56,21 @@ const Sidebar = () => {
                 Trang chủ
               </button>
             </li>
-            {data.length > 0 ? (
-              data.map((category) => (
-                <li key={category.id}>
-                  <button
-                    onClick={() => handleCategoryClick(category.slug)}
-                    className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
-                      location.pathname === `/forum/category/${category.slug}`
-                        ? "bg-hv text-main"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    <Iconify icon={category.icon} />
-                    {category.name}
-                  </button>
-                </li>
-              ))
-            ) : (
-              <p>Đang tải danh mục...</p>
-            )}
+            {data.map((category) => (
+              <li key={category.id}>
+                <button
+                  onClick={() => handleCategoryClick(category.slug)}
+                  className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
+                    location.pathname === `/forum/category/${category.slug}`
+                      ? "bg-hv text-main"
+                      : "text-gray-700"
+                  }`}
+                >
+                  <Iconify icon={category.icon} />
+                  {category.name}
+                </button>
+              </li>
+            ))}
           </ul>
         </nav>
       </div>
