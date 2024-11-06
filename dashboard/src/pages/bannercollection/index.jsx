@@ -73,9 +73,12 @@ export default function BannerCollection() {
           brand: item?.brand?.name,
           category: item?.category?.name,
           banner: item.banner.map((banner) => ({
+            id: banner._id,
+            name: banner.name,
             urlImage: banner.urlImage,
             refUrl: banner.refUrl,
             position: banner.position,
+            shotDescription: banner.shotDescription,
           })),
           status: item.status === true ? "active" : "inactive",
           startDate: formatDay(item.startDate),
