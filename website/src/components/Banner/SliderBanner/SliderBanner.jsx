@@ -13,89 +13,144 @@ import "swiper/css/thumbs";
 import { Autoplay, FreeMode, Navigation, Thumbs } from "swiper/modules";
 import { Link } from "react-router-dom";
 
-export default function SliderBanner() {
-  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+// export default function SliderBanner({ data }) {
+//   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+//   console.log(data);
 
-  const imgs = [
-    {
-      title: "Banner-1",
-      descrtiption: "This is banner 1",
-      link: "url_1",
-      src: "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/thang-oppo-muon-van-uu-dai-home.jpg",
-    },
-    {
-      title: "Banner-2",
-      descrtiption: "This is banner 2",
-      link: "url_1",
-      src: "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/s24-ultra-thang-10-home.png",
-    },
-    {
-      title: "Banner-3",
-      descrtiption: "This is banner 3",
-      link: "url_1",
-      src: "https://cdn2.cellphones.com.vn/insecure/rs:fill:690:300/q:90/plain/https://dashboard.cellphones.com.vn/storage/s24-ultra-thang-10-home.png",
-    },
-  ];
+//   return (
+//     <>
+//       <Swiper
+//         spaceBetween={10}
+//         navigation={true}
+//         // autoplay={{
+//         //   delay: 2500,
+//         //   disableOnInteraction: false,
+//         // }}
+//         thumbs={{
+//           swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+//         }}
+//         // modules={[FreeMode, Navigation, Thumbs, Autoplay]}
+//         modules={[FreeMode, Navigation, Thumbs]}
+//         className="contentSwiper "
+//       >
+//         {data &&
+//           data.banner &&
+//           data.banner.map((img, index) => (
+//             <SwiperSlide key={index} style={{ width: "100%" }}>
+//               <Link to={img.link}>
+//                 <img
+//                   src={img.src}
+//                   alt={img.title}
+//                   className="w-full object-cover"
+//                 />
+//               </Link>
+//             </SwiperSlide>
+//           ))}
+//       </Swiper>
+
+//       <Swiper
+//         onSwiper={setThumbsSwiper}
+//         spaceBetween={10}
+//         slidesPerView={4}
+//         freeMode={true}
+//         watchSlidesProgress={true}
+//         // modules={[FreeMode, Navigation, Thumbs, Autoplay]}
+//         modules={[FreeMode, Navigation, Thumbs]}
+//         // autoplay={{
+//         //   delay: 2500,
+//         //   disableOnInteraction: false,
+//         // }}
+//         className="bannerSwiper  hidden lg:flex lg:items-center lg:justify-center"
+//         style={{ height: "120px" }}
+//       >
+//         {data.map((img, index) => (
+//           <SwiperSlide
+//             key={index}
+//             style={{
+//               height: "100%",
+//               display: "flex",
+//               justifyContent: "center",
+//               alignItems: "center",
+//             }}
+//           >
+//             <button className="flex flex-col  justify-center items-center p-2 line-clamp-2 h-full">
+//               <h1>{img.title}</h1>
+//               <h6>{img.descrtiption}</h6>
+//             </button>
+//           </SwiperSlide>
+//         ))}
+//       </Swiper>
+//     </>
+//   );
+// }
+export default function SliderBanner({ data }) {
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  console.log(data);
+
   return (
     <>
+      {/* Main Slider */}
       <Swiper
         spaceBetween={10}
         navigation={true}
-        // autoplay={{
-        //   delay: 2500,
-        //   disableOnInteraction: false,
-        // }}
+        autoplay={{
+          delay: 1000,
+          disableOnInteraction: false,
+        }}
         thumbs={{
           swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
         }}
-        // modules={[FreeMode, Navigation, Thumbs, Autoplay]}
         modules={[FreeMode, Navigation, Thumbs]}
-        className="contentSwiper "
+        className="contentSwiper"
       >
-        {imgs.map((img, index) => (
-          <SwiperSlide key={index} style={{ width: "100%" }}>
-            <Link to={img.link}>
-              <img
-                src={img.src}
-                alt={img.title}
-                className="w-full object-cover"
-              />
-            </Link>
-          </SwiperSlide>
-        ))}
+        {data &&
+          data[0].banner &&
+          data[0].banner.map((img, index) => (
+            <SwiperSlide key={index} style={{ width: "100%" }}>
+              <Link to={img.link}>
+                <img
+                  src={img.src}
+                  alt={img.title}
+                  className="w-full object-cover"
+                />
+              </Link>
+            </SwiperSlide>
+          ))}
       </Swiper>
 
+      {/* Thumbnail Slider */}
       <Swiper
         onSwiper={setThumbsSwiper}
         spaceBetween={10}
         slidesPerView={4}
         freeMode={true}
         watchSlidesProgress={true}
-        // modules={[FreeMode, Navigation, Thumbs, Autoplay]}
         modules={[FreeMode, Navigation, Thumbs]}
-        // autoplay={{
-        //   delay: 2500,
-        //   disableOnInteraction: false,
-        // }}
-        className="bannerSwiper  hidden lg:flex lg:items-center lg:justify-center"
+        autoplay={{
+          delay: 1000,
+          disableOnInteraction: false,
+        }}
+        className="bannerSwiper hidden lg:flex lg:items-center lg:justify-center"
         style={{ height: "120px" }}
       >
-        {imgs.map((img, index) => (
-          <SwiperSlide
-            key={index}
-            style={{
-              height: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <button className="flex flex-col  justify-center items-center p-2 line-clamp-2 h-full">
-              <h1>{img.title}</h1>
-              <h6>{img.descrtiption}</h6>
-            </button>
-          </SwiperSlide>
-        ))}
+        {data &&
+          data[0].banner &&
+          data[0].banner.map((img, index) => (
+            <SwiperSlide
+              key={index}
+              style={{
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <button className="flex flex-col justify-center items-center p-2 line-clamp-2 h-full">
+                <h1>{img.title}</h1>
+                <p>{img.description}</p>
+              </button>
+            </SwiperSlide>
+          ))}
       </Swiper>
     </>
   );
