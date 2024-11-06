@@ -1,7 +1,6 @@
-/* eslint-disable no-unused-vars */
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 
-import BannerService from "../../services/barnner";
+import ProductServices from "../../services/product.service";
 
 const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
   try {
@@ -19,15 +18,19 @@ export const resetState = createAsyncThunk(
   }
 );
 
-export const getBanners = createAsyncThunk(
-  "banners/getBanners",
-  async (payload, thunkAPI) => {
-    return handleAsyncThunk(BannerService.getBanners, [], thunkAPI);
+export const getProducts = createAsyncThunk(
+  "products/getProducts",
+  async (params, thunkAPI) => {
+    return handleAsyncThunk(
+      () => ProductServices.getProducts(params),
+      [],
+      thunkAPI
+    );
   }
 );
 
-const bannerSlice = createSlice({
-  name: "banners",
+const productSlice = createSlice({
+  name: "products",
   initialState: {
     data: [],
     loading: false,
@@ -44,16 +47,16 @@ const bannerSlice = createSlice({
       }
     });
     builder
-      .addCase(getBanners.pending, (state) => {
+      .addCase(getProducts.pending, (state) => {
         state.loading = true;
         state.status = "loading";
       })
-      .addCase(getBanners.fulfilled, (state, action) => {
+      .addCase(getProducts.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
         state.status = "success";
       })
-      .addCase(getBanners.rejected, (state, action) => {
+      .addCase(getProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.status = "failed";
@@ -61,5 +64,5 @@ const bannerSlice = createSlice({
   },
 });
 
-export default bannerSlice.reducer;
-export const { bannerActions } = bannerSlice.actions;
+export default productSlice.reducer;
+export const { setProducts } = productSlice.actions;

@@ -85,7 +85,6 @@ import { Link } from "react-router-dom";
 // }
 export default function SliderBanner({ data }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  console.log(data);
 
   return (
     <>

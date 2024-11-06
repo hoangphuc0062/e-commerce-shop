@@ -101,7 +101,7 @@ export default function ProductDetailsDialog({
               {product?.name}
             </Typography>
             <Typography variant="h4" color="primary" gutterBottom>
-              {formatCurrency(product?.priceOnline, "VND", "vi-VN")}
+              {formatCurrency(product?.price, "VND", "vi-VN")}
             </Typography>
 
             {/* Colors */}
