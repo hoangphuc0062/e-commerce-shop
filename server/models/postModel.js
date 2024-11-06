@@ -43,6 +43,12 @@ const postSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Categories",
     },
+    tags: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tag",
+      },
+    ],
     rating: [
       {
         customer: {
@@ -61,7 +67,7 @@ const postSchema = new mongoose.Schema(
       enum: ["draft", "published", "archived"],
       default: "draft",
     },
-    thumbnail:{
+    thumbnail: {
       type: String,
     },
   },

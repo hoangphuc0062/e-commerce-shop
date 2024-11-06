@@ -22,8 +22,8 @@ export default function ProductPage() {
     { label: "Tên sản phẩm", field: "name" },
     { label: "Hình ảnh", field: "images" },
     { label: "Giá thị trường", field: "priceInMarket" },
-    { label: "Giá cửa hàng", field: "priceInStore" },
-    { label: "Giá trên website", field: "priceOnline" },
+    { label: "Giá cửa hàng", field: "historicalPrice" },
+    { label: "Giá trên website", field: "price" },
     { label: "Số lượng", field: "onStock" },
     { label: "Trạng thái", field: "status" },
   ];
