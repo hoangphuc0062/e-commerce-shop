@@ -9,6 +9,7 @@ const asyncHandler = require("express-async-handler");
 const getAllProduct = asyncHandler(async (req, res) => {
   try {
     const queries = { ...req.query };
+
     const excludeFields = ["sort", "page", "limit", "fields"];
     excludeFields.forEach((el) => delete queries[el]); //  xóa từng trường (key) tương ứng trong đối tượng queries nếu trường đó tồn tại trong mảng.
 
@@ -38,34 +39,31 @@ const getAllProduct = asyncHandler(async (req, res) => {
       formattedQueries.warehouse = queries.warehouses;
     }
 
+    // query slug category - brand - series
+
+    if (queries?.slug) {
+      const [matchCategory, matchBrand, matchSeries] = queries.slug.split(",");
+
+      const category = await Category.findOne({ slug: matchCategory });
+      const brand = await Brand.findOne({ slug: matchBrand });
+      const series = await Series.findOne({ slug: matchSeries });
+
+      if (category) {
+        formattedQueries.category = category._id;
+      }
+
+      if (brand) {
+        formattedQueries.brand = brand._id;
+      }
+
+      if (series) {
+        formattedQueries.series = series._id;
+      }
+
+      delete formattedQueries.slug;
+    }
+
     let queryCommand = Product.find(formattedQueries);
-
-    if (queries?.series) {
-      queryCommand = queryCommand.populate("series", "name slug");
-    }
-
-    if (queries?.brand) {
-      queryCommand = queryCommand.populate("brand", "name slug");
-    }
-
-    if (queries?.category) {
-      queryCommand = queryCommand.populate("category", "name slug");
-    }
-
-    if (queries?.attributes) {
-      queryCommand = queryCommand.populate({
-        path: "attributes.aid",
-        select: "name values",
-      });
-    }
-
-    if (queryCommand?.tagsProduct) {
-      queryCommand = queryCommand.populate("tagsProduct", "name");
-    }
-
-    if (queries?.warehouses) {
-      queryCommand = queryCommand.populate("warehouse", "name");
-    }
 
     if (req.query.sort) {
       const sortBy = req.query.sort.split(",").join(" ");
@@ -74,6 +72,21 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
     if (req.query.fields) {
       const fields = req.query.fields.split(",").join(" ");
+
+      const populateFields = {
+        category: "name slug",
+        brand: "name slug",
+        series: "name slug",
+        warehouse: "name",
+        tagsProduct: "name",
+      };
+
+      Object.keys(populateFields).forEach((field) => {
+        if (fields.includes(field)) {
+          queryCommand = queryCommand.populate(field, populateFields[field]);
+        }
+      });
+
       queryCommand = queryCommand.select(fields);
     }
 

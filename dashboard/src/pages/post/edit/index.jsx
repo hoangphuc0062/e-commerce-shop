@@ -29,7 +29,7 @@ import {
 function EditPost() {
   const dispatch = useDispatch();
   const [categoryOptions, setCategoryOptions] = useState([]);
-  const category = useSelector((state) => state.category.data);
+  const category = useSelector((state) => state.category.data.categories);
   const statusCategory = useSelector((state) => state.category.status);
   useEffect(() => {
     dispatch(getCategory());
@@ -72,7 +72,7 @@ function EditPost() {
         metaDescription: post.metaDescription,
         shortSeoDescription: post.shortSeoDescription,
         content: post.content,
-        category: post.category,
+        category: post.category._id,
         status: post.status,
       });
     }

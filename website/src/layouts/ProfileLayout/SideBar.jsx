@@ -1,10 +1,8 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useContext, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { logout } from "../../redux/slices/auth";
-import { handleToast } from "./../../ultils/toast";
-import { UserContext } from "../../context/AuthContext";
 
 const tabs = [
   {
@@ -42,17 +40,6 @@ const tabs = [
 export const SideBar = () => {
   const [activeTab, setActiveTab] = useState(tabs[0].id);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const status = useSelector((state) => state.auth.statusLogout);
-  const { setLoginAuth } = useContext(UserContext);
-
-  useEffect(() => {
-    if (status === "success") {
-      setLoginAuth(false);
-      navigate("/");
-      handleToast("success", "Đăng xuất thành công");
-    }
-  }, [status, navigate, setLoginAuth]);
   const handleLogout = () => {
     dispatch(logout());
   };

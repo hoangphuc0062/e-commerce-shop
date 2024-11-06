@@ -77,9 +77,11 @@ const forgotPassword = asyncHandler(async (req, res) => {
 });
 
 const getCustomer = asyncHandler(async (req, res) => {
-  const customers = await Customer.find().select(
-    "-refreshToken -role -password -passwordResetToken "
-  );
+  const sortBy = req.query.sort;
+  const order = req.query.order === "asc" ? 1 : -1;
+  const customers = await Customer.find()
+    .select("-refreshToken -role -password -passwordResetToken ")
+    .sort({ [sortBy]: order });
   return res.status(200).json(customers);
 });
 
@@ -185,6 +187,10 @@ const logout = asyncHandler(async (req, res) => {
   );
   // xóa refresh token ở cookie trình duyệt
   res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: true,
+  });
+  res.clearCookie("accessToken", {
     httpOnly: true,
     secure: true,
   });

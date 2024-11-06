@@ -1,15 +1,16 @@
 import Slider from "react-slick";
-// import { PostDB } from "../../data/Forum/PostDB";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import "./SliderPost.css";
+import { formatDay } from "../../../ultils/helper";
 
 const SliderPost = ({ category, data }) => {
   const sliderRef = useRef(null);
 
+  // Cấu hình cho Slider
   const settings = {
     dots: false,
     infinite: false,
@@ -27,7 +28,7 @@ const SliderPost = ({ category, data }) => {
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 3,
           slidesToScroll: 1,
         },
       },
@@ -41,10 +42,11 @@ const SliderPost = ({ category, data }) => {
     ],
   };
 
+  // Lọc các bài viết theo danh mục nếu có, nếu không sẽ hiển thị tất cả
   const filteredPosts = data?.filter((post) => post.category === category);
 
   return (
-    <div className="relative w-full">
+    <div className="w-full">
       <Slider ref={sliderRef} {...settings}>
         {filteredPosts?.map((post) => (
           <div key={post.id} className="px-1">
@@ -55,18 +57,21 @@ const SliderPost = ({ category, data }) => {
                 className="w-full h-36 object-cover md:h-48 lg:h-60 cursor-pointer"
               />
               <div className="p-3">
-                <Link to={`blog/${post.slug}`}>
-                  <h3 className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main">
-                    {post.postTitle}
-                  </h3>
+                <Link
+                  to={`${post.slug}`}
+                  className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main"
+                >
+                  {post.postTitle}
                 </Link>
-                <Link to={`blog/${post.slug}`}>
-                  <p className="text-xs text-blue-500 pb-1 cursor-pointer">
-                    {post.author}
-                  </p>
+                <Link
+                  to={`${post.slug}`}
+                  className="text-xs text-blue-500 pb-1 cursor-pointer"
+                >
+                  {post.author}
                 </Link>
+
                 <p className="text-xs text-gray-600 cursor-pointer">
-                  {post.date}
+                  {formatDay(post.date)}
                 </p>
               </div>
             </div>
@@ -77,8 +82,10 @@ const SliderPost = ({ category, data }) => {
   );
 };
 
+// Định nghĩa PropTypes để kiểm tra kiểu dữ liệu
 SliderPost.propTypes = {
-  category: PropTypes.string.isRequired,
+  category: PropTypes.string,
+  data: PropTypes.array.isRequired,
 };
 
 export default SliderPost;

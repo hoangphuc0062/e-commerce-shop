@@ -3,8 +3,22 @@ const Attribute = require("../models/attributeModel");
 const asyncHandler = require("express-async-handler");
 
 const getAllAttribute = asyncHandler(async (req, res) => {
-  const attributes = await Attribute.find();
-  return res.status(200).json(attributes);
+  const sortBy = req.query.sort;
+  const order = req.query.order === "asc" ? 1 : -1; // Default to descending order
+
+  try {
+    const attributes = await Attribute.find().sort({ [sortBy]: order });
+
+    return res.status(200).json({
+      success: true,
+      attributes,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      mes: `Invalid sort value: ${error.message}`,
+    });
+  }
 });
 
 const addAttribute = asyncHandler(async (req, res) => {

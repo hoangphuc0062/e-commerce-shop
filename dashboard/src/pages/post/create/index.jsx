@@ -27,7 +27,7 @@ function AddPost() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [categoryOptions, setCategoryOptions] = useState([]);
-  const category = useSelector((state) => state.category.data);
+  const category = useSelector((state) => state.category.data.categories);
   const statusCategory = useSelector((state) => state.category.status);
   useEffect(() => {
     dispatch(getCategory());
@@ -223,11 +223,8 @@ function AddPost() {
                       formik.touched.shortDescription &&
                       Boolean(formik.errors.shortDescription)
                     }
-                    helperText={
-                      formik.touched.shortDescription &&
-                      formik.errors.shortDescription
-                    }
-                    height={250}
+                    errorMessage={formik.errors.shortDescription}
+                    height={300}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -239,8 +236,10 @@ function AddPost() {
                     error={
                       formik.touched.content && Boolean(formik.errors.content)
                     }
-                    helperText={formik.touched.content && formik.errors.content}
-                    height={300}
+                    errorMessage={
+                      formik.touched.content && formik.errors.content
+                    }
+                    height={500}
                   />
                 </Grid>
               </Grid>

@@ -1,52 +1,53 @@
-import HeadingSection from "../../../components/Forum/HeadingSection";
-import TopicCard from "../../../components/Forum/TopicCard";
-import FeaturedPost from "../../../components/Forum/FeaturedPost";
-import SliderPost from "../../../components/Forum/SliderPost";
-import Sidebar from "../../../components/Forum/Sidebar";
-import PostScroll from "../../../components/Forum/PostScroll";
-import PostList from "../../../components/Forum/PostList";
-import SmallPost from "../../../components/Forum/SmallPost";
-import PostTag from "../../../components/Forum/PostTag";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { getPosts } from "../../../redux/slices/post";
 
+import {
+  Sidebar,
+  HeadingSection,
+  TopicCard,
+  FeaturedPost,
+  SliderPost,
+  PostTag,
+  PostScroll,
+} from "../../../components/Forum";
+
+import { getPosts } from "../../../redux/slices/post";
 
 function ForumPage() {
   const dispatch = useDispatch();
-  const status = useSelector((state) => state.postReducer.status);
-  const postData = useSelector((state) => state.postReducer.data);
+  const status = useSelector((state) => state.post.status);
+  const postData = useSelector((state) => state.post.data);
   const [data, setData] = useState([]);
-  
+
   useEffect(() => {
     dispatch(getPosts());
   }, [dispatch]);
-  
+
   useEffect(() => {
     if (status === "success" && Array.isArray(postData)) {
       setData(
-        postData.map((item) => ({
-          status: item.status,
-          id: item._id,
-          postTitle: item.postTitle,
-          shortDescription: item.shortDescription,
-          seoKeyWords: item.seoKeyWords,
-          content: item.content,
-          author: item.author?.name || "Unknown",
-          category: item.category,
-          rating: item.rating,
-          slug: item.slug,
-          date: item.createdAt,
-          thumbnail: item.thumbnail
-        }))
+        postData
+          .map((item) => ({
+            status: item.status,
+            id: item._id,
+            postTitle: item.postTitle,
+            shortDescription: item.shortDescription,
+            seoKeyWords: item.seoKeyWords,
+            content: item.content,
+            author: item.author?.name || "Unknown",
+            category: item.category?.name || "Unknown",
+            rating: item.rating,
+            slug: item.slug,
+            date: item.createdAt,
+            thumbnail: item.thumbnail,
+          }))
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
       );
     }
   }, [status, postData]);
-  
-  
 
-
+  const uniqueCategories = [...new Set(data.map((item) => item.category))];
 
   return (
     <div className="container w-full">
@@ -62,55 +63,25 @@ function ForumPage() {
               <TopicCard />
             </section>
 
-            <section className="mb-8">
-              <HeadingSection title="Nổi bật nhất" />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="w-full">
-                  <FeaturedPost />
-                </div>
-                <div className="space-y-4">
-                  <SmallPost />
-                </div>
-              </div>
+            {data && <FeaturedPost data={data} />}
+          </section>
+
+          {uniqueCategories.slice(0, 1).map((category) => (
+            <section key={category} className="mb-8 p-4">
+              <HeadingSection title={category} />
+              {data && <SliderPost data={data} category={category} />}
             </section>
-          </section>
+          ))}
 
-          <section className="mb-8 p-4">
-            <HeadingSection title="xem nhiều tuần qua" />
-            {
-              data && (
-                <SliderPost category="S-Games" data={data} />
-              )
-            }
-          </section>
-
-          <section className="mb-8 p-4"> 
-            <div className="md:flex md:space-x-8">
-              <div className="md:w-1/2">
-                <HeadingSection title="tin tức mới nhất" />
-                <div className="space-y-4">
-                  <PostList />
-                </div>
-              </div>
-              <div className="md:w-1/2 space-y-8">
-                <div>
-                  <PostScroll />
-                </div>
-                <div>
-                  <HeadingSection title="khám phá - TRENDING" />
-                  <PostScroll />
-                </div>
-              </div>
-            </div>
-          </section>
+          <PostScroll data={data} />
 
           <section className="mb-8 px-4 bg-gray-100 w-full rounded-lg">
             <HeadingSection title="S-GAMES" />
-            <SliderPost category="S-Games" />
+            {data && <SliderPost data={data} category={data?.category} />}
             <div className="mt-4 text-right">
               <Link
-                to=""
-                className="text-red-500 text-sm font-semibold hover:underline"
+                to="#"
+                className="text-main text-sm font-semibold hover:underline"
               >
                 Xem thêm
               </Link>
@@ -118,21 +89,18 @@ function ForumPage() {
           </section>
           <section className="mb-8 p-4">
             <div className="flex overflow-x-auto space-x-4">
-              <PostTag category="Trên Tay" />
-              <PostTag category="Tin Công Nghệ" />
-              <PostTag category="Đánh Giá" />
+              {uniqueCategories.slice(0, 3).map((category) => (
+                <PostTag key={category} category={category} data={data} />
+              ))}
             </div>
           </section>
 
-          <section className="mb-8 p-4">
-            <HeadingSection title="thủ thuật - mẹo hay" />
-            <SliderPost category="Thủ Thuật - Mẹo Hay" />
-          </section>
-
-          <section className="mb-8 p-4">
-            <HeadingSection title="Sự kiện" />
-            <SliderPost category="Sự Kiện" />
-          </section>
+          {uniqueCategories.slice(1, 3).map((category) => (
+            <section key={category} className="mb-8 p-4">
+              <HeadingSection title={category} />
+              {data && <SliderPost data={data} category={category} />}
+            </section>
+          ))}
         </div>
       </div>
     </div>

@@ -6,6 +6,8 @@ import {
   ForgetPassoword,
   Register,
   Error,
+  Product,
+  ProductDetail,
 } from "../pages/web";
 import { ProfileLayout } from "../layouts/profileLayout";
 import {
@@ -16,6 +18,7 @@ import {
   Coupon,
 } from "../pages/web/member";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { Cart } from "../pages/web/cart";
 
 export default function RootRouter() {
   const routes = useRoutes([
@@ -27,6 +30,19 @@ export default function RootRouter() {
         { path: "/login", element: <Login /> },
         { path: "/forget-password", element: <ForgetPassoword /> },
         { path: "register", element: <Register /> },
+        { path: "/cart", element: <Cart /> },
+        {
+          path: "/:product",
+          element: <Product />,
+        },
+        {
+          path: "/:category/:brand",
+          element: <Product />,
+        },
+        {
+          path: "/:category/:brand/:slug",
+          element: <ProductDetail />,
+        },
         {
           path: "/profile",
           element: <ProfileLayout />,

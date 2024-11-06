@@ -12,7 +12,7 @@ import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
 import ForgotPassword from "../ForgotPassword/ForgotPassword";
 import { useDispatch, useSelector } from "react-redux";
-import { useAuth } from "../../../contexts/AuthContext";
+import { UserContext } from "../../../contexts/AuthContext";
 import { handleToast } from "../../../utils/toast";
 import { resetState, login as loginAction } from "../../../redux/slices/staff";
 import { Navigate } from "react-router-dom";
@@ -66,24 +66,23 @@ export default function SignIn() {
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
   const [open, setOpen] = React.useState(false);
+  const { setUser, setLoginAuth, loginAuth } = React.useContext(UserContext);
 
   const dispatch = useDispatch();
-
-  const { islogin, login } = useAuth();
-
   const staff = useSelector((state) => state.staff.me?.data);
   const status = useSelector((state) => state.staff.status);
   React.useEffect(() => {
     if (status === "success") {
-      handleToast("success", "Login successful", "top-right");
-      login();
+      handleToast("success", "Đăng nhập thành công", "top-right");
       dispatch(resetState({ key: "status", value: "idle" }));
+      setLoginAuth(true);
+      setUser(staff);
     }
     if (status === "failed") {
-      handleToast("error", "Login failed", "top-right");
+      handleToast("error", "Đăng nhập thất bại", "top-right");
       dispatch(resetState({ key: "status", value: "idle" }));
     }
-  }, [status, login, staff, dispatch]);
+  }, [status, staff, dispatch, setLoginAuth, setUser]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -106,7 +105,7 @@ export default function SignIn() {
     dispatch(loginAction(data));
   };
 
-  if (islogin) {
+  if (loginAuth) {
     return <Navigate to="/dashboard" />;
   }
 
@@ -146,10 +145,18 @@ export default function SignIn() {
           <Typography
             component="h1"
             variant="h4"
-            sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
+            sx={{
+              width: "100%", // Full width
+              fontSize: "clamp(2rem, 10vw, 2.15rem)", // Responsive font size
+              textAlign: "center", // Center text horizontally
+              display: "flex", // Use flexbox to center vertically
+              justifyContent: "center", // Center horizontally
+              alignItems: "center", // Center vertically
+            }}
           >
             Đăng nhập
           </Typography>
+
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -169,7 +176,7 @@ export default function SignIn() {
                 id="email"
                 type="email"
                 name="email"
-                placeholder="your@email.com"
+                placeholder="Nhập email của bạn"
                 autoComplete="email"
                 autoFocus
                 required

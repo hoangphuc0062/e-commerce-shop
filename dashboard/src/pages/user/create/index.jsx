@@ -11,10 +11,13 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 const validationSchema = Yup.object({
-  name: Yup.string().required(" Tên người dùng là bắt buộc"),
+  name: Yup.string().required(" Tên người dùng là bắt buộc")
+    .min(2, "Tên khách hàng tối thiểu 2 ký tự"),
   phone: Yup.string()
     .matches(/^[0-9]+$/, "Số điện thoại phải là số")
-    .required("phone is required"),
+    .required("Số điện thoại không được để trống")
+    .max(12, "Số điện thoại tối đa 12 ký tự")
+    .min(10, "Số điện thoại tối thiểu 10 ký tự"),
   password: Yup.string()
     .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
     .required("Cần có mật khẩu"),
@@ -76,9 +79,9 @@ export default function CreatePageUser({ open, handleClose, onSaved }) {
             margin="dense"
           />
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleClose}>Đóng</Button>
             <Button type="submit" variant="contained" color="primary">
-              Save
+              Thêm Khách hàng
             </Button>
           </DialogActions>
         </form>

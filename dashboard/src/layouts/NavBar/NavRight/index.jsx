@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { Dropdown, ListGroup } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useSelector } from "react-redux";
 import { handleToast } from "../../../utils/toast";
-import { getMe, logout as handleLogout } from "../../../redux/slices/staff";
+import { UserContext } from "../../../contexts/AuthContext";
+import Cookies from "js-cookie";
 
 const NavRight = () => {
-  const dispatch = useDispatch();
+  const { setUser, setLoginAuth } = React.useContext(UserContext);
+
   const status = useSelector((state) => state.staff.getMeStatus);
   const data = useSelector((state) => state.staff.data);
   const [profileData, setProfileData] = useState({});
-  const { logout } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    dispatch(getMe());
-  }, [dispatch]);
 
   useEffect(() => {
     if (status === "success") {
@@ -25,15 +20,14 @@ const NavRight = () => {
   }, [status, data]);
 
   const logoutme = () => {
-    dispatch(handleLogout()).then((result) => {
-      if (result.type === "staff/logout/fulfilled") {
-        handleToast("success", "Logout successful", "top-right");
-        logout();
-        navigate("/");
-      } else {
-        handleToast("error", "Logout failed", "top-right");
-      }
-    });
+    setLoginAuth(false);
+    setUser({});
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+    Cookies.remove("role");
+
+    handleToast("success", "Logout successfully");
+    return <Navigate to="/" />;
   };
 
   return (

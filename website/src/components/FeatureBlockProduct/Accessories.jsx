@@ -10,12 +10,12 @@ export const Accessories = ({ title, datas }) => {
       >
         {title}
       </Link>
-      <div className="flex flex-nowrap md:flex-wrap gap-2 p-2 justify-start w-full overflow-x-auto">
+      <div className="grid grid-cols-3 md:grid-cols-9 md:flex-wrap gap-2 justify-start w-full  overflow-x-auto">
         {datas.map((item) => (
           <Link
             to={item.link}
             key={item.id}
-            className="flex-shrink-0 w-[120px] h-[120px] md:w-[156px] md:h-[156px] relative rounded-lg overflow-hidden cursor-pointer hover:underline"
+            className=" relative rounded-lg overflow-hidden cursor-pointer hover:underline"
           >
             <img
               src={item.imageUrl}

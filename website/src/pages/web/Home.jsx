@@ -1,35 +1,20 @@
 import { SingleBanner } from "../../components/Banner/SingleBanner/SingleBanner";
 import SliderBanner from "../../components/Banner/SliderBanner/SliderBanner";
-import { FeatureBlockProduct } from "../../components/FeatureBlockProduct/FeatureBlockProduct";
+
 import MenuTree from "../../components/Banner/MenuTree/MenuTree";
 
 import { faker } from "@faker-js/faker";
-import { Link } from "react-router-dom";
 import { Accessories } from "../../components/FeatureBlockProduct/Accessories";
 
-function createRandomProduct() {
-  return {
-    id: faker.string.uuid(),
-    name: faker.commerce.productName(),
-    image: faker.image.avatar(),
-    price: faker.commerce.price(),
-    discountPercent: faker.number.int({ min: 0, max: 50 }),
-    description: faker.commerce.productDescription(),
-    rating: faker.number.int({ min: 1, max: 5 }),
-    review: faker.number.int({ min: 0, max: 1000 }),
-    category: faker.commerce.department(),
-    brand: faker.commerce.department(),
-    discount: faker.number.int({ min: 0, max: 50 }),
-    slug: faker.lorem.slug(),
-    images: [faker.image.url(300, 300, "tech", true)],
-  };
-}
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { getAll } from "../../redux/slices/category";
+import { useState } from "react";
 
-const products = Array.from({ length: 15 }, createRandomProduct);
-const products1 = Array.from({ length: 15 }, createRandomProduct);
-const products2 = Array.from({ length: 15 }, createRandomProduct);
-const products3 = Array.from({ length: 15 }, createRandomProduct);
-const products4 = Array.from({ length: 15 }, createRandomProduct);
+import GridProduct from "../../components/FeatureBlockProduct/GridProduct";
+
+import { getBanners } from "../../redux/slices/barnner";
+import { getProducts } from "../../redux/slices/product";
 
 const datas = [
   {
@@ -162,36 +147,143 @@ const datas = [
 ];
 
 const HomePage = () => {
+  const [dataCategory, setDataCategory] = useState([]);
+  const [dataBanner, setDataBanner] = useState([]);
+  const [VerticalBanner, setVerticalBanner] = useState([]);
+  const [products, setProducts] = useState([]);
+
+  const dispatch = useDispatch();
+
+  const status = useSelector((state) => state.category.status);
+  const data = useSelector((state) => state.category.data.categories);
+  const statusBanner = useSelector((state) => state.banner.status);
+  const Banner = useSelector((state) => state.banner.data);
+
+  useEffect(() => {
+    dispatch(getAll());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (status === "success" && Array.isArray(data)) {
+      setDataCategory(
+        data
+          .filter((item) => item.type === "product")
+          .map((item) => ({
+            id: item._id,
+            icon: item.icon,
+            links: [{ url: `/${item.slug}`, name: item.name }],
+            children: [
+              {
+                title: "Hãng sản xuất",
+                queries: [
+                  ...item.brand.map((child) => ({
+                    url: `/${item.slug}/${child.slug}`,
+                    name: child.name,
+                  })),
+                ],
+              },
+              // {
+              //   title: "Mức giá",
+              //   queries: [
+              //     { url: "/scanner/price/2m", name: "Trên 2 triệu" },
+              //     { url: "/scanner/price/5m", name: "Trên 5 triệu" },
+              //     { url: "/scanner/price/7m", name: "Trên 7 triệu" },
+              //   ],
+              // },
+            ],
+          }))
+      );
+    }
+  }, [status, data]);
+  const statusProduct = useSelector((state) => state.product.status);
+  const productsData = useSelector((state) => state.product.data.products);
+
+  useEffect(() => {
+    dispatch(getBanners());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (statusProduct === "success" && Array.isArray(productsData)) {
+      setProducts(productsData);
+    }
+  }, [statusProduct, productsData]);
+
+  useEffect(() => {
+    if (statusBanner === "success" && Array.isArray(Banner)) {
+      setDataBanner(
+        Banner.filter((item) => item.title === "Home-banner").map((item) => ({
+          banner: item.banner.map((child) => ({
+            id: item._id,
+            title: child.name,
+            description: child.shotDescription,
+            src: child.urlImage,
+            link: child.refUrl,
+            position: child.position,
+          })),
+        }))
+      );
+    }
+  }, [statusBanner, Banner]);
+
+  useEffect(() => {
+    if (statusBanner === "success" && Array.isArray(Banner)) {
+      setVerticalBanner(
+        Banner.filter((item) => item.title === "Vertical-banner").map(
+          (item) => ({
+            banner: item.banner.map((child) => ({
+              id: item._id,
+              image: child.urlImage,
+              ref: child.refUrl,
+              position: child.position,
+            })),
+          })
+        )
+      );
+    }
+  }, [statusBanner, Banner]);
+
+  useEffect(() => {
+    dispatch(
+      getProducts({
+        page: 1,
+        limit: 20,
+        fields:
+          "name,price,thumbnail,discountPercent,description,rating,review,category,brand,discount,slug",
+      })
+    );
+  }, [dispatch]);
+
   return (
     <div className="flex flex-col gap-3">
       <section className="flex gap-3">
-        <div className="hidden w-1/6 lg:block">
-          <MenuTree />
+        <div className="hidden w-1/6 lg:block shadow-lg">
+          {dataCategory.length > 0 && <MenuTree dataCategory={dataCategory} />}
         </div>
-        <div className="w-full  lg:w-4/6 bg-whiteColor drop-shadow-main">
-          <SliderBanner />
+        <div className="w-full  lg:w-4/6 bg-whiteColor shadow-custom">
+          {dataBanner.length > 0 && <SliderBanner data={dataBanner} />}
         </div>
 
         <div className="hidden w-1/6 lg:block ">
-          <SingleBanner />
+          {VerticalBanner.length > 0 && <SingleBanner data={VerticalBanner} />}
         </div>
       </section>
-      <section className="bg-white shadow-lg">
-        <FeatureBlockProduct products={products} />
+      <section className="bg-white h-full ">
+        <GridProduct data={products} cat={dataCategory} />
       </section>
-      <section>
-        <FeatureBlockProduct products={products1} />
+      {/* <section className="bg-white h-full ">
+        <GridProduct data={products1} />
       </section>
-      <section>
-        <FeatureBlockProduct products={products2} />
+      <section className="bg-white h-full ">
+        <GridProduct data={products2} />
       </section>
-      <section>
-        <FeatureBlockProduct products={products3} />
+      <section className="bg-white h-full ">
+        <GridProduct data={products3} />
       </section>
-      <section>
-        <FeatureBlockProduct products={products4} />
-      </section>
-      <section>
+      <section className="bg-white h-full ">
+        <GridProduct data={products4} />
+      </section> */}
+
+      <section className="">
         <Accessories datas={datas} title="Phụ kiện" />
       </section>
       <section>Blogs</section>

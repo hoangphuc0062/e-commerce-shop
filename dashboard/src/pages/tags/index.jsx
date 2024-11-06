@@ -37,14 +37,15 @@ export default function TagPage() {
     }, [status, dataTags]);
 
     const handleEdit = (tag) => {
-        setEditTag(tag);  // Set the tag to edit mode
-        formik.setFieldValue("name", tag.name); // Populate the form with selected tag data
+        setEditTag(tag);
+        formik.setFieldValue("name", tag.name);
     };
-
     const validationSchema = Yup.object({
         name: Yup.string()
-            .required("Tên tag không được để trống") // Required validation
-            .max(250, "Tên tag không được vượt quá 250 ký tự"), // Max length validation
+            .required("Tên tag không được để trống")
+            .max(250, "Tên tag không được vượt quá 250 ký tự")
+            .min(2, "Tên tag phải có tối thiểu 2 ký tự")
+            .matches(/^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+$/, "Tên tag không được chứa khoảng trống hoặc dấu"),
     });
 
     const formik = useFormik({

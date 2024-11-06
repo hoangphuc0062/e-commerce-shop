@@ -4,8 +4,14 @@ export const CouponSchema = Yup.object().shape({
   name: Yup.string().required("Tên mã giảm giá là bắt buộc"),
   code: Yup.string().required("Mã giảm giá là bắt buộc"),
   discount: Yup.number()
+    .typeError("Số tiền giảm giá phải là một số") // Thông báo lỗi nếu discount không phải là số
     .required("Số tiền giảm giá là bắt buộc")
-    .min(1, "Số tiền giảm giá phải lớn hơn 0"),
+    .min(1, "Số tiền giảm giá phải lớn hơn 0")
+    .when("type", {
+      is: "percent",
+      then: (schema) => schema.max(100, "Số tiền giảm giá dạng phần trăm phải nhỏ hơn hoặc bằng 100"),
+      otherwise: (schema) => schema,
+    }),
   type: Yup.string()
     .oneOf(["fixed", "percent"], "Loại giảm giá không hợp lệ")
     .required("Loại giảm giá là bắt buộc"),

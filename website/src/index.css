@@ -7,3 +7,15 @@
   margin: 0;
   padding: 0;
 }
+
+.swiper__thumb .swiper-slide-thumb-active {
+  opacity: 1;
+  border: 2px solid #1e40af;
+  border-radius: 4px;
+}
+
+.bannerSwiper .swiper-slide-thumb-active {
+  opacity: 1;
+  border-bottom: 3px solid #1e40af;
+  font-weight: 700;
+}
