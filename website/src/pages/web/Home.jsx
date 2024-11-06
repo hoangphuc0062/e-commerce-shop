@@ -16,30 +16,6 @@ import GridProduct from "../../components/FeatureBlockProduct/GridProduct";
 import { getBanners } from "../../redux/slices/barnner";
 import { getProducts } from "../../redux/slices/product";
 
-function createRandomProduct() {
-  return {
-    id: faker.string.uuid(),
-    name: faker.commerce.productName(),
-    image: faker.image.avatar(),
-    price: faker.commerce.price(),
-    discountPercent: faker.number.int({ min: 0, max: 50 }),
-    description: faker.commerce.productDescription(),
-    rating: faker.number.int({ min: 1, max: 5 }),
-    review: faker.number.int({ min: 0, max: 1000 }),
-    category: faker.commerce.department(),
-    brand: faker.commerce.department(),
-    discount: faker.number.int({ min: 0, max: 50 }),
-    slug: faker.lorem.slug(),
-    images: [faker.image.url(300, 300, "tech", true)],
-  };
-}
-
-// const products = Array.from({ length: 20 }, createRandomProduct);
-const products1 = Array.from({ length: 10 }, createRandomProduct);
-const products2 = Array.from({ length: 10 }, createRandomProduct);
-const products3 = Array.from({ length: 10 }, createRandomProduct);
-const products4 = Array.from({ length: 10 }, createRandomProduct);
-
 const datas = [
   {
     id: 1,
@@ -292,9 +268,9 @@ const HomePage = () => {
         </div>
       </section>
       <section className="bg-white h-full ">
-        <GridProduct data={products} />
+        <GridProduct data={products} cat={dataCategory} />
       </section>
-      <section className="bg-white h-full ">
+      {/* <section className="bg-white h-full ">
         <GridProduct data={products1} />
       </section>
       <section className="bg-white h-full ">
@@ -305,7 +281,7 @@ const HomePage = () => {
       </section>
       <section className="bg-white h-full ">
         <GridProduct data={products4} />
-      </section>
+      </section> */}
 
       <section className="">
         <Accessories datas={datas} title="Phụ kiện" />
