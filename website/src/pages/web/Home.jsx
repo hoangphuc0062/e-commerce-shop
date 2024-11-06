@@ -14,6 +14,7 @@ import { useState } from "react";
 import GridProduct from "../../components/FeatureBlockProduct/GridProduct";
 
 import { getBanners } from "../../redux/slices/barnner";
+import { getProducts } from "../../redux/slices/product";
 
 function createRandomProduct() {
   return {
@@ -33,7 +34,7 @@ function createRandomProduct() {
   };
 }
 
-const products = Array.from({ length: 20 }, createRandomProduct);
+// const products = Array.from({ length: 20 }, createRandomProduct);
 const products1 = Array.from({ length: 10 }, createRandomProduct);
 const products2 = Array.from({ length: 10 }, createRandomProduct);
 const products3 = Array.from({ length: 10 }, createRandomProduct);
@@ -173,6 +174,7 @@ const HomePage = () => {
   const [dataCategory, setDataCategory] = useState([]);
   const [dataBanner, setDataBanner] = useState([]);
   const [VerticalBanner, setVerticalBanner] = useState([]);
+  const [products, setProducts] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -217,10 +219,18 @@ const HomePage = () => {
       );
     }
   }, [status, data]);
+  const statusProduct = useSelector((state) => state.product.status);
+  const productsData = useSelector((state) => state.product.data.products);
 
   useEffect(() => {
     dispatch(getBanners());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (statusProduct === "success" && Array.isArray(productsData)) {
+      setProducts(productsData);
+    }
+  }, [statusProduct, productsData]);
 
   useEffect(() => {
     if (statusBanner === "success" && Array.isArray(Banner)) {
@@ -256,7 +266,16 @@ const HomePage = () => {
     }
   }, [statusBanner, Banner]);
 
-  console.log(VerticalBanner);
+  useEffect(() => {
+    dispatch(
+      getProducts({
+        page: 1,
+        limit: 20,
+        fields:
+          "name,price,thumbnail,discountPercent,description,rating,review,category,brand,discount,slug",
+      })
+    );
+  }, [dispatch]);
 
   return (
     <div className="flex flex-col gap-3">

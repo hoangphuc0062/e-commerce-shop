@@ -32,11 +32,15 @@ export default function RootRouter() {
         { path: "register", element: <Register /> },
         { path: "/cart", element: <Cart /> },
         {
-          path: "/product",
+          path: "/:product",
           element: <Product />,
         },
         {
-          path: "/:category/:slug",
+          path: "/:product/:brand",
+          element: <Product />,
+        },
+        {
+          path: "/:category/:brand/:slug",
           element: <ProductDetail />,
         },
         {

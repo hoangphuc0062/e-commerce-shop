@@ -20,7 +20,7 @@ export default function ProductPage() {
   const columns = [
     { label: "Mã", field: "SKU" },
     { label: "Tên sản phẩm", field: "name" },
-    { label: "Hình ảnh", field: "images" },
+    { label: "Hình ảnh", field: "thumbnail" },
     { label: "Giá thị trường", field: "priceInMarket" },
     { label: "Giá cửa hàng", field: "historicalPrice" },
     { label: "Giá trên website", field: "price" },
