@@ -40,33 +40,6 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
     let queryCommand = Product.find(formattedQueries);
 
-    if (queries?.series) {
-      queryCommand = queryCommand.populate("series", "name slug");
-    }
-
-    if (queries?.brand) {
-      queryCommand = queryCommand.populate("brand", "name slug");
-    }
-
-    if (queries?.category) {
-      queryCommand = queryCommand.populate("category", "name slug");
-    }
-
-    if (queries?.attributes) {
-      queryCommand = queryCommand.populate({
-        path: "attributes.aid",
-        select: "name values",
-      });
-    }
-
-    if (queryCommand?.tagsProduct) {
-      queryCommand = queryCommand.populate("tagsProduct", "name");
-    }
-
-    if (queries?.warehouses) {
-      queryCommand = queryCommand.populate("warehouse", "name");
-    }
-
     if (req.query.sort) {
       const sortBy = req.query.sort.split(",").join(" ");
       queryCommand = queryCommand.sort(sortBy);
@@ -74,6 +47,21 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
     if (req.query.fields) {
       const fields = req.query.fields.split(",").join(" ");
+
+      const populateFields = {
+        category: "name slug",
+        brand: "name slug",
+        series: "name slug",
+        warehouse: "name",
+        tagsProduct: "name",
+      };
+
+      Object.keys(populateFields).forEach((field) => {
+        if (fields.includes(field)) {
+          queryCommand = queryCommand.populate(field, populateFields[field]);
+        }
+      });
+
       queryCommand = queryCommand.select(fields);
     }
 
