@@ -38,7 +38,7 @@ function FeaturedPost({ data }) {
                 <img
                   src={post?.thumbnail}
                   alt={post?.postTitle}
-                  className="w-48 object-cover rounded"
+                  className="w-32 lg:w-48 object-cover rounded"
                 />
 
                 <div className="flex flex-col">

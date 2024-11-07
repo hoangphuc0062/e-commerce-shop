@@ -31,7 +31,7 @@ const SliderPost = ({ category, data }) => {
               <img
                 src={post.thumbnail}
                 alt={post.postTitle}
-                className="w-full h-36 object-cover md:h-48 lg:h-60 cursor-pointer"
+                className="w-full h-36 object-cover lg:h-40 sm:h-28 cursor-pointer"
               />
               <div className="p-3">
                 <div

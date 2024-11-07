@@ -12,7 +12,7 @@ const PostScroll = ({ data }) => {
   return (
     <>
       <section className="mb-8 p-4">
-        <div className="md:flex md:space-x-8">
+        <div className="flex space-x-8">
           <div className="w-full ">
             <HeadingSection title="tin tức mới nhất" />
             <div className="space-y-4">
@@ -25,19 +25,19 @@ const PostScroll = ({ data }) => {
                   <img
                     src={post.thumbnail}
                     alt={post.postTitle}
-                    className="w-1/4 h-48 object-cover hover:scale-105 transition duration-300"
+                    className="w-36 h-32 lg:w-1/3 lg:h-44 object-cover rounded-lg"
                   />
                   <div className="pl-4 w-3/4">
-                    <h3 className="text-lg font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">
+                    <h3 className="lg:text-lg text-md font-semibold mb-2 line-clamp-1 lg:line-clamp-2 hover:text-main cursor-pointer">
                       {post.postTitle}
                     </h3>
                     <p
-                      className="text-sm text-gray-600 line-clamp-3 pt-2"
+                      className="text-sm text-gray-600 line-clamp-2 lg:line-clamp-3 lg:pt-2"
                       dangerouslySetInnerHTML={{
                         __html: post.shortDescription,
                       }}
                     />
-                    <div className="text-sm text-gray-600 flex pt-2">
+                    <div className="text-sm text-gray-600 flex pt-4 lg:pt-2">
                       <p className="text-main mr-1">{post.author}</p> -
                       <p className="ml-1">{formatDay(post.date)}</p>
                     </div>

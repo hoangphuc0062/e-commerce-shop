@@ -51,11 +51,9 @@ function ForumPage() {
   return (
     <div className="container w-full">
       <div className="flex flex-col md:flex-row w-full pt-16">
-        <div className="md:w-1/4 lg:w-1/5 xl:w-1/6">
           <Sidebar />
-        </div>
 
-        <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col ">
+        <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col">
           <section className="flex-grow px-4">
             <section className="mb-8">
               <HeadingSection title="Chủ Đề hot" />
