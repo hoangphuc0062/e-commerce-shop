@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 
@@ -52,11 +51,9 @@ function ForumPage() {
   return (
     <div className="container w-full">
       <div className="flex flex-col md:flex-row w-full pt-16">
-        <div className="md:w-1/4 lg:w-1/5 xl:w-1/6">
           <Sidebar />
-        </div>
 
-        <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col ">
+        <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col">
           <section className="flex-grow px-4">
             <section className="mb-8">
               <HeadingSection title="Chủ Đề hot" />
@@ -66,27 +63,8 @@ function ForumPage() {
             {data && <FeaturedPost data={data} />}
           </section>
 
-          {uniqueCategories.slice(0, 1).map((category) => (
-            <section key={category} className="mb-8 p-4">
-              <HeadingSection title={category} />
-              {data && <SliderPost data={data} category={category} />}
-            </section>
-          ))}
 
           <PostScroll data={data} />
-
-          <section className="mb-8 px-4 bg-gray-100 w-full rounded-lg">
-            <HeadingSection title="S-GAMES" />
-            {data && <SliderPost data={data} category={data?.category} />}
-            <div className="mt-4 text-right">
-              <Link
-                to="#"
-                className="text-main text-sm font-semibold hover:underline"
-              >
-                Xem thêm
-              </Link>
-            </div>
-          </section>
           <section className="mb-8 p-4">
             <div className="flex overflow-x-auto space-x-4">
               {uniqueCategories.slice(0, 3).map((category) => (

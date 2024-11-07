@@ -114,7 +114,7 @@ const DetailBlog = () => {
             </div>
 
             {/* Nội dung bài viết */}
-            <div className="text-base text-gray-700">
+            <div className="text-base text-gray-700 ">
               <div dangerouslySetInnerHTML={{ __html: data.content }} />
             </div>
           </div>

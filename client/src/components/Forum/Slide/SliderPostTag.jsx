@@ -16,7 +16,7 @@ const SliderPostTag = () => {
   };
 
   const dispatch = useDispatch();
-  const { tagName } = useParams();
+  const { tagsName } = useParams();
   const status = useSelector((state) => state.post.status);
   const postData = useSelector((state) => state.post.data);
   const [data, setData] = useState([]);
@@ -43,17 +43,15 @@ const SliderPostTag = () => {
             slug: item.slug,
             date: item.createdAt,
             thumbnail: item.thumbnail,
-            tagsName: item?.tags?.name,
+            tags: item.tags.map((tag) => tag.name),
           }))
           .sort((a, b) => new Date(b.date) - new Date(a.date))
       );
     }
   }, [status, postData]);
 
-  // Lọc bài viết theo tag name
-  const filteredData = data.filter((post) =>
-    post.tagsName?.some((tag) => tag === tagName)
-  );
+  // Lọc bài viết theo tagsName
+  const filteredData = data.filter((post) => post.tags.includes(tagsName));
 
   return (
     <div className="w-full">
@@ -66,7 +64,7 @@ const SliderPostTag = () => {
                 <img
                   src={post?.thumbnail}
                   alt={post?.postTitle}
-                  className="max-w-[180px] max-h-[180px] object-cover rounded-md"
+                  className="h-48 object-cover rounded-md"
                 />
                 <div className="p-3">
                   <Link

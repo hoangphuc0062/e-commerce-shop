@@ -21,7 +21,7 @@ const PostTag = ({ category, data }) => {
               <img
                 src={post.thumbnail}
                 alt={post.postTitle}
-                className="w-full h-48 object-cover"
+                className="w-full h-48 object-cover rounded-lg"
               />
             )}
             <div className="p-4">
