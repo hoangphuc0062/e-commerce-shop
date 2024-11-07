@@ -17,8 +17,9 @@ export default function SimpleSlide({ imgs }) {
           disableOnInteraction: false,
         }}
       >
-        {Array.isArray(imgs) &&
-          imgs.map((img, index) => (
+        {imgs &&
+          imgs[0].banner &&
+          imgs[0].banner.map((img, index) => (
             <SwiperSlide key={index}>
               <img
                 src={img.src}
