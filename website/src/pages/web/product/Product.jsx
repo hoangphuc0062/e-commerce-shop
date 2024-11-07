@@ -6,7 +6,7 @@ import ProductCard from "../../../components/FeatureBlockProduct/Card";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../../../redux/slices/product";
+import { getProducts, resetState } from "../../../redux/slices/product";
 import { getCategoryBySlug } from "../../../redux/slices/category";
 import { resetState as resetStateCategory } from "../../../redux/slices/category";
 import { getBanners } from "../../../redux/slices/barnner";
@@ -26,18 +26,16 @@ const Product = () => {
   const [dataBanner, setDataBanner] = useState([]);
   const [firstHalfBanner, setFirstHalfBanner] = useState([]);
   const [secondHalfBanner, setSecondHalfBanner] = useState([]);
+  const [noFoundProduct, setNoFoundProduct] = useState("");
   const statusProduct = useSelector((state) => state.product.status);
   const productsData = useSelector((state) => state.product.data.products);
+  const errorProduct = useSelector((state) => state.product.error);
   const categoryData = useSelector((state) => state.category.data);
   const statusCategory = useSelector(
     (state) => state.category.statusCategoryBySlug
   );
   const loadInitialProducts = useCallback(() => {
-    if (
-      statusCategory === "success" &&
-      categoryData &&
-      statusProduct !== "success"
-    ) {
+    if (statusCategory === "success" && categoryData) {
       const slug = brand ? `${category},${brand}` : category;
       dispatch(
         getProducts({
@@ -48,20 +46,27 @@ const Product = () => {
         })
       );
     }
-    if (["Không tìm thấy sản phẩm"].includes(productsData)) {
+  }, [brand, category, categoryData, dispatch, productPerPage, statusCategory]);
+
+  useEffect(() => {
+    if (errorProduct !== "null") {
       navigate("/404");
     }
-  }, [
-    brand,
-    category,
-    categoryData,
-    dispatch,
-    navigate,
-    productPerPage,
-    statusCategory,
-    productsData,
-    statusProduct,
-  ]);
+    dispatch(resetState({ key: "status", value: "idle" }));
+  }, [errorProduct, navigate, dispatch]);
+  useEffect(() => {
+    if (
+      statusProduct === "success" &&
+      productsData.includes("No product found")
+    ) {
+      setNoFoundProduct("Không có sản phẩm nào");
+      setHasMoreProducts(false);
+    } else {
+      setNoFoundProduct("");
+    }
+    dispatch(resetState({ key: "error", value: "null" }));
+  }, [statusProduct, productsData, dispatch]);
+
   useEffect(() => {
     loadInitialProducts();
   }, [loadInitialProducts]);
@@ -303,6 +308,11 @@ const Product = () => {
               Xem thêm sản phẩm
             </button>
           )}
+          {
+            <div className="text-center text-red-500">
+              {noFoundProduct && noFoundProduct}
+            </div>
+          }
         </div>
       </section>
     </div>
