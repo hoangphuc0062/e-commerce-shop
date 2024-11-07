@@ -1,8 +1,12 @@
 import sendRequest from "../utils/resquest";
 
 const ProductService = {
-  getAll: (page, limit) =>
-    sendRequest("get", "/products?page=" + page + "&limit=" + limit),
+  getAll: () =>
+    sendRequest("get", "/products", {
+      params: {
+        sort: "-createdAt",
+      },
+    }),
   delete: (id) => sendRequest("delete", `/products/${id}`),
   create: (data) => sendRequest("post", "/products/create", data),
   update: (id, data) => sendRequest("put", `/products/${id}`, data),

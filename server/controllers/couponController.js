@@ -51,7 +51,9 @@ const createNewCoupon = asyncHandler(async (req, res) => {
 });
 
 const getCoupon = asyncHandler(async (req, res) => {
-  const coupons = await Coupon.find({});
+  const sortBy = req.query.sort;
+  const order = req.query.order === "asc" ? 1 : -1;
+  const coupons = await Coupon.find({}).sort({ [sortBy]: order });
   res.json(coupons);
 });
 

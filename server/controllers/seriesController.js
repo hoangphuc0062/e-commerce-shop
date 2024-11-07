@@ -3,7 +3,9 @@ const Series = require("../models/seriesModel");
 const asyncHandler = require("express-async-handler");
 
 const getAllSeries = asyncHandler(async (req, res) => {
-  const series = await Series.find();
+  const sortBy = req.query.sort;
+  const order = req.query.order === "asc" ? 1 : -1;
+  const series = await Series.find().sort({ [sortBy]: order });
 
   return res.status(200).json(series);
 });

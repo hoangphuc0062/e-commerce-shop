@@ -72,7 +72,7 @@ function AddCoupon() {
   const statusBrand = useSelector((state) => state.brand.status);
   const statusCollection = useSelector((state) => state.collection.status);
   const statusProduct = useSelector((state) => state.product.status);
-  const categories = useSelector((state) => state.category.data);
+  const categories = useSelector((state) => state.category.data.categories);
   const brands = useSelector((state) => state.brand.data);
   const collections = useSelector((state) => state.collection.data);
   const products = useSelector((state) => state.product.data);

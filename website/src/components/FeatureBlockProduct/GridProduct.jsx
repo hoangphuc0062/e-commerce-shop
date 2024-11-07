@@ -7,29 +7,39 @@ import ProductCard from "./Card";
 import { Pagination } from "swiper/modules";
 import { Link } from "react-router-dom";
 
-export default function GridProduct({ data }) {
+export default function GridProduct({ data, cat }) {
   const itemsPerPage = 10;
   const pages = Math.ceil(data.length / itemsPerPage);
 
   const paginatedData = Array.from({ length: pages }, (_, i) =>
     data.slice(i * itemsPerPage, i * itemsPerPage + itemsPerPage)
   );
+  const categoryId = data[0]?.category._id;
+
+  const filteredBrands =
+    cat.find((category) => category.id === categoryId)?.children[0]?.queries ||
+    [];
 
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold uppercase ">{data[0]?.category}</h1>
+        <h1 className="text-2xl font-bold uppercase ">
+          {data[0]?.category.name}
+        </h1>
         <div className="flex gap-1 overflow-scroll scroll-smooth md:overflow-hidden  ">
-          {data &&
-            data.slice(0, 10).map((product, index) => (
-              <Link
-                className="bg-slate-200 text-center p-2  rounded hover:underline"
-                key={index}
-              >
-                {product?.brand}
-              </Link>
-            ))}
-          <Link className="bg-slate-200 text-center p-2  rounded hover:underline">
+          {filteredBrands.map((brand, index) => (
+            <Link
+              to={brand.url}
+              className="bg-slate-200 text-center p-2 rounded hover:underline"
+              key={index}
+            >
+              {brand.name}
+            </Link>
+          ))}
+          <Link
+            className="bg-slate-200 text-center p-2  rounded hover:underline"
+            to={`/${data[0]?.category.slug}`}
+          >
             Xem tất cả
           </Link>
         </div>
