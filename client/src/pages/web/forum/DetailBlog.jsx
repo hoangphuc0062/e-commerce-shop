@@ -65,18 +65,19 @@ const DetailBlog = () => {
             ))}
           </div>
           {/* Đường dẫn breadcrumb */}
-          <div className="text-sm mb-4">
+          <div className="text-sm mb-4 flex items-center gap-1 overflow-x-auto whitespace-nowrap">
             <Link to="/forum" className="text-main">
               Trang chủ
-            </Link>{" "}
-            &raquo;{" "}
+            </Link>
+            <p className="text-gray-600"> &raquo;</p>
             <Link
               to={`/forum/category/${data?.categorySlug}`}
               className="text-gray-600"
             >
               {data?.category}
-            </Link>{" "}
-            &raquo; {data.postTitle}
+            </Link>
+            <p className="text-gray-600"> &raquo;</p>
+            <div className="text-gray-600 line-clamp-1">{data.postTitle}</div>
           </div>
           {/* Hình ảnh bài viết */}
           <div className="mb-6">
@@ -94,7 +95,7 @@ const DetailBlog = () => {
             </div>
 
             {/* Tiêu đề bài viết */}
-            <h1 className="text-2xl font-bold mb-4">{data.postTitle}</h1>
+            <h1 className="text-2xl font-semibold mb-4">{data.postTitle}</h1>
 
             {/* Thông tin tác giả và ngày đăng */}
             <div className="flex items-center justify-between mb-6">

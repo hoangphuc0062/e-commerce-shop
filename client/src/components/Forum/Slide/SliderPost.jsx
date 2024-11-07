@@ -17,6 +17,37 @@ const SliderPost = ({ category, data }) => {
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
+    mobileFirst: true,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 425,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 320,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+    ],
   };
 
   // Lọc các bài viết theo danh mục nếu có, nếu không sẽ hiển thị tất cả
@@ -31,17 +62,13 @@ const SliderPost = ({ category, data }) => {
               <img
                 src={post.thumbnail}
                 alt={post.postTitle}
-                className="w-full h-36 object-cover lg:h-40 sm:h-28 cursor-pointer"
+                className="w-full h-28 object-cover lg:h-40 sm:h-28 cursor-pointer"
               />
               <div className="p-3">
-                <div
-                  className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main"
-                >
+                <div className="text-base font-semibold mb-1 line-clamp-1 lg:line-clamp-2 cursor-pointer hover:text-main">
                   {post.postTitle}
                 </div>
-                <div
-                  className="text-xs text-blue-500 pb-1 cursor-pointer"
-                >
+                <div className="text-xs text-blue-500 pb-1 cursor-pointer">
                   {post.author}
                 </div>
 

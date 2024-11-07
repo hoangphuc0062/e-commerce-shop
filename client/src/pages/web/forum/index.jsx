@@ -45,13 +45,14 @@ function ForumPage() {
       );
     }
   }, [status, postData]);
+  console.log(data.thumbnail);
 
   const uniqueCategories = [...new Set(data.map((item) => item.category))];
 
   return (
     <div className="container w-full">
       <div className="flex flex-col md:flex-row w-full pt-16">
-          <Sidebar />
+        <Sidebar />
 
         <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col">
           <section className="flex-grow px-4">
@@ -62,7 +63,6 @@ function ForumPage() {
 
             {data && <FeaturedPost data={data} />}
           </section>
-
 
           <PostScroll data={data} />
           <section className="mb-8 p-4">

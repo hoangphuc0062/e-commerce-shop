@@ -14,7 +14,7 @@ function FeaturedPost({ data }) {
           <Link to={`${featuredPost?.slug}`} className="relative">
             <img
               src={featuredPost?.thumbnail}
-              alt={featuredPost?.postTitle}
+              alt={featuredPost?.thumbnail}
               className="w-full h-full object-cover"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">

@@ -11,7 +11,7 @@ const Sidebar = () => {
   const location = useLocation();
 
   const status = useSelector((state) => state.category.status);
-  const categoryData = useSelector((state) => state.category.data);
+  const categoryData = useSelector((state) => state.category.data.categories);
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -36,7 +36,6 @@ const Sidebar = () => {
   const handleCategoryClick = (slug) => {
     navigate(`/forum/category/${slug}`);
   };
-
   return (
     <>
       {/* Sidebar cho màn hình lớn */}
