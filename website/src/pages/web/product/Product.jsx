@@ -48,12 +48,12 @@ const Product = () => {
     }
   }, [brand, category, categoryData, dispatch, productPerPage, statusCategory]);
 
-  useEffect(() => {
-    if (errorProduct !== "null") {
-      navigate("/404");
-    }
-    dispatch(resetState({ key: "status", value: "idle" }));
-  }, [errorProduct, navigate, dispatch]);
+  // useEffect(() => {
+  //   if (errorProduct !== "null") {
+  //     navigate("/404");
+  //   }
+  //   dispatch(resetState({ key: "status", value: "idle" }));
+  // }, [errorProduct, navigate, dispatch]);
   useEffect(() => {
     if (
       statusProduct === "success" &&
@@ -218,7 +218,7 @@ const Product = () => {
               }}
             >
               <img
-                className="aspect-video w-full h-full"
+                className="aspect-video object-contain w-full h-full p-1"
                 src={_.image}
                 alt={_.slug}
               />

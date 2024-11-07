@@ -27,6 +27,10 @@ dbConnect();
 
 initRoutes(app);
 
+app.use((req, res) => {
+  res.status(404).send("404 Not Found");
+});
+
 app.listen(port, () => {
   console.log(`Server is running on this port ` + port);
   console.log(process.env.CLIENT_URL, process.env.DASHBOARD_URL);
