@@ -6,7 +6,7 @@ import ProductCard from "../../../components/FeatureBlockProduct/Card";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../../../redux/slices/product";
+import { getProducts, resetState } from "../../../redux/slices/product";
 import { getCategoryBySlug } from "../../../redux/slices/category";
 import { resetState as resetStateCategory } from "../../../redux/slices/category";
 import { getBanners } from "../../../redux/slices/barnner";
@@ -26,18 +26,16 @@ const Product = () => {
   const [dataBanner, setDataBanner] = useState([]);
   const [firstHalfBanner, setFirstHalfBanner] = useState([]);
   const [secondHalfBanner, setSecondHalfBanner] = useState([]);
+  const [noFoundProduct, setNoFoundProduct] = useState("");
   const statusProduct = useSelector((state) => state.product.status);
   const productsData = useSelector((state) => state.product.data.products);
+  const errorProduct = useSelector((state) => state.product.error);
   const categoryData = useSelector((state) => state.category.data);
   const statusCategory = useSelector(
     (state) => state.category.statusCategoryBySlug
   );
   const loadInitialProducts = useCallback(() => {
-    if (
-      statusCategory === "success" &&
-      categoryData &&
-      statusProduct !== "success"
-    ) {
+    if (statusCategory === "success" && categoryData) {
       const slug = brand ? `${category},${brand}` : category;
       dispatch(
         getProducts({
@@ -48,20 +46,27 @@ const Product = () => {
         })
       );
     }
-    if (["Không tìm thấy sản phẩm"].includes(productsData)) {
-      navigate("/404");
+  }, [brand, category, categoryData, dispatch, productPerPage, statusCategory]);
+
+  // useEffect(() => {
+  //   if (errorProduct !== "null") {
+  //     navigate("/404");
+  //   }
+  //   dispatch(resetState({ key: "status", value: "idle" }));
+  // }, [errorProduct, navigate, dispatch]);
+  useEffect(() => {
+    if (
+      statusProduct === "success" &&
+      productsData.includes("No product found")
+    ) {
+      setNoFoundProduct("Không có sản phẩm nào");
+      setHasMoreProducts(false);
+    } else {
+      setNoFoundProduct("");
     }
-  }, [
-    brand,
-    category,
-    categoryData,
-    dispatch,
-    navigate,
-    productPerPage,
-    statusCategory,
-    productsData,
-    statusProduct,
-  ]);
+    dispatch(resetState({ key: "error", value: "null" }));
+  }, [statusProduct, productsData, dispatch]);
+
   useEffect(() => {
     loadInitialProducts();
   }, [loadInitialProducts]);
@@ -84,6 +89,7 @@ const Product = () => {
       setHasMoreProducts(productsData.length >= productPerPage);
     }
   }, [statusProduct, productsData, productPerPage]);
+  console.log("products");
 
   const loading = () => (
     <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
@@ -156,29 +162,48 @@ const Product = () => {
   }, [dispatch]);
   useEffect(() => {
     if (statusBanner === "success" && Array.isArray(Banner)) {
-      setDataBanner(
-        Banner.filter((item) => item.title === category).map((item) => ({
-          banner: item.banner.map((child) => ({
+      // Lọc và chuẩn bị dữ liệu banner
+      const filteredData = Banner.filter((item) => item.title === category).map(
+        (item) => ({
+          banner: item.banner?.map((child) => ({
             id: item._id,
             title: child.name,
             description: child.shotDescription,
             src: child.urlImage,
             link: child.refUrl,
           })),
-        }))
+        })
       );
+
+      setDataBanner(filteredData);
+
+      // Kiểm tra xem filteredData có phần tử và banner có phải là mảng không
+      if (filteredData.length > 0 && Array.isArray(filteredData[0].banner)) {
+        const banners = filteredData[0].banner;
+
+        setFirstHalfBanner([{ banner: banners }]); // Từ trên xuống
+        setSecondHalfBanner([{ banner: [...banners].reverse() }]); // Từ dưới lên
+      } else {
+        console.warn(
+          "filteredData is empty or does not contain a valid banner array."
+        );
+        setFirstHalfBanner([]);
+        setSecondHalfBanner([]);
+      }
     }
-  }, [statusBanner, Banner, category, dispatch]);
+  }, [statusBanner, Banner, category]);
 
   return (
     <div className="flex flex-col gap-3">
       <div>breadcrumb here</div>
       <section className="flex gap-1">
         <div className="hidden w-full md:block md:w-1/2">
-          {dataBanner.length > 0 && <SimpleSlide imgs={dataBanner} />}
+          {firstHalfBanner.length > 0 && <SimpleSlide imgs={firstHalfBanner} />}
         </div>
         <div className="w-full md:w-1/2">
-          {dataBanner.length > 0 && <SimpleSlide imgs={dataBanner} />}
+          {secondHalfBanner.length > 0 && (
+            <SimpleSlide imgs={secondHalfBanner} />
+          )}
         </div>
       </section>
       <section>
@@ -193,7 +218,7 @@ const Product = () => {
               }}
             >
               <img
-                className="aspect-video w-full h-full"
+                className="aspect-video object-contain w-full h-full p-1"
                 src={_.image}
                 alt={_.slug}
               />
@@ -284,6 +309,11 @@ const Product = () => {
               Xem thêm sản phẩm
             </button>
           )}
+          {
+            <div className="text-center text-red-500">
+              {noFoundProduct && noFoundProduct}
+            </div>
+          }
         </div>
       </section>
     </div>

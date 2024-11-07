@@ -1,5 +1,9 @@
 import { Link, useParams } from "react-router-dom";
-import { HeadingSection, Sidebar, SlidePostCategory } from "../../../components/Forum";
+import {
+  HeadingSection,
+  Sidebar,
+  SlidePostCategory,
+} from "../../../components/Forum";
 import { formatDay } from "../../../ultils/helper";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -17,7 +21,7 @@ const CategoryPost = () => {
 
   const formattedData = Array.isArray(postData)
     ? postData
-        .filter((item) => item.category.slug === categorySlug)
+        .filter((item) => item.category?.slug === categorySlug)
         .map((item) => ({
           status: item.status,
           id: item._id,
@@ -42,59 +46,59 @@ const CategoryPost = () => {
   };
 
   return (
-    <div className="container w-full">
+    <div className="container w-full mb-8">
       <div className="flex flex-col md:flex-row w-full pt-16">
         <div className="md:w-1/4 lg:w-1/5">
           <Sidebar />
         </div>
         <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col">
           <SlidePostCategory />
-          <section className="mb-8 p-4 w-full">
-            <div className="md:flex md:space-x-8">
-              <div className="md:w-1/2">
-                <HeadingSection title="Tin Mới Nhất" />
-                <div className="space-y-4">
-                  {visibleData.map((post) => (
-                    <div
-                      key={post.id}
-                      className="bg-white overflow-hidden flex "
-                    >
-                      <img
-                        src={post.thumbnail}
-                        alt={post.postTitle}
-                        className="w-1/3 h-32 object-cover hover:scale-105 transition duration-300 rounded-md"
-                      />
-                      <div className="p-4 w-2/3">
-                        <h3 className="text-lg font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">
-                          <Link to={`/forum/${post.slug}`}>
-                            {post.postTitle}
-                          </Link>
-                        </h3>
-                        <h3 className="text-sm text-gray-600 line-clamp-1 py-1">
-                          <div
-                            dangerouslySetInnerHTML={{
-                              __html: post.shortDescription,
-                            }}
-                          />
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {post.author} - {formatDay(post.date)}
-                        </p>
-                      </div>
+          <section className="w-full">
+            <HeadingSection title="Tin Mới Nhất" />
+            <div className="space-y-4">
+              {visibleData.length > 0 ? (
+                visibleData.map((post) => (
+                  <div
+                    key={post.id}
+                    className="bg-white overflow-hidden flex flex-row"
+                  >
+                    <img
+                      src={post.thumbnail}
+                      alt={post.postTitle}
+                      className="object-cover transition duration-300 rounded-md w-1/4 h-48"
+                    />
+                    <div className="p-4 w-2/3">
+                      <h3 className="text-lg font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">
+                        <Link to={`/forum/${post.slug}`}>{post.postTitle}</Link>
+                      </h3>
+                      <h3 className="text-sm text-gray-600 line-clamp-1 py-1">
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: post.shortDescription,
+                          }}
+                        />
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {post.author} - {formatDay(post.date)}
+                      </p>
                     </div>
-                  ))}
-                  {visibleItemCount < formattedData.length && (
-                    <div className="mt-6 flex justify-center">
-                      <button
-                        className="text-main text-md font-semibold underline"
-                        onClick={handleLoadMore}
-                      >
-                        Xem thêm
-                      </button>
-                    </div>
-                  )}
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-gray-600">
+                  Không có bài viết nào trong danh mục này.
+                </p>
+              )}
+              {visibleItemCount < formattedData.length && (
+                <div className="mt-6 flex justify-center">
+                  <button
+                    className="text-main text-md font-semibold underline"
+                    onClick={handleLoadMore}
+                  >
+                    Xem thêm
+                  </button>
                 </div>
-              </div>
+              )}
             </div>
           </section>
         </div>
