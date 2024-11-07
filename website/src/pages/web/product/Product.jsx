@@ -156,29 +156,48 @@ const Product = () => {
   }, [dispatch]);
   useEffect(() => {
     if (statusBanner === "success" && Array.isArray(Banner)) {
-      setDataBanner(
-        Banner.filter((item) => item.title === category).map((item) => ({
-          banner: item.banner.map((child) => ({
+      // Lọc và chuẩn bị dữ liệu banner
+      const filteredData = Banner.filter((item) => item.title === category).map(
+        (item) => ({
+          banner: item.banner?.map((child) => ({
             id: item._id,
             title: child.name,
             description: child.shotDescription,
             src: child.urlImage,
             link: child.refUrl,
           })),
-        }))
+        })
       );
+
+      setDataBanner(filteredData);
+
+      // Kiểm tra xem filteredData có phần tử và banner có phải là mảng không
+      if (filteredData.length > 0 && Array.isArray(filteredData[0].banner)) {
+        const banners = filteredData[0].banner;
+
+        setFirstHalfBanner([{ banner: banners }]); // Từ trên xuống
+        setSecondHalfBanner([{ banner: [...banners].reverse() }]); // Từ dưới lên
+      } else {
+        console.warn(
+          "filteredData is empty or does not contain a valid banner array."
+        );
+        setFirstHalfBanner([]);
+        setSecondHalfBanner([]);
+      }
     }
-  }, [statusBanner, Banner, category, dispatch]);
+  }, [statusBanner, Banner, category]);
 
   return (
     <div className="flex flex-col gap-3">
       <div>breadcrumb here</div>
       <section className="flex gap-1">
         <div className="hidden w-full md:block md:w-1/2">
-          {dataBanner.length > 0 && <SimpleSlide imgs={dataBanner} />}
+          {firstHalfBanner.length > 0 && <SimpleSlide imgs={firstHalfBanner} />}
         </div>
         <div className="w-full md:w-1/2">
-          {dataBanner.length > 0 && <SimpleSlide imgs={dataBanner} />}
+          {secondHalfBanner.length > 0 && (
+            <SimpleSlide imgs={secondHalfBanner} />
+          )}
         </div>
       </section>
       <section>
