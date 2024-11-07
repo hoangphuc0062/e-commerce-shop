@@ -3,7 +3,9 @@ const Category = require("../models/categoryModel");
 const asyncHandler = require("express-async-handler");
 
 const getAllCategory = asyncHandler(async (req, res) => {
-  const categories = await Category.find().populate("icon", "name className");
+  const categories = await Category.find()
+    .populate("icon", "name className")
+    .populate("brand", "name slug");
 
   return res.status(200).json(categories);
 });
@@ -87,7 +89,7 @@ const getCategoryById = asyncHandler(async (req, res) => {
       mes: "Missing inputs",
     });
   }
-  const category = await Category.findById(_id);
+  const category = await Category.findById(_id).populate("brand", "name slug");
   if (!category) {
     return res.status(400).json({
       mes: "No category found with the provided id",
