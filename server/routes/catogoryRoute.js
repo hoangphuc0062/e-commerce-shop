@@ -12,5 +12,6 @@ router.put("/:_id", ctrl.updateCategory);
 router.get("/:_id", ctrl.getCategoryById);
 
 router.put("/position/update", ctrl.updateManyPosition);
+router.get("/slug/:slug", ctrl.getCategoryBySlug);
 
 module.exports = router;
