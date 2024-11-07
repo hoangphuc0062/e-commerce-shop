@@ -3,7 +3,7 @@ import SliderBanner from "../../components/Banner/SliderBanner/SliderBanner";
 
 import MenuTree from "../../components/Banner/MenuTree/MenuTree";
 
-import { el, faker } from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 import { Accessories } from "../../components/FeatureBlockProduct/Accessories";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -13,30 +13,8 @@ import { useState } from "react";
 
 import GridProduct from "../../components/FeatureBlockProduct/GridProduct";
 
-
-function createRandomProduct() {
-  return {
-    id: faker.string.uuid(),
-    name: faker.commerce.productName(),
-    image: faker.image.avatar(),
-    price: faker.commerce.price(),
-    discountPercent: faker.number.int({ min: 0, max: 50 }),
-    description: faker.commerce.productDescription(),
-    rating: faker.number.int({ min: 1, max: 5 }),
-    review: faker.number.int({ min: 0, max: 1000 }),
-    category: faker.commerce.department(),
-    brand: faker.commerce.department(),
-    discount: faker.number.int({ min: 0, max: 50 }),
-    slug: faker.lorem.slug(),
-    images: [faker.image.url(300, 300, "tech", true)],
-  };
-}
-
-const products = Array.from({ length: 20 }, createRandomProduct);
-const products1 = Array.from({ length: 10 }, createRandomProduct);
-const products2 = Array.from({ length: 10 }, createRandomProduct);
-const products3 = Array.from({ length: 10 }, createRandomProduct);
-const products4 = Array.from({ length: 10 }, createRandomProduct);
+import { getBanners } from "../../redux/slices/barnner";
+import { getProducts, resetState } from "../../redux/slices/product";
 
 const datas = [
   {
@@ -170,11 +148,16 @@ const datas = [
 
 const HomePage = () => {
   const [dataCategory, setDataCategory] = useState([]);
+  const [dataBanner, setDataBanner] = useState([]);
+  const [VerticalBanner, setVerticalBanner] = useState([]);
+  const [products, setProducts] = useState([]);
 
   const dispatch = useDispatch();
 
   const status = useSelector((state) => state.category.status);
-  const data = useSelector((state) => state.category.data);
+  const data = useSelector((state) => state.category.data.categories);
+  const statusBanner = useSelector((state) => state.banner.status);
+  const Banner = useSelector((state) => state.banner.data);
 
   useEffect(() => {
     dispatch(getAll());
@@ -193,7 +176,10 @@ const HomePage = () => {
               {
                 title: "Hãng sản xuất",
                 queries: [
-                  { url: `/${item.brand?.slug}`, name: item.brand?.name },
+                  ...item.brand.map((child) => ({
+                    url: `/${item.slug}/${child.slug}`,
+                    name: child.name,
+                  })),
                 ],
               },
               // {
@@ -209,6 +195,64 @@ const HomePage = () => {
       );
     }
   }, [status, data]);
+  const statusProduct = useSelector((state) => state.product.status);
+  const productsData = useSelector((state) => state.product.data.products);
+
+  useEffect(() => {
+    dispatch(getBanners());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (statusProduct === "success" && Array.isArray(productsData)) {
+      setProducts(productsData);
+    }
+    dispatch(resetState({ key: "status", value: "idle" }));
+  }, [statusProduct, productsData, dispatch]);
+
+  useEffect(() => {
+    if (statusBanner === "success" && Array.isArray(Banner)) {
+      setDataBanner(
+        Banner.filter((item) => item.title === "Home-banner").map((item) => ({
+          banner: item.banner.map((child) => ({
+            id: item._id,
+            title: child.name,
+            description: child.shotDescription,
+            src: child.urlImage,
+            link: child.refUrl,
+            position: child.position,
+          })),
+        }))
+      );
+    }
+  }, [statusBanner, Banner]);
+
+  useEffect(() => {
+    if (statusBanner === "success" && Array.isArray(Banner)) {
+      setVerticalBanner(
+        Banner.filter((item) => item.title === "Vertical-banner").map(
+          (item) => ({
+            banner: item.banner.map((child) => ({
+              id: item._id,
+              image: child.urlImage,
+              ref: child.refUrl,
+              position: child.position,
+            })),
+          })
+        )
+      );
+    }
+  }, [statusBanner, Banner]);
+
+  useEffect(() => {
+    dispatch(
+      getProducts({
+        page: 1,
+        limit: 20,
+        fields:
+          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+      })
+    );
+  }, [dispatch]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -217,17 +261,17 @@ const HomePage = () => {
           {dataCategory.length > 0 && <MenuTree dataCategory={dataCategory} />}
         </div>
         <div className="w-full  lg:w-4/6 bg-whiteColor shadow-custom">
-          <SliderBanner />
+          {dataBanner.length > 0 && <SliderBanner data={dataBanner} />}
         </div>
 
         <div className="hidden w-1/6 lg:block ">
-          <SingleBanner />
+          {VerticalBanner.length > 0 && <SingleBanner data={VerticalBanner} />}
         </div>
       </section>
       <section className="bg-white h-full ">
-        <GridProduct data={products} />
+        <GridProduct data={products} cat={dataCategory} />
       </section>
-      <section className="bg-white h-full ">
+      {/* <section className="bg-white h-full ">
         <GridProduct data={products1} />
       </section>
       <section className="bg-white h-full ">
@@ -238,7 +282,7 @@ const HomePage = () => {
       </section>
       <section className="bg-white h-full ">
         <GridProduct data={products4} />
-      </section>
+      </section> */}
 
       <section className="">
         <Accessories datas={datas} title="Phụ kiện" />

@@ -1,14 +1,15 @@
+const asyncHandler = require("express-async-handler");
+
 const Product = require("../models/productModel");
 const Category = require("../models/categoryModel");
 const Brand = require("../models/brandModel");
 const Series = require("../models/seriesModel");
 
-const asyncHandler = require("express-async-handler");
-
 // Filter - sort - pagination
 const getAllProduct = asyncHandler(async (req, res) => {
   try {
     const queries = { ...req.query };
+
     const excludeFields = ["sort", "page", "limit", "fields"];
     excludeFields.forEach((el) => delete queries[el]); //  xóa từng trường (key) tương ứng trong đối tượng queries nếu trường đó tồn tại trong mảng.
 
@@ -38,34 +39,45 @@ const getAllProduct = asyncHandler(async (req, res) => {
       formattedQueries.warehouse = queries.warehouses;
     }
 
+    // query slug category - brand - series
+
+    if (queries?.slug) {
+      const [matchCategory, matchBrand, matchSeries] = queries.slug.split(",");
+
+      const entities = [
+        {
+          match: matchCategory,
+          model: Category,
+          key: "category",
+          errorMessage: `Category ${matchCategory} is not found`,
+        },
+        {
+          match: matchBrand,
+          model: Brand,
+          key: "brand",
+          errorMessage: `Brand ${matchBrand} is not found`,
+        },
+        {
+          match: matchSeries,
+          model: Series,
+          key: "series",
+          errorMessage: `Series ${matchSeries} is not found`,
+        },
+      ];
+
+      for (const entity of entities) {
+        if (entity.match) {
+          const result = await entity.model.findOne({ slug: entity.match });
+          if (!result) {
+            return res.status(404).json({ mes: entity.errorMessage });
+          }
+          formattedQueries[entity.key] = result._id;
+        }
+      }
+      delete formattedQueries.slug;
+    }
+
     let queryCommand = Product.find(formattedQueries);
-
-    if (queries?.series) {
-      queryCommand = queryCommand.populate("series", "name slug");
-    }
-
-    if (queries?.brand) {
-      queryCommand = queryCommand.populate("brand", "name slug");
-    }
-
-    if (queries?.category) {
-      queryCommand = queryCommand.populate("category", "name slug");
-    }
-
-    if (queries?.attributes) {
-      queryCommand = queryCommand.populate({
-        path: "attributes.aid",
-        select: "name values",
-      });
-    }
-
-    if (queryCommand?.tagsProduct) {
-      queryCommand = queryCommand.populate("tagsProduct", "name");
-    }
-
-    if (queries?.warehouses) {
-      queryCommand = queryCommand.populate("warehouse", "name");
-    }
 
     if (req.query.sort) {
       const sortBy = req.query.sort.split(",").join(" ");
@@ -74,6 +86,21 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
     if (req.query.fields) {
       const fields = req.query.fields.split(",").join(" ");
+
+      const populateFields = {
+        category: "name slug",
+        brand: "name slug",
+        series: "name slug",
+        warehouse: "name",
+        tagsProduct: "name",
+      };
+
+      Object.keys(populateFields).forEach((field) => {
+        if (fields.includes(field)) {
+          queryCommand = queryCommand.populate(field, populateFields[field]);
+        }
+      });
+
       queryCommand = queryCommand.select(fields);
     }
 
@@ -87,13 +114,12 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       counts,
-      products: response.length ? response : "Không tìm thấy sản phẩm",
+      products: response.length ? response : "No product found",
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       success: false,
-      message: "Đã xảy ra lỗi server",
+      message: "Internal server error",
       error: error.message,
     });
   }

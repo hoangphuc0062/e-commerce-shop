@@ -3,11 +3,25 @@ const Category = require("../models/categoryModel");
 const asyncHandler = require("express-async-handler");
 
 const getAllCategory = asyncHandler(async (req, res) => {
-  const categories = await Category.find()
-    .populate("icon", "name className")
-    .populate("brand", "name slug");
+  const sortBy = req.query.sort;
+  const order = req.query.order === "asc" ? 1 : -1; // Default to descending order
 
-  return res.status(200).json(categories);
+  try {
+    const categories = await Category.find()
+      .populate("icon", "name className")
+      .populate("brand", "name slug")
+      .sort({ [sortBy]: order });
+
+    return res.status(200).json({
+      success: true,
+      categories,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      mes: `Invalid sort value: ${error.message}`,
+    });
+  }
 });
 
 const addCategory = asyncHandler(async (req, res) => {
@@ -115,6 +129,25 @@ const updateManyPosition = asyncHandler(async (req, res) => {
   });
 });
 
+const getCategoryBySlug = asyncHandler(async (req, res) => {
+  const { slug } = req.params;
+  if (!slug) {
+    return res.status(400).json({
+      mes: "Missing inputs",
+    });
+  }
+  const category = await Category.findOne({ slug }).populate(
+    "brand",
+    "slug image"
+  );
+  if (!category) {
+    return res.status(400).json({
+      mes: "No category found with the provided slug",
+    });
+  }
+  return res.status(200).json(category);
+});
+
 module.exports = {
   getAllCategory,
   addCategory,
@@ -123,4 +156,5 @@ module.exports = {
   updateCategory,
   getCategoryById,
   updateManyPosition,
+  getCategoryBySlug,
 };

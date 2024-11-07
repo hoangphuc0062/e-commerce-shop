@@ -78,7 +78,9 @@ const TableRowComponent = ({
                 <span>Không có dữ liệu</span>
               )}
             </div>
-          ) : column.field === "image" || column.field === "logo" ? (
+          ) : column.field === "image" ||
+            column.field === "logo" ||
+            column.field === "thumbnail" ? (
             <Avatar
               alt={row[column.name]}
               variant="rounded"
@@ -92,13 +94,13 @@ const TableRowComponent = ({
               src={row[column.field][0]}
               sx={{ width: 50, height: 50 }}
             />
-          ) : column.field === "priceInMarket" ? (
-            <span>{row[column.field].toLocaleString()} VNĐ</span>
+          ) : column.field === "price" ? (
+            <span>{row[column.field]?.toLocaleString()} VNĐ</span>
           ) : column.field === "icon" ? (
             <Iconify icon={row[column.field]} width={30} />
-          ) : column.field === "priceInStore" ? (
+          ) : column.field === "historicalPrice" ? (
             <span>{row[column.field].toLocaleString()} VNĐ</span>
-          ) : column.field === "priceOnline" ? (
+          ) : column.field === "priceInMarket" ? (
             <span>{row[column.field].toLocaleString()} VNĐ</span>
           ) : column.field === "address" ? (
             row[column.field].length > 50 ? (

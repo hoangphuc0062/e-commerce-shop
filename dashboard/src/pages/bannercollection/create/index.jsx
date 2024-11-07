@@ -1,7 +1,6 @@
 import {
   Grid,
   Box,
-  Typography,
   Paper,
   Button,
   Select,
@@ -40,7 +39,7 @@ function AddBannerCollection() {
   const statusCollection = useSelector((state) => state.collection.status);
   const dataCollection = useSelector((state) => state.collection.data);
   const statusCategory = useSelector((state) => state.category.status);
-  const dataCategory = useSelector((state) => state.category.data);
+  const dataCategory = useSelector((state) => state.category.data.categories);
   const statusBrand = useSelector((state) => state.brand.status);
   const dataBrand = useSelector((state) => state.brand.data);
 
@@ -49,8 +48,8 @@ function AddBannerCollection() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (statusCollection === "succeeded") {
-      const collectionOptions = dataCollection.map((item) => ({
+    if (statusCollection === "succeeded" && dataCollection) {
+      const collectionOptions = dataCollection?.map((item) => ({
         value: item._id,
         label: item.name,
       }));
@@ -63,8 +62,8 @@ function AddBannerCollection() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (statusCategory === "success") {
-      const categorySelect = dataCategory.map((item) => ({
+    if (statusCategory === "success" && dataCategory) {
+      const categorySelect = dataCategory?.map((item) => ({
         value: item._id,
         label: item.name,
       }));
@@ -98,9 +97,11 @@ function AddBannerCollection() {
       status: "active",
       banner: [
         {
+          name: "",
           urlImage: "",
           refUrl: "",
           position: 0,
+          shotDescription: "",
         },
       ],
       startDate: "",
@@ -136,7 +137,7 @@ function AddBannerCollection() {
   const addNewBanner = () => {
     formik.setFieldValue("banner", [
       ...formik.values.banner,
-      { urlImage: "", refUrl: "", position: "" },
+      { name: "", urlImage: "", refUrl: "", position: "", shotDescription: "" },
     ]);
   };
 
@@ -161,18 +162,43 @@ function AddBannerCollection() {
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
                       <ImageUploader
-                        onUploadComplete={(url) => handleUploadComplete(url, index)}
+                        onUploadComplete={(url) =>
+                          handleUploadComplete(url, index)
+                        }
                         onDelete={() => handleDelete(index)}
                         avatarSize={100}
                         idupload={`banner[${index}].urlImage`}
                         value={bannerItem.urlImage}
                         {...getErrorProps(`banner[${index}].urlImage`)} // This includes error handling
                         onBlur={formik.handleBlur}
+                        fooder="banner"
                       />
-                      {formik.touched.banner?.[index]?.urlImage && formik.errors.banner?.[index]?.urlImage && (
-                        <FormHelperText error>{formik.errors.banner[index].urlImage}</FormHelperText>
-                      )}
+                      {formik.touched.banner?.[index]?.urlImage &&
+                        formik.errors.banner?.[index]?.urlImage && (
+                          <FormHelperText error>
+                            {formik.errors.banner[index].urlImage}
+                          </FormHelperText>
+                        )}
                     </Grid>
+                    <TextField
+                      label="Tên Banner"
+                      name={`banner[${index}].name`}
+                      value={bannerItem.name}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      fullWidth
+                      sx={{ mt: 1, ml: 2 }}
+                      error={
+                        formik.touched.banner &&
+                        formik.touched.banner[index]?.name &&
+                        Boolean(formik.errors.banner?.[index]?.name)
+                      }
+                      helperText={
+                        formik.touched.banner &&
+                        formik.touched.banner[index]?.name &&
+                        formik.errors.banner?.[index]?.name
+                      }
+                    />
                     <TextField
                       label="Ref URL"
                       name={`banner[${index}].refUrl`}
@@ -181,8 +207,16 @@ function AddBannerCollection() {
                       onBlur={formik.handleBlur}
                       fullWidth
                       sx={{ mt: 1, ml: 2 }}
-                      error={formik.touched.banner && formik.touched.banner[index]?.refUrl && Boolean(formik.errors.banner?.[index]?.refUrl)}
-                      helperText={formik.touched.banner && formik.touched.banner[index]?.refUrl && formik.errors.banner?.[index]?.refUrl}
+                      error={
+                        formik.touched.banner &&
+                        formik.touched.banner[index]?.refUrl &&
+                        Boolean(formik.errors.banner?.[index]?.refUrl)
+                      }
+                      helperText={
+                        formik.touched.banner &&
+                        formik.touched.banner[index]?.refUrl &&
+                        formik.errors.banner?.[index]?.refUrl
+                      }
                     />
 
                     <TextField
@@ -193,9 +227,49 @@ function AddBannerCollection() {
                       onBlur={formik.handleBlur}
                       fullWidth
                       sx={{ mt: 1, ml: 2 }}
-                      error={formik.touched.banner && formik.touched.banner[index]?.position && Boolean(formik.errors.banner?.[index]?.position)}
-                      helperText={formik.touched.banner && formik.touched.banner[index]?.position && formik.errors.banner?.[index]?.position}
+                      error={
+                        formik.touched.banner &&
+                        formik.touched.banner[index]?.position &&
+                        Boolean(formik.errors.banner?.[index]?.position)
+                      }
+                      helperText={
+                        formik.touched.banner &&
+                        formik.touched.banner[index]?.position &&
+                        formik.errors.banner?.[index]?.position
+                      }
                     />
+                    <textarea
+                      name={`banner[${index}].shotDescription`}
+                      value={bannerItem.shotDescription}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      style={{
+                        width: "100%",
+                        marginTop: "8px",
+                        marginLeft: "16px",
+                      }}
+                      rows="4"
+                      className={
+                        formik.touched.banner &&
+                        formik.touched.banner[index]?.shotDescription &&
+                        Boolean(formik.errors.banner?.[index]?.shotDescription)
+                          ? "error"
+                          : ""
+                      }
+                    />
+                    {formik.touched.banner &&
+                      formik.touched.banner[index]?.shotDescription &&
+                      formik.errors.banner?.[index]?.shotDescription && (
+                        <div
+                          style={{
+                            color: "red",
+                            marginTop: "4px",
+                            marginLeft: "16px",
+                          }}
+                        >
+                          {formik.errors.banner?.[index]?.shotDescription}
+                        </div>
+                      )}
                     <Button
                       variant="outlined"
                       color="error"

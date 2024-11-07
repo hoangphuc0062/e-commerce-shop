@@ -3,10 +3,13 @@ const asyncHandler = require("express-async-handler");
 const BannerCollection = require("../models/bannerCollectionModel");
 
 const getAllBannerCollection = asyncHandler(async (req, res) => {
+  const sortBy = req.query.sort;
+  const order = req.query.order === "asc" ? 1 : -1;
   const bannerCollection = await BannerCollection.find()
     .populate("series", "name slug")
     .populate("brand", "name slug")
-    .populate("category", "name slug");
+    .populate("category", "name slug")
+    .sort([[sortBy, order]]);
   return res.status(200).json(bannerCollection);
 });
 

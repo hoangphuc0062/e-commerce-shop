@@ -3,8 +3,11 @@ const asyncHandler = require("express-async-handler");
 const Post = require("../models/postModel");
 
 const getAllPost = asyncHandler(async (req, res) => {
+  const sortBy = req.query.sort;
+  const order = req.query.order === "asc" ? 1 : -1;
   const posts = await Post.find()
     .populate("author", "name")
+
     .populate("category", "name slug")
     .populate("tags", "name");
   return res.status(200).json(posts);
@@ -19,6 +22,7 @@ const getPostBySlug = asyncHandler(async (req, res) => {
     .populate("author", "name")
     .populate("category", "name slug")
     .populate("tags", "name");
+
   return res.status(200).json(post);
 });
 
