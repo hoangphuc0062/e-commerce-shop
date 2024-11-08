@@ -47,7 +47,7 @@ const PostScroll = ({ data }) => {
               <div className="mt-6 flex justify-center">
                 <button
                   onClick={handleLoadMore}
-                  className="text-gray-700 capitalize hover:text-main"
+                  className="text-gray-700 capitalize hover:text-main underline"
                 >
                   Xem thêm
                 </button>

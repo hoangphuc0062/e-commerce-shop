@@ -59,7 +59,7 @@ const SliderPostCategory = () => {
       <HeadingSection title="Nổi bật nhất" />
       <Slider {...settings}>
         {filteredData.length > 0 ? (
-          filteredData.slice(0, 5).map((post) => (
+          filteredData.slice(0, 4).map((post) => (
             <div key={post.id} className="px-1">
               <div className="bg-white overflow-hidden flex lg:flex-row flex-col">
                 <img

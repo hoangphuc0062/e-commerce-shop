@@ -45,7 +45,7 @@ function ForumPage() {
       );
     }
   }, [status, postData]);
-  console.log(data.thumbnail);
+
 
   const uniqueCategories = [...new Set(data.map((item) => item.category))];
 

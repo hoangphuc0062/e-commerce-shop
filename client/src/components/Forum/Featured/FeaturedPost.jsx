@@ -17,7 +17,7 @@ function FeaturedPost({ data }) {
               alt={featuredPost?.thumbnail}
               className="w-full h-full object-cover"
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
+            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50  text-white p-4">
               <h3 className="text-xl font-bold mb-2 line-clamp-2 hover:text-main">
                 {featuredPost?.postTitle}
               </h3>
