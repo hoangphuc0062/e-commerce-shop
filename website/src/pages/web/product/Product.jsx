@@ -29,31 +29,18 @@ const Product = () => {
   const [noFoundProduct, setNoFoundProduct] = useState("");
   const statusProduct = useSelector((state) => state.product.status);
   const productsData = useSelector((state) => state.product.data.products);
-  const errorProduct = useSelector((state) => state.product.error);
-  const categoryData = useSelector((state) => state.category.data);
-  const statusCategory = useSelector(
-    (state) => state.category.statusCategoryBySlug
-  );
   const loadInitialProducts = useCallback(() => {
-    if (statusCategory === "success" && categoryData) {
-      const slug = brand ? `${category},${brand}` : category;
-      dispatch(
-        getProducts({
-          limit: productPerPage,
-          fields:
-            "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
-          slug,
-        })
-      );
-    }
-  }, [brand, category, categoryData, dispatch, productPerPage, statusCategory]);
+    const slug = brand ? `${category},${brand}` : category;
+    dispatch(
+      getProducts({
+        limit: productPerPage,
+        fields:
+          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        slug,
+      })
+    );
+  }, [brand, category, dispatch, productPerPage]);
 
-  // useEffect(() => {
-  //   if (errorProduct !== "null") {
-  //     navigate("/404");
-  //   }
-  //   dispatch(resetState({ key: "status", value: "idle" }));
-  // }, [errorProduct, navigate, dispatch]);
   useEffect(() => {
     if (
       statusProduct === "success" &&
@@ -64,8 +51,11 @@ const Product = () => {
     } else {
       setNoFoundProduct("");
     }
+    if (statusProduct === "failed") {
+      navigate("/404");
+    }
     dispatch(resetState({ key: "error", value: "null" }));
-  }, [statusProduct, productsData, dispatch]);
+  }, [statusProduct, productsData, dispatch, navigate]);
 
   useEffect(() => {
     loadInitialProducts();
@@ -218,7 +208,7 @@ const Product = () => {
               }}
             >
               <img
-                className="aspect-video object-contain w-full h-full p-1"
+                className="aspect-video w-full h-full"
                 src={_.image}
                 alt={_.slug}
               />

@@ -29,13 +29,26 @@ export const getProducts = createAsyncThunk(
   }
 );
 
+export const getProductBySlug = createAsyncThunk(
+  "products/getProductBySlug",
+  async (slug, thunkAPI) => {
+    return handleAsyncThunk(
+      () => ProductServices.getProductBySlug(slug),
+      [],
+      thunkAPI
+    );
+  }
+);
+
 const productSlice = createSlice({
   name: "products",
   initialState: {
     data: [],
+    dataDetail: [],
     loading: false,
     error: null,
     status: "idle",
+    statusDetail: "idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -60,6 +73,21 @@ const productSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
         state.status = "failed";
+      });
+    builder
+      .addCase(getProductBySlug.pending, (state) => {
+        state.loading = true;
+        state.statusDetail = "loading";
+      })
+      .addCase(getProductBySlug.fulfilled, (state, action) => {
+        state.loading = false;
+        state.dataDetail = action.payload;
+        state.statusDetail = "success";
+      })
+      .addCase(getProductBySlug.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.statusDetail = "failed";
       });
   },
 });
