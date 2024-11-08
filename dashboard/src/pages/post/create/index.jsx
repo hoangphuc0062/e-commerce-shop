@@ -32,9 +32,9 @@ function AddPost() {
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [tagsOptions, setTagsOptions] = useState([]);
 
-  const category = useSelector((state) => state.category.data.categories);
+  const category = useSelector((state) => state.category.data?.categories || []);
   const statusCategory = useSelector((state) => state.category.status);
-  const tags = useSelector((state) => state.tag.data.tags);
+  const tags = useSelector((state) => state.tag.data?.tags || []);
 
   useEffect(() => {
     dispatch(getCategory());
@@ -42,7 +42,7 @@ function AddPost() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (statusCategory === "success") {
+    if (statusCategory === "success" && category) {
       setCategoryOptions(
         category.map((item) => ({
           label: item.name,
@@ -56,12 +56,14 @@ function AddPost() {
   }, [statusCategory, category, dispatch]);
 
   useEffect(() => {
-    setTagsOptions(
-      tags.map((tag) => ({
-        label: tag.name,
-        value: tag._id,
-      }))
-    );
+    if (tags) {
+      setTagsOptions(
+        tags.map((tag) => ({
+          label: tag.name,
+          value: tag._id,
+        }))
+      );
+    }
   }, [tags]);
 
   const formik = useFormik({
@@ -184,7 +186,10 @@ function AddPost() {
                       name="category"
                       value={formik.values.category}
                       onChange={formik.handleChange}
-                      error={formik.touched.category && Boolean(formik.errors.category)}
+                      error={
+                        formik.touched.category &&
+                        Boolean(formik.errors.category)
+                      }
                       onBlur={formik.handleBlur}
                     >
                       {categoryOptions.map((option) => (
@@ -194,7 +199,9 @@ function AddPost() {
                       ))}
                     </Select>
                     {formik.touched.category && formik.errors.category && (
-                      <FormHelperText error>{formik.errors.category}</FormHelperText>
+                      <FormHelperText error>
+                        {formik.errors.category}
+                      </FormHelperText>
                     )}
                   </FormControl>
                 </Grid>
