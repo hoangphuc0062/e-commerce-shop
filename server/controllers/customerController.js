@@ -338,6 +338,8 @@ const updateCustomerBYAdmin = asyncHandler(async (req, res) => {
   return res.status(200).json(customer);
 });
 
+const addCart = asyncHandler(async (req, res) => {});
+
 module.exports = {
   checkOTP,
   deleteCustomer,

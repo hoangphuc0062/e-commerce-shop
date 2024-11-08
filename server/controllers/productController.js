@@ -125,6 +125,26 @@ const getAllProduct = asyncHandler(async (req, res) => {
   }
 });
 
+const getProductBySlug = asyncHandler(async (req, res) => {
+  const { pid } = req.params;
+  if (!pid) {
+    return res.status(400).json({
+      mes: "Missing inputs",
+    });
+  }
+
+  const product = await Product.findOne({ slug: pid }).populate(
+    "category brand series"
+  );
+
+  if (!product) {
+    return res.status(404).json({
+      mes: "Product is not found",
+    });
+  }
+  return res.status(200).json(product);
+});
+
 const addProduct = asyncHandler(async (req, res) => {
   const requiredFields = [
     "name",
@@ -208,4 +228,5 @@ module.exports = {
   addManyProduct,
   updateProduct,
   deleteProduct,
+  getProductBySlug,
 };
