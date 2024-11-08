@@ -33,11 +33,12 @@ var customerSchema = new mongoose.Schema(
     },
     cart: [
       {
-        pid: {
+        pid: { type: mongoose.Types.ObjectId, ref: "Product" }, // Product ID
+        attributeId: {
           type: mongoose.Types.ObjectId,
-          ref: "Product",
+          ref: "Product.attributes",
         },
-        quantity: Number,
+        quantity: { type: Number, default: 1 },
       },
     ],
     address: {
@@ -147,6 +148,27 @@ customerSchema.methods = {
   updateCode: function (newCode) {
     this.code = newCode;
     return this.save(); // Save the customer document with the updated code
+  },
+
+  // Add product to cart method
+
+  addToCart: async function (productId, attributeId, quantity = 1) {
+    const cartItemIndex = this.cart.findIndex(
+      (item) =>
+        item.pid.toString() === productId.toString() &&
+        item.attributeId.toString() === attributeId.toString()
+    );
+
+    if (cartItemIndex > -1) {
+      // Product with the same variant exists, update quantity
+      this.cart[cartItemIndex].quantity += quantity;
+    } else {
+      // New product with variant, add to cart
+      this.cart.push({ pid: productId, attributeId, quantity });
+    }
+
+    await this.save();
+    return this.cart;
   },
 };
 
