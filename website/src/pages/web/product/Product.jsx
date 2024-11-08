@@ -7,14 +7,17 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts, resetState } from "../../../redux/slices/product";
-import { getCategoryBySlug } from "../../../redux/slices/category";
-import { resetState as resetStateCategory } from "../../../redux/slices/category";
+import {
+  getCategoryBySlug,
+  resetState as resetStateCategory,
+} from "../../../redux/slices/category";
 import { getBanners } from "../../../redux/slices/barnner";
 
 const Product = () => {
   const { category, brand } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [firstLoading, setFirstLoading] = useState(true);
@@ -27,51 +30,26 @@ const Product = () => {
   const [firstHalfBanner, setFirstHalfBanner] = useState([]);
   const [secondHalfBanner, setSecondHalfBanner] = useState([]);
   const [noFoundProduct, setNoFoundProduct] = useState("");
+
   const statusProduct = useSelector((state) => state.product.status);
   const productsData = useSelector((state) => state.product.data.products);
-  const errorProduct = useSelector((state) => state.product.error);
-  const categoryData = useSelector((state) => state.category.data);
-  const statusCategory = useSelector(
-    (state) => state.category.statusCategoryBySlug
-  );
-  const loadInitialProducts = useCallback(() => {
-    if (statusCategory === "success" && categoryData) {
-      const slug = brand ? `${category},${brand}` : category;
-      dispatch(
-        getProducts({
-          limit: productPerPage,
-          fields:
-            "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
-          slug,
-        })
-      );
-    }
-  }, [brand, category, categoryData, dispatch, productPerPage, statusCategory]);
+  const statusBanner = useSelector((state) => state.banner.status);
+  const Banner = useSelector((state) => state.banner.data);
 
-  useEffect(() => {
-    if (errorProduct !== "null") {
-      navigate("/404");
-    }
-    dispatch(resetState({ key: "status", value: "idle" }));
-  }, [errorProduct, navigate, dispatch]);
-  useEffect(() => {
-    if (
-      statusProduct === "success" &&
-      productsData.includes("No product found")
-    ) {
-      setNoFoundProduct("Không có sản phẩm nào");
-      setHasMoreProducts(false);
-    } else {
-      setNoFoundProduct("");
-    }
-    dispatch(resetState({ key: "error", value: "null" }));
-  }, [statusProduct, productsData, dispatch]);
+  const loadInitialProducts = useCallback(() => {
+    const slug = brand ? `${category},${brand}` : category;
+    dispatch(
+      getProducts({
+        limit: productPerPage,
+        fields:
+          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        slug,
+      })
+    );
+  }, [brand, category, dispatch, productPerPage]);
 
   useEffect(() => {
     loadInitialProducts();
-  }, [loadInitialProducts]);
-
-  useEffect(() => {
     if (category) {
       dispatch(getCategoryBySlug(category)).then((data) => {
         if (data.type === "category/getBySlug/fulfilled") {
@@ -79,16 +57,57 @@ const Product = () => {
         }
       });
     }
+    dispatch(getBanners());
     dispatch(resetStateCategory({ key: "status", value: "idle" }));
-  }, [category, dispatch]);
+  }, [loadInitialProducts, category, dispatch]);
 
   useEffect(() => {
-    if (statusProduct === "success" && Array.isArray(productsData)) {
-      setProducts(productsData);
-      setSortedProducts(productsData);
-      setHasMoreProducts(productsData.length >= productPerPage);
+    if (statusProduct === "success") {
+      if (
+        !productsData ||
+        !Array.isArray(productsData) ||
+        productsData.length === 0
+      ) {
+        setNoFoundProduct("Không có sản phẩm nào");
+        setProducts([]);
+        setSortedProducts([]);
+        setHasMoreProducts(false);
+      } else {
+        setNoFoundProduct("");
+        setProducts(productsData);
+        setSortedProducts(productsData);
+        setHasMoreProducts(productsData.length >= productPerPage);
+      }
+    } else if (statusProduct === "failed") {
+      navigate("/404");
     }
-  }, [statusProduct, productsData, productPerPage]);
+    dispatch(resetState({ key: "error", value: "null" }));
+  }, [statusProduct, productsData, dispatch, navigate, productPerPage]);
+  useEffect(() => {
+    if (statusBanner === "success" && Array.isArray(Banner)) {
+      const filteredData = Banner.filter((item) => item.title === category).map(
+        (item) => ({
+          banner: item.banner?.map((child) => ({
+            id: item._id,
+            title: child.name,
+            description: child.shotDescription,
+            src: child.urlImage,
+            link: child.refUrl,
+          })),
+        })
+      );
+      setDataBanner(filteredData);
+
+      if (filteredData.length > 0 && Array.isArray(filteredData[0].banner)) {
+        const banners = filteredData[0].banner;
+        setFirstHalfBanner([{ banner: banners }]);
+        setSecondHalfBanner([{ banner: [...banners].reverse() }]);
+      } else {
+        setFirstHalfBanner([]);
+        setSecondHalfBanner([]);
+      }
+    }
+  }, [statusBanner, Banner, category]);
 
   const loading = () => (
     <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
@@ -127,7 +146,6 @@ const Product = () => {
         setHasMoreProducts(false);
       }
     } catch (error) {
-      console.error("Error loading more products:", error);
       setHasMoreProducts(false);
     } finally {
       setIsLoading(false);
@@ -136,13 +154,13 @@ const Product = () => {
 
   const handleSort = useCallback(
     (criteria) => {
-      const sorted = [...products].sort((a, b) => {
-        if (criteria === "price-high-low") return b.price - a.price;
-        if (criteria === "price-low-high") return a.price - b.price;
-        if (criteria === "discount")
-          return b.discountPercent - a.discountPercent;
-        return b.views - a.views;
-      });
+      const sortingCriteria = {
+        "price-high-low": (a, b) => b.price - a.price,
+        "price-low-high": (a, b) => a.price - b.price,
+        discount: (a, b) => b.discountPercent - a.discountPercent,
+        views: (a, b) => b.views - a.views,
+      };
+      const sorted = [...products].sort(sortingCriteria[criteria]);
       setActiveButton(criteria);
       setSortedProducts(sorted);
     },
@@ -152,45 +170,6 @@ const Product = () => {
   useEffect(() => {
     setTimeout(() => setFirstLoading(false), 2000);
   }, []);
-
-  const statusBanner = useSelector((state) => state.banner.status);
-  const Banner = useSelector((state) => state.banner.data);
-
-  useEffect(() => {
-    dispatch(getBanners());
-  }, [dispatch]);
-  useEffect(() => {
-    if (statusBanner === "success" && Array.isArray(Banner)) {
-      // Lọc và chuẩn bị dữ liệu banner
-      const filteredData = Banner.filter((item) => item.title === category).map(
-        (item) => ({
-          banner: item.banner?.map((child) => ({
-            id: item._id,
-            title: child.name,
-            description: child.shotDescription,
-            src: child.urlImage,
-            link: child.refUrl,
-          })),
-        })
-      );
-
-      setDataBanner(filteredData);
-
-      // Kiểm tra xem filteredData có phần tử và banner có phải là mảng không
-      if (filteredData.length > 0 && Array.isArray(filteredData[0].banner)) {
-        const banners = filteredData[0].banner;
-
-        setFirstHalfBanner([{ banner: banners }]); // Từ trên xuống
-        setSecondHalfBanner([{ banner: [...banners].reverse() }]); // Từ dưới lên
-      } else {
-        console.warn(
-          "filteredData is empty or does not contain a valid banner array."
-        );
-        setFirstHalfBanner([]);
-        setSecondHalfBanner([]);
-      }
-    }
-  }, [statusBanner, Banner, category]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -212,9 +191,9 @@ const Product = () => {
               key={i}
               className="round-lg outline outline-gray-100 w-full h-[40px]"
               to={`/${category}/${_.slug}`}
-              onClick={() => {
-                dispatch(getProducts({ slug: `${category},${_.slug}` }));
-              }}
+              onClick={() =>
+                dispatch(getProducts({ slug: `${category},${_.slug}` }))
+              }
             >
               <img
                 className="aspect-video w-full h-full"
@@ -286,15 +265,24 @@ const Product = () => {
           </div>
         </div>
       </section>
-      <section>
+      {/* <section>
         {firstLoading ? (
           loading()
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
-            {(sortedProducts.length > 0 ? sortedProducts : products).map(
-              (product, index) => (
-                <ProductCard key={index} data={product} />
-              )
+          <div>
+            {(Array.isArray(sortedProducts) && sortedProducts.length > 0) ||
+            (Array.isArray(products) && products.length > 0) ? (
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
+                {(sortedProducts.length > 0 ? sortedProducts : products).map(
+                  (product, index) => (
+                    <ProductCard key={index} data={product} />
+                  )
+                )}
+              </div>
+            ) : (
+              <div className="text-center text-red-500">
+                Không có sản phẩm nào
+              </div>
             )}
           </div>
         )}
@@ -308,11 +296,39 @@ const Product = () => {
               Xem thêm sản phẩm
             </button>
           )}
-          {
-            <div className="text-center text-red-500">
-              {noFoundProduct && noFoundProduct}
-            </div>
-          }
+          {noFoundProduct && (
+            <div className="text-center text-red-500">{noFoundProduct}</div>
+          )}
+        </div>
+      </section> */}
+      <section>
+        {firstLoading ? (
+          loading()
+        ) : (
+          <div>
+            {sortedProducts.length > 0 ? (
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
+                {sortedProducts.map((product, index) => (
+                  <ProductCard key={index} data={product} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-red-500">
+                {noFoundProduct || "Không có sản phẩm nào"}
+              </div>
+            )}
+          </div>
+        )}
+        <div>{isLoading && loading()}</div>
+        <div className="flex justify-center my-2">
+          {hasMoreProducts && (
+            <button
+              className="bg-main text-white p-2 rounded-lg"
+              onClick={handleLoadMore}
+            >
+              Xem thêm sản phẩm
+            </button>
+          )}
         </div>
       </section>
     </div>

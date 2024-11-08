@@ -7,15 +7,17 @@ import {
     Typography,
 } from "@mui/material";
 import ReusableTable from "../../components/table";
-import CustomInputField from "../../components/InputField";
 import { useDispatch, useSelector } from "react-redux";
 import { createTag, deleteTag, getAllTags, updateTag } from "../../redux/slices/tags"; // Added updateTag action
 import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
 import { useFormik } from "formik";
 import * as Yup from "yup"; // Import Yup for validation
+import ImageUploader from "../../components/upload";
+import CustomInputField from "../../components/InputField";
 
 const columns = [
     { label: "Tên tag", field: "name" },
+    { label: "Hình ảnh", field: "image" },
 ];
 
 export default function TagPage() {
@@ -38,36 +40,37 @@ export default function TagPage() {
 
     const handleEdit = (tag) => {
         setEditTag(tag);
-        formik.setFieldValue("name", tag.name);
+        formik.setValues({ name: tag.name, image: tag.image || "" });
     };
+
     const validationSchema = Yup.object({
         name: Yup.string()
             .required("Tên tag không được để trống")
             .max(250, "Tên tag không được vượt quá 250 ký tự")
             .min(2, "Tên tag phải có tối thiểu 2 ký tự")
             .matches(/^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+$/, "Tên tag không được chứa khoảng trống hoặc dấu"),
+        image: Yup.string().url("Đường dẫn hình ảnh không hợp lệ"),
     });
 
     const formik = useFormik({
         initialValues: {
             name: "",
+            image: "",
         },
-        validationSchema, // Integrate validation schema
+        validationSchema,
         onSubmit: (values, { resetForm }) => {
             if (editTag) {
-                // If edit mode, dispatch update action
                 dispatch(updateTag({ tagId: editTag._id, data: { ...values } })).then((res) => {
                     if (res.type === "tags/updateTag/fulfilled") {
                         handleToast("success", "Tag cập nhật thành công");
                         resetForm();
-                        setEditTag(null);  // Exit edit mode after successful update
+                        setEditTag(null);
                         dispatch(getAllTags());
                     } else {
                         handleToast("error", "Cập nhật tag thất bại");
                     }
                 });
             } else {
-                // If not in edit mode, create new tag
                 dispatch(createTag(values)).then((res) => {
                     if (res.type === "tags/createTag/fulfilled") {
                         handleToast("success", "Tag thêm thành công");
@@ -81,8 +84,16 @@ export default function TagPage() {
         },
     });
 
+    const handleImageUpload = (url) => {
+        formik.setFieldValue("image", url);
+    };
+
+    const handleImageDelete = () => {
+        formik.setFieldValue("image", "");
+    };
+
     const handleDelete = useCallback(
-        (index) => {
+        (tag) => {
             DeleteConfirmationModal({
                 title: "Xác nhận xóa tag",
                 content: "Bạn có chắc chắn muốn xóa tag này không?",
@@ -91,7 +102,7 @@ export default function TagPage() {
                 icon: "warning",
                 confirmButtonText: "Xóa",
                 onConfirm: () =>
-                    dispatch(deleteTag(index._id)).then((res) => {
+                    dispatch(deleteTag(tag._id)).then((res) => {
                         if (res.type === "tags/deleteTag/fulfilled") {
                             handleToast("success", "Xóa tag thành công");
                             dispatch(getAllTags());
@@ -111,7 +122,7 @@ export default function TagPage() {
                     <ReusableTable
                         data={data}
                         columns={columns}
-                        handleEdit={handleEdit} // Pass the handleEdit function to the table
+                        handleEdit={handleEdit}
                         handleDelete={handleDelete}
                     />
                 )}
@@ -122,20 +133,35 @@ export default function TagPage() {
                         {editTag ? "Cập nhật tag" : "Thêm tag"}
                     </Typography>
                     <form onSubmit={formik.handleSubmit}>
-                        <CustomInputField
-                            label="Tên Tag"
-                            name="name"
-                            value={formik.values.name}
-                            onChange={formik.handleChange}
-                            error={formik.touched.name && Boolean(formik.errors.name)} // Show error status
-                            helperText={formik.touched.name ? formik.errors.name : ""} // Show error message
-                        />
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <ImageUploader
+                                    label="Hình ảnh"
+                                    name="image"
+                                    onUploadComplete={handleImageUpload}
+                                    onDelete={handleImageDelete}
+                                    error={formik.touched.image && Boolean(formik.errors.image)}
+                                    helperText={formik.touched.image ? formik.errors.image : ""}
+                                    folder="brand"
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <CustomInputField
+                                    label="Tên Tag"
+                                    name="name"
+                                    value={formik.values.name}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.name && Boolean(formik.errors.name)}
+                                    helperText={formik.touched.name ? formik.errors.name : ""}
+                                />
+                            </Grid>
+                        </Grid>
                         <Box mt={3} textAlign="right">
                             <Button
                                 variant="contained"
                                 type="submit"
                                 color="success"
-                                aria-label={editTag ? "Update Tag" : "Add Tag"} // Change button label based on mode
+                                aria-label={editTag ? "Update Tag" : "Add Tag"}
                                 disabled={!formik.values.name}
                             >
                                 {editTag ? "Cập nhật" : "Thêm tag"}
@@ -147,7 +173,7 @@ export default function TagPage() {
                                 aria-label="Cancel"
                                 onClick={() => {
                                     formik.resetForm();
-                                    setEditTag(null);  // Exit edit mode
+                                    setEditTag(null);
                                 }}
                             >
                                 Hủy

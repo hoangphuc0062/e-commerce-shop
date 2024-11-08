@@ -3,15 +3,15 @@ const ctrl = require("../controllers/categoryController");
 const { verifyAccessToken, isStaff } = require("../middlewares/vertifyToken");
 
 router.get("/", ctrl.getAllCategory);
+router.get("/:_id", ctrl.getCategoryById);
+router.get("/slug/:slug", ctrl.getCategoryBySlug);
 
 router.use([verifyAccessToken, isStaff]);
 router.post("/create", ctrl.addCategory);
 router.delete("/:_id", ctrl.deleteCategory);
 router.delete("/", ctrl.deleteManyCategories);
 router.put("/:_id", ctrl.updateCategory);
-router.get("/:_id", ctrl.getCategoryById);
 
 router.put("/position/update", ctrl.updateManyPosition);
-router.get("/slug/:slug", ctrl.getCategoryBySlug);
 
 module.exports = router;
