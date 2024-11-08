@@ -250,6 +250,7 @@ const HomePage = () => {
         limit: 20,
         fields:
           "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        sort: "-createdAt",
       })
     );
   }, [dispatch]);

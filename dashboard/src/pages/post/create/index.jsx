@@ -10,6 +10,8 @@ import {
   FormControl,
   InputLabel,
   FormHelperText,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import { useFormik } from "formik";
 import CustomInputField from "../../../components/InputField";
@@ -22,19 +24,25 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCategory } from "../../../redux/slices/category";
 import { useEffect, useState } from "react";
 import { createPost, resetState } from "../../../redux/slices/post";
+import { getAllTags } from "../../../redux/slices/tags";
 
 function AddPost() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [categoryOptions, setCategoryOptions] = useState([]);
-  const category = useSelector((state) => state.category.data.categories);
+  const [tagsOptions, setTagsOptions] = useState([]);
+
+  const category = useSelector((state) => state.category.data?.categories || []);
   const statusCategory = useSelector((state) => state.category.status);
+  const tags = useSelector((state) => state.tag.data?.tags || []);
+
   useEffect(() => {
     dispatch(getCategory());
+    dispatch(getAllTags());
   }, [dispatch]);
 
   useEffect(() => {
-    if (statusCategory === "success") {
+    if (statusCategory === "success" && category) {
       setCategoryOptions(
         category.map((item) => ({
           label: item.name,
@@ -46,6 +54,18 @@ function AddPost() {
     }
     dispatch(resetState({ key: "getcategoryStatus", value: "idle" }));
   }, [statusCategory, category, dispatch]);
+
+  useEffect(() => {
+    if (tags) {
+      setTagsOptions(
+        tags.map((tag) => ({
+          label: tag.name,
+          value: tag._id,
+        }))
+      );
+    }
+  }, [tags]);
+
   const formik = useFormik({
     initialValues: {
       postTitle: "",
@@ -58,6 +78,7 @@ function AddPost() {
       content: "",
       category: "",
       status: "draft",
+      tags: [],
     },
     validationSchema: PostSchema,
     validateOnChange: true,
@@ -87,6 +108,7 @@ function AddPost() {
     error: formik.touched[name] && Boolean(formik.errors[name]),
     helperText: formik.touched[name] && formik.errors[name],
   });
+
   const handleTitleChange = (e) => {
     const title = e.target.value;
     formik.setFieldValue("postTitle", title);
@@ -97,6 +119,7 @@ function AddPost() {
       .replace(/[^a-z0-9\-]/g, "");
     formik.setFieldValue("slug", slug);
   };
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <Box p={3}>
@@ -119,6 +142,7 @@ function AddPost() {
               </Box>
             </Paper>
           </Grid>
+
           {/* Post Information Section */}
           <Grid item xs={12} md={8}>
             <Paper elevation={3} sx={{ padding: 2 }}>
@@ -153,6 +177,7 @@ function AddPost() {
                   />
                 </Grid>
 
+                {/* Category Select */}
                 <Grid item xs={12} md={6}>
                   <FormControl fullWidth>
                     <InputLabel>Danh mục</InputLabel>
@@ -180,20 +205,37 @@ function AddPost() {
                     )}
                   </FormControl>
                 </Grid>
+
+                {/* Tags Select with Autocomplete */}
+                <Grid item xs={12} md={6}>
+                  <Autocomplete
+                    multiple
+                    options={tagsOptions}
+                    getOptionLabel={(option) => option.label}
+                    value={tagsOptions.filter(tag => formik.values.tags.includes(tag.value))}
+                    onChange={(event, newValue) => {
+                      formik.setFieldValue("tags", newValue.map((item) => item.value));
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Tags"
+                        placeholder="Chọn thẻ"
+                        error={formik.touched.tags && Boolean(formik.errors.tags)}
+                        helperText={formik.touched.tags && formik.errors.tags}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                {/* SEO Fields */}
                 <Grid item xs={12} md={6}>
                   <CustomInputField
                     label="Từ khóa SEO"
                     name="seoKeyWords"
                     value={formik.values.seoKeyWords}
                     onChange={formik.handleChange}
-                    {...getErrorProps("seoKeywords")}
-                    error={
-                      formik.touched.seoKeyWords &&
-                      Boolean(formik.errors.seoKeyWords)
-                    }
-                    helperText={
-                      formik.touched.seoKeyWords && formik.errors.seoKeyWords
-                    }
+                    {...getErrorProps("seoKeyWords")}
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -213,32 +255,29 @@ function AddPost() {
                     }
                   />
                 </Grid>
+
+                {/* Short Description */}
                 <Grid item xs={12}>
                   <Textarea
                     label="Mô tả ngắn"
                     name="shortDescription"
                     value={formik.values.shortDescription || ""}
                     onChange={formik.handleChange}
-                    error={
-                      formik.touched.shortDescription &&
-                      Boolean(formik.errors.shortDescription)
-                    }
+                    error={formik.touched.shortDescription && Boolean(formik.errors.shortDescription)}
                     errorMessage={formik.errors.shortDescription}
                     height={300}
                   />
                 </Grid>
+
+                {/* Post Content */}
                 <Grid item xs={12}>
                   <Textarea
                     label="Nội dung bài viết"
                     name="content"
                     value={formik.values.content || ""}
                     onChange={formik.handleChange}
-                    error={
-                      formik.touched.content && Boolean(formik.errors.content)
-                    }
-                    errorMessage={
-                      formik.touched.content && formik.errors.content
-                    }
+                    error={formik.touched.content && Boolean(formik.errors.content)}
+                    errorMessage={formik.errors.content}
                     height={500}
                   />
                 </Grid>
@@ -246,12 +285,7 @@ function AddPost() {
 
               {/* Submit and Cancel Buttons */}
               <Box mt={3} textAlign="right">
-                <Button
-                  variant="contained"
-                  type="submit"
-                  color="success"
-                  aria-label="Add Post"
-                >
+                <Button variant="contained" type="submit" color="success" aria-label="Add Post">
                   Thêm bài viết
                 </Button>
                 <Button

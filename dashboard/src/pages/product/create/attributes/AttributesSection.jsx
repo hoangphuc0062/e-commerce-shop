@@ -350,16 +350,13 @@ export default function AttributesSection({
                               )}
                               <AvatarGroup max={4}>
                                 {attr.images &&
-                                  attr.images
-                                    // .flat() // Làm phẳng mảng lồng nhau
-                                    // .filter((img) => typeof img === "string") // Đảm bảo chỉ có chuỗi
-                                    .map((img, i) => (
-                                      <Avatar
-                                        key={i}
-                                        src={img}
-                                        sx={{ width: 50, height: 50 }}
-                                      />
-                                    ))}
+                                  attr.images?.map((img, i) => (
+                                    <Avatar
+                                      key={i}
+                                      src={img}
+                                      sx={{ width: 50, height: 50 }}
+                                    />
+                                  ))}
                               </AvatarGroup>
                             </Grid>
                           </Grid>
