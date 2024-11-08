@@ -8,7 +8,6 @@ import { formatDay } from "../../../ultils/helper";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getPosts } from "../../../redux/slices/post";
-
 const CategoryPost = () => {
   const dispatch = useDispatch();
   const { categorySlug } = useParams();
@@ -65,7 +64,7 @@ const CategoryPost = () => {
                     <img
                       src={post.thumbnail}
                       alt={post.postTitle}
-                      className="object-cover transition duration-300 rounded-md w-1/4 h-48"
+                      className="object-cover transition duration-300 rounded-md w-1/4 lg:h-48 h-32"
                     />
                     <div className="p-4 w-2/3">
                       <h3 className="text-lg font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">

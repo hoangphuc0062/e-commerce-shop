@@ -12,7 +12,7 @@ import {
 } from "../../../components/Forum";
 
 import { getPosts } from "../../../redux/slices/post";
-
+import { Helmet } from "react-helmet-async";
 function ForumPage() {
   const dispatch = useDispatch();
   const status = useSelector((state) => state.post.status);
@@ -50,8 +50,11 @@ function ForumPage() {
 
   return (
     <div className="container w-full">
+      <Helmet>
+        <title>Forum | Voi Tây Nguyên</title>
+      </Helmet>
       <div className="flex flex-col md:flex-row w-full pt-16">
-          <Sidebar />
+        <Sidebar />
 
         <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col">
           <section className="flex-grow px-4">
@@ -63,9 +66,8 @@ function ForumPage() {
             {data && <FeaturedPost data={data} />}
           </section>
 
-
           <PostScroll data={data} />
-          <section className="mb-8 p-4">
+          <section className="mb-2">
             <div className="flex overflow-x-auto space-x-4">
               {uniqueCategories.slice(0, 3).map((category) => (
                 <PostTag key={category} category={category} data={data} />
@@ -74,7 +76,7 @@ function ForumPage() {
           </section>
 
           {uniqueCategories.slice(1, 3).map((category) => (
-            <section key={category} className="mb-8 p-4">
+            <section key={category}>
               <HeadingSection title={category} />
               {data && <SliderPost data={data} category={category} />}
             </section>

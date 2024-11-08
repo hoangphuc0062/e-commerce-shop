@@ -58,29 +58,29 @@ const SliderPostTag = () => {
       <HeadingSection title="Nổi bật nhất" />
       <Slider {...settings}>
         {filteredData?.length > 0 ? (
-          filteredData?.map((post) => (
+          filteredData?.slice(0, 4).map((post) => (
             <div key={post?.id} className="px-1">
-              <div className="bg-white overflow-hidden flex">
+              <div className="bg-white overflow-hidden flex lg:flex-row flex-col">
                 <img
                   src={post?.thumbnail}
                   alt={post?.postTitle}
-                  className="h-48 object-cover rounded-md"
+                  className="lg:h-48 h-36 object-cover rounded-md"
                 />
                 <div className="p-3">
                   <Link
                     to={`/forum/${post.slug}`}
-                    className="text-base font-semibold mb-1 line-clamp-2 cursor-pointer hover:text-main"
+                    className="text-base font-semibold mb-1 lg:line-clamp-2 line-clamp-1 cursor-pointer hover:text-main"
                   >
                     {post?.postTitle}
                   </Link>
-                  <span className="text-md line-clamp-3 text-gray-500">
+                  <span className="text-md lg:line-clamp-3 line-clamp-2 text-gray-500">
                     <div
                       dangerouslySetInnerHTML={{
                         __html: post?.shortDescription,
                       }}
                     />
                   </span>
-                  <div className="flex items-center justify-start pt-16">
+                  <div className="flex items-center justify-start lg:pt-16 pt-4">
                     <span className="text-sm">
                       Ngày đăng {formatDay(post?.date)}
                     </span>

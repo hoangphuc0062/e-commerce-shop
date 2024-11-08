@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import "./Sidebar.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -11,7 +11,7 @@ const Sidebar = () => {
   const location = useLocation();
 
   const status = useSelector((state) => state.category.status);
-  const categoryData = useSelector((state) => state.category.data);
+  const categoryData = useSelector((state) => state.category.data.categories);
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -33,10 +33,6 @@ const Sidebar = () => {
     }
   }, [status, categoryData]);
 
-  const handleCategoryClick = (slug) => {
-    navigate(`/forum/category/${slug}`);
-  };
-
   return (
     <>
       {/* Sidebar cho màn hình lớn */}
@@ -44,8 +40,8 @@ const Sidebar = () => {
         <nav className="p-4">
           <ul className="space-y-2">
             <li>
-              <button
-                onClick={() => navigate("/forum")}
+              <Link
+                to="/forum"
                 className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
                   location.pathname === "/forum"
                     ? "bg-hv text-main"
@@ -54,12 +50,12 @@ const Sidebar = () => {
               >
                 <Iconify icon="mdi:home" />
                 Trang chủ
-              </button>
+              </Link>
             </li>
             {data.map((category) => (
               <li key={category.id}>
-                <button
-                  onClick={() => handleCategoryClick(category.slug)}
+                <Link
+                  to={`/forum/category/${category.slug}`}
                   className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
                     location.pathname === `/forum/category/${category.slug}`
                       ? "bg-hv text-main"
@@ -68,7 +64,7 @@ const Sidebar = () => {
                 >
                   <Iconify icon={category.icon} />
                   {category.name}
-                </button>
+                </Link>
               </li>
             ))}
           </ul>
@@ -80,8 +76,8 @@ const Sidebar = () => {
         <nav>
           <ul className="flex space-x-4">
             <li>
-              <button
-                onClick={() => navigate("/forum")}
+              <Link
+                to="/forum"
                 className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
                   location.pathname === "/forum"
                     ? "bg-hv text-main"
@@ -90,27 +86,23 @@ const Sidebar = () => {
               >
                 <Iconify icon="mdi:home" />
                 Trang chủ
-              </button>
+              </Link>
             </li>
-            {data.length > 0 ? (
-              data.map((category) => (
-                <li key={category.id}>
-                  <button
-                    onClick={() => handleCategoryClick(category.slug)}
-                    className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
-                      location.pathname === `/forum/category/${category.slug}`
-                        ? "bg-hv text-main"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    <Iconify icon={category.icon} />
-                    {category.name}
-                  </button>
-                </li>
-              ))
-            ) : (
-              <p>Đang tải danh mục...</p>
-            )}
+            {data.map((category) => (
+              <li key={category.id}>
+                <Link
+                  to={`/forum/category/${category.slug}`}
+                  className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
+                    location.pathname === `/forum/category/${category.slug}`
+                      ? "bg-hv text-main"
+                      : "text-gray-700"
+                  }`}
+                >
+                  <Iconify icon={category.icon} />
+                  {category.name}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
       </div>
