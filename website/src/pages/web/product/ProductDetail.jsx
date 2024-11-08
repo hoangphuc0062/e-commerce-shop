@@ -1,27 +1,21 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
-
-// Import Swiper styles
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { SwiperSlide, Swiper } from "swiper/react";
+import { FreeMode, Navigation, Thumbs } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
-
-// import required modules
-import { FreeMode, Navigation, Thumbs } from "swiper/modules";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { SwiperSlide, Swiper } from "swiper/react";
-
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-
 import SingleProduct from "../../../components/FeatureBlockProduct/SingleProduct";
-import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { getProductBySlug, getProducts } from "./../../../redux/slices/product";
 import { extractTextFromHtml } from "./../../../../../dashboard/src/utils/extractTextFromHtml";
 
@@ -37,6 +31,7 @@ const ProductDetail = () => {
   const DataProduct = useSelector((state) => state.product.dataDetail);
   const products = useSelector((state) => state.product.data.products);
   const statusLP = useSelector((state) => state.product.status);
+  const [activeIndex, setActiveIndex] = useState(null);
 
   useEffect(() => {
     if (product) {
@@ -81,7 +76,28 @@ const ProductDetail = () => {
     setOpen(false);
   };
 
-  const dataImg = [data?.thumbnail, ...(data?.images ?? [])];
+  const handleAttributeClick = (index, attr) => {
+    setActiveIndex(index);
+    setData((prevData) => ({
+      ...prevData,
+      price: attr.price,
+    }));
+  };
+
+  const handleAddToCart = () => {
+    // Implement your add to cart logic here
+    console.log("Product added to cart:", {
+      id: data._id,
+      idattributes: data.attributes[activeIndex]._id,
+    });
+  };
+
+  const dataImg = [
+    data?.thumbnail,
+    ...(data?.images ?? []),
+    ...(data?.attributes?.map((attr) => attr.images) ?? []),
+  ];
+
   return (
     <div className="container p-2 sm:p-4 lg:p-8 w-full flex flex-col gap-4">
       <div>breadcrumb here</div>
@@ -168,67 +184,18 @@ const ProductDetail = () => {
           <div className="block__header--right flex flex-col  p-4 rounded-lg gap-3 w-1/2">
             {/* bien the here */}
             <div className="grid grid-cols-3 gap-2">
-              <button className="border-2 border-gray-300 rounded-lg p-2 text-sm relative">
-                <span className="block font-semibold">12GB 1TB </span>
-                <span className="text-gray-700">52.990.000 đ</span>
-              </button>
-              <button className="border-2 border-gray-300 rounded-lg p-2 text-sm relative">
-                <span className="block font-semibold">12GB 1TB </span>
-                <span className="text-gray-700">52.990.000 đ</span>
-              </button>
-              <button className="border-2 border-main  p-2 rounded-lg text-sm relative">
-                <span className="block font-semibold">12GB 1TB </span>
-                <span className="text-gray-700">52.990.000 đ</span>
-                <span className=" absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
-                  <Icon
-                    icon="akar-icons:check"
-                    width="0.8rem"
-                    height="0.8rem"
-                    className="inline"
-                  />
-                </span>
-              </button>
-            </div>
-            {/* Biến thể màu sản phẩm */}
-            <div className="flex flex-col gap-2">
-              <div>Chọn màu sản phẩm</div>
-              <div className="grid grid-cols-3 gap-2">
-                <button className="border-2 border-gray-300 flex items-center gap-2 rounded-lg p-2 text-sm relative">
-                  <div>
-                    <img
-                      src="https://cdn2.cellphones.com.vn/insecure/rs:fill:50:50/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/m/image_1171.png"
-                      alt=""
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold">12GB 1TB </span>
-                    <span className="text-gray-700">52.990.000 đ</span>
-                  </div>
-                </button>
-                <button className="border-2 border-gray-300 flex items-center gap-2  rounded-lg p-2 text-sm relative">
-                  <div>
-                    <img
-                      src="https://cdn2.cellphones.com.vn/insecure/rs:fill:50:50/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/m/image_1171.png"
-                      alt=""
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold">12GB 1TB </span>
-                    <span className="text-gray-700">52.990.000 đ</span>
-                  </div>
-                </button>
-                {/* Active */}
-                <button className="border-2 border-main flex items-center rounded-lg gap-2 p-2 text-sm relative">
-                  <div>
-                    <img
-                      src="https://cdn2.cellphones.com.vn/insecure/rs:fill:50:50/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/m/image_1171.png"
-                      alt=""
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold">12GB 1TB </span>
-                    <span className="text-gray-700">52.990.000 đ</span>
-                    <span className=" absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
+              {data?.attributes?.map((attr, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleAttributeClick(index, attr)}
+                  className={`border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative w-[145px] ${
+                    activeIndex === index
+                      ? "border-blue-500"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {activeIndex === index && (
+                    <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
                       <Icon
                         icon="akar-icons:check"
                         width="0.8rem"
@@ -236,10 +203,22 @@ const ProductDetail = () => {
                         className="inline"
                       />
                     </span>
+                  )}
+                  <div className="h-[50px]">
+                    <img
+                      className="w-full h-full object-contain"
+                      src={attr.images}
+                      alt=""
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-semibold">{attr.value}</span>
+                    <span className="text-gray-700">{attr.price}</span>
                   </div>
                 </button>
-              </div>
+              ))}
             </div>
+
             <div>
               <span className="text-[24px] font-bold mr-2">Giá:</span>
               <span className="text-[24px] font-bold">
@@ -271,7 +250,10 @@ const ProductDetail = () => {
                   ( Giao hàng nhanh từ 2 giờ hoặc nhận tại cửa hàng)
                 </span>
               </button>
-              <button className="flex flex-col justify-center items-center border-2 border-main text-main rounded-lg w-1/6 p-1">
+              <button
+                onClick={handleAddToCart}
+                className="flex flex-col justify-center items-center border-2 border-main text-main rounded-lg w-1/6 p-1"
+              >
                 <span>
                   <Icon
                     icon="solar:cart-plus-outline"
@@ -289,7 +271,11 @@ const ProductDetail = () => {
 
       <section>
         <h1 className="text-[24px] font-semibold">Sản phẩm liên quan</h1>
-        <SingleProduct data={productLP} />
+        {productLP.length > 0 ? (
+          <SingleProduct data={productLP} />
+        ) : (
+          <div>Không có sản phẩm liên quan</div>
+        )}
       </section>
 
       <section className="flex gap-4 p-2">
