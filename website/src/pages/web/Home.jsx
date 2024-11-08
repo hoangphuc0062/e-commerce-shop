@@ -14,7 +14,7 @@ import { useState } from "react";
 import GridProduct from "../../components/FeatureBlockProduct/GridProduct";
 
 import { getBanners } from "../../redux/slices/barnner";
-import { getProducts } from "../../redux/slices/product";
+import { getProducts, resetState } from "../../redux/slices/product";
 
 const datas = [
   {
@@ -206,7 +206,8 @@ const HomePage = () => {
     if (statusProduct === "success" && Array.isArray(productsData)) {
       setProducts(productsData);
     }
-  }, [statusProduct, productsData]);
+    dispatch(resetState({ key: "status", value: "idle" }));
+  }, [statusProduct, productsData, dispatch]);
 
   useEffect(() => {
     if (statusBanner === "success" && Array.isArray(Banner)) {
@@ -248,7 +249,8 @@ const HomePage = () => {
         page: 1,
         limit: 20,
         fields:
-          "name,price,thumbnail,discountPercent,description,rating,review,category,brand,discount,slug",
+          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        sort: "-createdAt",
       })
     );
   }, [dispatch]);

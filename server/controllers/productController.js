@@ -1,9 +1,9 @@
+const asyncHandler = require("express-async-handler");
+
 const Product = require("../models/productModel");
 const Category = require("../models/categoryModel");
 const Brand = require("../models/brandModel");
 const Series = require("../models/seriesModel");
-
-const asyncHandler = require("express-async-handler");
 
 // Filter - sort - pagination
 const getAllProduct = asyncHandler(async (req, res) => {
@@ -44,22 +44,36 @@ const getAllProduct = asyncHandler(async (req, res) => {
     if (queries?.slug) {
       const [matchCategory, matchBrand, matchSeries] = queries.slug.split(",");
 
-      const category = await Category.findOne({ slug: matchCategory });
-      const brand = await Brand.findOne({ slug: matchBrand });
-      const series = await Series.findOne({ slug: matchSeries });
+      const entities = [
+        {
+          match: matchCategory,
+          model: Category,
+          key: "category",
+          errorMessage: `Category ${matchCategory} is not found`,
+        },
+        {
+          match: matchBrand,
+          model: Brand,
+          key: "brand",
+          errorMessage: `Brand ${matchBrand} is not found`,
+        },
+        {
+          match: matchSeries,
+          model: Series,
+          key: "series",
+          errorMessage: `Series ${matchSeries} is not found`,
+        },
+      ];
 
-      if (category) {
-        formattedQueries.category = category._id;
+      for (const entity of entities) {
+        if (entity.match) {
+          const result = await entity.model.findOne({ slug: entity.match });
+          if (!result) {
+            return res.status(404).json({ mes: entity.errorMessage });
+          }
+          formattedQueries[entity.key] = result._id;
+        }
       }
-
-      if (brand) {
-        formattedQueries.brand = brand._id;
-      }
-
-      if (series) {
-        formattedQueries.series = series._id;
-      }
-
       delete formattedQueries.slug;
     }
 
@@ -100,16 +114,35 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       counts,
-      products: response.length ? response : "Không tìm thấy sản phẩm",
+      products: response.length ? response : "No product found",
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       success: false,
-      message: "Đã xảy ra lỗi server",
+      message: "Internal server error",
       error: error.message,
     });
   }
+});
+
+const getProductBySlug = asyncHandler(async (req, res) => {
+  const { pid } = req.params;
+  if (!pid) {
+    return res.status(400).json({
+      mes: "Missing inputs",
+    });
+  }
+
+  const product = await Product.findOne({ slug: pid }).populate(
+    "category brand series"
+  );
+
+  if (!product) {
+    return res.status(404).json({
+      mes: "Product is not found",
+    });
+  }
+  return res.status(200).json(product);
 });
 
 const addProduct = asyncHandler(async (req, res) => {
@@ -195,4 +228,5 @@ module.exports = {
   addManyProduct,
   updateProduct,
   deleteProduct,
+  getProductBySlug,
 };

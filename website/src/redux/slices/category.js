@@ -23,6 +23,11 @@ export const getAll = createAsyncThunk("category/getAll", (_, thunkAPI) =>
   handleAsyncThunk(CategoryService.getAll, [null], thunkAPI)
 );
 
+export const getCategoryBySlug = createAsyncThunk(
+  "category/getBySlug",
+  (slug, thunkAPI) =>
+    handleAsyncThunk(CategoryService.getBySlug, [slug], thunkAPI)
+);
 const category = createSlice({
   name: "category",
 
@@ -30,6 +35,7 @@ const category = createSlice({
     data: [],
     status: "idle",
     error: null,
+    statusCategoryBySlug: "idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -40,17 +46,31 @@ const category = createSlice({
         }
       }
     });
-    builder.addCase(getAll.pending, (state) => {
-      state.status = "loading";
-    });
-    builder.addCase(getAll.fulfilled, (state, action) => {
-      state.status = "success";
-      state.data = action.payload;
-    });
-    builder.addCase(getAll.rejected, (state, action) => {
-      state.status = "failed";
-      state.error = action.payload;
-    });
+    builder
+      .addCase(getAll.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getAll.fulfilled, (state, action) => {
+        state.status = "success";
+        state.data = action.payload;
+      })
+
+      .addCase(getAll.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      });
+    builder
+      .addCase(getCategoryBySlug.pending, (state) => {
+        state.statusCategoryBySlug = "loading";
+      })
+      .addCase(getCategoryBySlug.fulfilled, (state, action) => {
+        state.statusCategoryBySlug = "success";
+        state.data = action.payload;
+      })
+      .addCase(getCategoryBySlug.rejected, (state, action) => {
+        state.statusCategoryBySlug = "failed";
+        state.error = action.payload;
+      });
   },
 });
 
