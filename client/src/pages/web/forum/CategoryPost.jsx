@@ -8,7 +8,6 @@ import { formatDay } from "../../../ultils/helper";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getPosts } from "../../../redux/slices/post";
-
 const CategoryPost = () => {
   const dispatch = useDispatch();
   const { categorySlug } = useParams();

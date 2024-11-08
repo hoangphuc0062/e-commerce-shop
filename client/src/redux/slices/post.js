@@ -13,9 +13,8 @@ const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
 export const getPosts = createAsyncThunk("post/getPost", (_, thunkAPI) =>
   handleAsyncThunk(PostSevice.getPost, [null], thunkAPI)
 );
-export const GetBySlug = createAsyncThunk(
-  "post/getBySlug",
-  (slug, thunkAPI) => handleAsyncThunk(PostSevice.getBySlug, [slug], thunkAPI),
+export const GetBySlug = createAsyncThunk("post/getBySlug", (slug, thunkAPI) =>
+  handleAsyncThunk(PostSevice.getBySlug, [slug], thunkAPI)
 );
 
 export const resetState = createAsyncThunk(
@@ -28,31 +27,35 @@ export const resetState = createAsyncThunk(
 const Posts = createSlice({
   name: "post",
   initialState: {
-    data: [],
+    data: [], // Dữ liệu bài viết toàn cục
     status: "idle",
     error: null,
     me: null,
     getBySlugStatus: "idle",
+    slugData: null, // Thêm state cho bài viết theo slug
   },
   extraReducers: (builder) => {
     builder
+      // Quản lý trạng thái của việc lấy tất cả bài viết
       .addCase(getPosts.pending, (state) => {
         state.status = "loading";
       })
       .addCase(getPosts.fulfilled, (state, action) => {
         state.status = "success";
-        state.data = action.payload;
+        state.data = action.payload; // Lưu tất cả bài viết
       })
       .addCase(getPosts.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       })
+
+      // Quản lý trạng thái của việc lấy bài viết theo slug
       .addCase(GetBySlug.pending, (state) => {
         state.getBySlugStatus = "loading";
       })
       .addCase(GetBySlug.fulfilled, (state, action) => {
         state.getBySlugStatus = "success";
-        state.data = action.payload;
+        state.slugData = action.payload; // Lưu bài viết theo slug vào slugData
       })
       .addCase(GetBySlug.rejected, (state, action) => {
         state.getBySlugStatus = "failed";

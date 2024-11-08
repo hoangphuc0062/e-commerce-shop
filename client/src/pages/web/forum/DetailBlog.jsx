@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { FaArrowTrendUp } from "react-icons/fa6";
+import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import { GetBySlug } from "../../../redux/slices/post";
 import { Sidebar } from "../../../components/Forum";
@@ -12,43 +13,50 @@ const DetailBlog = () => {
 
   // Lấy trạng thái và dữ liệu bài viết từ Redux
   const status = useSelector((state) => state.post.getBySlugStatus);
-  const post = useSelector((state) => state.post.data);
+  const slugData = useSelector((state) => state.post.slugData); // Lấy bài viết theo slug
 
   useEffect(() => {
     dispatch(GetBySlug(slug));
   }, [slug, dispatch]);
 
   useEffect(() => {
-    if (status === "success") {
+    if (status === "success" && slugData) {
       setData({
-        status: post?.status,
-        id: post?._id,
-        postTitle: post?.postTitle,
-        shortDescription: post?.shortDescription,
-        seoKeyWords: post?.seoKeyWords,
-        content: post?.content,
-        author: post?.author?.name || "Unknown",
-        authorImageUrl: post?.author?.imageUrl || "/path/to/default-image.jpg",
-        category: post?.category?.name || "Unknown",
-        categorySlug: post?.category?.slug || "Unknown",
-        rating: post?.rating,
-        slug: post?.slug,
-        date: post?.createdAt,
-        thumbnail: post?.thumbnail,
-        tags: post?.tags?.map((tag) => tag.name) || [],
+        status: slugData?.status,
+        id: slugData?._id,
+        postTitle: slugData?.postTitle,
+        shortDescription: slugData?.shortDescription,
+        seoKeyWords: slugData?.seoKeyWords,
+        content: slugData?.content,
+        author: slugData?.author?.name || "Unknown",
+        authorImageUrl:
+          slugData?.author?.imageUrl || "/path/to/default-image.jpg",
+        category: slugData?.category?.name || "Unknown",
+        categorySlug: slugData?.category?.slug || "Unknown",
+        rating: slugData?.rating,
+        slug: slugData?.slug,
+        date: slugData?.createdAt,
+        thumbnail: slugData?.thumbnail,
+        tags: slugData?.tags?.map((tag) => tag.name) || [],
       });
     }
-  }, [status, post]);
+  }, [status, slugData]);
+
   if (status !== "success" || !data) {
     return <div>Loading...</div>;
   }
   return (
-    <div className="flex flex-col md:flex-row w-full pt-16">
+    <div className="flex flex-col md:flex-row w-full pt-16 container">
+      <Helmet>
+        <title>{data.postTitle}</title>
+        <meta name="description" content={data.shortDescription} />
+        <meta name="keywords" content={data.seoKeyWords} />
+      </Helmet>
       <div className="md:w-1/4 lg:w-1/5 xl:w-1/6">
         <Sidebar />
       </div>
       <div className="md:w-3/4 lg:w-4/5 w-full">
-        <div className="bg-gray-100 min-h-screen p-4">
+        <div className="min-h-screen p-4">
           <div className="flex items-center mb-4 overflow-x-auto whitespace-nowrap">
             <span className="text-sm flex items-center text-main px-3">
               <FaArrowTrendUp className="mr-1" /> Xu hướng:
