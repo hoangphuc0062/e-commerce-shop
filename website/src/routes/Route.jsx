@@ -96,10 +96,10 @@ export default function RootRouter() {
       path: "*",
       element: <Error />,
     },
-    // {
-    //   path: "/404",
-    //   element: <Error />,
-    // },
+    {
+      path: "/404",
+      element: <Error />,
+    },
   ]);
   return routes;
 }
