@@ -201,6 +201,7 @@ export default function EditProduct() {
     validationSchema: validationProductSchema,
     enableReinitialize: true,
     onSubmit: (values) => {
+      console.log(values);
       dispatch(updateProduct({ productId: id, data: { values } })).then(
         (res) => {
           if (res.type === "product/updateProduct/fulfilled") {
