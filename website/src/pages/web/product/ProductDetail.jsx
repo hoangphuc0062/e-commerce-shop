@@ -245,7 +245,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Action button */}
-            <div className="flex flex-col md:flex-row  gap-2">
+            <div className="flex gap-2">
               <button className="bg-main border-main  rounded-lg text-white w-10/12">
                 <span className="text-[18px]">Mua ngay</span>
                 <span className="block">
