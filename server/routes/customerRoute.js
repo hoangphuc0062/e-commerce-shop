@@ -10,6 +10,11 @@ router.get("/logout", ctrl.logout);
 router.post("/forgotpassword", ctrl.forgotPassword);
 router.put("/resetpassword", ctrl.resetPassword);
 router.post("/refreshtoken", ctrl.refreshAccessToken);
+router.post("/add-cart", verifyAccessToken, ctrl.addCart);
+router.get("/get-cart", verifyAccessToken, ctrl.getCart);
+router.put("/update-cart", verifyAccessToken, ctrl.updateCart);
+router.delete("/delete-cart", verifyAccessToken, ctrl.deleteCartItem);
+router.delete("/delete-all-cart", verifyAccessToken, ctrl.deleteManyCart);
 
 router.get("/", ctrl.getCustomer);
 router.get("/get-cookie", verifyAccessToken, ctrl.getCustomerByCookie);
