@@ -13,6 +13,7 @@ import {
 
 import { getPosts } from "../../../redux/slices/post";
 import { Helmet } from "react-helmet-async";
+
 function ForumPage() {
   const dispatch = useDispatch();
   const status = useSelector((state) => state.post.status);
@@ -78,7 +79,7 @@ function ForumPage() {
           {uniqueCategories.slice(1, 3).map((category) => (
             <section key={category}>
               <HeadingSection title={category} />
-              {data && <SliderPost data={data} category={category} />}
+              <SliderPost data={data} category={category} />
             </section>
           ))}
         </div>

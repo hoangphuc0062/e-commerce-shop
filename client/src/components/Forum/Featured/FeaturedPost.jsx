@@ -1,7 +1,9 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import HeadingSection from "../Heading/HeadingSection";
 import PropTypes from "prop-types";
 import { formatDay } from "../../../ultils/helper";
+import { Skeleton } from "@mui/material";
 
 function FeaturedPost({ data }) {
   const featuredPost = data[0];
@@ -17,7 +19,7 @@ function FeaturedPost({ data }) {
               alt={featuredPost?.thumbnail}
               className="w-full h-full object-cover"
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50  text-white p-4">
+            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
               <h3 className="text-xl font-bold mb-2 line-clamp-2 hover:text-main">
                 {featuredPost?.postTitle}
               </h3>
@@ -40,7 +42,6 @@ function FeaturedPost({ data }) {
                   alt={post?.postTitle}
                   className="w-32 lg:w-48 object-cover rounded"
                 />
-
                 <div className="flex flex-col">
                   <h3 className="text-sm sm:text-base md:text-lg font-semibold hover:text-main line-clamp-2">
                     {post?.postTitle}

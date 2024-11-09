@@ -57,7 +57,7 @@ const SliderPostCategory = () => {
   return (
     <div className="w-full">
       <HeadingSection title="Nổi bật nhất" />
-      <Slider {...settings}>
+      <Slider {...settings} className="slider-container">
         {filteredData.length > 0 ? (
           filteredData.slice(0, 4).map((post) => (
             <div key={post.id} className="px-1">

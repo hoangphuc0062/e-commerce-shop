@@ -1,13 +1,12 @@
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import "./Sidebar.css";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getCategory } from "../../../redux/slices/category";
 import Iconify from "./Iconify";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const location = useLocation();
 
   const status = useSelector((state) => state.category.status);
@@ -42,9 +41,9 @@ const Sidebar = () => {
             <li>
               <Link
                 to="/forum"
-                className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
+                className={`flex text-sm items-center gap-2 p-2 rounded-lg hover:text-main capitalize ${
                   location.pathname === "/forum"
-                    ? "bg-hv text-main"
+                    ? "bg-gray-100 text-main"
                     : "text-gray-700"
                 }`}
               >
@@ -58,7 +57,7 @@ const Sidebar = () => {
                   to={`/forum/category/${category.slug}`}
                   className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
                     location.pathname === `/forum/category/${category.slug}`
-                      ? "bg-hv text-main"
+                      ? "bg-gray-100 text-main"
                       : "text-gray-700"
                   }`}
                 >
@@ -72,7 +71,7 @@ const Sidebar = () => {
       </div>
 
       {/* Sidebar cho màn hình nhỏ */}
-      <div className="md:hidden bg-white p-4 z-50 overflow-x-auto whitespace-nowrap scrollbar-hide">
+      <div className="md:hidden bg-white p-4 overflow-x-auto whitespace-nowrap scrollbar-hide">
         <nav>
           <ul className="flex space-x-4">
             <li>
@@ -80,7 +79,7 @@ const Sidebar = () => {
                 to="/forum"
                 className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
                   location.pathname === "/forum"
-                    ? "bg-hv text-main"
+                    ? "bg-gray-100 text-main"
                     : "text-gray-700"
                 }`}
               >
@@ -94,7 +93,7 @@ const Sidebar = () => {
                   to={`/forum/category/${category.slug}`}
                   className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
                     location.pathname === `/forum/category/${category.slug}`
-                      ? "bg-hv text-main"
+                      ? "bg-gray-100 text-main"
                       : "text-gray-700"
                   }`}
                 >

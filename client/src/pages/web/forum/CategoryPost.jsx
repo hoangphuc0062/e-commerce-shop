@@ -6,16 +6,21 @@ import {
 } from "../../../components/Forum";
 import { formatDay } from "../../../ultils/helper";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { getPosts } from "../../../redux/slices/post";
+import Skeleton from "@mui/material/Skeleton";
+
 const CategoryPost = () => {
   const dispatch = useDispatch();
   const { categorySlug } = useParams();
   const postData = useSelector((state) => state.post.data);
   const [visibleItemCount, setVisibleItemCount] = useState(6);
+  const [loading, setLoading] = useState(true); // Thêm loading state
+  const observerRef = useRef(); // Dùng để theo dõi Intersection Observer
 
   useEffect(() => {
-    dispatch(getPosts());
+    setLoading(true); // Bắt đầu loading khi component mount
+    dispatch(getPosts()).then(() => setLoading(false)); // Tắt loading sau khi lấy dữ liệu thành công
   }, [dispatch]);
 
   const formattedData = Array.isArray(postData)
@@ -40,9 +45,30 @@ const CategoryPost = () => {
 
   const visibleData = formattedData.slice(0, visibleItemCount);
 
+  // Hàm để tải thêm khi cuộn xuống
   const handleLoadMore = () => {
     setVisibleItemCount((prevCount) => prevCount + 6);
   };
+
+  // Intersection Observer để tự động tải khi cuộn
+  const lastPostRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observerRef.current) observerRef.current.disconnect();
+
+      observerRef.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          handleLoadMore();
+        }
+      });
+
+      if (node) observerRef.current.observe(node);
+    },
+    [loading]
+  );
+
+  // Kiểm tra nếu còn bài viết để hiển thị nút "Xem thêm"
+  const hasMorePosts = visibleItemCount < formattedData.length;
 
   return (
     <div className="container w-full mb-8">
@@ -55,10 +81,22 @@ const CategoryPost = () => {
           <section className="w-full">
             <HeadingSection title="Tin Mới Nhất" />
             <div className="space-y-4">
-              {visibleData.length > 0 ? (
-                visibleData.map((post) => (
+              {loading ? (
+                Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="flex flex-row space-x-4">
+                    <Skeleton variant="rectangular" width="25%" height={120} />
+                    <div className="w-3/4 space-y-2">
+                      <Skeleton variant="text" width="100%" height={30} />
+                      <Skeleton variant="text" width="80%" />
+                      <Skeleton variant="text" width="50%" />
+                    </div>
+                  </div>
+                ))
+              ) : visibleData.length > 0 ? (
+                visibleData.map((post, index) => (
                   <div
                     key={post.id}
+                    ref={index === visibleData.length - 1 ? lastPostRef : null}
                     className="bg-white overflow-hidden flex flex-row"
                   >
                     <img
@@ -88,17 +126,23 @@ const CategoryPost = () => {
                   Không có bài viết nào trong danh mục này.
                 </p>
               )}
-              {visibleItemCount < formattedData.length && (
-                <div className="mt-6 flex justify-center">
+            </div>
+
+            {/* Hiển thị nút "Xem thêm" nếu còn bài viết để tải thêm */}
+            {hasMorePosts && (
+              <div className="flex justify-center mt-4">
+                {loading ? (
+                  <Skeleton variant="rectangular" width={120} height={40} />
+                ) : (
                   <button
-                    className="text-main text-md font-semibold underline"
                     onClick={handleLoadMore}
+                    className="px-4 py-2 bg-main text-white rounded-md hover:bg-blue-600"
                   >
                     Xem thêm
                   </button>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </section>
         </div>
       </div>

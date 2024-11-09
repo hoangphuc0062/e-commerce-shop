@@ -15,7 +15,7 @@ const PostScroll = ({ data }) => {
     // Giả lập thời gian loading ban đầu
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 2000);
     return () => clearTimeout(timeout);
   }, []);
 
@@ -36,14 +36,14 @@ const PostScroll = ({ data }) => {
       // Tăng số lượng bài viết hiển thị
       setVisibleItemCount((prevCount) => prevCount + 6);
       setLoadingMore(false);
-    }, 1000); // Giả lập thời gian loading
+    }, 2000); // Giả lập thời gian loading
   };
 
   // Kiểm tra xem có còn bài viết nào để tải thêm không
   const noMorePosts = visibleItemCount >= combinedData.length;
 
   return (
-    <section className="mb-8 p-4">
+    <section className="mb-8 pl-4">
       <div className="flex space-x-8">
         <div className="w-full ">
           <HeadingSection title="Tin tức mới nhất" />
@@ -83,7 +83,7 @@ const PostScroll = ({ data }) => {
             <div className="mt-6 flex justify-center">
               {!noMorePosts &&
                 (loadingMore ? (
-                  <Skeleton variant="rectangular" width="100%" height={20} />
+                  <Skeleton width={100} height={20}  />
                 ) : (
                   <button
                     onClick={handleLoadMore}
