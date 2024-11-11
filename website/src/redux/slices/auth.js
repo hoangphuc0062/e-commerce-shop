@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 
 import AuthService from "../../services/auth.service";
+import CartServices from "../../services/cart.service";
 
 const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
   try {
@@ -40,17 +41,46 @@ export const logout = createAsyncThunk("auth/logout", (_, thunkAPI) =>
 export const getMe = createAsyncThunk("auth/getMe", (_, thunkAPI) =>
   handleAsyncThunk(AuthService.getme, [null], thunkAPI)
 );
+
+export const getCart = createAsyncThunk("auth/getCart", (_, thunkAPI) =>
+  handleAsyncThunk(CartServices.getCart, [null], thunkAPI)
+);
+
+export const deleteCart = createAsyncThunk(
+  "auth/deleteCart",
+  (data, thunkAPI) =>
+    handleAsyncThunk(CartServices.deleteAllCart, [data], thunkAPI)
+);
+
+// addCart
+
+export const addCart = createAsyncThunk("auth/addCart", (data, thunkAPI) =>
+  handleAsyncThunk(CartServices.addCart, [data], thunkAPI)
+);
+
+// update cart
+
+export const updateCart = createAsyncThunk(
+  "auth/updateCart",
+  (data, thunkAPI) =>
+    handleAsyncThunk(CartServices.updateCart, [data], thunkAPI)
+);
 const auth = createSlice({
   name: "auth",
 
   initialState: {
     isLogin: false,
     data: [],
+    dataCart: [],
     status: "idle",
     error: null,
     statusRegister: "idle",
     statusLogout: "idle",
     statusGetMe: "idle  ",
+    statusGetCart: "idle",
+    statusDeleteCart: "idle",
+    statusAddCart: "idle",
+    statusUpdateCart: "idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -106,6 +136,48 @@ const auth = createSlice({
       })
       .addCase(getMe.rejected, (state) => {
         state.statusGetMe = "failed";
+      });
+    builder
+      .addCase(getCart.pending, (state) => {
+        state.statusGetCart = "loading";
+      })
+      .addCase(getCart.fulfilled, (state, action) => {
+        state.statusGetCart = "success";
+        state.dataCart = action.payload;
+      })
+      .addCase(getCart.rejected, (state) => {
+        state.statusGetCart = "failed";
+      });
+
+    builder
+      .addCase(deleteCart.pending, (state) => {
+        state.statusDeleteCart = "loading";
+      })
+      .addCase(deleteCart.fulfilled, (state) => {
+        state.statusDeleteCart = "success";
+      })
+      .addCase(deleteCart.rejected, (state) => {
+        state.statusDeleteCart = "failed";
+      });
+    builder
+      .addCase(addCart.pending, (state) => {
+        state.statusAddCart = "loading";
+      })
+      .addCase(addCart.fulfilled, (state) => {
+        state.statusAddCart = "success";
+      })
+      .addCase(addCart.rejected, (state) => {
+        state.statusAddCart = "failed";
+      });
+    builder
+      .addCase(updateCart.pending, (state) => {
+        state.statusUpdateCart = "loading";
+      })
+      .addCase(updateCart.fulfilled, (state) => {
+        state.statusUpdateCart = "success";
+      })
+      .addCase(updateCart.rejected, (state) => {
+        state.statusUpdateCart = "failed";
       });
   },
 });

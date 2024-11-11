@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React, { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import { getMe } from "../redux/slices/auth";
+import { getCart, getMe } from "../redux/slices/auth";
 import Cookies from "js-cookie";
 
 const UserContext = React.createContext();
