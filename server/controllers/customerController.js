@@ -338,7 +338,191 @@ const updateCustomerBYAdmin = asyncHandler(async (req, res) => {
   return res.status(200).json(customer);
 });
 
-const addCart = asyncHandler(async (req, res) => {});
+const addCart = asyncHandler(async (req, res) => {
+  const { productId, attributeId, quantity } = req.body;
+  const customer = await Customer.findById(req.user._id);
+
+  if (!customer) {
+    return res.status(404).json({ message: "Customer not found" });
+  }
+
+  const updatedCart = await customer.addToCart(
+    productId,
+    attributeId,
+    quantity
+  );
+  res.status(200).json({
+    message: "Product with variant added to cart",
+    cart: updatedCart,
+  });
+});
+
+// get cart
+const getCart = asyncHandler(async (req, res) => {
+  const userId = req.user._id; // Assuming `req.user` contains authenticated user data
+
+  // Find the customer's cart and populate the product details
+  const customer = await Customer.findById(userId).populate({
+    path: "cart.pid", // Populate main product details
+    select: "name thumbnail price slug attributes", // Include attributes for manual lookup
+  });
+
+  if (!customer) {
+    return res.status(404).json({ message: "Customer not found" });
+  }
+
+  // Process the cart items to include specific attribute details
+  const cartWithAttributes = customer.cart.map((cartItem) => {
+    const product = cartItem.pid;
+    const attribute = product.attributes.find(
+      (attr) => attr._id.toString() === cartItem.attributeId.toString()
+    );
+
+    return {
+      productId: product._id,
+      name: product.name,
+      thumbnail: product.thumbnail,
+      price: product.price,
+      slug: product.slug,
+      quantity: cartItem.quantity,
+      attribute: attribute
+        ? {
+            _id: attribute._id,
+            value: attribute.value,
+            price: attribute.price,
+            images: attribute.images,
+          }
+        : null, // If attribute not found, set to null
+    };
+  });
+
+  // Send back the cart with populated attribute details
+  res.status(200).json({
+    message: "Cart retrieved successfully",
+    cart: cartWithAttributes,
+  });
+});
+
+// update cart
+const updateCart = asyncHandler(async (req, res) => {
+  const items = req.body; // Expecting an array of items directly
+  const userId = req.user._id;
+
+  // Find the customer's cart
+  const customer = await Customer.findById(userId);
+
+  if (!customer) {
+    return res.status(404).json({ message: "Customer not found" });
+  }
+
+  items.forEach(({ productId, attributeId, quantity }) => {
+    // Check if the item with the given productId and attributeId already exists in the cart
+    const cartItemIndex = customer.cart.findIndex(
+      (item) =>
+        item.pid.toString() === productId.toString() &&
+        item.attributeId.toString() === attributeId.toString()
+    );
+
+    if (cartItemIndex > -1) {
+      // If the item exists, update its quantity
+      if (quantity > 0) {
+        customer.cart[cartItemIndex].quantity = quantity;
+      } else {
+        // If quantity is 0, remove the item from the cart
+        customer.cart.splice(cartItemIndex, 1);
+      }
+    } else {
+      if (quantity > 0) {
+        customer.cart.push({
+          pid: productId,
+          attributeId: attributeId,
+          quantity: quantity,
+        });
+      } else {
+        return res.status(400).json({ message: "Invalid quantity" });
+      }
+    }
+  });
+
+  // Save the updated cart
+  await customer.save();
+
+  res.status(200).json({
+    message: "Cart updated successfully",
+    cart: customer.cart,
+  });
+});
+
+// xoá cart
+const deleteCartItem = asyncHandler(async (req, res) => {
+  const { productId, attributeId } = req.body;
+  const userId = req.user._id;
+
+  // Find the customer's cart
+  const customer = await Customer.findById(userId);
+
+  if (!customer) {
+    return res.status(404).json({ message: "Customer not found" });
+  }
+
+  // Find the index of the item to be removed
+  const cartItemIndex = customer.cart.findIndex(
+    (item) =>
+      item.pid.toString() === productId.toString() &&
+      item.attributeId.toString() === attributeId.toString()
+  );
+
+  if (cartItemIndex > -1) {
+    // Remove the item from the cart
+    customer.cart.splice(cartItemIndex, 1);
+
+    // Save the updated cart
+    await customer.save();
+
+    res.status(200).json({
+      message: "Cart item removed successfully",
+      cart: customer.cart,
+    });
+  } else {
+    res.status(404).json({ message: "Item not found in cart" });
+  }
+});
+
+// xoas cart nhieu
+const deleteManyCart = asyncHandler(async (req, res) => {
+  const items = req.body; // Expecting an array of items
+  const userId = req.user._id;
+
+  // Find the customer's cart
+  const customer = await Customer.findById(userId);
+
+  if (!customer) {
+    return res.status(404).json({ message: "Customer not found" });
+  }
+
+  items.forEach(({ productId, attributeId }) => {
+    let cartItemIndex;
+    // Use a while loop to remove all occurrences of the item
+    while (
+      (cartItemIndex = customer.cart.findIndex(
+        (item) =>
+          item.pid.toString() === productId.toString() &&
+          item.attributeId.toString() === attributeId.toString()
+      )) > -1
+    ) {
+      // Remove the item from the cart
+      customer.cart.splice(cartItemIndex, 1);
+    }
+  });
+
+  // Save the updated cart
+  await customer.save();
+
+  res.status(200).json({
+    message: "Cart items removed successfully",
+    cart: customer.cart,
+  });
+});
 
 module.exports = {
   checkOTP,
@@ -354,4 +538,9 @@ module.exports = {
   updateCustomer,
   updateCustomerBYAdmin,
   getCustomerByCookie,
+  addCart,
+  getCart,
+  updateCart,
+  deleteCartItem,
+  deleteManyCart,
 };

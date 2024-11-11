@@ -22,10 +22,10 @@ export default function SingleProduct({ data }) {
           modules={[Pagination]}
           pagination={{ clickable: true }}
         >
-          {paginatedData.map((pageData, pageIndex) => (
+          {paginatedData?.map((pageData, pageIndex) => (
             <SwiperSlide key={pageIndex}>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5  gap-4 py-2">
-                {pageData.map((item, index) => (
+                {pageData?.map((item, index) => (
                   <ProductCard key={index} data={item} />
                 ))}
               </div>

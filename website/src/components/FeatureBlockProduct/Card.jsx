@@ -29,11 +29,13 @@ const ProductCard = ({ data }) => {
           </div>
         )}
         <Link to={`/${data.category.slug}/${data.brand.slug}/${data.slug}`}>
-          <img
-            src={data.thumbnail}
-            alt={name}
-            className="w-full object-cover"
-          />
+          <div className="h-[300px]">
+            <img
+              src={data.thumbnail}
+              alt={name}
+              className="w-full h-full object-cover"
+            />
+          </div>
           <div className="p-2 text-start">
             <h2 className="text-xl font-semibold line-clamp-1">{name}</h2>
             <div className="flex gap-2">
