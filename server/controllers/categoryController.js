@@ -138,7 +138,7 @@ const getCategoryBySlug = asyncHandler(async (req, res) => {
   }
   const category = await Category.findOne({ slug }).populate(
     "brand",
-    "slug image"
+    "slug image name"
   );
   if (!category) {
     return res.status(400).json({

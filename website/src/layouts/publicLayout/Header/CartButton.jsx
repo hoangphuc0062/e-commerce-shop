@@ -1,26 +1,33 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Icon } from "@iconify/react";
 import { Box, List, ListItem, Divider, Drawer, Checkbox } from "@mui/material";
 import { Link } from "react-router-dom";
 import EmptyCart from "../../../components/EmptyCart";
+import { useDispatch } from "react-redux";
+import { deleteCart, getCart, updateCart } from "../../../redux/slices/auth";
+import { handleToast } from "../../../ultils/toast";
 
-// Example placeholder image URL for the empty cart illustration
 const emptyCartImage =
   "https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/cart%2Fno-cart-1.png?alt=media&token=dc3dc5e6-ecd8-4b2d-8bc9-e5f6fd887b92";
 
-function CartButton({ data = [] }) {
+function CartButton({ data }) {
   const [state, setState] = useState({ right: false });
-  const [cartData, setCartData] = useState(data);
+  const [cartData, setCartData] = useState([]);
   const [checkedItems, setCheckedItems] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    setCartData(data);
+  }, [data]);
 
   const toggleDrawer = (anchor, open) => (event) => {
     if (
       event.type === "keydown" &&
       (event.key === "Tab" || event.key === "Shift")
-    ) {
+    )
       return;
-    }
     setState({ ...state, [anchor]: open });
   };
 
@@ -39,40 +46,54 @@ function CartButton({ data = [] }) {
     setSelectAll(!selectAll);
   };
 
-  const handleIncrement = (index) => {
-    setCartData((prev) =>
-      prev.map((item, i) =>
-        i === index ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+  const updateQuantity = (index, amount) => {
+    const newQuantity = cartData[index].quantity + amount;
+    const newCartData = cartData.map((item, i) => {
+      if (i === index) return { ...item, quantity: newQuantity };
+      return item;
+    });
+    setCartData(newCartData);
   };
 
-  const handleDecrement = (index) => {
-    setCartData((prev) =>
-      prev.map((item, i) =>
-        i === index && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
-  };
-
-  const handleUpdateQuantity = () => {
-    const updatedCartData = cartData.map((item, index) =>
-      checkedItems.includes(index) ? { ...item, quantity: item.quantity } : item
-    );
-    setCartData(updatedCartData);
+  const handleDelete = useCallback(() => {
+    const productIds = checkedItems.map((index) => cartData[index].productId);
+    const itemsToDelete = productIds.map((id) => ({ productId: id }));
+    dispatch(deleteCart(itemsToDelete)).then((result) => {
+      if (result.type === "auth/deleteCart/fulfilled") {
+        handleToast("success", "Xoá sản phẩm thành công");
+        dispatch(getCart());
+      }
+    });
     setCheckedItems([]);
     setSelectAll(false);
-  };
+  }, [dispatch, checkedItems, cartData]);
 
-  const handleDelete = () => {
-    const newData = cartData.filter(
-      (_, index) => !checkedItems.includes(index)
-    );
-    setCartData(newData);
-    setCheckedItems([]);
-    setSelectAll(false);
+  const totalAmount = useMemo(() => {
+    return cartData.reduce((total, item, index) => {
+      if (checkedItems.includes(index))
+        return total + item.price * item.quantity;
+      return total;
+    }, 0);
+  }, [cartData, checkedItems]);
+
+  const handleUpdateCart = () => {
+    const updatedItems = checkedItems.map((index) => {
+      const item = cartData[index];
+      return {
+        productId: item.productId,
+        attributeId: item.attribute._id,
+        quantity: item.quantity,
+      };
+    });
+
+    dispatch(updateCart(updatedItems)).then((result) => {
+      if (result.type === "auth/updateCart/fulfilled") {
+        handleToast("success", "Cập nhật giỏ hàng thành công");
+        dispatch(getCart());
+        setCheckedItems([]);
+        setSelectAll(false);
+      }
+    });
   };
 
   const list = (anchor) => (
@@ -94,13 +115,12 @@ function CartButton({ data = [] }) {
               style={{ color: " #1e40b0" }}
             />
             <h1 className="font-bold text-main">
-              Giỏ hàng của bạn (
-              {cartData.reduce((acc, cur) => acc + cur.quantity, 0)})
+              Giỏ hàng của bạn ({cartData?.length > 0 ? cartData.length : 0})
             </h1>
           </ListItem>
           <Divider />
         </List>
-        {cartData.length === 0 ? (
+        {cartData?.length === 0 ? (
           <EmptyCart emptyCartImage={emptyCartImage} to="/" />
         ) : (
           <>
@@ -110,7 +130,7 @@ function CartButton({ data = [] }) {
                 <span className="ml-2">Chọn tất cả</span>
               </div>
 
-              {cartData.map((item, index) => (
+              {cartData?.map((item, index) => (
                 <ListItem key={index} disablePadding>
                   <Checkbox
                     checked={checkedItems.includes(index)}
@@ -119,7 +139,7 @@ function CartButton({ data = [] }) {
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
                       <img
-                        src={item.image}
+                        src={item.thumbnail}
                         alt={item.name}
                         className="w-20 h-20 object-cover"
                       />
@@ -127,18 +147,17 @@ function CartButton({ data = [] }) {
                         <p className="font-bold text-base text-gray-800">
                           {item.name}
                         </p>
-
                         <p className="text-indigo-600 font-semibold text-sm mt-1">
                           {item.price.toLocaleString()} VND
                         </p>
                         <p className="text-gray-400 text-xs line-through mt-1">
-                          {item.priceSale.toLocaleString()} VND
+                          {item?.attribute?.price.toLocaleString()} VND
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center border border-gray-300 rounded w-28 justify-between">
                       <button
-                        onClick={() => handleDecrement(index)}
+                        onClick={() => updateQuantity(index, -1)}
                         className="text-lg px-3 focus:outline-none hover:bg-gray-200"
                       >
                         -
@@ -147,8 +166,7 @@ function CartButton({ data = [] }) {
                         className="w-full p-0 bg-transparent border-0 text-gray-800 focus:ring-0 
                         [&::-webkit-inner-spin-button]:appearance-none 
                         [&::-webkit-outer-spin-button]:appearance-none dark:text-white
-                        border-l border-r text-center
-                        "
+                        border-l border-r text-center"
                         style={{ MozAppearance: "textfield" }}
                         type="number"
                         value={item.quantity}
@@ -166,7 +184,7 @@ function CartButton({ data = [] }) {
                         }}
                       />
                       <button
-                        onClick={() => handleIncrement(index)}
+                        onClick={() => updateQuantity(index, 1)}
                         className="text-lg px-3 focus:outline-none hover:bg-gray-200"
                       >
                         +
@@ -182,18 +200,15 @@ function CartButton({ data = [] }) {
                 <div className="flex justify-between w-full font-bold">
                   <p>Tổng cộng:</p>
                   <p className="text-main">
-                    {cartData
-                      .reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
-                      .toLocaleString()}{" "}
-                    VND
+                    {totalAmount.toLocaleString()} VND
                   </p>
                 </div>
               </ListItem>
               {checkedItems.length > 0 && (
                 <div className="flex gap-1">
                   <button
-                    className="w-full bg-indigo-600 text-white p-2 rounded-lg mr-2 "
-                    onClick={handleUpdateQuantity}
+                    className="w-full bg-indigo-600 text-white p-2 rounded-lg mr-2"
+                    onClick={handleUpdateCart}
                   >
                     Cập nhật
                   </button>
@@ -235,7 +250,7 @@ function CartButton({ data = [] }) {
         <div className="flex items-center justify-center relative">
           <Icon icon="carbon:shopping-bag" width="2rem" height="2rem" />
           <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full px-1 text-[10px]">
-            {cartData.length || 0}
+            {cartData?.length || 0}
           </span>
         </div>
         <p className="line-clamp-2">Giỏ hàng</p>
@@ -250,5 +265,20 @@ function CartButton({ data = [] }) {
     </div>
   );
 }
+
+CartButton.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      productId: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
+      quantity: PropTypes.number.isRequired,
+      attribute: PropTypes.shape({
+        value: PropTypes.string,
+        price: PropTypes.number,
+      }),
+    })
+  ).isRequired,
+};
 
 export default CartButton;
