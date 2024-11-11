@@ -49,6 +49,7 @@ const addPost = asyncHandler(async (req, res) => {
     seoKeyWords,
     metaDescription,
     tags,
+    thumbnail,
   } = req.body;
   const staff_id = req.user._id;
 
@@ -69,6 +70,7 @@ const addPost = asyncHandler(async (req, res) => {
     seoKeyWords,
     metaDescription,
     tags,
+    thumbnail,
   });
   return res.status(200).json({ mes: "Create a post successful", post });
 });

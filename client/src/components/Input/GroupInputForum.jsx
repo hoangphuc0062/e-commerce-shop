@@ -11,6 +11,7 @@ const GroupInputForum = () => {
   const [results, setResults] = useState([]);
   const [value, setValue] = useState("");
   const timeoutRef = useRef();
+  const resultsRef = useRef();
 
   useEffect(() => {
     dispatch(getPosts());
@@ -37,12 +38,24 @@ const GroupInputForum = () => {
     },
     [posts]
   );
+
   const handleClickLink = () => {
     setValue("");
     setResults([]);
   };
+
+  const handleClickOutside = (e) => {
+    if (resultsRef.current && !resultsRef.current.contains(e.target)) {
+      setResults([]);
+    }
+  };
+
   useEffect(() => {
-    return () => clearTimeout(timeoutRef.current);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      clearTimeout(timeoutRef.current);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   return (
@@ -67,7 +80,10 @@ const GroupInputForum = () => {
       </form>
 
       {results.length > 0 && (
-        <ul className="absolute top-full mt-2 w-full bg-white shadow-lg rounded-md z-10">
+        <ul
+          ref={resultsRef}
+          className="absolute top-full mt-2 w-full bg-white shadow-lg rounded-md"
+        >
           {results.map((result, index) => (
             <li
               key={index}
