@@ -1,12 +1,6 @@
 /* eslint-disable react/prop-types */
 
-const CartItem = ({
-  product,
-  onQuantityChange,
-  onRemove,
-  isChecked,
-  onCheck,
-}) => {
+const CartItem = ({ product, onQuantityChange, isChecked, onCheck }) => {
   const handleDecreaseQuantity = () => {
     if (product.quantity > 1) {
       onQuantityChange(product.id, product.quantity - 1);
@@ -15,10 +9,6 @@ const CartItem = ({
 
   const handleIncreaseQuantity = () => {
     onQuantityChange(product.id, product.quantity + 1);
-  };
-
-  const handleRemoveProduct = () => {
-    onRemove(product.id);
   };
 
   const handleCheckboxChange = () => {
@@ -35,7 +25,7 @@ const CartItem = ({
           className="mr-4"
         />
         <img
-          src={product.images}
+          src={product.thumbnail}
           alt={product.name}
           className="w-20 h-20 object-cover rounded mr-4"
         />
@@ -65,9 +55,6 @@ const CartItem = ({
             +
           </button>
         </div>
-        <button className="text-gray-500 text-sm" onClick={handleRemoveProduct}>
-          Xóa
-        </button>
       </div>
     </div>
   );

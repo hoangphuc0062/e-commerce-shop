@@ -151,6 +151,8 @@ const HomePage = () => {
   const [dataBanner, setDataBanner] = useState([]);
   const [VerticalBanner, setVerticalBanner] = useState([]);
   const [products, setProducts] = useState([]);
+  const [products1, setProducts1] = useState([]);
+  const [products2, setProduct2] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -195,19 +197,10 @@ const HomePage = () => {
       );
     }
   }, [status, data]);
-  const statusProduct = useSelector((state) => state.product.status);
-  const productsData = useSelector((state) => state.product.data.products);
 
   useEffect(() => {
     dispatch(getBanners());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (statusProduct === "success" && Array.isArray(productsData)) {
-      setProducts(productsData);
-    }
-    dispatch(resetState({ key: "status", value: "idle" }));
-  }, [statusProduct, productsData, dispatch]);
 
   useEffect(() => {
     if (statusBanner === "success" && Array.isArray(Banner)) {
@@ -243,6 +236,10 @@ const HomePage = () => {
     }
   }, [statusBanner, Banner]);
 
+  let slug = "dien-thoai";
+  let slug1 = "laptop";
+  let slug2 = "tivi";
+
   useEffect(() => {
     dispatch(
       getProducts({
@@ -251,9 +248,44 @@ const HomePage = () => {
         fields:
           "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
         sort: "-createdAt",
+        slug,
       })
-    );
-  }, [dispatch]);
+    ).then((result) => {
+      if (result.type === "products/getProducts/fulfilled") {
+        setProducts(result.payload.products);
+      }
+    });
+
+    dispatch(
+      getProducts({
+        page: 1,
+        limit: 20,
+        fields:
+          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        sort: "-createdAt",
+        slug: slug1,
+      })
+    ).then((result) => {
+      if (result.type === "products/getProducts/fulfilled") {
+        setProducts1(result.payload.products);
+      }
+    });
+
+    dispatch(
+      getProducts({
+        page: 1,
+        limit: 20,
+        fields:
+          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        sort: "-createdAt",
+        slug: slug2,
+      })
+    ).then((result) => {
+      if (result.type === "products/getProducts/fulfilled") {
+        setProduct2(result.payload.products);
+      }
+    });
+  }, [dispatch, slug, slug1, slug2]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -261,6 +293,7 @@ const HomePage = () => {
         <div className="hidden w-1/6 lg:block shadow-lg">
           {dataCategory.length > 0 && <MenuTree dataCategory={dataCategory} />}
         </div>
+
         <div className="w-full  lg:w-4/6 bg-whiteColor shadow-custom">
           {dataBanner.length > 0 && <SliderBanner data={dataBanner} />}
         </div>
@@ -270,21 +303,14 @@ const HomePage = () => {
         </div>
       </section>
       <section className="bg-white h-full ">
-        <GridProduct data={products} cat={dataCategory} />
-      </section>
-      {/* <section className="bg-white h-full ">
-        <GridProduct data={products1} />
+        {products.length > 0 && <GridProduct data={products} cat={slug} />}
       </section>
       <section className="bg-white h-full ">
-        <GridProduct data={products2} />
+        {products1.length > 0 && <GridProduct data={products1} cat={slug1} />}
       </section>
       <section className="bg-white h-full ">
-        <GridProduct data={products3} />
+        {products2.length > 0 && <GridProduct data={products2} cat={slug2} />}
       </section>
-      <section className="bg-white h-full ">
-        <GridProduct data={products4} />
-      </section> */}
-
       <section className="">
         <Accessories datas={datas} title="Phụ kiện" />
       </section>
