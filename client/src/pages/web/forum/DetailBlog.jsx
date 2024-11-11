@@ -4,17 +4,18 @@ import { FaArrowTrendUp } from "react-icons/fa6";
 import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import { GetBySlug } from "../../../redux/slices/post";
-import { HeadingSection, PostScroll, Sidebar } from "../../../components/Forum";
+import { HeadingSection, Sidebar } from "../../../components/Forum";
 import { formatDay } from "../../../ultils/helper";
+import he from "he";
 
 const DetailBlog = () => {
   const { slug } = useParams();
   const dispatch = useDispatch();
-  const [data, setData] = useState(null); // Use null as initial state
+  const [data, setData] = useState(null);
 
   // Lấy trạng thái và dữ liệu bài viết từ Redux
   const status = useSelector((state) => state.post.getBySlugStatus);
-  const slugData = useSelector((state) => state.post.slugData); // Lấy bài viết theo slug
+  const slugData = useSelector((state) => state.post.slugData);
 
   useEffect(() => {
     dispatch(GetBySlug(slug));
@@ -50,7 +51,7 @@ const DetailBlog = () => {
     <div className="flex flex-col md:flex-row w-full pt-16 container">
       <Helmet>
         <title>{data.postTitle}</title>
-        <meta name="description" content={data.shortDescription} />
+        <meta name="description" content={he.decode(data.shortDescription)} />
         <meta name="keywords" content={data.seoKeyWords} />
       </Helmet>
       <div className="md:w-1/4 lg:w-1/5 xl:w-1/6">
@@ -67,7 +68,7 @@ const DetailBlog = () => {
               <Link
                 key={index}
                 to={`/forum/tag/${tag}`}
-                className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 hover:bg-main hover:text-white transition-colors duration-300"
+                className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 hover:bg-main hover:text-white transition-colors duration-300 cursor-pointer"
               >
                 #{tag}
               </Link>
@@ -133,12 +134,13 @@ const DetailBlog = () => {
             <span className="text-sm font-semibold mr-2 py-2">Thẻ:</span>
             {Array.isArray(data.tags) &&
               data.tags.map((tag, index) => (
-                <span
+                <Link
                   key={index}
+                  to={`/forum/tag/${tag}`}
                   className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center transition-colors duration-300 hover:bg-main hover:text-white"
                 >
                   #{tag}
-                </span>
+                </Link>
               ))}
           </div>
           <div className="pt-4">
