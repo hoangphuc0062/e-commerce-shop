@@ -29,32 +29,14 @@ function TopicCard() {
           }))
         );
         setLoading(false);
-      }, 500);
+      }, 2000);
     }
   }, [status, tagData]);
-
-  const renderSkeleton = () => {
-    return (
-      <div className="flex overflow-x-auto space-x-4 py-4 scrollbar-hide">
-        {[...Array(5)].map((_, index) => (
-          <div
-            key={index}
-            className="flex-shrink-0 relative w-48 h-32 rounded-lg overflow-hidden cursor-pointer"
-          >
-            <Skeleton height="100%" width="100%" />
-            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
-              <Skeleton width="100%" height="100%" />
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   return (
     <div>
       {loading ? (
-        renderSkeleton()
+        <Skeleton width={100} height={32} />
       ) : (
         <div className="flex overflow-x-auto space-x-4 py-4 scrollbar-hide">
           {data?.map((tags) => (

@@ -2,50 +2,43 @@ import { useState, useEffect } from "react";
 import { formatDay } from "../../../ultils/helper";
 import HeadingSection from "../Heading/HeadingSection";
 import { Link } from "react-router-dom";
-import { Skeleton } from "@mui/material";
 import PostSkeleton from "../Skeleton/PostSkeleton";
 
 const PostScroll = ({ data }) => {
-  const [visibleItemCount, setVisibleItemCount] = useState(7); // Số lượng bài viết hiển thị ban đầu
-  const [loading, setLoading] = useState(true); // Trạng thái loading khi khởi tạo
-  const [loadingMore, setLoadingMore] = useState(false); // Trạng thái loading khi nhấn "Xem thêm"
-  const [fetchedData, setFetchedData] = useState([]); // Dữ liệu đã tải thêm
+  const [visibleItemCount, setVisibleItemCount] = useState(6);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [fetchedData, setFetchedData] = useState([]);
 
   useEffect(() => {
-    // Giả lập thời gian loading ban đầu
     const timeout = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 2000);
     return () => clearTimeout(timeout);
   }, []);
 
-  // Kết hợp dữ liệu props `data` và `fetchedData`
   const combinedData = [...data, ...fetchedData];
   const visibleData = combinedData.slice(0, visibleItemCount);
 
   const handleLoadMore = () => {
-    // Tránh tải thêm dữ liệu nếu đã đủ bài viết
     if (visibleItemCount >= combinedData.length) return;
 
     setLoadingMore(true);
     setTimeout(() => {
-      // Giả lập việc tải thêm bài viết
       const newItems = data.slice(visibleItemCount, visibleItemCount + 6);
       setFetchedData((prevData) => [...prevData, ...newItems]);
 
-      // Tăng số lượng bài viết hiển thị
       setVisibleItemCount((prevCount) => prevCount + 6);
       setLoadingMore(false);
-    }, 1000); // Giả lập thời gian loading
+    }, 2000);
   };
 
-  // Kiểm tra xem có còn bài viết nào để tải thêm không
   const noMorePosts = visibleItemCount >= combinedData.length;
 
   return (
-    <section className="mb-8 p-4">
+    <section className="mb-8 pl-4">
       <div className="flex space-x-8">
-        <div className="w-full ">
+        <div className="w-full">
           <HeadingSection title="Tin tức mới nhất" />
           <div className="space-y-4">
             {loading
@@ -80,10 +73,12 @@ const PostScroll = ({ data }) => {
                     </div>
                   </Link>
                 ))}
-            <div className="mt-6 flex justify-center">
+            <div className="mt-6 flex flex-col space-y-4 items-center w-full">
               {!noMorePosts &&
                 (loadingMore ? (
-                  <Skeleton variant="rectangular" width="100%" height={20} />
+                  Array.from({ length: 6 }).map((_, index) => (
+                    <PostSkeleton key={index} className="w-full" />
+                  ))
                 ) : (
                   <button
                     onClick={handleLoadMore}
