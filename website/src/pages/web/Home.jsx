@@ -1,15 +1,12 @@
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+
 import { SingleBanner } from "../../components/Banner/SingleBanner/SingleBanner";
 import SliderBanner from "../../components/Banner/SliderBanner/SliderBanner";
 
 import MenuTree from "../../components/Banner/MenuTree/MenuTree";
-
-import { faker } from "@faker-js/faker";
 import { Accessories } from "../../components/FeatureBlockProduct/Accessories";
-
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
 import { getAll } from "../../redux/slices/category";
-import { useState } from "react";
 
 import GridProduct from "../../components/FeatureBlockProduct/GridProduct";
 
