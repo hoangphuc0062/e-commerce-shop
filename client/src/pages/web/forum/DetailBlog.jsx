@@ -4,7 +4,7 @@ import { FaArrowTrendUp } from "react-icons/fa6";
 import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import { GetBySlug } from "../../../redux/slices/post";
-import { HeadingSection, Sidebar } from "../../../components/Forum";
+import { Sidebar } from "../../../components/Forum";
 import { formatDay } from "../../../ultils/helper";
 import he from "he";
 
@@ -45,12 +45,12 @@ const DetailBlog = () => {
   }, [status, slugData]);
 
   if (status !== "success" || !data) {
-    return <div>Loading...</div>;
+    return null;
   }
   return (
     <div className="flex flex-col md:flex-row w-full pt-16 container">
       <Helmet>
-        <title>{data.postTitle}</title>
+        <title>{}</title>
         <meta name="description" content={he.decode(data.shortDescription)} />
         <meta name="keywords" content={data.seoKeyWords} />
       </Helmet>
@@ -144,7 +144,6 @@ const DetailBlog = () => {
               ))}
           </div>
           <div className="pt-4">
-            <HeadingSection title="Bài viết liên quan" />
             {/* Đánh giá bài viết */}
             <div className="flex flex-col items-end">
               <div className="flex flex-col items-center">
