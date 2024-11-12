@@ -36,7 +36,23 @@ function TopicCard() {
   return (
     <div>
       {loading ? (
-        <Skeleton width={100} height={32} />
+        <div className="flex overflow-x-auto space-x-4 py-4 scrollbar-hide">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div
+              key={index}
+              className={`flex-shrink-0 w-48 h-32 relative p-4 ${
+                index === 2 ? "border-b-0" : "border-b"
+              }`}
+            >
+              <Skeleton
+                variant="rectangular"
+                width={192}
+                height={128}
+                className="absolute rounded-lg bg-slate-200"
+              />
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="flex overflow-x-auto space-x-4 py-4 scrollbar-hide">
           {data?.map((tags) => (
