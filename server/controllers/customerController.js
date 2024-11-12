@@ -397,10 +397,7 @@ const getCart = asyncHandler(async (req, res) => {
   });
 
   // Send back the cart with populated attribute details
-  res.status(200).json({
-    message: "Cart retrieved successfully",
-    cart: cartWithAttributes,
-  });
+  res.status(200).json(cartWithAttributes);
 });
 
 // update cart
@@ -488,10 +485,16 @@ const deleteCartItem = asyncHandler(async (req, res) => {
   }
 });
 
-// xoas cart nhieu
 const deleteManyCart = asyncHandler(async (req, res) => {
-  const items = req.body; // Expecting an array of items
+  const items = req.body;
   const userId = req.user._id;
+
+  // Check if items is an array
+  if (!Array.isArray(items)) {
+    return res
+      .status(400)
+      .json({ message: "Invalid input, expected an array of items" });
+  }
 
   // Find the customer's cart
   const customer = await Customer.findById(userId);
@@ -500,27 +503,21 @@ const deleteManyCart = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Customer not found" });
   }
 
-  items.forEach(({ productId, attributeId }) => {
-    let cartItemIndex;
-    // Use a while loop to remove all occurrences of the item
-    while (
-      (cartItemIndex = customer.cart.findIndex(
-        (item) =>
-          item.pid.toString() === productId.toString() &&
-          item.attributeId.toString() === attributeId.toString()
-      )) > -1
-    ) {
-      // Remove the item from the cart
-      customer.cart.splice(cartItemIndex, 1);
-    }
+  // Filter out items to be deleted
+  const updatedCart = customer.cart.filter((item) => {
+    const found = items.find(
+      (cartItem) => cartItem.productId === item.pid.toString()
+    );
+    return !found;
   });
 
-  // Save the updated cart
-  await customer.save();
+  // Update the customer's cart with the filtered items
+  customer.cart = updatedCart;
+  await customer.save(); // Save the changes to the database
 
   res.status(200).json({
     message: "Cart items removed successfully",
-    cart: customer.cart,
+    cart: updatedCart,
   });
 });
 
