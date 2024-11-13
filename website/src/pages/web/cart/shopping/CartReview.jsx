@@ -39,7 +39,9 @@ export default function CartReview({
                   onChange={handleSelectAll}
                   className="mr-2"
                 />
-                <span>Chọn tất cả</span>
+                <span className=" cursor-pointer" onClick={handleSelectAll}>
+                  Chọn tất cả
+                </span>
               </div>
               {selectedProducts.length > 0 && (
                 <>
@@ -68,6 +70,7 @@ export default function CartReview({
                 onRemove={handleRemoveProduct}
                 isChecked={selectedProducts.includes(product.id)}
                 onCheck={handleCheck}
+                setProducts={setProducts}
               />
             ))}
 

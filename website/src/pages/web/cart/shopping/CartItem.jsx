@@ -1,6 +1,12 @@
 /* eslint-disable react/prop-types */
 
-const CartItem = ({ product, onQuantityChange, isChecked, onCheck }) => {
+const CartItem = ({
+  product,
+  onQuantityChange,
+  isChecked,
+  onCheck,
+  setProducts,
+}) => {
   const handleDecreaseQuantity = () => {
     if (product.quantity > 1) {
       onQuantityChange(product.id, product.quantity - 1);
@@ -17,7 +23,10 @@ const CartItem = ({ product, onQuantityChange, isChecked, onCheck }) => {
 
   return (
     <div className="flex items-center justify-between border-b pb-4 mb-4">
-      <div className="flex items-center">
+      <div
+        className="flex items-center cursor-pointer"
+        onClick={handleCheckboxChange}
+      >
         <input
           type="checkbox"
           checked={isChecked}
@@ -49,7 +58,14 @@ const CartItem = ({ product, onQuantityChange, isChecked, onCheck }) => {
             value={product.quantity}
             className="w-8 text-center"
             min={1}
-            readOnly
+            onChange={(e) => {
+              const value = Math.max(1, parseInt(e.target.value) || 1);
+              setProducts((prev) =>
+                prev.map((item) =>
+                  item.id === product.id ? { ...item, quantity: value } : item
+                )
+              );
+            }}
           />
           <button className="px-2" onClick={handleIncreaseQuantity}>
             +
