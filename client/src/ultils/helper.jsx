@@ -1,3 +1,5 @@
+import icons from "./icon";
+const { FaRegStar, FaStar } = icons;
 export const formatDay = (isoDateString) => {
   const date = new Date(isoDateString);
   const day = String(date.getDate()).padStart(2, "0");
@@ -17,4 +19,23 @@ export const formatCurrency = (number) => {
     style: "currency",
     currency: "VND",
   }).format(number);
+};
+
+export const renderStarFromNumber = (number, size) => {
+  if (!Number(number)) return;
+  const starArray = [];
+
+  for (let i = 0; i < Math.floor(number); i++) {
+    starArray.push(
+      <FaStar key={`full-${i}`} color="orange" size={size || 16} />
+    );
+  }
+
+  for (let i = Math.floor(number); i < 5; i++) {
+    starArray.push(
+      <FaRegStar key={`empty-${i}`} color="orange" size={size || 16} />
+    );
+  }
+
+  return starArray;
 };

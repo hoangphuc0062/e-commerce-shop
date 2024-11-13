@@ -57,7 +57,7 @@ function TopicCard() {
         <div className="flex overflow-x-auto space-x-4 py-4 scrollbar-hide">
           {data?.map((tags) => (
             <Link
-              to={`/forum/tag/${tags.name}`}
+              to={`/tag/${tags.name}`}
               key={tags.id}
               className="flex-shrink-0 relative w-48 h-32 rounded-lg overflow-hidden cursor-pointer hover:underline"
             >
