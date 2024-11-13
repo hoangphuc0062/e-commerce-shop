@@ -68,6 +68,7 @@ export default function CartReview({
                 onRemove={handleRemoveProduct}
                 isChecked={selectedProducts.includes(product.id)}
                 onCheck={handleCheck}
+                setProducts={setProducts}
               />
             ))}
 
