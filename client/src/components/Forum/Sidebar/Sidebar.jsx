@@ -1,7 +1,7 @@
-import { useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import "./Sidebar.css";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getCategory } from "../../../redux/slices/category";
 import Iconify from "./Iconify";
 
@@ -40,9 +40,9 @@ const Sidebar = () => {
           <ul className="space-y-2">
             <li>
               <Link
-                to="/"
+                to="/forum"
                 className={`flex text-sm items-center gap-2 p-2 rounded-lg hover:text-main capitalize ${
-                  location.pathname === "/"
+                  location.pathname === "/forum"
                     ? "bg-gray-100 text-main"
                     : "text-gray-700"
                 }`}
@@ -54,9 +54,9 @@ const Sidebar = () => {
             {data.map((category) => (
               <li key={category.id}>
                 <Link
-                  to={`/category/${category.slug}`}
+                  to={`/forum/category/${category.slug}`}
                   className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
-                    location.pathname === `/category/${category.slug}`
+                    location.pathname === `/forum/category/${category.slug}`
                       ? "bg-gray-100 text-main"
                       : "text-gray-700"
                   }`}
@@ -76,9 +76,9 @@ const Sidebar = () => {
           <ul className="flex space-x-4">
             <li>
               <Link
-                to="/"
+                to="/forum"
                 className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
-                  location.pathname === "/"
+                  location.pathname === "/forum"
                     ? "bg-gray-100 text-main"
                     : "text-gray-700"
                 }`}
@@ -90,9 +90,9 @@ const Sidebar = () => {
             {data.map((category) => (
               <li key={category.id}>
                 <Link
-                  to={`/category/${category.slug}`}
+                  to={`/forum/category/${category.slug}`}
                   className={`flex text-sm items-center gap-2 p-2 rounded hover:text-main capitalize ${
-                    location.pathname === `/category/${category.slug}`
+                    location.pathname === `/forum/category/${category.slug}`
                       ? "bg-gray-100 text-main"
                       : "text-gray-700"
                   }`}
