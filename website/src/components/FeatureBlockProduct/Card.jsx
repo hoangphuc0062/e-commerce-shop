@@ -28,7 +28,9 @@ const ProductCard = ({ data }) => {
             </span>
           </div>
         )}
-        <Link to={`/${data.category.slug}/${data.brand.slug}/${data.slug}`}>
+        <Link
+          to={`/${data?.category?.slug}/${data?.brand?.slug}/${data?.slug}`}
+        >
           <div className="h-[300px]">
             <img
               src={data.thumbnail}

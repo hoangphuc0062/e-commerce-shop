@@ -17,11 +17,14 @@ import Payment from "./Payment";
 import Info from "./info";
 import ProgressSteps from "./ProgressSteps";
 import CartReview from "./shopping/CartReview";
+import { useDispatch, useSelector } from "react-redux";
+import { getCart, resetState, updateCart } from "../../../redux/slices/auth";
 
 const emptyCartImage =
   "https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/cart%2Fno-cart-1.png?alt=media&token=dc3dc5e6-ecd8-4b2d-8bc9-e5f6fd887b92";
 
 export default function Cart() {
+  const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(0);
   const [discountCode, setDiscountCode] = useState("");
   const [selectedProvince, setSelectedProvince] = useState([]);
@@ -67,6 +70,9 @@ export default function Cart() {
       console.log(values);
     },
   });
+  const statusGetCart = useSelector((state) => state.auth.statusGetCart);
+  const datacard = useSelector((state) => state.auth.dataCart);
+  const [products, setProducts] = useState([]);
   useEffect(() => {
     // Fetch provinces
     getProvinces().then((provinces) => {
@@ -132,30 +138,19 @@ export default function Cart() {
       });
     }
   }, [wardID, districtID, ServiceId]);
-  // console.log(shippingFee);
-  function createRandomProduct() {
-    return {
-      id: faker.string.uuid(),
-      name: faker.commerce.productName(),
-      image: faker.image.avatar(),
-      price: faker.commerce.price(),
-      discountPercent: faker.number.int({ min: 0, max: 50 }),
-      description: faker.commerce.productDescription(),
-      rating: faker.number.int({ min: 1, max: 5 }),
-      review: faker.number.int({ min: 0, max: 1000 }),
-      category: faker.commerce.department(),
-      brand: faker.commerce.department(),
-      discount: faker.number.int({ min: 0, max: 50 }),
-      slug: faker.lorem.slug(),
-      images: [faker.image.url(300, 300, "tech", true)],
-      quantity: faker.number.int({ min: 1, max: 10 }),
-    };
-  }
-  const [products, setProducts] = useState(
-    Array.from({ length: 6 }, createRandomProduct)
-  );
+  useEffect(() => {
+    dispatch(getCart());
+  }, [dispatch]);
+  useEffect(() => {
+    if (statusGetCart === "success" && datacard) {
+      setProducts(datacard);
+    }
+    dispatch(resetState({ key: "statusGetCart", value: "idle" }));
+  }, [statusGetCart, datacard, dispatch]);
+
   const [selectAll, setSelectAll] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
+
   const handleQuantityChange = (productId, newQuantity) => {
     setProducts((prevProducts) =>
       prevProducts.map((product) =>
@@ -205,13 +200,14 @@ export default function Cart() {
     setSelectedProducts([]);
   };
   const handleUpdateSelected = () => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        selectedProducts.includes(product.id)
-          ? { ...product, quantity: 1 }
-          : product
-      )
-    );
+    console.log("Selected products:", selectedProducts);
+    dispatch(updateCart(selectedProducts)).then((result) => {
+      if (result.type === "auth/updateCart/fulfilled") {
+        dispatch(getCart());
+      }
+    });
+    setSelectedProducts([]);
+    setSelectAll(false);
   };
 
   const discountOptions = [

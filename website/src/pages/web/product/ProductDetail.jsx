@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -18,6 +18,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import SingleProduct from "../../../components/FeatureBlockProduct/SingleProduct";
 import { getProductBySlug, getProducts } from "./../../../redux/slices/product";
 import { extractTextFromHtml } from "./../../../../../dashboard/src/utils/extractTextFromHtml";
+import { addCart, getCart, resetState } from "../../../redux/slices/auth";
+import { handleToast } from "../../../ultils/toast";
 
 const ProductDetail = () => {
   const { category, brand, product } = useParams();
@@ -84,13 +86,30 @@ const ProductDetail = () => {
     }));
   };
 
-  const handleAddToCart = () => {
-    // Implement your add to cart logic here
-    console.log("Product added to cart:", {
-      id: data._id,
-      idattributes: data.attributes[activeIndex]._id,
-    });
-  };
+  const handleAddToCart = useCallback(() => {
+    const attribute = data?.attributes?.[activeIndex];
+
+    if (!data || !attribute) {
+      handleToast("error", "Invalid product data");
+      return;
+    }
+
+    const cartData = {
+      productId: data._id,
+      attributeId: attribute._id,
+      quantity: 1,
+    };
+
+    dispatch(addCart(cartData))
+      .unwrap()
+      .then(() => {
+        handleToast("success", "Thêm sản phẩm vào giỏ hàng thành công");
+        dispatch(getCart());
+      })
+      .catch(() => {
+        handleToast("error", "Không thể thêm sản phẩm vào giỏ hàng");
+      });
+  }, [dispatch, data, activeIndex]);
 
   const dataImg = [
     data?.thumbnail,
