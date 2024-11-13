@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -18,6 +18,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import SingleProduct from "../../../components/FeatureBlockProduct/SingleProduct";
 import { getProductBySlug, getProducts } from "./../../../redux/slices/product";
 import { extractTextFromHtml } from "./../../../../../dashboard/src/utils/extractTextFromHtml";
+import { addCart, getCart, resetState } from "../../../redux/slices/auth";
+import { handleToast } from "../../../ultils/toast";
 
 const ProductDetail = () => {
   const { category, brand, product } = useParams();
@@ -84,13 +86,30 @@ const ProductDetail = () => {
     }));
   };
 
-  const handleAddToCart = () => {
-    // Implement your add to cart logic here
-    console.log("Product added to cart:", {
-      id: data._id,
-      idattributes: data.attributes[activeIndex]._id,
-    });
-  };
+  const handleAddToCart = useCallback(() => {
+    const attribute = data?.attributes?.[activeIndex];
+
+    if (!data || !attribute) {
+      handleToast("error", "Invalid product data");
+      return;
+    }
+
+    const cartData = {
+      productId: data._id,
+      attributeId: attribute._id,
+      quantity: 1,
+    };
+
+    dispatch(addCart(cartData))
+      .unwrap()
+      .then(() => {
+        handleToast("success", "Thêm sản phẩm vào giỏ hàng thành công");
+        dispatch(getCart());
+      })
+      .catch(() => {
+        handleToast("error", "Không thể thêm sản phẩm vào giỏ hàng");
+      });
+  }, [dispatch, data, activeIndex]);
 
   const dataImg = [
     data?.thumbnail,
@@ -122,8 +141,8 @@ const ProductDetail = () => {
             <span className="inline">So sánh</span>
           </button>
         </div>
-        <div className="flex gap-4">
-          <div className="block__header--left flex flex-col gap-3 w-1/2 min-h-[400px] ">
+        <div className="flex flex-col md:flex md:flex-row  gap-4">
+          <div className="block__header--left flex flex-col gap-3 w-full md:w-1/2 min-h-[400px] ">
             <div className="rounded-lg border-2 p-2">
               <Swiper
                 style={{
@@ -174,21 +193,23 @@ const ProductDetail = () => {
                 <div className="box-title font-semibold">
                   <p>Thông tin sản phẩm</p>
                 </div>
-                {data?.shortDescription
-                  ? extractTextFromHtml(data.shortDescription)
-                  : "Không có thông tin sản phẩm"}
+                <div>
+                  {data?.shortDescription
+                    ? extractTextFromHtml(data.shortDescription)
+                    : "Không có thông tin sản phẩm"}
+                </div>
               </div>
               <div className="w-1/2 text-sm">Chọn vị trí của hàng</div>
             </div>
           </div>
-          <div className="block__header--right flex flex-col  p-4 rounded-lg gap-3 w-1/2">
+          <div className="block__header--right flex flex-col p-4 w-full md:w-1/2 rounded-lg gap-3 ">
             {/* bien the here */}
             <div className="grid grid-cols-3 gap-2">
               {data?.attributes?.map((attr, index) => (
                 <button
                   key={index}
                   onClick={() => handleAttributeClick(index, attr)}
-                  className={`border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative w-[145px] ${
+                  className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative  ${
                     activeIndex === index
                       ? "border-blue-500"
                       : "border-gray-300"
@@ -278,8 +299,8 @@ const ProductDetail = () => {
         )}
       </section>
 
-      <section className="flex gap-4 p-2">
-        <div className="flex flex-col items-center justify-between w-4/6 p-2 rounded-lg shadow-lg ">
+      <section className="flex flex-col md:flex-row gap-4 p-2">
+        <div className="flex flex-col items-center justify-between w-full md:w-4/6 p-2 rounded-lg shadow-lg ">
           <div
             className={`${
               viewMoreDescription ? `h-[400px]` : `min-h-fit`
@@ -310,7 +331,7 @@ const ProductDetail = () => {
             )}
           </button>
         </div>
-        <div className="w-2/6 h-[300px] p-2 rounded-lg shadow-custom ">
+        <div className="w-full md:w-2/6 h-[300px] p-2 rounded-lg shadow-custom ">
           <div className="flex flex-col gap-3">
             <div>
               <div className="text-[18px] font-semibold">Thông số kỹ thuật</div>
