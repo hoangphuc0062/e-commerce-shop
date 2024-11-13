@@ -148,7 +148,7 @@ export default function Cart() {
     dispatch(resetState({ key: "statusGetCart", value: "idle" }));
   }, [statusGetCart, datacart, dispatch]);
 
-  const [selectAll, setSelectAll] = useState(false);
+  const [selectAll, setSelectAll] = useState(true);
   const [selectedProducts, setSelectedProducts] = useState([]);
 
   const handleQuantityChange = (productId, newQuantity) => {
@@ -178,12 +178,12 @@ export default function Cart() {
   };
 
   const handleSelectAll = () => {
-    setSelectAll(!selectAll);
     if (!selectAll) {
-      setSelectedProducts(products.map((product) => product.id));
-    } else {
       setSelectedProducts([]);
+    } else {
+      setSelectedProducts(products.map((product) => product.id));
     }
+    setSelectAll(!selectAll);
   };
 
   const handleCheck = (productId) => {
@@ -199,7 +199,7 @@ export default function Cart() {
       const product = products.find((prod) => prod.id === id);
       return {
         productId: product.productId,
-        attributeId: product.attribute?._id,
+        attributeId: product.attributeValue?.id,
         quantity: product.quantity,
       };
     });
@@ -219,7 +219,7 @@ export default function Cart() {
       const product = products.find((prod) => prod.id === id);
       return {
         productId: product.productId,
-        attributeId: product.attribute?._id,
+        attributeId: product.attributeValue?.id,
         quantity: product.quantity,
       };
     });
@@ -312,10 +312,10 @@ export default function Cart() {
       selectedProducts.map((id) => {
         const product = products.find((prod) => prod.id === id);
         return {
-          id: product.id,
-          name: product.name,
+          id: product.productId,
           price: product.price,
           quantity: product.quantity,
+          attributeId: product.attributeValue?.id,
         };
       })
     );

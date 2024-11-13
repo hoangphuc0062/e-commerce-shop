@@ -1,6 +1,7 @@
 const mongoose = require("mongoose"); // Erase if already required
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const { type } = require("os");
 
 // Declare the Schema of the Mongo model
 var customerSchema = new mongoose.Schema(
@@ -33,10 +34,9 @@ var customerSchema = new mongoose.Schema(
     },
     cart: [
       {
-        pid: { type: mongoose.Types.ObjectId, ref: "Product" }, // Product ID
+        pid: { type: mongoose.Types.ObjectId, ref: "Product" },
         attributeId: {
-          type: mongoose.Types.ObjectId,
-          ref: "Product.attributes",
+          type: String,
         },
         quantity: { type: Number, default: 1 },
       },

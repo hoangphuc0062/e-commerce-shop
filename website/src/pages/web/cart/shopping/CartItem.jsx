@@ -23,7 +23,10 @@ const CartItem = ({
 
   return (
     <div className="flex items-center justify-between border-b pb-4 mb-4">
-      <div className="flex items-center">
+      <div
+        className="flex items-center cursor-pointer"
+        onClick={handleCheckboxChange}
+      >
         <input
           type="checkbox"
           checked={isChecked}

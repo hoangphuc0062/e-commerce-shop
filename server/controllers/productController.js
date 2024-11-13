@@ -194,10 +194,22 @@ const deleteProduct = asyncHandler(async (req, res) => {
   });
 });
 
+const getProductBySlug = asyncHandler(async (req, res) => {
+  const { pid } = req.params;
+  if (!pid) {
+    return res.status(400).json({
+      mes: "Missing inputs",
+    });
+  }
+  const product = await Product.findOne({ slug: pid });
+  if (!product) throw new Error("Product is not found in database");
+  return res.status(200).json(product);
+});
 module.exports = {
   getAllProduct,
   addProduct,
   addManyProduct,
   updateProduct,
   deleteProduct,
+  getProductBySlug,
 };
