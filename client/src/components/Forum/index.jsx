@@ -8,3 +8,5 @@ export { default as SliderPost } from "./Slide/SliderPost";
 export { default as SlidePostCategory } from "./Slide/SliderPostCategory";
 export { default as SlidePostTag } from "./Slide/SliderPostTag";
 export { default as TopicCard } from "./Card/TopicCard";
+export { default as Ratings } from "./Ratings/Ratings";
+export { default as Votebar } from "./Ratings/Votebar";

@@ -4,8 +4,8 @@ import { FaArrowTrendUp } from "react-icons/fa6";
 import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import { GetBySlug } from "../../../redux/slices/post";
-import { Sidebar } from "../../../components/Forum";
-import { formatDay } from "../../../ultils/helper";
+import { HeadingSection, Sidebar, Votebar } from "../../../components/Forum";
+import { formatDay, renderStarFromNumber } from "../../../ultils/helper";
 import he from "he";
 
 const DetailBlog = () => {
@@ -31,11 +31,21 @@ const DetailBlog = () => {
         seoKeyWords: slugData?.seoKeyWords,
         content: slugData?.content,
         author: slugData?.author?.name || "Unknown",
-        authorImageUrl:
-          slugData?.author?.imageUrl || "/path/to/default-image.jpg",
+        avatar:
+          slugData?.author?.avatar ||
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcazeHuAcZDzv4_61fPLT-S00XnaKXch2YWQ&s",
         category: slugData?.category?.name || "Unknown",
         categorySlug: slugData?.category?.slug || "Unknown",
-        rating: slugData?.rating,
+        rating: {
+          averageStar: slugData?.rating?.star || 0, // Average star rating
+          totalRatings: slugData?.totalRatings || 0,
+          reviews:
+            slugData?.rating?.map((review) => ({
+              customer: review.customer,
+              star: review.star,
+              comment: review.comment,
+            })) || [],
+        },
         slug: slugData?.slug,
         date: slugData?.createdAt,
         thumbnail: slugData?.thumbnail,
@@ -50,7 +60,7 @@ const DetailBlog = () => {
   return (
     <div className="flex flex-col md:flex-row w-full pt-16 container">
       <Helmet>
-        <title>{}</title>
+        <title>{data.postTitle || "Chi tiết bài viết"}</title>
         <meta name="description" content={he.decode(data.shortDescription)} />
         <meta name="keywords" content={data.seoKeyWords} />
       </Helmet>
@@ -67,7 +77,7 @@ const DetailBlog = () => {
             {data?.tags?.map((tag, index) => (
               <Link
                 key={index}
-                to={`/forum/tag/${tag}`}
+                to={`/tag/${tag}`}
                 className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 hover:bg-main hover:text-white transition-colors duration-300 cursor-pointer"
               >
                 #{tag}
@@ -81,7 +91,7 @@ const DetailBlog = () => {
             </Link>
             <p className="text-gray-600"> &raquo;</p>
             <Link
-              to={`/forum/category/${data?.categorySlug}`}
+              to={`/category/${data?.categorySlug}`}
               className="text-gray-600"
             >
               {data?.category}
@@ -111,9 +121,9 @@ const DetailBlog = () => {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
                 <img
-                  src={data.authorImageUrl}
+                  src={data.avatar}
                   alt={data.author}
-                  className="w-10 h-10 rounded-full mr-3"
+                  className="w-10 h-10 rounded-full mr-3 object-cover"
                 />
                 <div className="text-sm">
                   <span className="block font-semibold">{data.author}</span>
@@ -136,37 +146,42 @@ const DetailBlog = () => {
               data.tags.map((tag, index) => (
                 <Link
                   key={index}
-                  to={`/forum/tag/${tag}`}
+                  to={`/tag/${tag}`}
                   className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center transition-colors duration-300 hover:bg-main hover:text-white"
                 >
                   #{tag}
                 </Link>
               ))}
           </div>
+
           <div className="pt-4">
             {/* Đánh giá bài viết */}
-            <div className="flex flex-col items-end">
-              <div className="flex flex-col items-center">
-                <img
-                  src="https://cdn-static.sforum.vn/sforum/_next/static/media/danh-gia-bai-viet.98c2189c.png"
-                  alt="Đánh giá bài viết"
-                  className="mb-4 w-20 max-w-md"
-                />
-                <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <svg
-                      key={star}
-                      className="w-8 h-8 text-yellow-400"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
+            <HeadingSection title={`Đánh giá: ${data.postTitle}`} />
+            <div className="flex p-4">
+              <div className="flex-4 flex items-center justify-center flex-col">
+                <span className="text-3xl font-semibold">{`${data.rating.averageStar}/5`}</span>
+                <span className="flex items-center gap-1">
+                  {(renderStarFromNumber(data.rating.averageStar) || []).map(
+                    (el, index) => (
+                      <span key={index}>{el}</span>
+                    )
+                  )}
+                </span>
+                <span className="text-sm">
+                  {data.rating.totalRatings} đánh giá
+                </span>
+              </div>
+              <div className="flex-6 p-4 flex flex-col gap-2">
+                {Array.from(Array(5).keys())
+                  .reverse()
+                  .map((el) => (
+                    <Votebar
+                      key={el}
+                      number={el + 1}
+                      ratingCount={2}
+                      ratingTotal={5}
+                    />
                   ))}
-                </div>
-                <div className="text-sm text-gray-500 mt-2">
-                  (0 lượt đánh giá - 0/5)
-                </div>
               </div>
             </div>
           </div>

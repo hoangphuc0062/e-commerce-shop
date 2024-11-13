@@ -60,7 +60,7 @@ import { IoIosStar } from "react-icons/io";
 import { FaLocationDot, FaAngleDown } from "react-icons/fa6";
 import { TbCategoryPlus } from "react-icons/tb";
 import { VscSaveAs } from "react-icons/vsc";
-
+import { CiStar } from "react-icons/ci";
 const icons = {
   AiOutlineSearch, // kinh lup
   AiOutlineHeart, // yeu thich
@@ -128,6 +128,7 @@ const icons = {
   TbCategoryPlus,
   BiSolidDiscount,
   VscSaveAs,
+  CiStar,
 };
 
 export default icons;
