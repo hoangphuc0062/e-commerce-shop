@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-
+import { useEffect, useMemo, useState } from "react";
 import {
   Sidebar,
   HeadingSection,
@@ -10,8 +9,8 @@ import {
   PostTag,
   PostScroll,
 } from "../../../components/Forum";
-
 import { getPosts } from "../../../redux/slices/post";
+import { Helmet } from "react-helmet-async";
 
 function ForumPage() {
   const dispatch = useDispatch();
@@ -46,12 +45,17 @@ function ForumPage() {
     }
   }, [status, postData]);
 
-  const uniqueCategories = [...new Set(data.map((item) => item.category))];
+  const uniqueCategories = useMemo(() => {
+    return [...new Set(data.map((item) => item.category))];
+  }, [data]);
 
   return (
     <div className="container w-full">
+      <Helmet>
+        <title>Forum | Voi Tây Nguyên</title>
+      </Helmet>
       <div className="flex flex-col md:flex-row w-full pt-16">
-          <Sidebar />
+        <Sidebar />
 
         <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col">
           <section className="flex-grow px-4">
@@ -60,12 +64,11 @@ function ForumPage() {
               <TopicCard />
             </section>
 
-            {data && <FeaturedPost data={data} />}
+            {data.length > 0 && <FeaturedPost data={data} />}
           </section>
 
-
-          <PostScroll data={data} />
-          <section className="mb-8 p-4">
+          {data.length > 0 && <PostScroll data={data} />}
+          <section className="mb-2">
             <div className="flex overflow-x-auto space-x-4">
               {uniqueCategories.slice(0, 3).map((category) => (
                 <PostTag key={category} category={category} data={data} />
@@ -74,9 +77,9 @@ function ForumPage() {
           </section>
 
           {uniqueCategories.slice(1, 3).map((category) => (
-            <section key={category} className="mb-8 p-4">
+            <section key={category}>
               <HeadingSection title={category} />
-              {data && <SliderPost data={data} category={category} />}
+              <SliderPost data={data} category={category} />
             </section>
           ))}
         </div>

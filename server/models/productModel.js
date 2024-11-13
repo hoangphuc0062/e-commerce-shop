@@ -1,62 +1,5 @@
 const mongoose = require("mongoose");
 
-const { type } = require("os");
-
-const attributeSchema = new mongoose.Schema({
-  aid: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Attribute",
-      required: true,
-    },
-  ],
-  value: {
-    type: String,
-    required: true,
-  },
-  SKU: {
-    type: String,
-    required: true,
-  },
-  historicalPrice: {
-    type: Number,
-  },
-  priceInMarket: {
-    type: Number,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  discount: {
-    type: Number,
-  },
-  inStock: {
-    type: Number, // số lượng tồn kho
-  },
-  onStock: {
-    type: Number, // số lượng có thể bán
-  },
-  inComing: {
-    type: Number, // số lượng hàng đang về
-  },
-  unit: {
-    type: String,
-  },
-  minInventory: {
-    type: Number,
-  },
-  maxInventory: {
-    type: Number,
-  },
-  images: [
-    {
-      type: String,
-    },
-  ],
-});
-
 const ProductSchema = new mongoose.Schema(
   {
     name: {
@@ -85,7 +28,7 @@ const ProductSchema = new mongoose.Schema(
     discount: {
       type: Number,
     },
-    inStock: {
+    inventory: {
       type: Number, // số lượng tồn kho
     },
     onStock: {
@@ -94,17 +37,14 @@ const ProductSchema = new mongoose.Schema(
     inComing: {
       type: Number, // số lượng hàng đang về
     },
-    unit: {
-      type: String,
-    },
     minInventory: {
       type: Number,
     },
     maxInventory: {
       type: Number,
     },
-    weight: {
-      type: Number,
+    unit: {
+      type: String,
     },
     isBattery: {
       type: Boolean,
@@ -113,6 +53,9 @@ const ProductSchema = new mongoose.Schema(
     isStopSelling: {
       type: Boolean,
       default: false,
+    },
+    status: {
+      type: String,
     },
     description: {
       type: String,
@@ -140,52 +83,16 @@ const ProductSchema = new mongoose.Schema(
     videos: {
       type: String,
     },
-    status: {
-      type: String,
-    },
-    specifications: [
-      {
-        title: {
-          type: String,
-          required: true,
-        },
-        details: [
-          {
-            key: {
-              type: String,
-              required: true,
-            },
-            value: {
-              type: mongoose.Mixed,
-              required: true,
-            },
-          },
-        ],
-      },
-    ],
     views: {
       type: Number,
-    },
-
-    gifts: [
-      //quà tặng kèm
-      {
-        name: String,
-        value: String,
-        typeOfValue: String,
-      },
-    ],
-    series: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Series",
-    },
-    brand: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Brands",
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Categories",
+    },
+    brand: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brands",
     },
     warehouse: {
       type: mongoose.Schema.Types.ObjectId,
@@ -197,7 +104,20 @@ const ProductSchema = new mongoose.Schema(
         ref: "Tags",
       },
     ],
-    attributes: [attributeSchema],
+    attributes: {
+      type: Map,
+      of: String,
+    },
+    variants: [
+      {
+        type: Map,
+        of: String,
+      },
+    ],
+    filter: {
+      type: Map,
+      of: String,
+    },
   },
   {
     timestamps: true,

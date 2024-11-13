@@ -5,6 +5,7 @@ import { formatDay } from "../../../ultils/helper";
 
 function FeaturedPost({ data }) {
   const featuredPost = data[0];
+  if (!data || data.length === 0) return null;
 
   return (
     <section className="mb-8">
@@ -14,7 +15,7 @@ function FeaturedPost({ data }) {
           <Link to={`${featuredPost?.slug}`} className="relative">
             <img
               src={featuredPost?.thumbnail}
-              alt={featuredPost?.postTitle}
+              alt={featuredPost?.thumbnail}
               className="w-full h-full object-cover"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4">
@@ -40,7 +41,6 @@ function FeaturedPost({ data }) {
                   alt={post?.postTitle}
                   className="w-32 lg:w-48 object-cover rounded"
                 />
-
                 <div className="flex flex-col">
                   <h3 className="text-sm sm:text-base md:text-lg font-semibold hover:text-main line-clamp-2">
                     {post?.postTitle}
@@ -66,8 +66,6 @@ FeaturedPost.propTypes = {
       postTitle: PropTypes.string,
       author: PropTypes.string,
       date: PropTypes.string,
-      imageUrl: PropTypes.string,
-      title: PropTypes.string,
       slug: PropTypes.string.isRequired,
     })
   ),
