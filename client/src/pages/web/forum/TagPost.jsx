@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   HeadingSection,
   Sidebar,
@@ -11,7 +11,8 @@ import { getPosts } from "../../../redux/slices/post";
 
 const TagPost = () => {
   const dispatch = useDispatch();
-  const { tagsName } = useParams(); // lấy tag từ URL
+  const navigate = useNavigate();
+  const { tagsName } = useParams();
   const status = useSelector((state) => state.post.status);
   const postData = useSelector((state) => state.post.data);
   const [data, setData] = useState([]);
@@ -23,37 +24,43 @@ const TagPost = () => {
 
   useEffect(() => {
     if (status === "success" && Array.isArray(postData)) {
-      setData(
-        postData
-          .map((item) => ({
-            status: item.status,
-            id: item._id,
-            postTitle: item.postTitle,
-            shortDescription: item.shortDescription,
-            seoKeyWords: item.seoKeyWords,
-            content: item.content,
-            author: item.author?.name || "Unknown",
-            category: item?.category?.name,
-            rating: item.rating,
-            slug: item.slug,
-            date: item.createdAt,
-            thumbnail: item.thumbnail,
-            tags: item.tags.map((tag) => tag.name),
-          }))
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
+      const formattedData = postData
+        .map((item) => ({
+          status: item.status,
+          id: item._id,
+          postTitle: item.postTitle,
+          shortDescription: item.shortDescription,
+          seoKeyWords: item.seoKeyWords,
+          content: item.content,
+          author: item.author?.name || "Unknown",
+          category: item?.category?.name,
+          rating: item.rating,
+          slug: item.slug,
+          date: item.createdAt,
+          thumbnail: item.thumbnail,
+          tags: item.tags.map((tag) => tag.name),
+        }))
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      setData(formattedData);
+
+      const filteredData = formattedData.filter((post) =>
+        post.tags.includes(tagsName)
       );
+      if (filteredData.length === 0) {
+        navigate("/404");
+      }
+    } else if (status === "failed" || !postData) {
+      navigate("/404");
     }
-  }, [status, postData]);
+  }, [status, postData, navigate, tagsName]);
 
-  // Lọc bài viết theo tagsName
   const filteredData = data.filter((post) => post.tags.includes(tagsName));
-
   const visibleData = filteredData.slice(0, visibleItemCount);
 
   const handleLoadMore = () => {
     setVisibleItemCount((prevCount) => prevCount + 6);
   };
-
   return (
     <div className="container w-full mb-8">
       <div className="flex flex-col md:flex-row w-full pt-16">

@@ -124,6 +124,10 @@ export default function RootRouter() {
       ],
     },
     {
+      path: "/404",
+      element: <NotFound />,
+    },
+    {
       path: "*",
       element: <NotFound />,
     },
