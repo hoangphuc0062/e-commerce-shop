@@ -125,53 +125,25 @@ const getAllProduct = asyncHandler(async (req, res) => {
   }
 });
 
-const getProductBySlug = asyncHandler(async (req, res) => {
-  const { pid } = req.params;
-  if (!pid) {
+const addProduct = asyncHandler(async (req, res) => {
+  const product = req.body;
+  if (!product) {
     return res.status(400).json({
       mes: "Missing inputs",
     });
   }
 
-  const product = await Product.findOne({ slug: pid }).populate(
-    "category brand series"
-  );
+  const existedProduct = await Product.findOne({ slug: product?.slug });
 
-  if (!product) {
-    return res.status(404).json({
-      mes: "Product is not found",
+  if (existedProduct) {
+    return res.status(400).json({
+      mes: "Product is already existed",
     });
   }
-  return res.status(200).json(product);
-});
-
-const addProduct = asyncHandler(async (req, res) => {
-  const requiredFields = [
-    "name",
-    "slug",
-    "historicalPrice",
-    "description",
-    "images",
-    "weight",
-    "SKU",
-    "priceInMarket",
-    "price",
-    "onStock",
-    "unit",
-  ];
-
-  for (const field of requiredFields) {
-    if (!req.body[field]) {
-      return res.status(400).json({
-        error: `${field} is required`,
-      });
-    }
-  }
-
-  const product = await Product.create(req.body);
+  const newProduct = await Product.create(product);
   return res.status(201).json({
-    mes: product ? "create a product successfull" : "Some thing went wrong",
-    product,
+    mes: newProduct ? "create product successfull" : "Some thing went wrong",
+    newProduct,
   });
 });
 
@@ -216,7 +188,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
     });
   }
   const product = await Product.findByIdAndDelete(pid);
-  if (!product) throw new Error("Product is not found in datase");
+  if (!product) throw new Error("Product is not found in database");
   return res.status(200).json({
     mes: product ? "Delete product is succesful" : "Some thing went wrong",
   });
@@ -228,5 +200,4 @@ module.exports = {
   addManyProduct,
   updateProduct,
   deleteProduct,
-  getProductBySlug,
 };

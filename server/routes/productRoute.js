@@ -5,7 +5,6 @@ const ctrl = require("../controllers/productController");
 const { verifyAccessToken, isStaff } = require("../middlewares/vertifyToken");
 
 router.get("/", ctrl.getAllProduct);
-router.get("/slug/:pid", ctrl.getProductBySlug);
 
 router.use([verifyAccessToken, isStaff]);
 router.post("/create", ctrl.addProduct);
