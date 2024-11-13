@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   HeadingSection,
   Sidebar,
@@ -6,51 +6,57 @@ import {
 } from "../../../components/Forum";
 import { formatDay } from "../../../ultils/helper";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { getPosts } from "../../../redux/slices/post";
 import Skeleton from "@mui/material/Skeleton";
 
 const CategoryPost = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { categorySlug } = useParams();
   const postData = useSelector((state) => state.post.data);
   const [visibleItemCount, setVisibleItemCount] = useState(6);
-  const [loading, setLoading] = useState(true); // Thêm loading state
-  const observerRef = useRef(); // Dùng để theo dõi Intersection Observer
+  const [loading, setLoading] = useState(true);
+  const observerRef = useRef();
 
   useEffect(() => {
-    setLoading(true); // Bắt đầu loading khi component mount
-    dispatch(getPosts()).then(() => setLoading(false)); // Tắt loading sau khi lấy dữ liệu thành công
+    setLoading(true);
+    dispatch(getPosts()).then(() => setLoading(false));
   }, [dispatch]);
 
-  const formattedData = Array.isArray(postData)
-    ? postData
-        .filter((item) => item.category?.slug === categorySlug)
-        .map((item) => ({
-          status: item.status,
-          id: item._id,
-          postTitle: item.postTitle,
-          shortDescription: item.shortDescription,
-          seoKeyWords: item.seoKeyWords,
-          content: item.content,
-          author: item.author?.name || "Unknown",
-          category: item.category,
-          rating: item.rating,
-          slug: item.slug,
-          date: item.createdAt,
-          thumbnail: item.thumbnail,
-        }))
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-    : [];
+  const formattedData = useMemo(() => {
+    return Array.isArray(postData)
+      ? postData
+          .filter((item) => item.category?.slug === categorySlug)
+          .map((item) => ({
+            status: item.status,
+            id: item._id,
+            postTitle: item.postTitle,
+            shortDescription: item.shortDescription,
+            seoKeyWords: item.seoKeyWords,
+            content: item.content,
+            author: item.author?.name || "Unknown",
+            category: item.category,
+            rating: item.rating,
+            slug: item.slug,
+            date: item.createdAt,
+            thumbnail: item.thumbnail,
+          }))
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+      : [];
+  }, [postData, categorySlug]);
 
   const visibleData = formattedData.slice(0, visibleItemCount);
-
-  // Hàm để tải thêm khi cuộn xuống
   const handleLoadMore = () => {
     setVisibleItemCount((prevCount) => prevCount + 6);
   };
 
-  // Intersection Observer để tự động tải khi cuộn
+  useEffect(() => {
+    if (formattedData.length === 0) {
+      navigate("/404");
+    }
+  }, [formattedData, navigate]);
+
   const lastPostRef = useCallback(
     (node) => {
       if (loading) return;
@@ -67,7 +73,6 @@ const CategoryPost = () => {
     [loading]
   );
 
-  // Kiểm tra nếu còn bài viết để hiển thị nút "Xem thêm"
   const hasMorePosts = visibleItemCount < formattedData.length;
 
   return (

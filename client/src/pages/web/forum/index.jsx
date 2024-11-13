@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-
+import { useEffect, useMemo, useState } from "react";
 import {
   Sidebar,
   HeadingSection,
@@ -10,7 +9,6 @@ import {
   PostTag,
   PostScroll,
 } from "../../../components/Forum";
-
 import { getPosts } from "../../../redux/slices/post";
 import { Helmet } from "react-helmet-async";
 
@@ -47,7 +45,9 @@ function ForumPage() {
     }
   }, [status, postData]);
 
-  const uniqueCategories = [...new Set(data.map((item) => item.category))];
+  const uniqueCategories = useMemo(() => {
+    return [...new Set(data.map((item) => item.category))];
+  }, [data]);
 
   return (
     <div className="container w-full">
@@ -64,10 +64,10 @@ function ForumPage() {
               <TopicCard />
             </section>
 
-            {data && <FeaturedPost data={data} />}
+            {data.length > 0 && <FeaturedPost data={data} />}
           </section>
 
-          <PostScroll data={data} />
+          {data.length > 0 && <PostScroll data={data} />}
           <section className="mb-2">
             <div className="flex overflow-x-auto space-x-4">
               {uniqueCategories.slice(0, 3).map((category) => (
