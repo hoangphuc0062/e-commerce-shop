@@ -65,9 +65,9 @@ export default function BannerCollection() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (status === "success" && data) {
+    if (status === "success" && Array.isArray(data)) {
       setInitialData(
-        data?.map((item) => ({
+        data.map((item) => ({
           id: item._id,
           name: item?.title,
           brand: item?.brand?.name,
