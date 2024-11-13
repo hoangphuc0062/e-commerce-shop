@@ -116,11 +116,7 @@ export default function RootRouter() {
       children: [
         {
           path: "",
-          element: (
-            <ProtectedRoute>
-              <ForumPage />
-            </ProtectedRoute>
-          ),
+          element: <ForumPage />,
         },
         { path: ":slug", element: <DetailBlog /> },
         { path: "category/:categorySlug", element: <CategoryPost /> },

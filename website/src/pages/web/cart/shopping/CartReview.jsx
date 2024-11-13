@@ -60,9 +60,9 @@ export default function CartReview({
                 </>
               )}
             </div>
-            {products.map((product) => (
+            {products.map((product, index) => (
               <CartItem
-                key={product.id}
+                key={index}
                 product={product}
                 onQuantityChange={handleQuantityChange}
                 onRemove={handleRemoveProduct}

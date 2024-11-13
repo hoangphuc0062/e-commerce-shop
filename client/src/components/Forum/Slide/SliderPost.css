@@ -1,3 +1,17 @@
+/* Đầu tiên, ẩn các nút theo mặc định */
+button.slick-next,
+button.slick-prev {
+  opacity: 0;
+  transition: opacity 0.3s ease; /* Hiệu ứng chuyển đổi mượt */
+}
+
+/* Khi người dùng di chuột vào phần slider, hiện các nút */
+.slider-container:hover button.slick-next,
+.slider-container:hover button.slick-prev {
+  opacity: 1;
+}
+
+/* Các nút slick với cùng kiểu như cũ */
 button.slick-next,
 button.slick-prev {
   position: absolute;
@@ -7,7 +21,7 @@ button.slick-prev {
   font-size: 0;
   width: 40px;
   height: 40px;
-  background-color: #fff;
+  background-color: #1e40af;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -17,12 +31,12 @@ button.slick-next {
 }
 
 button.slick-next::before {
-  content: "\276F"; /* Right arrow */
+  content: "\276F"; /* Mũi tên phải */
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #000;
+  color: #fff;
 }
 
 button.slick-prev {
@@ -30,15 +44,15 @@ button.slick-prev {
 }
 
 button.slick-prev::before {
-  content: "\276E";
+  content: "\276E"; /* Mũi tên trái */
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #000;
+  color: #fff;
 }
 
 button.slick-next:hover,
 button.slick-prev:hover {
-  background-color: #fff;
+  background-color: #1e40af;
 }
