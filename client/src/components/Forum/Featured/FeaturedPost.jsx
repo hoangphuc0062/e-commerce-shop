@@ -1,12 +1,11 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import HeadingSection from "../Heading/HeadingSection";
 import PropTypes from "prop-types";
 import { formatDay } from "../../../ultils/helper";
-import { Skeleton } from "@mui/material";
 
 function FeaturedPost({ data }) {
   const featuredPost = data[0];
+  if (!data || data.length === 0) return null;
 
   return (
     <section className="mb-8">
@@ -67,8 +66,6 @@ FeaturedPost.propTypes = {
       postTitle: PropTypes.string,
       author: PropTypes.string,
       date: PropTypes.string,
-      imageUrl: PropTypes.string,
-      title: PropTypes.string,
       slug: PropTypes.string.isRequired,
     })
   ),
