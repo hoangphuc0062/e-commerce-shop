@@ -1,18 +1,43 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 import { FaArrowTrendUp } from "react-icons/fa6";
 import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import { GetBySlug } from "../../../redux/slices/post";
-import { Sidebar } from "../../../components/Forum";
-import { formatDay } from "../../../ultils/helper";
+import { HeadingSection, Sidebar, Votebar, VoteOption } from "../../../components/Forum";
+import { formatDay, renderStarFromNumber } from "../../../ultils/helper";
 import he from "he";
-
+import { Box, Modal, Typography } from "@mui/material";
+import { Button } from "@mui/material";
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 700,
+  height: 600,
+  bgcolor: "background.paper",
+  border: "2px solid #1e40af",
+  boxShadow: 24,
+  p: 4,
+};
 const DetailBlog = () => {
   const { slug } = useParams();
   const dispatch = useDispatch();
   const [data, setData] = useState(null);
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
+  const [payload, setPayload] = useState({
+    star: "",
+    comment: "",
+  });
+
+  const handleSubmitRating = async (value) => {
+
+  }
+  
   // Lấy trạng thái và dữ liệu bài viết từ Redux
   const status = useSelector((state) => state.post.getBySlugStatus);
   const slugData = useSelector((state) => state.post.slugData);
@@ -36,6 +61,7 @@ const DetailBlog = () => {
         category: slugData?.category?.name || "Unknown",
         categorySlug: slugData?.category?.slug || "Unknown",
         rating: slugData?.rating,
+        totalRating: slugData?.totalRating,
         slug: slugData?.slug,
         date: slugData?.createdAt,
         thumbnail: slugData?.thumbnail,
@@ -43,14 +69,13 @@ const DetailBlog = () => {
       });
     }
   }, [status, slugData]);
-
   if (status !== "success" || !data) {
     return null;
   }
   return (
     <div className="flex flex-col md:flex-row w-full pt-16 container">
       <Helmet>
-        <title>{}</title>
+        <title>{data.postTitle}</title>
         <meta name="description" content={he.decode(data.shortDescription)} />
         <meta name="keywords" content={data.seoKeyWords} />
       </Helmet>
@@ -76,12 +101,12 @@ const DetailBlog = () => {
           </div>
           {/* Đường dẫn breadcrumb */}
           <div className="text-sm mb-4 flex items-center gap-1 overflow-x-auto whitespace-nowrap">
-            <Link to="/forum" className="text-main">
+            <Link to="/" className="text-main">
               Trang chủ
             </Link>
             <p className="text-gray-600"> &raquo;</p>
             <Link
-              to={`/forum/category/${data?.categorySlug}`}
+              to={`forum/category/${data?.categorySlug}`}
               className="text-gray-600"
             >
               {data?.category}
@@ -143,31 +168,63 @@ const DetailBlog = () => {
                 </Link>
               ))}
           </div>
-          <div className="pt-4">
+          <div className="flex p-4 flex-col">
+            <HeadingSection title={`Bình luận bài viết`}/>
             {/* Đánh giá bài viết */}
-            <div className="flex flex-col items-end">
-              <div className="flex flex-col items-center">
-                <img
-                  src="https://cdn-static.sforum.vn/sforum/_next/static/media/danh-gia-bai-viet.98c2189c.png"
-                  alt="Đánh giá bài viết"
-                  className="mb-4 w-20 max-w-md"
-                />
-                <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <svg
-                      key={star}
-                      className="w-8 h-8 text-yellow-400"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
+            <div className="flex">
+              <div className="flex-4 flex items-center justify-center flex-col">
+                <span>{`${data?.totalRating}/5`}</span>
+                <span className="flex items-center gap-1">
+                  {renderStarFromNumber(data?.totalRating)?.map((el, index) => (
+                    <span key={index}>{el}</span>
                   ))}
-                </div>
-                <div className="text-sm text-gray-500 mt-2">
-                  (0 lượt đánh giá - 0/5)
-                </div>
+                </span>
               </div>
+
+              <div className="flex-6 p-4 flex flex-col gap-2">
+                {Array.from(Array(5).keys())
+                  .reverse()
+                  .map((el) => (
+                    <Votebar
+                      key={el}
+                      number={el + 1}
+                      ratingCount={5}
+                      ratingTotal={2}
+                    />
+                  ))}
+              </div>
+            </div>
+            <div className="p-4 flex items-center justify-center flex-col gap-2 text-sm">
+              <span>Bạn thấy sao về bài viết này?</span>
+              <Button onClick={handleOpen} variant="contained">
+                Đánh giá
+              </Button>
+              <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+              >
+                <Box sx={style}>
+                  <Typography
+                    id="modal-modal-title"
+                    variant="h6"
+                    component="h2"
+                  >
+                    Đánh giá bài viết
+                  </Typography>
+                  <Typography
+                    id="modal-modal-title"
+                    variant="h6"
+                    component="h2"
+                  >
+                    <VoteOption
+                      postTitle={data.postTitle}
+                      handleSubmitRating={handleSubmitRating}
+                    />
+                  </Typography>
+                </Box>
+              </Modal>
             </div>
           </div>
         </div>
