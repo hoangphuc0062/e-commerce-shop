@@ -148,13 +148,14 @@ export default function Cart() {
     dispatch(resetState({ key: "statusGetCart", value: "idle" }));
   }, [statusGetCart, datacart, dispatch]);
 
-  const [selectAll, setSelectAll] = useState(true);
+  const [selectAll, setSelectAll] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
 
-  const handleQuantityChange = (productId, newQuantity) => {
+  const handleQuantityChange = (productId, attributeId, newQuantity) => {
     setProducts((prevProducts) =>
       prevProducts.map((product) =>
-        product.id === productId
+        product.productId === productId &&
+        product.attributeValue?.id === attributeId
           ? { ...product, quantity: newQuantity }
           : product
       )
@@ -179,30 +180,44 @@ export default function Cart() {
 
   const handleSelectAll = () => {
     if (!selectAll) {
-      setSelectedProducts([]);
+      setSelectedProducts(
+        products.map(
+          (product) =>
+            `${product.productId}-${product.attributeValue?.id || "null"}`
+        )
+      );
     } else {
-      setSelectedProducts(products.map((product) => product.id));
+      setSelectedProducts([]);
     }
     setSelectAll(!selectAll);
   };
 
-  const handleCheck = (productId) => {
+  const handleCheck = (productId, attributeId) => {
+    const uniqueId = `${productId}-${attributeId || "null"}`;
     setSelectedProducts((prevSelected) =>
-      prevSelected.includes(productId)
-        ? prevSelected.filter((id) => id !== productId)
-        : [...prevSelected, productId]
+      prevSelected.includes(uniqueId)
+        ? prevSelected.filter((id) => id !== uniqueId)
+        : [...prevSelected, uniqueId]
     );
+    setSelectAll(true);
   };
 
   const handleRemoveSelected = () => {
-    const updatedProducts = selectedProducts.map((id) => {
-      const product = products.find((prod) => prod.id === id);
-      return {
-        productId: product.productId,
-        attributeId: product.attributeValue?.id,
-        quantity: product.quantity,
-      };
-    });
+    const updatedProducts = products
+      .map((product) => {
+        const uniqueId = `${product.productId}-${
+          product.attributeValue?.id || "null"
+        }`;
+        if (selectedProducts.includes(uniqueId)) {
+          return {
+            productId: product.productId,
+            attributeId: product.attributeValue?.id || null,
+            quantity: product.quantity,
+          };
+        }
+        return null;
+      })
+      .filter((item) => item !== null);
 
     dispatch(deleteCart(updatedProducts)).then((result) => {
       if (result.type === "auth/deleteCart/fulfilled") {
@@ -210,19 +225,28 @@ export default function Cart() {
         dispatch(getCart());
       }
     });
+
+    // Reset selected products and "select all" checkbox
     setSelectedProducts([]);
     setSelectAll(false);
   };
 
   const handleUpdateSelected = () => {
-    const updatedProducts = selectedProducts.map((id) => {
-      const product = products.find((prod) => prod.id === id);
-      return {
-        productId: product.productId,
-        attributeId: product.attributeValue?.id,
-        quantity: product.quantity,
-      };
-    });
+    const updatedProducts = products
+      .map((product) => {
+        const uniqueId = `${product.productId}-${
+          product.attributeValue?.id || "null"
+        }`;
+        if (selectedProducts.includes(uniqueId)) {
+          return {
+            productId: product.productId,
+            attributeId: product.attributeValue?.id || null,
+            quantity: product.quantity,
+          };
+        }
+        return null;
+      })
+      .filter((item) => item !== null);
 
     dispatch(updateCart(updatedProducts)).then((result) => {
       if (result.type === "auth/updateCart/fulfilled") {
@@ -230,6 +254,8 @@ export default function Cart() {
         dispatch(getCart());
       }
     });
+
+    // Reset selected products and "select all" checkbox
     setSelectedProducts([]);
     setSelectAll(false);
   };
