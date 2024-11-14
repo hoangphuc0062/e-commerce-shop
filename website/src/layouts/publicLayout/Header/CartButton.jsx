@@ -59,12 +59,13 @@ function CartButton({ data }) {
   const handleDelete = useCallback(() => {
     const productIds = checkedItems.map((index) => cartData[index].productId);
     const attributeIds = checkedItems.map(
-      (index) => cartData[index].attributeValue.id[0]
+      (index) => cartData[index]?.attributeValue?.id?.[0] || null
     );
-    const itemsToDelete = productIds.map((id) => ({
-      productId: id,
-      attributeId: attributeIds,
+    const itemsToDelete = productIds.map((productId, index) => ({
+      productId,
+      attributeId: attributeIds[index] || null,
     }));
+
     dispatch(deleteCart(itemsToDelete)).then((result) => {
       if (result.type === "auth/deleteCart/fulfilled") {
         handleToast("success", "Xoá sản phẩm thành công");
@@ -88,10 +89,11 @@ function CartButton({ data }) {
       const item = cartData[index];
       return {
         productId: item.productId,
-        attributeId: item.attributeValue.id,
+        attributeId: item.attributeValue?.id || "null",
         quantity: item.quantity,
       };
     });
+
     dispatch(updateCart(updatedItems)).then((result) => {
       if (result.type === "auth/updateCart/fulfilled") {
         handleToast("success", "Cập nhật giỏ hàng thành công");
