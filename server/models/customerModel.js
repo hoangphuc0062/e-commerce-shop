@@ -37,6 +37,7 @@ var customerSchema = new mongoose.Schema(
         pid: { type: mongoose.Types.ObjectId, ref: "Product" },
         attributeId: {
           type: String,
+          default: null,
         },
         quantity: { type: Number, default: 1 },
       },

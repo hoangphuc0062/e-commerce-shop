@@ -401,14 +401,21 @@ const updateCart = asyncHandler(async (req, res) => {
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
-
   items.forEach(({ productId, attributeId, quantity }) => {
-    // Check if the item with the given productId and attributeId already exists in the cart
-    const cartItemIndex = customer.cart.findIndex(
-      (item) =>
+    if (attributeId === "null") {
+      attributeId = null;
+    }
+
+    const cartItemIndex = customer.cart.findIndex((item) => {
+      const itemAttributeId = item.attributeId
+        ? item.attributeId.toString()
+        : null;
+      const inputAttributeId = attributeId ? attributeId.toString() : null;
+      return (
         item.pid.toString() === productId.toString() &&
-        item.attributeId.toString() === attributeId.toString()
-    );
+        itemAttributeId === inputAttributeId
+      );
+    });
 
     if (cartItemIndex > -1) {
       // If the item exists, update its quantity
@@ -422,7 +429,7 @@ const updateCart = asyncHandler(async (req, res) => {
       if (quantity > 0) {
         customer.cart.push({
           pid: productId,
-          attributeId: attributeId,
+          attributeId: attributeId, // This can be null for single products
           quantity: quantity,
         });
       } else {
@@ -431,7 +438,6 @@ const updateCart = asyncHandler(async (req, res) => {
     }
   });
 
-  // Save the updated cart
   await customer.save();
 
   res.status(200).json({
@@ -484,7 +490,7 @@ const deleteManyCart = asyncHandler(async (req, res) => {
       .status(400)
       .json({ message: "Invalid input, expected an array of items" });
   }
-
+  console.log(items);
   const customer = await Customer.findById(userId);
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
