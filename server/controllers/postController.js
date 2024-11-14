@@ -115,6 +115,31 @@ const deleteManyPost = asyncHandler(async (req, res) => {
     mes: post ? "Delete posts is successful" : "Some thing went wrong",
   });
 });
+
+const ratingPosts = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { star, comment, bid } = req.body;
+  if (!star || !bid) throw new Error("Missing inputs");
+  const ratingPosts = await Post.findById(bid);
+  const alreadyRating = ratingPosts?.rating?.some((el) => el.customer);
+  if (alreadyRating) {
+    // Update star and comment
+  } else {
+    // Add star and comment
+    const response = await Post.findByIdAndUpdate(
+      bid,
+      {
+        $push: { rating: { star, comment, customer: _id } },
+      },
+      { new: true }
+    );
+  }
+
+  return res.status(200).json({
+    status: true,
+  });
+});
+
 module.exports = {
   getAllPost,
   getPostBySlug,
@@ -123,4 +148,5 @@ module.exports = {
   updatePost,
   deletePost,
   deleteManyPost,
+  ratingPosts,
 };

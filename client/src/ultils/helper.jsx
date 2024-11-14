@@ -1,3 +1,5 @@
+import { FaRegStar, FaStar } from "react-icons/fa";
+
 export const formatDay = (isoDateString) => {
   const date = new Date(isoDateString);
   const day = String(date.getDate()).padStart(2, "0");
@@ -17,4 +19,21 @@ export const formatCurrency = (number) => {
     style: "currency",
     currency: "VND",
   }).format(number);
+};
+
+export const renderStarFromNumber = (number, size) => {
+  const stars = [];
+  const color = Number.isFinite(number) && number > 0 ? "#FFD700" : "#000000";
+  const filledStars = Math.floor(number) || 0;
+
+  for (let i = 0; i < filledStars; i++) {
+    stars.push(<FaStar color={color} size={size || 16} key={`filled-${i}`} />);
+  }
+  for (let i = filledStars; i < 5; i++) {
+    stars.push(
+      <FaRegStar color={color} size={size || 16} key={`empty-${i}`} />
+    );
+  }
+
+  return stars;
 };
