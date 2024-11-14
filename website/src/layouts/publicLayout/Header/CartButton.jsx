@@ -15,11 +15,12 @@ function CartButton({ data }) {
   const [state, setState] = useState({ right: false });
   const [cartData, setCartData] = useState([]);
   const [checkedItems, setCheckedItems] = useState([]);
-  const [selectAll, setSelectAll] = useState(false);
+  const [selectAll, setSelectAll] = useState(true);
   const dispatch = useDispatch();
 
   useEffect(() => {
     setCartData(data);
+    setCheckedItems(data.map((_, index) => index));
   }, [data]);
 
   const toggleDrawer = (anchor, open) => (event) => {
@@ -39,9 +40,9 @@ function CartButton({ data }) {
 
   const handleSelectAll = () => {
     if (selectAll) {
-      setCheckedItems([]);
-    } else {
       setCheckedItems(cartData.map((_, index) => index));
+    } else {
+      setCheckedItems([]);
     }
     setSelectAll(!selectAll);
   };
@@ -57,7 +58,13 @@ function CartButton({ data }) {
 
   const handleDelete = useCallback(() => {
     const productIds = checkedItems.map((index) => cartData[index].productId);
-    const itemsToDelete = productIds.map((id) => ({ productId: id }));
+    const attributeIds = checkedItems.map(
+      (index) => cartData[index].attributeValue.id[0]
+    );
+    const itemsToDelete = productIds.map((id) => ({
+      productId: id,
+      attributeId: attributeIds,
+    }));
     dispatch(deleteCart(itemsToDelete)).then((result) => {
       if (result.type === "auth/deleteCart/fulfilled") {
         handleToast("success", "Xoá sản phẩm thành công");
@@ -81,11 +88,10 @@ function CartButton({ data }) {
       const item = cartData[index];
       return {
         productId: item.productId,
-        attributeId: item.attribute._id,
+        attributeId: item.attributeValue.id,
         quantity: item.quantity,
       };
     });
-
     dispatch(updateCart(updatedItems)).then((result) => {
       if (result.type === "auth/updateCart/fulfilled") {
         handleToast("success", "Cập nhật giỏ hàng thành công");

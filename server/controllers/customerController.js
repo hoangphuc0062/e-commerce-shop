@@ -359,45 +359,35 @@ const addCart = asyncHandler(async (req, res) => {
 
 // get cart
 const getCart = asyncHandler(async (req, res) => {
-  const userId = req.user._id; // Assuming `req.user` contains authenticated user data
+  const userId = req.user._id;
 
-  // Find the customer's cart and populate the product details
   const customer = await Customer.findById(userId).populate({
-    path: "cart.pid", // Populate main product details
-    select: "name thumbnail price slug attributes", // Include attributes for manual lookup
+    path: "cart.pid",
+    select: "name thumbnail price slug variants",
   });
 
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
 
-  // Process the cart items to include specific attribute details
-  const cartWithAttributes = customer.cart.map((cartItem) => {
-    const product = cartItem.pid;
-    const attribute = product.attributes.find(
-      (attr) => attr._id.toString() === cartItem.attributeId.toString()
+  const cart = customer.cart.map((item) => {
+    const product = item.pid;
+    const variant = product.variants?.find(
+      (v) => v.get("id") === item.attributeId
     );
 
     return {
       productId: product._id,
       name: product.name,
       thumbnail: product.thumbnail,
-      price: product.price,
+      price: variant?.get("price") || product.price,
       slug: product.slug,
-      quantity: cartItem.quantity,
-      attribute: attribute
-        ? {
-            _id: attribute._id,
-            value: attribute.value,
-            price: attribute.price,
-            images: attribute.images,
-          }
-        : null, // If attribute not found, set to null
+      attributeValue: variant,
+      quantity: item.quantity,
     };
   });
 
-  // Send back the cart with populated attribute details
-  res.status(200).json(cartWithAttributes);
+  res.status(200).json(cart);
 });
 
 // update cart
@@ -489,35 +479,30 @@ const deleteManyCart = asyncHandler(async (req, res) => {
   const items = req.body;
   const userId = req.user._id;
 
-  // Check if items is an array
   if (!Array.isArray(items)) {
     return res
       .status(400)
       .json({ message: "Invalid input, expected an array of items" });
   }
 
-  // Find the customer's cart
   const customer = await Customer.findById(userId);
-
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
 
-  // Filter out items to be deleted
-  const updatedCart = customer.cart.filter((item) => {
-    const found = items.find(
-      (cartItem) => cartItem.productId === item.pid.toString()
-    );
-    return !found;
-  });
+  const itemsToDelete = new Set(
+    items.map((item) => `${item.productId}-${item.attributeId}`)
+  );
 
-  // Update the customer's cart with the filtered items
-  customer.cart = updatedCart;
-  await customer.save(); // Save the changes to the database
+  customer.cart = customer.cart.filter(
+    (item) => !itemsToDelete.has(`${item.pid.toString()}-${item.attributeId}`)
+  );
+
+  await customer.save();
 
   res.status(200).json({
     message: "Cart items removed successfully",
-    cart: updatedCart,
+    cart: customer.cart,
   });
 });
 
