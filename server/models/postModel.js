@@ -62,7 +62,6 @@ const postSchema = new mongoose.Schema(
         },
         comment: {
           type: String,
-          minlength: 15, // Giới hạn độ dài tối thiểu của comment là 15 ký tự
         },
       },
     ],

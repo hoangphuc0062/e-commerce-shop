@@ -1,14 +1,22 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { FaArrowTrendUp } from "react-icons/fa6";
 import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
-import { GetBySlug } from "../../../redux/slices/post";
-import { HeadingSection, Sidebar, Votebar, VoteOption } from "../../../components/Forum";
+import { GetBySlug, submitRating } from "../../../redux/slices/post";
+import {
+  Comment,
+  HeadingSection,
+  Sidebar,
+  Votebar,
+  VoteOption,
+} from "../../../components/Forum";
 import { formatDay, renderStarFromNumber } from "../../../ultils/helper";
 import he from "he";
 import { Box, Modal, Typography } from "@mui/material";
 import { Button } from "@mui/material";
+import Swal from "sweetalert2";
+
 const style = {
   position: "absolute",
   top: "50%",
@@ -24,20 +32,46 @@ const style = {
 const DetailBlog = () => {
   const { slug } = useParams();
   const dispatch = useDispatch();
+  const isLoginned = useSelector((state) => state.customer.isLoginned);
   const [data, setData] = useState(null);
-    const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+  const [open, setOpen] = useState(false);
+  const handleClose = () => setOpen(false);
+  const handleOpen = () => {
+    if (!isLoginned) {
+      Swal.fire({
+        title: "Bạn cần đăng nhập!",
+        text: "Vui lòng đăng nhập để thực hiện hành động này.",
+        icon: "warning",
+        confirmButtonText: "Đăng nhập",
+        confirmButtonColor: "#1e40af",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/login";
+        }
+      });
+    } else {
+      setOpen(true);
+    }
+  };
 
-  const [payload, setPayload] = useState({
-    star: "",
-    comment: "",
-  });
+  const handleSubmitRating = ({ comment, star }) => {
+    if (!comment || !star || !data.id) {
+      alert("Xin hãy điền đầy đủ thông tin");
+      return;
+    }
 
-  const handleSubmitRating = async (value) => {
+    // Dispatch the submitRating action with the necessary payload
+    const payload = {
+      postId: data.id,
+      star,
+      comment,
+    };
 
-  }
-  
+    dispatch(submitRating(payload));
+    alert("Cảm ơn bạn đã đánh giá!");
+
+    handleClose();
+  };
   // Lấy trạng thái và dữ liệu bài viết từ Redux
   const status = useSelector((state) => state.post.getBySlugStatus);
   const slugData = useSelector((state) => state.post.slugData);
@@ -169,7 +203,7 @@ const DetailBlog = () => {
               ))}
           </div>
           <div className="flex p-4 flex-col">
-            <HeadingSection title={`Bình luận bài viết`}/>
+            <HeadingSection title={`Bình luận bài viết`} />
             {/* Đánh giá bài viết */}
             <div className="flex">
               <div className="flex-4 flex items-center justify-center flex-col">
@@ -188,8 +222,11 @@ const DetailBlog = () => {
                     <Votebar
                       key={el}
                       number={el + 1}
-                      ratingCount={5}
-                      ratingTotal={2}
+                      ratingCount={
+                        data?.rating.filter((item) => item.star === el + 1)
+                          ?.length
+                      }
+                      ratingTotal={data?.rating?.length}
                     />
                   ))}
               </div>
@@ -225,6 +262,17 @@ const DetailBlog = () => {
                   </Typography>
                 </Box>
               </Modal>
+            </div>
+            <div className="flex flex-col gap-4">
+              {data?.rating?.map((el) => (
+                <Comment
+                  key={el._id}
+                  star={el.star}
+                  comment={el.comment}
+                  name={el.customer.name}
+                  avatar={el.customer.avatar}
+                />
+              ))}
             </div>
           </div>
         </div>
