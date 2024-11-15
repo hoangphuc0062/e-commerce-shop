@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Customer = require("../models/customerModel");
+const Product = require("../models/productModel");
 
 const crypto = require("crypto");
 const {
@@ -391,6 +392,60 @@ const getCart = asyncHandler(async (req, res) => {
 });
 
 // update cart
+// const updateCart = asyncHandler(async (req, res) => {
+//   const items = req.body;
+//   const userId = req.user._id;
+
+//   // Find the customer's cart
+//   const customer = await Customer.findById(userId);
+
+//   if (!customer) {
+//     return res.status(404).json({ message: "Customer not found" });
+//   }
+//   items.forEach(({ productId, attributeId, quantity }) => {
+//     if (attributeId === "null") {
+//       attributeId = null;
+//     }
+
+//     const cartItemIndex = customer.cart.findIndex((item) => {
+//       const itemAttributeId = item.attributeId
+//         ? item.attributeId.toString()
+//         : null;
+//       const inputAttributeId = attributeId ? attributeId.toString() : null;
+//       return (
+//         item.pid.toString() === productId.toString() &&
+//         itemAttributeId === inputAttributeId
+//       );
+//     });
+
+//     if (cartItemIndex > -1) {
+
+//       if (quantity > 0) {
+//         customer.cart[cartItemIndex].quantity = quantity;
+//       } else {
+//         customer.cart.splice(cartItemIndex, 1);
+//       }
+//     } else {
+//       if (quantity > 0) {
+//         customer.cart.push({
+//           pid: productId,
+//           attributeId: attributeId,
+//           quantity: quantity,
+//         });
+//       } else {
+//         return res.status(400).json({ message: "Invalid quantity" });
+//       }
+//     }
+//   });
+
+//   await customer.save();
+
+//   res.status(200).json({
+//     message: "Cart updated successfully",
+//     cart: customer.cart,
+//   });
+// });
+
 const updateCart = asyncHandler(async (req, res) => {
   const items = req.body; // Expecting an array of items directly
   const userId = req.user._id;
@@ -401,9 +456,38 @@ const updateCart = asyncHandler(async (req, res) => {
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
-  items.forEach(({ productId, attributeId, quantity }) => {
+
+  for (const { productId, attributeId, quantity } of items) {
     if (attributeId === "null") {
       attributeId = null;
+    }
+
+    // Fetch the product details
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ message: `Product with ID ${productId} not found` });
+    }
+
+    // Check the stock availability
+    let availableStock = product.onStock;
+    if (attributeId) {
+      const attribute = product.variants.find(
+        (attr) => attr.id === attributeId
+      );
+      if (!attribute) {
+        return res.status(404).json({
+          message: `Insufficient stock for product`,
+        });
+      }
+      availableStock = attribute.onStock;
+    }
+
+    if (quantity > availableStock) {
+      return res
+        .status(400)
+        .json({ message: `Insufficient stock for product` });
     }
 
     const cartItemIndex = customer.cart.findIndex((item) => {
@@ -436,7 +520,7 @@ const updateCart = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Invalid quantity" });
       }
     }
-  });
+  }
 
   await customer.save();
 
@@ -445,7 +529,6 @@ const updateCart = asyncHandler(async (req, res) => {
     cart: customer.cart,
   });
 });
-
 // xoá cart
 const deleteCartItem = asyncHandler(async (req, res) => {
   const { productId, attributeId } = req.body;
@@ -490,7 +573,6 @@ const deleteManyCart = asyncHandler(async (req, res) => {
       .status(400)
       .json({ message: "Invalid input, expected an array of items" });
   }
-  console.log(items);
   const customer = await Customer.findById(userId);
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
