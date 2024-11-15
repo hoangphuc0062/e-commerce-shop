@@ -9,6 +9,6 @@ export { default as SlidePostCategory } from "./Slide/SliderPostCategory";
 export { default as SlidePostTag } from "./Slide/SliderPostTag";
 export { default as TopicCard } from "./Card/TopicCard";
 export { default as Votebar } from "./Ratings/Votebar";
-export { default as Ratings } from "./Ratings/Ratings";
+export { default as Comment } from "./Ratings/Comment";
 export { default as VoteOption } from "./Ratings/VoteOption";
 export { default as Modal } from "./Modal/Modal";

@@ -5,21 +5,22 @@ const Votebar = ({ number, ratingCount, ratingTotal }) => {
   const { FaStar } = icons;
   const percentRef = useRef();
   useEffect(() => {
-    percentRef.current.style.cssText = `right: ${100 - Math.round(
-      (ratingTotal * 100) / ratingCount
-    )}%`;
+    const percent = ratingCount
+      ? Math.round((ratingCount / ratingTotal) * 100)
+      : 0;
+    percentRef.current.style.width = `${percent}%`;
   }, [ratingTotal, ratingCount]);
   return (
     <div className="flex items-center gap-2 text-sm text-gray-500">
-      <div className="flex w-[10%] items-center justify-center gap-1">
+      <div className="flex w-[10%] items-center justify-center gap-1 text-sm">
         <span>{number}</span>
         <FaStar color="#FFD700" />
       </div>
       <div className="w-[75%]">
-        <div className="w-full h-[6px] bg-gray-200 rounded-full relative">
+        <div className="h-[6px] bg-gray-200 rounded-full relative w-full">
           <div
             ref={percentRef}
-            className="absolute inset-0 bg-main rounded-full"
+            className="absolute left-0 bg-main h-full rounded-full"
           ></div>
         </div>
       </div>
