@@ -140,11 +140,9 @@ const deleteManyPost = asyncHandler(async (req, res) => {
 const ratingPosts = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { star, comment, bid } = req.body;
-  if (!star || !bid || !comment) throw new Error("Missing inputs");
+  if (!star || !bid) throw new Error("Missing inputs");
   const ratingPosts = await Post.findById(bid);
-  const alreadyRating = ratingPosts?.rating?.find(
-    (el) => el.customer.toString() === _id
-  );
+  const alreadyRating = ratingPosts?.rating?.find((el) => el.customer);
   if (alreadyRating) {
     // Update star and comment
     await Post.updateOne(
