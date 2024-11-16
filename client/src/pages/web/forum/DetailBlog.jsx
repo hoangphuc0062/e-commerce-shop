@@ -55,14 +55,11 @@ const DetailBlog = () => {
   };
 
   const handleSubmitRating = ({ comment, star }) => {
-    if (!comment || !star || !data.id) {
+    if (!comment || !star || !slugData._id) {
       alert("Xin hãy điền đầy đủ thông tin");
-      return;
     }
-
-    // Dispatch the submitRating action with the necessary payload
     const payload = {
-      postId: data.id,
+      postId: slugData?._id,
       star,
       comment,
     };
@@ -72,10 +69,10 @@ const DetailBlog = () => {
 
     handleClose();
   };
+
   // Lấy trạng thái và dữ liệu bài viết từ Redux
   const status = useSelector((state) => state.post.getBySlugStatus);
   const slugData = useSelector((state) => state.post.slugData);
-
   useEffect(() => {
     dispatch(GetBySlug(slug));
   }, [slug, dispatch]);

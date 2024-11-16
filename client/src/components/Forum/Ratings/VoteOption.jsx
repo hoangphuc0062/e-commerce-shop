@@ -22,7 +22,7 @@ const VoteOption = ({ postTitle, handleSubmitRating }) => {
         cols="30"
         rows="10"
         className="w-full h-40 border-2 border-gray-300 rounded-md p-2 resize-none focus:outline-main text-sm"
-        placeholder="Nhập đánh giá của bạn (Tối thiểu 15 ký tự)"
+        placeholder="Nhập đánh giá của bạn"
         value={comment}
         onChange={(e) => setComment(e.target.value)}
       ></textarea>
