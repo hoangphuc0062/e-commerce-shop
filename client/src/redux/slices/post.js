@@ -19,10 +19,10 @@ export const GetBySlug = createAsyncThunk("post/getBySlug", (slug, thunkAPI) =>
 
 export const submitRating = createAsyncThunk(
   "post/ratings",
-  async ({ postId, star, comment }, thunkAPI) => {
+  async ({ bid, star, comment }, thunkAPI) => {
     return await handleAsyncThunk(
       PostSevice.ratings,
-      [{ postId, star, comment }],
+      [{ bid, star, comment }],
       thunkAPI
     );
   }

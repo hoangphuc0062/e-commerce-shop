@@ -16,6 +16,7 @@ import he from "he";
 import { Box, Modal, Typography } from "@mui/material";
 import { Button } from "@mui/material";
 import Swal from "sweetalert2";
+import { handleToast } from "../../../ultils/toast";
 
 const style = {
   position: "absolute",
@@ -53,19 +54,22 @@ const DetailBlog = () => {
       setOpen(true);
     }
   };
+  const handleSubmitRating = async ({ comment, star }) => {
+    // Lấy thông tin người dùng từ Redux
 
-  const handleSubmitRating = ({ comment, star }) => {
-    if (!comment || !star || !slugData._id) {
-      alert("Xin hãy điền đầy đủ thông tin");
+    if (!comment || !star || !slugData?._id) {
+      handleToast("error", "Vui lòng nhập thông tin đánh giá");
+      return;
     }
+
     const payload = {
-      postId: slugData?._id,
+      bid: slugData._id,
       star,
       comment,
     };
 
     dispatch(submitRating(payload));
-    alert("Cảm ơn bạn đã đánh giá!");
+    handleToast("success", "Cảm ơn bạn đã đánh giá!", 3000);
 
     handleClose();
   };
