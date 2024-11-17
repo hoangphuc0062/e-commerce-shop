@@ -142,7 +142,9 @@ const ratingPosts = asyncHandler(async (req, res) => {
   const { star, comment, bid } = req.body;
   if (!star || !bid) throw new Error("Missing inputs");
   const ratingPosts = await Post.findById(bid);
-  const alreadyRating = ratingPosts?.rating?.find((el) => el.customer);
+  const alreadyRating = ratingPosts?.rating?.find(
+    (el) => el.customer.toString() === _id.toString()
+  );
   if (alreadyRating) {
     // Update star and comment
     await Post.updateOne(
