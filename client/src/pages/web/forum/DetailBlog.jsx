@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 import { FaArrowTrendUp } from "react-icons/fa6";
 import { Helmet } from "react-helmet-async";
@@ -8,7 +8,7 @@ import {
   Comment,
   HeadingSection,
   Sidebar,
-  Votebar,
+  Votebar, 
   VoteOption,
 } from "../../../components/Forum";
 import { formatDay, renderStarFromNumber } from "../../../ultils/helper";
@@ -23,8 +23,8 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 700,
-  height: 600,
+  width: "90%", // Responsive
+  maxWidth: 700,
   bgcolor: "background.paper",
   border: "2px solid #1e40af",
   boxShadow: 24,
@@ -33,6 +33,9 @@ const style = {
 const DetailBlog = () => {
   const { slug } = useParams();
   const dispatch = useDispatch();
+  // Lấy trạng thái và dữ liệu bài viết từ Redux
+  const status = useSelector((state) => state.post.getBySlugStatus);
+  const slugData = useSelector((state) => state.post.slugData);
   const isLoginned = useSelector((state) => state.customer.isLoginned);
   const [data, setData] = useState(null);
   const [open, setOpen] = useState(false);
@@ -54,29 +57,29 @@ const DetailBlog = () => {
       setOpen(true);
     }
   };
-  const handleSubmitRating = async ({ comment, star }) => {
-    // Lấy thông tin người dùng từ Redux
 
-    if (!comment || !star || !slugData?._id) {
-      handleToast("error", "Vui lòng nhập thông tin đánh giá");
-      return;
-    }
+  const handleSubmitRating = useCallback(
+    async ({ comment, star }) => {
+      if (!comment || !star || !slugData?._id) {
+        handleToast("error", "Vui lòng nhập thông tin đánh giá");
+        return;
+      }
 
-    const payload = {
-      bid: slugData._id,
-      star,
-      comment,
-    };
+      const payload = {
+        bid: slugData._id,
+        star,
+        comment,
+      };
 
-    dispatch(submitRating(payload));
-    handleToast("success", "Cảm ơn bạn đã đánh giá!", 3000);
+      await dispatch(submitRating(payload));
+      handleToast("success", "Cảm ơn bạn đã đánh giá!", 3000);
 
-    handleClose();
-  };
+      handleClose();
+      dispatch(GetBySlug(slug)); // Rerender after rating
+    },
+    [dispatch, slug, slugData?._id]
+  );
 
-  // Lấy trạng thái và dữ liệu bài viết từ Redux
-  const status = useSelector((state) => state.post.getBySlugStatus);
-  const slugData = useSelector((state) => state.post.slugData);
   useEffect(() => {
     dispatch(GetBySlug(slug));
   }, [slug, dispatch]);
@@ -91,8 +94,7 @@ const DetailBlog = () => {
         seoKeyWords: slugData?.seoKeyWords,
         content: slugData?.content,
         author: slugData?.author?.name || "Unknown",
-        authorImageUrl:
-          slugData?.author?.imageUrl || "/path/to/default-image.jpg",
+        authorAvatar: slugData?.author?.avatar,
         category: slugData?.category?.name || "Unknown",
         categorySlug: slugData?.category?.slug || "Unknown",
         rating: slugData?.rating,
@@ -107,6 +109,7 @@ const DetailBlog = () => {
   if (status !== "success" || !data) {
     return null;
   }
+
   return (
     <div className="flex flex-col md:flex-row w-full pt-16 container">
       <Helmet>
@@ -171,7 +174,7 @@ const DetailBlog = () => {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
                 <img
-                  src={data.authorImageUrl}
+                  src={data.authorAvatar}
                   alt={data.author}
                   className="w-10 h-10 rounded-full mr-3"
                 />
@@ -203,10 +206,15 @@ const DetailBlog = () => {
                 </Link>
               ))}
           </div>
-          <div className="flex p-4 flex-col">
-            <HeadingSection title={`Bình luận bài viết`} />
-            {/* Đánh giá bài viết */}
-            <div className="flex">
+          {/* <div>
+            <HeadingSection title="Bài viết liên quan" />
+            <div className="flex flex-col gap-4">
+            </div>
+          </div> */}
+          {/* Đánh giá bài viết */}
+          <div className="flex flex-col">
+            <HeadingSection title="Bình luận bài viết" />
+            <div className="flex flex-col gap-4 lg:flex-row">
               <div className="flex-4 flex items-center justify-center flex-col">
                 <span>{`${data?.totalRating}/5`}</span>
                 <span className="flex items-center gap-1">
@@ -249,13 +257,6 @@ const DetailBlog = () => {
                     variant="h6"
                     component="h2"
                   >
-                    Đánh giá bài viết
-                  </Typography>
-                  <Typography
-                    id="modal-modal-title"
-                    variant="h6"
-                    component="h2"
-                  >
                     <VoteOption
                       postTitle={data.postTitle}
                       handleSubmitRating={handleSubmitRating}
@@ -270,8 +271,11 @@ const DetailBlog = () => {
                   key={el._id}
                   star={el.star}
                   comment={el.comment}
-                  name={el.customer.name}
-                  avatar={el.customer.avatar}
+                  name={el.customer?.name}
+                  avatar={
+                    el.customer?.avatar ||
+                    "https://asset.cloudinary.com/dgthe0zuj/426512c1702396bd962a4de573a60b15"
+                  }
                 />
               ))}
             </div>
