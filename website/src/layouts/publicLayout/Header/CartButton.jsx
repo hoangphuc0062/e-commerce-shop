@@ -87,19 +87,30 @@ function CartButton({ data }) {
   const handleUpdateCart = () => {
     const updatedItems = checkedItems.map((index) => {
       const item = cartData[index];
+      const price = item.attributeValue?.price || item.price;
       return {
         productId: item.productId,
         attributeId: item.attributeValue?.id || "null",
         quantity: item.quantity,
+        price: price,
       };
     });
 
     dispatch(updateCart(updatedItems)).then((result) => {
+      console.log(result);
       if (result.type === "auth/updateCart/fulfilled") {
         handleToast("success", "Cập nhật giỏ hàng thành công");
         dispatch(getCart());
         setCheckedItems([]);
         setSelectAll(false);
+      } else if (result.type === "auth/updateCart/rejected") {
+        const mes = result.payload.message;
+        if (mes === "Assignment to constant variable") {
+          handleToast(
+            "error",
+            "Số lượng sản phẩm trong giỏ hàng vượt quá số lượng tồn kho"
+          );
+        }
       }
     });
   };
