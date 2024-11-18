@@ -24,7 +24,7 @@ const Votebar = ({ number, ratingCount, ratingTotal }) => {
           ></div>
         </div>
       </div>
-      <div className="flex justify-end text-xs w-[15%] text-gray-400">{`${
+      <div className="flex justify-end lg:text-xs text-[10px] w-[15%] text-gray-400">{`${
         ratingCount || 0
       } đánh giá`}</div>
     </div>

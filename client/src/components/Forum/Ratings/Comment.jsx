@@ -2,7 +2,7 @@ import { renderStarFromNumber } from "../../../ultils/helper";
 
 const Comment = ({ avatar, name = "Ẩn Danh", star, comment }) => {
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 border-b border-gray-300">
       <div className="flex-none">
         <img
           src={avatar}
@@ -14,17 +14,15 @@ const Comment = ({ avatar, name = "Ẩn Danh", star, comment }) => {
         <div className="flex justify-between items-center">
           <h3 className="font-semibold">{name}</h3>
         </div>
-        <div className="flex flex-col gap-2 pl-4 text-sm mt-4 border border-gray-300 py-2 bg-gray-100">
-          <span className="flex items-center gap-1">
-            <span className="font-semibold">Số Sao:</span>
+        <div className="flex flex-col gap-2 pl-4 text-sm mt-4 py-2">
+          <span className="flex items-start gap-1">
             <span className="flex items-center gap-1">
               {renderStarFromNumber(star)?.map((el, index) => (
                 <span key={index}>{el}</span>
               ))}
             </span>
           </span>
-          <span className="flex items-center gap-1">
-            <span className="font-semibold">Bình luận:</span>
+          <span className="flex items-start gap-1 flex-col">
             <span className="flex gap-1">{comment}</span>
           </span>
         </div>

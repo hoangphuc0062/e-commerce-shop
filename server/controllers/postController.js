@@ -6,7 +6,7 @@ const getAllPost = asyncHandler(async (req, res) => {
   const sortBy = req.query.sort;
   const order = req.query.order === "asc" ? 1 : -1;
   const posts = await Post.find()
-    .populate("author", "name")
+    .populate("author", "name avatar")
 
     .populate("category", "name slug")
     .populate("tags", "name")
@@ -26,7 +26,7 @@ const getPostBySlug = asyncHandler(async (req, res) => {
     return res.status(400).json({ mes: "Missing slug" });
   }
   const post = await Post.findOne({ slug })
-    .populate("author", "name")
+    .populate("author", "name avatar")
     .populate("category", "name slug")
     .populate("tags", "name")
     .populate({
@@ -47,7 +47,7 @@ const getPostById = asyncHandler(async (req, res) => {
     return res.status(400).json({ mes: "bid hasnt founded" });
   }
   const post = await Post.findById(bid)
-    .populate("author", "name")
+    .populate("author", "name avatar")
     .populate("category", "name slug")
     .populate("tags", "name")
     .populate({
