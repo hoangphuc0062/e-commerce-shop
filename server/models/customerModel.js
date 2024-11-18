@@ -37,8 +37,10 @@ var customerSchema = new mongoose.Schema(
         pid: { type: mongoose.Types.ObjectId, ref: "Product" },
         attributeId: {
           type: String,
+          default: null,
         },
         quantity: { type: Number, default: 1 },
+        price: { type: Number },
       },
     ],
     address: {
@@ -67,22 +69,11 @@ var customerSchema = new mongoose.Schema(
     },
     purchaseHistory: [
       {
-        pid: {
-          type: mongoose.Types.ObjectId,
-          ref: "Product",
-        },
-        quantity: Number,
+        pid: { type: mongoose.Types.ObjectId, ref: "Order" },
         date: Date,
       },
     ],
-    paymentHistory: [
-      {
-        date: Date,
-        total: Number,
-        paymentMethod: String,
-        status: String,
-      },
-    ],
+
     isBlocked: {
       type: Boolean,
       default: true,
@@ -169,6 +160,13 @@ customerSchema.methods = {
 
     await this.save();
     return this.cart;
+  },
+
+  UpdateCustomer: async function (updateCustomer) {
+    this.address = updateCustomer.address;
+    this.name = updateCustomer.name;
+    this.phone = updateCustomer.phone;
+    return this.save();
   },
 };
 

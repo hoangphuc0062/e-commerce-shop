@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Icon } from "@iconify/react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 
@@ -24,11 +23,21 @@ import {
   updateCart,
 } from "../../../redux/slices/auth";
 import { handleToast } from "../../../ultils/toast";
+import {
+  createOrder,
+  sendMail,
+  vnPay,
+  vnPAYReturn,
+} from "../../../redux/slices/order";
+import { useLocation } from "react-router-dom";
+import Success from "../../../components/status/Success";
 
 const emptyCartImage =
   "https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/cart%2Fno-cart-1.png?alt=media&token=dc3dc5e6-ecd8-4b2d-8bc9-e5f6fd887b92";
 
 export default function Cart() {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
   const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(0);
   const [discountCode, setDiscountCode] = useState("");
@@ -41,6 +50,7 @@ export default function Cart() {
   const [wardID, setWardID] = useState(null);
   const [shippingFee, setShippingFee] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [statusPayment, setStatusPayment] = useState();
 
   const formik = useFormik({
     initialValues: {
@@ -60,15 +70,109 @@ export default function Cart() {
       shippingFee: "",
       discount: "",
       total: "",
-      products: [],
     },
     validationSchema: Yup.object({
       // Bổ sung các field cần thiết nếu muốn kiểm tra
     }),
     onSubmit: async (values) => {
-      console.log(values);
+      dispatch(createOrder(values)).then((result) => {
+        if (result.type === "order/createOrder/fulfilled") {
+          if (values.paymentMethod === "vnpay") {
+            const data = {
+              orderId: result.payload._id,
+              amount: values.total,
+            };
+            dispatch(vnPay(data)).then((result) => {
+              if (result.type === "order/vnPay/fulfilled") {
+                window.open(result.payload);
+                setCurrentStep((prev) => prev + 1);
+              }
+            });
+          } else if (values.paymentMethod === "cash") {
+            setCurrentStep((prev) => prev + 1);
+            setStatusPayment(true);
+          }
+        } else {
+          handleToast("error", "Đặt hàng thất bại");
+        }
+      });
     },
   });
+
+  const vnp_Amount = params.get("vnp_Amount");
+  const vnp_BankCode = params.get("vnp_BankCode");
+  const vnp_BankTranNo = params.get("vnp_BankTranNo");
+  const vnp_CardType = params.get("vnp_CardType");
+  const vnp_OrderInfo = params.get("vnp_OrderInfo");
+  const vnp_PayDate = params.get("vnp_PayDate");
+  const vnp_ResponseCode = params.get("vnp_ResponseCode");
+  const vnp_TmnCode = params.get("vnp_TmnCode");
+  const vnp_TransactionNo = params.get("vnp_TransactionNo");
+  const vnp_TransactionStatus = params.get("vnp_TransactionStatus");
+  const vnp_TxnRef = params.get("vnp_TxnRef");
+  const vnp_SecureHash = params.get("vnp_SecureHash");
+
+  useEffect(() => {
+    if (
+      vnp_Amount &&
+      vnp_BankCode &&
+      vnp_BankTranNo &&
+      vnp_CardType &&
+      vnp_OrderInfo &&
+      vnp_PayDate &&
+      vnp_ResponseCode &&
+      vnp_TmnCode &&
+      vnp_TransactionNo &&
+      vnp_TransactionStatus &&
+      vnp_TxnRef &&
+      vnp_SecureHash
+    ) {
+      dispatch(
+        vnPAYReturn({
+          vnp_Amount,
+          vnp_BankCode,
+          vnp_BankTranNo,
+          vnp_CardType,
+          vnp_OrderInfo,
+          vnp_PayDate,
+          vnp_ResponseCode,
+          vnp_TmnCode,
+          vnp_TransactionNo,
+          vnp_TransactionStatus,
+          vnp_TxnRef,
+          vnp_SecureHash,
+        })
+      ).then((result) => {
+        if (result.type === "order/vnPAYReturn/fulfilled") {
+          if (result.payload.statusPayment === "Paid") {
+            setCurrentStep(3);
+            setStatusPayment(true);
+            dispatch(sendMail());
+          } else {
+            setCurrentStep(3);
+            setStatusPayment(false);
+          }
+        } else {
+          setCurrentStep(3);
+          setStatusPayment(false);
+        }
+      });
+    }
+  }, [
+    dispatch,
+    vnp_Amount,
+    vnp_BankCode,
+    vnp_BankTranNo,
+    vnp_CardType,
+    vnp_OrderInfo,
+    vnp_PayDate,
+    vnp_ResponseCode,
+    vnp_TmnCode,
+    vnp_TransactionNo,
+    vnp_TransactionStatus,
+    vnp_TxnRef,
+    vnp_SecureHash,
+  ]);
 
   const statusGetCart = useSelector((state) => state.auth.statusGetCart);
   const datacart = useSelector((state) => state.auth.dataCart);
@@ -148,26 +252,28 @@ export default function Cart() {
     dispatch(resetState({ key: "statusGetCart", value: "idle" }));
   }, [statusGetCart, datacart, dispatch]);
 
-  const [selectAll, setSelectAll] = useState(true);
+  const [selectAll, setSelectAll] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
 
-  const handleQuantityChange = (productId, newQuantity) => {
+  const handleQuantityChange = (productId, attributeId, newQuantity) => {
     setProducts((prevProducts) =>
       prevProducts.map((product) =>
-        product.id === productId
+        product.productId === productId &&
+        product.attributeValue?.id === attributeId
           ? { ...product, quantity: newQuantity }
           : product
       )
     );
   };
 
-  const total = products.reduce(
-    (acc, product) =>
-      selectedProducts.includes(product.id)
-        ? acc + product.price * product.quantity
-        : acc,
-    0
-  );
+  const total = products.reduce((acc, product) => {
+    const uniqueId = `${product.productId}-${
+      product.attributeValue?.id || "null"
+    }`;
+    return selectedProducts.includes(uniqueId)
+      ? acc + product.price * product.quantity
+      : acc;
+  }, 0);
 
   const subTotal = total + shippingFee;
 
@@ -179,30 +285,44 @@ export default function Cart() {
 
   const handleSelectAll = () => {
     if (!selectAll) {
-      setSelectedProducts([]);
+      setSelectedProducts(
+        products.map(
+          (product) =>
+            `${product.productId}-${product.attributeValue?.id || "null"}`
+        )
+      );
     } else {
-      setSelectedProducts(products.map((product) => product.id));
+      setSelectedProducts([]);
     }
     setSelectAll(!selectAll);
   };
 
-  const handleCheck = (productId) => {
+  const handleCheck = (productId, attributeId) => {
+    const uniqueId = `${productId}-${attributeId || "null"}`;
     setSelectedProducts((prevSelected) =>
-      prevSelected.includes(productId)
-        ? prevSelected.filter((id) => id !== productId)
-        : [...prevSelected, productId]
+      prevSelected.includes(uniqueId)
+        ? prevSelected.filter((id) => id !== uniqueId)
+        : [...prevSelected, uniqueId]
     );
+    setSelectAll(true);
   };
 
   const handleRemoveSelected = () => {
-    const updatedProducts = selectedProducts.map((id) => {
-      const product = products.find((prod) => prod.id === id);
-      return {
-        productId: product.productId,
-        attributeId: product.attributeValue?.id,
-        quantity: product.quantity,
-      };
-    });
+    const updatedProducts = products
+      .map((product) => {
+        const uniqueId = `${product.productId}-${
+          product.attributeValue?.id || "null"
+        }`;
+        if (selectedProducts.includes(uniqueId)) {
+          return {
+            productId: product.productId,
+            attributeId: product.attributeValue?.id || null,
+            quantity: product.quantity,
+          };
+        }
+        return null;
+      })
+      .filter((item) => item !== null);
 
     dispatch(deleteCart(updatedProducts)).then((result) => {
       if (result.type === "auth/deleteCart/fulfilled") {
@@ -210,26 +330,46 @@ export default function Cart() {
         dispatch(getCart());
       }
     });
+
+    // Reset selected products and "select all" checkbox
     setSelectedProducts([]);
     setSelectAll(false);
   };
 
   const handleUpdateSelected = () => {
-    const updatedProducts = selectedProducts.map((id) => {
-      const product = products.find((prod) => prod.id === id);
-      return {
-        productId: product.productId,
-        attributeId: product.attributeValue?.id,
-        quantity: product.quantity,
-      };
-    });
+    const updatedProducts = products
+      .map((product) => {
+        const uniqueId = `${product.productId}-${
+          product.attributeValue?.id || "null"
+        }`;
+        if (selectedProducts.includes(uniqueId)) {
+          return {
+            productId: product.productId,
+            attributeId: product.attributeValue?.id || null,
+            quantity: product.quantity,
+          };
+        }
+        return null;
+      })
+      .filter((item) => item !== null);
 
     dispatch(updateCart(updatedProducts)).then((result) => {
+      console.log(result);
       if (result.type === "auth/updateCart/fulfilled") {
         handleToast("success", "Cập nhật giỏ hàng thành công");
         dispatch(getCart());
+      } else if (result.type === "auth/updateCart/rejected") {
+        const mes = result.payload.message;
+        if (mes === "Insufficient stock for product") {
+          handleToast(
+            "error",
+            "Số lượng sản phẩm trong giỏ hàng vượt quá số lượng tồn kho"
+          );
+        }
       }
     });
+
+    // Reset selected products and "select all" checkbox
     setSelectedProducts([]);
     setSelectAll(false);
   };
@@ -255,17 +395,17 @@ export default function Cart() {
 
   const paymentMethods = [
     {
-      id: "cod",
+      id: "cash",
       label: "Thanh toán khi nhận hàng",
       imageSrc:
-        "https://donghosieucap.vn/wp-content/uploads/2023/05/Hanghieusieucap-3.jpg",
+        "https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/logo%20payment%2Fcash.jpg?alt=media&token=5ba3b882-72ef-4cc8-9ca9-75770d0d4c59",
       discountText: "Giảm thêm tới 500.000đ",
     },
     {
-      id: "card",
-      label: "Thanh toán qua thẻ",
+      id: "vnpay",
+      label: "Thanh toán qua VNPay",
       imageSrc:
-        "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQIIlNgicC8kReaUlb4bMvSmTmfdcZClOraJKdpObsgNXAPfTUy",
+        "https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/logo%20payment%2Fvnpay.webp?alt=media&token=2ac62e2b-bd88-431f-917a-570122a4ca7a",
       discountText: "Giảm thêm tới 500.000đ",
     },
   ];
@@ -307,18 +447,6 @@ export default function Cart() {
   };
 
   const updateFormValues = () => {
-    formik.setFieldValue(
-      "products",
-      selectedProducts.map((id) => {
-        const product = products.find((prod) => prod.id === id);
-        return {
-          id: product.productId,
-          price: product.price,
-          quantity: product.quantity,
-          attributeId: product.attributeValue?.id,
-        };
-      })
-    );
     formik.setFieldValue("shippingFee", shippingFee);
     formik.setFieldValue("discount", 0);
     formik.setFieldValue("total", subTotal);
@@ -403,7 +531,7 @@ export default function Cart() {
       </form>
       {currentStep === 3 && (
         <>
-          <Error />
+          {statusPayment ? <Success /> : <Error />}
           <button className="w-full py-3 mt-5 bg-indigo-600 text-white font-semibold rounded text-center">
             Tiếp tục mua hàng
           </button>

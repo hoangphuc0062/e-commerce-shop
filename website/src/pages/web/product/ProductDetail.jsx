@@ -88,16 +88,13 @@ const ProductDetail = () => {
 
   const handleAddToCart = useCallback(() => {
     const attribute = data?.variants?.[activeIndex];
-
-    if (!data || !attribute) {
-      handleToast("error", "Invalid product data");
-      return;
-    }
+    const priceAttribute = attribute?.price ? attribute.price : data.price;
 
     const cartData = {
       productId: data._id,
-      attributeId: attribute.id,
+      attributeId: attribute?.id || null,
       quantity: 1,
+      price: priceAttribute,
     };
 
     dispatch(addCart(cartData))
