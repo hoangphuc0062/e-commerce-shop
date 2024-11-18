@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { Input } from "../../../components/Input/Input";
 import { Select } from "../../../components/Input/Select";
-import { formatCurrency, convertToISODateString } from "../../../ultils/helper";
+import {
+  formatCurrency,
+  convertToISODateString,
+  formatDay,
+} from "../../../ultils/helper";
 import { useSelector } from "react-redux";
 
 export default function Account() {
@@ -46,7 +50,10 @@ export default function Account() {
           <div className="flex flex-col justify-center items-center">
             <div className="flex justify-center w-fit rounded-full relative">
               <img
-                src={customerData.avatar}
+                src={
+                  customerData.avatar ||
+                  "https://res.cloudinary.com/dgthe0zuj/image/upload/fl_preserve_transparency/v1717730182/0d64989794b1a4c9d89bff571d3d5842_xytb2b.jpg?_s=public-apps"
+                }
                 alt={customerData.name}
                 className="w-32 h-32 object-cover rounded-full  mx-auto p-2"
               />
@@ -71,11 +78,16 @@ export default function Account() {
           <Input
             label="Email"
             value={customerData.email}
-            iconName={"hugeicons:edit-01"}
-            edit
+            readOnly
             onChange={(e) => handleChange("email", e.target.value)}
           />
-          <Input label="Số điện thoại" value={customerData.phone} readOnly />
+          <Input
+            label="Số điện thoại"
+            value={customerData.phone}
+            edit
+            iconName="hugeicons:edit-01"
+            onChange={(e) => handleChange("phone", e.target.value)}
+          />
           <Input
             label="Ngày sinh"
             type="text"
@@ -84,7 +96,11 @@ export default function Account() {
             iconName="hugeicons:edit-01"
             onChange={(e) => handleChange("birthday", e.target.value)}
           />
-          <Input label="Ngày tạo" value={customerData.createdAt} readOnly />
+          <Input
+            label="Ngày tạo"
+            value={formatDay(customerData.createdAt)}
+            readOnly
+          />
           <Input
             label="Tổng tiền tích lũy"
             value={formatCurrency(customerData.stackMoney)}
