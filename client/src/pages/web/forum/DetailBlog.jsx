@@ -1,18 +1,19 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 import { FaArrowTrendUp } from "react-icons/fa6";
-import { Helmet } from "react-helmet-async";
 import { useDispatch, useSelector } from "react-redux";
 import { GetBySlug, submitRating } from "../../../redux/slices/post";
 import {
   Comment,
   HeadingSection,
+  SEOBlog,
+  Share,
   Sidebar,
-  Votebar, 
+  Votebar,
   VoteOption,
 } from "../../../components/Forum";
+
 import { formatDay, renderStarFromNumber } from "../../../ultils/helper";
-import he from "he";
 import { Box, Modal, Typography } from "@mui/material";
 import { Button } from "@mui/material";
 import Swal from "sweetalert2";
@@ -112,11 +113,7 @@ const DetailBlog = () => {
 
   return (
     <div className="flex flex-col md:flex-row w-full pt-16 container">
-      <Helmet>
-        <title>{data.postTitle}</title>
-        <meta name="description" content={he.decode(data.shortDescription)} />
-        <meta name="keywords" content={data.seoKeyWords} />
-      </Helmet>
+      <SEOBlog data={data} />
       <div className="md:w-1/4 lg:w-1/5 xl:w-1/6">
         <Sidebar />
       </div>
@@ -130,7 +127,7 @@ const DetailBlog = () => {
             {data?.tags?.map((tag, index) => (
               <Link
                 key={index}
-                to={`/forum/tag/${tag}`}
+                to={`/tag/${tag}`}
                 className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm mr-2 hover:bg-main hover:text-white transition-colors duration-300 cursor-pointer"
               >
                 #{tag}
@@ -144,7 +141,7 @@ const DetailBlog = () => {
             </Link>
             <p className="text-gray-600"> &raquo;</p>
             <Link
-              to={`forum/category/${data?.categorySlug}`}
+              to={`/category/${data?.categorySlug}`}
               className="text-gray-600"
             >
               {data?.category}
@@ -199,18 +196,17 @@ const DetailBlog = () => {
               data.tags.map((tag, index) => (
                 <Link
                   key={index}
-                  to={`/forum/tag/${tag}`}
+                  to={`/tag/${tag}`}
                   className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm flex items-center transition-colors duration-300 hover:bg-main hover:text-white"
                 >
                   #{tag}
                 </Link>
               ))}
           </div>
-          {/* <div>
-            <HeadingSection title="Bài viết liên quan" />
-            <div className="flex flex-col gap-4">
-            </div>
-          </div> */}
+          <div className="flex gap-2 items-center py-4">
+            <p className="text-lg font-semibold ">Chia sẻ bài viết với:</p>
+            <Share />
+          </div>
           {/* Đánh giá bài viết */}
           <div className="flex flex-col">
             <HeadingSection title="Bình luận bài viết" />
