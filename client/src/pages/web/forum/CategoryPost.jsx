@@ -97,7 +97,11 @@ const CategoryPost = () => {
                     </div>
                   </div>
                 ))
-              ) : visibleData.length > 0 ? (
+              ) : !visibleData || visibleData.length === 0 ? (
+                <p className="text-center text-gray-600">
+                  Không có bài viết nào trong danh mục này.
+                </p>
+              ) : (
                 visibleData.map((post, index) => (
                   <div
                     key={post.id}
@@ -111,7 +115,7 @@ const CategoryPost = () => {
                     />
                     <div className="p-4 w-2/3">
                       <h3 className="text-lg font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">
-                        <Link to={`/forum/${post.slug}`}>{post.postTitle}</Link>
+                        <Link to={`/${post.slug}`}>{post.postTitle}</Link>
                       </h3>
                       <h3 className="text-sm text-gray-600 line-clamp-1 py-1">
                         <div
@@ -126,10 +130,6 @@ const CategoryPost = () => {
                     </div>
                   </div>
                 ))
-              ) : (
-                <p className="text-center text-gray-600">
-                  Không có bài viết nào trong danh mục này.
-                </p>
               )}
             </div>
 

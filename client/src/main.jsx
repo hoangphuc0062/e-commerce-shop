@@ -9,14 +9,14 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <AuthProvider>
-      <Provider store={store}>
+    <Provider store={store}>
+      <AuthProvider>
         <ThemeProvider>
           <HelmetProvider>
             <App />
           </HelmetProvider>
         </ThemeProvider>
-      </Provider>
-    </AuthProvider>
+      </AuthProvider>
+    </Provider>
   </BrowserRouter>
 );

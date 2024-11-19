@@ -12,3 +12,5 @@ export { default as Votebar } from "./Ratings/Votebar";
 export { default as Comment } from "./Ratings/Comment";
 export { default as VoteOption } from "./Ratings/VoteOption";
 export { default as Modal } from "./Modal/Modal";
+export { default as Share } from "./Share/Share";
+export { default as SEOBlog } from "./SEO/SEOBlog";
