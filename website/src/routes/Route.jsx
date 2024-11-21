@@ -19,7 +19,6 @@ import {
 } from "../pages/web/member";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { Cart } from "../pages/web/cart";
-import Finalregister from "../pages/web/auth/finalregister";
 
 export default function RootRouter() {
   const routes = useRoutes([
@@ -43,10 +42,6 @@ export default function RootRouter() {
         {
           path: "/:category/:brand/:product",
           element: <ProductDetail />,
-        },
-        {
-          path: "finalregister/:token",
-          element: <Finalregister />,
         },
         {
           path: "/profile",

@@ -4,10 +4,7 @@ const ctrl = require("../controllers/customerController");
 const { verifyAccessToken, isAdmin } = require("../middlewares/vertifyToken");
 
 router.post("/register", ctrl.registerCustomer);
-router.get("/finalregister/:token", ctrl.finalRegister);
-
 router.post("/login", ctrl.loginCustomer);
-
 router.post("/checkOTP", ctrl.checkOTP);
 router.get("/logout", ctrl.logout);
 router.post("/forgotpassword", ctrl.forgotPassword);

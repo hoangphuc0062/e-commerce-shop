@@ -87,14 +87,17 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = useCallback(() => {
-    const attribute = data?.variants?.[activeIndex];
-    const priceAttribute = attribute?.price ? attribute.price : data.price;
+    const attribute = data?.attributes?.[activeIndex];
+
+    if (!data || !attribute) {
+      handleToast("error", "Invalid product data");
+      return;
+    }
 
     const cartData = {
       productId: data._id,
-      attributeId: attribute?.id || null,
+      attributeId: attribute._id,
       quantity: 1,
-      price: priceAttribute,
     };
 
     dispatch(addCart(cartData))
@@ -110,64 +113,9 @@ const ProductDetail = () => {
 
   const dataImg = [
     data?.thumbnail,
-    data?.videos ?? [],
     ...(data?.images ?? []),
-    // ...(data?.attributes?.map((attr) => attr.images) ?? []),
+    ...(data?.attributes?.map((attr) => attr.images) ?? []),
   ];
-  const translations = {
-    bao_hanh_1_doi_1: "Bảo hành 1 đổi 1",
-    battery: "Dung lượng pin",
-    best_discount_price: "Giá khuyến mãi tốt nhất",
-    bluetooth: "Bluetooth",
-    change_layout_preorder: "Thay đổi bố cục khi đặt hàng trước",
-    cpu: "CPU",
-    dimensions: "Kích thước",
-    display_resolution: "Độ phân giải màn hình",
-    display_size: "Kích thước màn hình",
-    display_type: "Loại màn hình",
-    final_sale_price: "Giá bán cuối cùng",
-    flash_sale_from: "Bắt đầu flash sale",
-    flash_sale_price: "Giá flash sale",
-    hdd_sdd: "Bộ nhớ",
-    included_accessories: "Phụ kiện đi kèm",
-    key_selling_points: "Điểm nổi bật",
-    laptop_bao_mat: "Bảo mật",
-    laptop_camera_webcam: "Camera/Webcam",
-    laptop_cong_nghe_am_thanh: "Công nghệ âm thanh",
-    laptop_cpu: "CPU",
-    laptop_ram: "RAM",
-    macbook_bao_mat: "Bảo mật",
-    macbook_gpu: "GPU",
-    macbook_thoi_luong_pin: "Thời lượng pin",
-    manufacturer: "Hãng sản xuất",
-    nhu_cau_su_dung: "Nhu cầu sử dụng",
-    product_weight: "Khối lượng",
-    product_condition: "Tình trạng sản phẩm",
-    warranty_information: "Thông tin bảo hành",
-    weight: "Trọng lượng",
-    wlan: "Kết nối không dây",
-    // Add more translations as needed
-  };
-
-  // Translation function
-  const translateKey = (key) =>
-    translations[key] ||
-    key.replace(/_/g, " ").replace(/\d/g, "").toUpperCase();
-
-  // Updated transformAttributes function
-  const transformAttributes = (attributes) => {
-    return [
-      {
-        title: "Thông số kỹ thuật",
-        details: Object.entries(attributes).map(([key, value]) => ({
-          key: translateKey(key),
-          value,
-        })),
-      },
-    ];
-  };
-
-  const displayKeys = ["screenSize", "RAM", "storage"];
 
   return (
     <div className="container p-2 sm:p-4 lg:p-8 w-full flex flex-col gap-4">
@@ -256,12 +204,12 @@ const ProductDetail = () => {
           </div>
           <div className="block__header--right flex flex-col p-4 w-full md:w-1/2 rounded-lg gap-3 ">
             {/* bien the here */}
-            {/* <div className="grid grid-cols-3 gap-2">
-              {data?.variants?.map((attr, index) => (
+            <div className="grid grid-cols-3 gap-2">
+              {data?.attributes?.map((attr, index) => (
                 <button
                   key={index}
                   onClick={() => handleAttributeClick(index, attr)}
-                  className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative ${
+                  className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative  ${
                     activeIndex === index
                       ? "border-blue-500"
                       : "border-gray-300"
@@ -280,52 +228,13 @@ const ProductDetail = () => {
                   <div className="h-[50px]">
                     <img
                       className="w-full h-full object-contain"
-                      src={attr.images || "default-image-url.jpg"}
-                      alt={`Variant ${attr.SKU}`}
+                      src={attr.images}
+                      alt=""
                     />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-semibold">{attr.screenSize}</span>
-                    <span className="text-gray-700">{attr.RAM}</span>
-                    <span className="text-gray-700">{attr.storage}</span>
-                  </div>
-                </button>
-              ))}
-            </div> */}
-            <div className="grid grid-cols-3 gap-2">
-              {data?.variants?.map((variant, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAttributeClick(index, variant)}
-                  className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative ${
-                    activeIndex === index
-                      ? "border-blue-500"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {activeIndex === index && (
-                    <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
-                      <Icon
-                        icon="akar-icons:check"
-                        width="0.8rem"
-                        height="0.8rem"
-                        className="inline"
-                      />
-                    </span>
-                  )}
-                  <div className="h-[50px]">
-                    <img
-                      className="w-full h-full object-contain"
-                      src={variant.images || "default-image-url.jpg"}
-                      alt={`Variant ${variant.SKU}`}
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    {displayKeys.map((key) => (
-                      <span key={key} className="text-gray-700">
-                        {variant[key] || ""}
-                      </span>
-                    ))}
+                    <span className="font-semibold">{attr.value}</span>
+                    <span className="text-gray-700">{attr.price}</span>
                   </div>
                 </button>
               ))}
@@ -422,35 +331,36 @@ const ProductDetail = () => {
             )}
           </button>
         </div>
-        <div className="w-full md:w-2/6 h-[300px] p-2 rounded-lg shadow-custom">
+        <div className="w-full md:w-2/6 h-[300px] p-2 rounded-lg shadow-custom ">
           <div className="flex flex-col gap-3">
             <div>
-              <div className="h-full max-h-[300px]">
-                {transformAttributes(data?.attributes || []).map(
-                  (spec, specIndex) => (
-                    <div key={specIndex}>
-                      <div className="font-semibold">{spec.title}</div>
-                      {spec.details.splice(0, 5).map((detail, detailIndex) => (
-                        <div
-                          key={detailIndex}
-                          className="flex justify-between p-1"
-                        >
-                          <span className="w-1/2 line-clamp-2">
-                            {detail.key}
-                          </span>
-                          <span className="w-1/2 line-clamp-2">
-                            {detail.value}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )
-                )}
-              </div>
+              <div className="text-[18px] font-semibold">Thông số kỹ thuật</div>
+              {/* Thong so ky thuat */}
+
+              {data?.specifications?.length > 0 ? (
+                data.specifications.map((spec, specIndex) => (
+                  <div key={specIndex}>
+                    <div className="font-semibold">{spec.title}</div>
+                    {spec.details.map((detail, detailIndex) => (
+                      <div
+                        key={detailIndex}
+                        className="flex justify-between p-1"
+                      >
+                        <span className="w-1/2 line-clamp-2">{detail.key}</span>
+                        <span className="w-1/2 line-clamp-2">
+                          {detail.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ))
+              ) : (
+                <div>Không có thông số kỹ thuật có sẵn</div>
+              )}
             </div>
             <button
               onClick={handleClickOpen}
-              className="w-full p-2 text-center shadow-lg rounded-lg border-gray-300 border-2 hover:border-2 hover:border-main hover:text-main hover:bg-blue-100 focus:outline-main focus:bg-blue-100"
+              className="w-full p-2 text-center shadow-lg rounded-lg border-gray-300 border-2 hover:border-2 hover:border-main hover:text-main hover:bg-blue-100 focus:outline-main focus:bg-blue-100 "
             >
               Xem chi tiết
             </button>
@@ -470,27 +380,25 @@ const ProductDetail = () => {
               </DialogTitle>
               <DialogContent>
                 <DialogContentText id="alert-dialog-description">
-                  {transformAttributes(data?.attributes || []).length > 0 ? (
-                    transformAttributes(data?.attributes || []).map(
-                      (spec, specIndex) => (
-                        <div key={specIndex}>
-                          <div className="font-semibold">{spec.title}</div>
-                          {spec.details.map((detail, detailIndex) => (
-                            <div
-                              key={detailIndex}
-                              className="flex justify-between p-1"
-                            >
-                              <span className="w-1/2 line-clamp-2">
-                                {detail.key}
-                              </span>
-                              <span className="w-1/2 line-clamp-2">
-                                {detail.value}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )
-                    )
+                  {data?.specifications?.length > 0 ? (
+                    data.specifications.map((spec, specIndex) => (
+                      <div key={specIndex}>
+                        <div className="font-semibold">{spec.title}</div>
+                        {spec.details.map((detail, detailIndex) => (
+                          <div
+                            key={detailIndex}
+                            className="flex justify-between p-1"
+                          >
+                            <span className="w-1/2 line-clamp-2">
+                              {detail.key}
+                            </span>
+                            <span className="w-1/2 line-clamp-2">
+                              {detail.value}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ))
                   ) : (
                     <div>Không có thông số kỹ thuật có sẵn</div>
                   )}

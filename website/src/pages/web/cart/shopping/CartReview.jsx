@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
 import EmptyCart from "../../../../components/EmptyCart";
 import Discount from "../discount";
 import CartItem from "./CartItem";
@@ -41,9 +39,7 @@ export default function CartReview({
                   onChange={handleSelectAll}
                   className="mr-2"
                 />
-                <span className=" cursor-pointer" onClick={handleSelectAll}>
-                  Chọn tất cả
-                </span>
+                <span>Chọn tất cả</span>
               </div>
               {selectedProducts.length > 0 && (
                 <>
@@ -64,24 +60,14 @@ export default function CartReview({
                 </>
               )}
             </div>
-            {products.map((product) => (
+            {products.map((product, index) => (
               <CartItem
-                key={`${product.productId}-${
-                  product.attributeValue?.id || "null"
-                }`} // Use productId and attributeId as the unique key
+                key={index}
                 product={product}
                 onQuantityChange={handleQuantityChange}
                 onRemove={handleRemoveProduct}
-                isChecked={selectedProducts.includes(
-                  `${product.productId}-${product.attributeValue?.id || "null"}`
-                )} // Pass the correct value for isChecked
-                onCheck={() =>
-                  handleCheck(
-                    product.productId,
-                    product.attributeValue?.id || "null"
-                  )
-                }
-                setProducts={setProducts}
+                isChecked={selectedProducts.includes(product.id)}
+                onCheck={handleCheck}
               />
             ))}
 
