@@ -20,13 +20,13 @@ export default function Login() {
 
   const formik = useFormik({
     initialValues: {
-      phone: "",
+      email: "",
       password: "",
     },
     validationSchema: Yup.object({
-      phone: Yup.string()
+      email: Yup.string()
         .required("Vui lòng nhập số điện thoại hoặc email.")
-        .matches(/^[0-9]*$/, "Số điện thoại không hợp lệ. Vui lòng nhập lại."),
+        .email("Email không hợp lệ."),
       password: Yup.string()
         .required("Vui lòng nhập mật khẩu.")
         .min(6, "Mật khẩu phải có ít nhất 6 ký tự."),
@@ -75,12 +75,12 @@ export default function Login() {
             <div className="grid gap-6 mb-6">
               <div>
                 <CustomInputField
-                  id={"phone"}
+                  id={"email"}
                   label={"Số điện thoại hoặc email"}
-                  name={"phone"}
-                  inputValue={formik.values.phone}
+                  name={"email"}
+                  inputValue={formik.values.email}
                   onChange={formik.handleChange}
-                  errorMessage={formik.errors.phone}
+                  errorMessage={formik.errors.email}
                   onBlur={formik.handleBlur}
                   placeholder={"Số điện thoại hoặc email"}
                 />
