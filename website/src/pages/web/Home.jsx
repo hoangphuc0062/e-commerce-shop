@@ -167,34 +167,40 @@ const HomePage = () => {
       setDataCategory(
         data
           .filter((item) => item.type === "product")
-          .map((item) => ({
-            id: item._id,
-            icon: item.icon,
-            links: [{ url: `/${item.slug}`, name: item.name }],
-            children: [
-              {
-                title: "Hãng sản xuất",
-                queries: [
-                  ...item.brand.map((child) => ({
-                    url: `/${item.slug}/${child.slug}`,
-                    name: child.name,
-                  })),
-                ],
-              },
-              // {
-              //   title: "Mức giá",
-              //   queries: [
-              //     { url: "/scanner/price/2m", name: "Trên 2 triệu" },
-              //     { url: "/scanner/price/5m", name: "Trên 5 triệu" },
-              //     { url: "/scanner/price/7m", name: "Trên 7 triệu" },
-              //   ],
-              // },
-            ],
-          }))
+          .sort((a, b) => a.position - b.position)
+          .map((item) => {
+            const brandQueries = item.brand.map((child) => ({
+              url: `/${item.slug}/${child.slug}`,
+              name: child.name,
+            }));
+
+            return {
+              id: item._id,
+              icon: item.icon,
+              links: [{ url: `/${item.slug}`, name: item.name }],
+              children: [
+                ...(brandQueries.length > 0
+                  ? [
+                      {
+                        title: "Hãng sản xuất",
+                        queries: brandQueries,
+                      },
+                    ]
+                  : []),
+                // {
+                //   title: "Mức giá",
+                //   queries: [
+                //     { url: "/scanner/price/2m", name: "Trên 2 triệu" },
+                //     { url: "/scanner/price/5m", name: "Trên 5 triệu" },
+                //     { url: "/scanner/price/7m", name: "Trên 7 triệu" },
+                //   ],
+                // },
+              ],
+            };
+          })
       );
     }
   }, [status, data]);
-
   useEffect(() => {
     dispatch(getBanners());
   }, [dispatch]);
