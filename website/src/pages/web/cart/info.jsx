@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { CustomInputField } from "../../../components/Input/Input";
 
 export default function Info({
@@ -24,19 +25,29 @@ export default function Info({
               name="sex"
               value="Anh"
               checked={values.sex === "Anh"}
-              onChange={() => setFieldValue("sex", "Anh")}
+              onChange={() => setFieldValue("sex", "Nam")}
             />
             <span className="ml-1">Anh</span>
           </label>
-          <label>
+          <label className="mr-4">
             <input
               type="radio"
               name="sex"
               value="Chị"
               checked={values.sex === "Chị"}
-              onChange={() => setFieldValue("sex", "Chị")}
+              onChange={() => setFieldValue("sex", "Nữ")}
             />
             <span className="ml-1">Chị</span>
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="sex"
+              value="Khác"
+              checked={values.sex === "Khác"}
+              onChange={() => setFieldValue("sex", "Khác")}
+            />
+            <span className="ml-1">Khác</span>
           </label>
         </div>
 
@@ -87,7 +98,16 @@ export default function Info({
           <select
             name="address.province"
             className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
-            onChange={(e) => setProvinceID(e.target.value)}
+            onChange={(e) => {
+              const selectedProvinceId = e.target.value;
+              setProvinceID(selectedProvinceId);
+              const province = selectedProvince.find(
+                (prov) => prov.id === parseInt(selectedProvinceId)
+              );
+              if (province) {
+                setFieldValue("address.province", province.name);
+              }
+            }}
           >
             <option>Chọn Tỉnh, Thành phố</option>
             {selectedProvince?.map((province) => (
@@ -104,7 +124,16 @@ export default function Info({
           <select
             name="address.district"
             className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
-            onChange={(e) => setDistrictID(e.target.value)}
+            onChange={(e) => {
+              const selectedDistrictId = e.target.value;
+              setDistrictID(selectedDistrictId);
+              const district = selectedDistrict.find(
+                (dist) => dist.id === parseInt(selectedDistrictId)
+              );
+              if (district) {
+                setFieldValue("address.district", district.name);
+              }
+            }}
           >
             <option>Chọn Quận, Huyện</option>
             {selectedDistrict?.map((district) => (
@@ -120,7 +149,19 @@ export default function Info({
           <select
             className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
             name="address.ward"
-            onChange={(e) => setWardID(e.target.value)}
+            onChange={(e) => {
+              const selectedWardId = e.target.value;
+
+              setWardID(selectedWardId);
+
+              const ward = selectedWard.find(
+                (ward) => ward.id === selectedWardId
+              );
+
+              if (ward) {
+                setFieldValue("address.ward", ward.name);
+              }
+            }}
           >
             <option>Chọn Phường, Xã</option>
             {selectedWard?.map((ward) => (

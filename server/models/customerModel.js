@@ -1,6 +1,7 @@
 const mongoose = require("mongoose"); // Erase if already required
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const { type } = require("os");
 
 // Declare the Schema of the Mongo model
 var customerSchema = new mongoose.Schema(
@@ -11,12 +12,12 @@ var customerSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      sparse: true,
+      required: true,
+      unique: true,
     },
     phone: {
       type: String,
-      required: true,
-      unique: true,
+      default: null,
     },
     password: {
       type: String,
@@ -33,12 +34,13 @@ var customerSchema = new mongoose.Schema(
     },
     cart: [
       {
-        pid: { type: mongoose.Types.ObjectId, ref: "Product" }, // Product ID
+        pid: { type: mongoose.Types.ObjectId, ref: "Product" },
         attributeId: {
-          type: mongoose.Types.ObjectId,
-          ref: "Product.attributes",
+          type: String,
+          default: null,
         },
         quantity: { type: Number, default: 1 },
+        price: { type: Number },
       },
     ],
     address: {
@@ -67,22 +69,11 @@ var customerSchema = new mongoose.Schema(
     },
     purchaseHistory: [
       {
-        pid: {
-          type: mongoose.Types.ObjectId,
-          ref: "Product",
-        },
-        quantity: Number,
+        pid: { type: mongoose.Types.ObjectId, ref: "Order" },
         date: Date,
       },
     ],
-    paymentHistory: [
-      {
-        date: Date,
-        total: Number,
-        paymentMethod: String,
-        status: String,
-      },
-    ],
+
     isBlocked: {
       type: Boolean,
       default: true,
@@ -169,6 +160,13 @@ customerSchema.methods = {
 
     await this.save();
     return this.cart;
+  },
+
+  UpdateCustomer: async function (updateCustomer) {
+    this.address = updateCustomer.address;
+    this.name = updateCustomer.name;
+    this.phone = updateCustomer.phone;
+    return this.save();
   },
 };
 
