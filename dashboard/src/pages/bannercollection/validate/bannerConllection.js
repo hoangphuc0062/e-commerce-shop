@@ -31,13 +31,11 @@ export const BannerSchema = Yup.object().shape({
           .required("URL hình ảnh không được để trống"),
 
         refUrl: Yup.string()
-          .matches(
-            /^(https?:\/\/(localhost:\d{1,5}|[a-zA-Z0-9\-]+\.[a-zA-Z]{2,})\/)?[a-zA-Z0-9\-\/]+$/,
-            "URL tham chiếu không hợp lệ"
-          )
+          .url("URL tham chiếu không hợp lệ")
           .nullable(true),
-
-
+        // Giao thức : URL phải bắt đầu bằng một giao thức như http://, https://, ftp://, v.v.
+        // Tên máy chủ : Đây là tên miền (giống như www.example.com) hoặc địa chỉ IP.
+        // Đường dẫn : Đường dẫn đến tài nguyên cụ thể trên máy chủ (tùy chọn).
         position: Yup.number()
           .integer("Vị trí phải là một số nguyên")
           .min(0, "Vị trí không được nhỏ hơn 0")

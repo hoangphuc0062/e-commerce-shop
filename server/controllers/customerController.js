@@ -1,6 +1,5 @@
 const asyncHandler = require("express-async-handler");
 const Customer = require("../models/customerModel");
-const Product = require("../models/productModel");
 
 const crypto = require("crypto");
 const {
@@ -8,8 +7,6 @@ const {
   generateRefreshToken,
 } = require("../middlewares/jwt");
 const sendSMS = require("../ultils/sendPhone");
-const sendMail = require("../ultils/sendMail");
-const makeToken = require("uniquid");
 
 const checkOTP = asyncHandler(async (req, res) => {
   const { phone, code } = req.body;
@@ -121,15 +118,15 @@ const getCustomerByCookie = asyncHandler(async (req, res) => {
 });
 
 const loginCustomer = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { phone, password } = req.body;
 
   // Check if the phone number exists
-  const customer = await Customer.findOne({ email }).select(
+  const customer = await Customer.findOne({ phone }).select(
     "-code -isBlocked -resetPasswordToken -resetPasswordExpires -passwordResetExprires -passwordResetToken -refreshToken"
   );
   if (!customer) {
     res.status(400);
-    throw new Error("email not found");
+    throw new Error("Phone number not found");
   }
 
   // Check if the password is correct
@@ -224,105 +221,59 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   });
 });
 
-// const registerCustomer = asyncHandler(async (req, res) => {
-//   const { email, password, name } = req.body;
-
-//   // Check if the phone number already exists
-//   const existingCustomer = await Customer.findOne({ email });
-//   if (existingCustomer) {
-//     res.status(400);
-//     throw new Error("Email already exists");
-//   }
-
-//   const html = `Xin vui lòng click vào link dưới đây để hoàn tất quá trình đăng ký của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ.
-//     <a href=${process.env.URL_SERVER}/api/users/finalregister/${token}>Click here</a>`;
-//   const subject = "Welcome to VOI TAY NGUYEN";
-
-//   // Create new customer
-//   const newCustomer = new Customer({
-//     phone,
-//     password,
-//     name,
-//   });
-//   await newCustomer.save();
-
-//   // Generate tokens
-//   const { _id, role } = newCustomer;
-//   const accessToken = generateAccessToken(_id, role);
-//   const refreshToken = generateRefreshToken(_id);
-
-//   // Save refresh token to the customer object
-//   newCustomer.refreshToken = refreshToken;
-//   await newCustomer.save();
-
-//   // Set refresh token as a cookie
-//   res.cookie("refreshToken", refreshToken, {
-//     httpOnly: true,
-//     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-//   });
-
-//   // Return response to the client
-//   res.status(201).json({
-//     mes: "Register success",
-//     accessToken,
-//     customer: newCustomer,
-//   });
-// });
-
 const registerCustomer = asyncHandler(async (req, res) => {
-  const { email, password, name } = req.body;
-  if (!email || !password || !name) {
-    return res.status(400).json({
-      success: false,
-      mes: "Missing inputs",
-    });
+  const { phone, password, name } = req.body;
+
+  // Check if the phone number already exists
+  const existingCustomer = await Customer.findOne({ phone });
+  if (existingCustomer) {
+    res.status(400);
+    throw new Error("Phone number already exists");
   }
 
-  const user = await Customer.findOne({ email: email });
-  if (user) throw new Error("User has already existed");
-  else {
-    const token = makeToken();
-    // rest of your code...
-    res.cookie(
-      "dataregister",
-      { ...req.body, token },
-      {
-        httpOnly: true,
-        maxAge: 15 * 60 * 1000,
-      }
-    );
+  // Generate OTP
+  const otp = Math.floor(Math.random() * (999999 - 100000) + 100000).toString();
 
-    const html = `Xin vui lòng click vào link dưới đây để hoàn tất quá trình đăng ký của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ.
-      <a href=${process.env.URL_SERVER}/api/customers/finalregister/${token}>Xác nhận tài khoản</a>`;
-    const subject = `Hoàn tất đăng ký Voi Tây Nguyên Account`;
-
-    const rs = await sendMail(email, html, subject);
-
-    return res
-      .status(200)
-      .json({ mes: "Please check your email to active account" });
-  }
-});
-
-const finalRegister = asyncHandler(async (req, res) => {
-  const cookie = req.cookies;
-  const { token } = req.params;
-
-  if (!cookie || !cookie.dataregister || cookie.dataregister.token !== token) {
-    res.clearCookie("dataregister");
-    return res.redirect(`${process.env.WEB_URL}/finalregister/failed`);
-  }
-  const newUser = await Customer.create({
-    email: cookie.dataregister.email,
-    password: cookie.dataregister.password,
-    name: cookie.dataregister.name,
+  // Create new customer
+  const newCustomer = new Customer({
+    phone,
+    password,
+    name,
+    code: otp,
   });
-  res.clearCookie("dataregister");
-  if (newUser) {
-    return res.redirect(`${process.env.WEB_URL}/finalregister/success`);
-  } else {
-    return res.redirect(`${process.env.WEB_URL}/finalregister/failed`);
+  await newCustomer.save();
+
+  // Send OTP via SMS
+  try {
+    const message = `OTP của bạn là ${otp}. Vui lòng không chia sẻ nó với bất kỳ ai khác.`;
+    await sendSMS(phone, message);
+    console.log(`OTP sent to ${phone}: ${otp}`);
+  } catch (error) {
+    console.error("Error sending OTP:", error);
+    return res.status(500).json({ message: "Error sending OTP" });
   }
+
+  // Generate tokens
+  const { _id, role } = newCustomer;
+  const accessToken = generateAccessToken(_id, role);
+  const refreshToken = generateRefreshToken(_id);
+
+  // Save refresh token to the customer object
+  newCustomer.refreshToken = refreshToken;
+  await newCustomer.save();
+
+  // Set refresh token as a cookie
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
+  // Return response to the client
+  res.status(201).json({
+    mes: "Register success",
+    accessToken,
+    customer: newCustomer,
+  });
 });
 
 const resetPassword = asyncHandler(async (req, res) => {
@@ -408,92 +359,48 @@ const addCart = asyncHandler(async (req, res) => {
 
 // get cart
 const getCart = asyncHandler(async (req, res) => {
-  const userId = req.user._id;
+  const userId = req.user._id; // Assuming `req.user` contains authenticated user data
 
+  // Find the customer's cart and populate the product details
   const customer = await Customer.findById(userId).populate({
-    path: "cart.pid",
-    select: "name thumbnail price slug variants",
+    path: "cart.pid", // Populate main product details
+    select: "name thumbnail price slug attributes", // Include attributes for manual lookup
   });
 
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
 
-  const cart = customer.cart.map((item) => {
-    const product = item.pid;
-    const variant = product.variants?.find(
-      (v) => v.get("id") === item.attributeId
+  // Process the cart items to include specific attribute details
+  const cartWithAttributes = customer.cart.map((cartItem) => {
+    const product = cartItem.pid;
+    const attribute = product.attributes.find(
+      (attr) => attr._id.toString() === cartItem.attributeId.toString()
     );
 
     return {
       productId: product._id,
       name: product.name,
       thumbnail: product.thumbnail,
-      price: variant?.get("price") || product.price,
+      price: product.price,
       slug: product.slug,
-      attributeValue: variant,
-      quantity: item.quantity,
+      quantity: cartItem.quantity,
+      attribute: attribute
+        ? {
+            _id: attribute._id,
+            value: attribute.value,
+            price: attribute.price,
+            images: attribute.images,
+          }
+        : null, // If attribute not found, set to null
     };
   });
 
-  res.status(200).json(cart);
+  // Send back the cart with populated attribute details
+  res.status(200).json(cartWithAttributes);
 });
 
 // update cart
-// const updateCart = asyncHandler(async (req, res) => {
-//   const items = req.body;
-//   const userId = req.user._id;
-
-//   // Find the customer's cart
-//   const customer = await Customer.findById(userId);
-
-//   if (!customer) {
-//     return res.status(404).json({ message: "Customer not found" });
-//   }
-//   items.forEach(({ productId, attributeId, quantity }) => {
-//     if (attributeId === "null") {
-//       attributeId = null;
-//     }
-
-//     const cartItemIndex = customer.cart.findIndex((item) => {
-//       const itemAttributeId = item.attributeId
-//         ? item.attributeId.toString()
-//         : null;
-//       const inputAttributeId = attributeId ? attributeId.toString() : null;
-//       return (
-//         item.pid.toString() === productId.toString() &&
-//         itemAttributeId === inputAttributeId
-//       );
-//     });
-
-//     if (cartItemIndex > -1) {
-
-//       if (quantity > 0) {
-//         customer.cart[cartItemIndex].quantity = quantity;
-//       } else {
-//         customer.cart.splice(cartItemIndex, 1);
-//       }
-//     } else {
-//       if (quantity > 0) {
-//         customer.cart.push({
-//           pid: productId,
-//           attributeId: attributeId,
-//           quantity: quantity,
-//         });
-//       } else {
-//         return res.status(400).json({ message: "Invalid quantity" });
-//       }
-//     }
-//   });
-
-//   await customer.save();
-
-//   res.status(200).json({
-//     message: "Cart updated successfully",
-//     cart: customer.cart,
-//   });
-// });
-
 const updateCart = asyncHandler(async (req, res) => {
   const items = req.body; // Expecting an array of items directly
   const userId = req.user._id;
@@ -505,49 +412,13 @@ const updateCart = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Customer not found" });
   }
 
-  for (const { productId, attributeId, quantity } of items) {
-    if (attributeId === "null") {
-      attributeId = null;
-    }
-
-    // Fetch the product details
-    const product = await Product.findById(productId);
-    if (!product) {
-      return res
-        .status(404)
-        .json({ message: `Product with ID ${productId} not found` });
-    }
-
-    // Check the stock availability
-    let availableStock = product.onStock;
-    if (attributeId) {
-      const attribute = product.variants.find(
-        (attr) => attr.id === attributeId
-      );
-      if (!attribute) {
-        return res.status(404).json({
-          message: `Insufficient stock for product`,
-        });
-      }
-      availableStock = attribute.onStock;
-    }
-
-    if (quantity > availableStock) {
-      return res
-        .status(400)
-        .json({ message: `Insufficient stock for product` });
-    }
-
-    const cartItemIndex = customer.cart.findIndex((item) => {
-      const itemAttributeId = item.attributeId
-        ? item.attributeId.toString()
-        : null;
-      const inputAttributeId = attributeId ? attributeId.toString() : null;
-      return (
+  items.forEach(({ productId, attributeId, quantity }) => {
+    // Check if the item with the given productId and attributeId already exists in the cart
+    const cartItemIndex = customer.cart.findIndex(
+      (item) =>
         item.pid.toString() === productId.toString() &&
-        itemAttributeId === inputAttributeId
-      );
-    });
+        item.attributeId.toString() === attributeId.toString()
+    );
 
     if (cartItemIndex > -1) {
       // If the item exists, update its quantity
@@ -561,15 +432,16 @@ const updateCart = asyncHandler(async (req, res) => {
       if (quantity > 0) {
         customer.cart.push({
           pid: productId,
-          attributeId: attributeId, // This can be null for single products
+          attributeId: attributeId,
           quantity: quantity,
         });
       } else {
         return res.status(400).json({ message: "Invalid quantity" });
       }
     }
-  }
+  });
 
+  // Save the updated cart
   await customer.save();
 
   res.status(200).json({
@@ -577,6 +449,7 @@ const updateCart = asyncHandler(async (req, res) => {
     cart: customer.cart,
   });
 });
+
 // xoá cart
 const deleteCartItem = asyncHandler(async (req, res) => {
   const { productId, attributeId } = req.body;
@@ -616,29 +489,35 @@ const deleteManyCart = asyncHandler(async (req, res) => {
   const items = req.body;
   const userId = req.user._id;
 
+  // Check if items is an array
   if (!Array.isArray(items)) {
     return res
       .status(400)
       .json({ message: "Invalid input, expected an array of items" });
   }
+
+  // Find the customer's cart
   const customer = await Customer.findById(userId);
+
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
 
-  const itemsToDelete = new Set(
-    items.map((item) => `${item.productId}-${item.attributeId}`)
-  );
+  // Filter out items to be deleted
+  const updatedCart = customer.cart.filter((item) => {
+    const found = items.find(
+      (cartItem) => cartItem.productId === item.pid.toString()
+    );
+    return !found;
+  });
 
-  customer.cart = customer.cart.filter(
-    (item) => !itemsToDelete.has(`${item.pid.toString()}-${item.attributeId}`)
-  );
-
-  await customer.save();
+  // Update the customer's cart with the filtered items
+  customer.cart = updatedCart;
+  await customer.save(); // Save the changes to the database
 
   res.status(200).json({
     message: "Cart items removed successfully",
-    cart: customer.cart,
+    cart: updatedCart,
   });
 });
 
@@ -652,7 +531,6 @@ module.exports = {
   logout,
   refreshAccessToken,
   registerCustomer,
-  finalRegister,
   resetPassword,
   updateCustomer,
   updateCustomerBYAdmin,

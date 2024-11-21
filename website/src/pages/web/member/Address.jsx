@@ -1,11 +1,10 @@
 import { Icon } from "@iconify/react";
 import { useState } from "react";
-import { useSelector } from "react-redux";
 
 export default function Address() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const address = useSelector((state) => state.auth.data.rs);
+
   const handleAddAddress = () => {
     setIsDialogOpen(true);
   };
@@ -38,17 +37,13 @@ export default function Address() {
       <div className="flex justify-between items-center p-2 mb-2">
         <div>
           <div>
-            <span className="text-lg font-bold">
-              {address && address.name}{" "}
-            </span>
-            <span className="text-gray-500 ">
-              | {address && address.phone}{" "}
-            </span>
+            <span className="text-lg font-bold">Nguyễn Dương Hoàng Phúc</span>
+            <span className="text-gray-500 ">| 0773440062 </span>
           </div>
           <div className="text-gray-500 ">
-            {address && address.address.map((item) => item)}
+            <div>Hẻm 189 Trần Quý Cáp</div>
+            <div>P.Tự An, Tp.Buôn Ma Thuột, Đắk Lắk</div>
           </div>
-
           <div className="outline outline-main text-main w-fit p-2 mt-2 rounded-sm">
             Mặc định
           </div>

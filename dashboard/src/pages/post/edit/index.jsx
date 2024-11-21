@@ -72,7 +72,7 @@ function EditPost() {
         metaDescription: post.metaDescription,
         shortSeoDescription: post.shortSeoDescription,
         content: post.content,
-        category: post.category ? post.category._id : "",
+        category: post.category._id,
         status: post.status,
       });
     }

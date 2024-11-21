@@ -10,6 +10,8 @@ import UserPage from "../pages/user";
 import WarehousePage from "../pages/warehouse";
 import AddWarehouse from "../pages/warehouse/create";
 import ProductPage from "../pages/product";
+import VariantForm from "../pages/product/variant/create";
+import VariantPage from "../pages/product/variant";
 import OrderPage from "../pages/order";
 import SiteConfig from "../pages/webconfig";
 import PaymentConfig from "../pages/paymentconfig";
@@ -29,10 +31,10 @@ import BrandPage from "../pages/brand";
 import CollectionPage from "../pages/collection";
 import AddBannerConllection from "../pages/bannercollection/create";
 import EditBannerCollection from "../pages/bannercollection/edit";
-
+import CreateProduct from "../pages/product/create";
+import EditProduct from "../pages/product/update";
 import TagPage from "../pages/tags";
 import ShippingPage from "../pages/shippingConfig";
-import CreateProduct from "../pages/product/add";
 
 const AdminRoute = () => {
   return (
@@ -185,7 +187,7 @@ const AdminRoute = () => {
           />
         }
       />
-      {/* <Route
+      <Route
         path="product/update/:id"
         element={
           <PrivateRoute
@@ -193,7 +195,25 @@ const AdminRoute = () => {
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
-      /> */}
+      />
+      <Route
+        path="product/variant"
+        element={
+          <PrivateRoute
+            element={<VariantPage />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="product/variant/create"
+        element={
+          <PrivateRoute
+            element={<VariantForm />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
 
       {/* order */}
 
