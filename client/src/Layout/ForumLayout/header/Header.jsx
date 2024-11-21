@@ -20,8 +20,6 @@ const Header = () => {
     }
   }, [dispatch, isLoginned]);
 
-  console.log("Redux isLoginned:", isLoginned);
-  console.log("Redux customerData:", customerData);
 
   return (
     <header className="bg-main py-2 px-4 fixed top-0 left-0 right-0 z-50">
@@ -37,7 +35,7 @@ const Header = () => {
           {/* Search Section */}
           <GroupInputForum />
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 text-white" >
             {isLoginned ? (
               <Link to={"/profile"}>
                 <Account name={customerData?.name || "User"} />

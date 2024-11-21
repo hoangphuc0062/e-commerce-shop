@@ -25,6 +25,9 @@ export default function RootRouter() {
         { path: ":slug", element: <DetailBlog /> },
         { path: "category/:categorySlug", element: <CategoryPost /> },
         { path: "tag/:tagsName", element: <TagPost /> },
+        { path: "/login", element: <Login /> },
+        { path: "/forget-password", element: <ForgetPassoword /> },
+        { path: "/register", element: <Register /> },
       ],
     },
     {
@@ -53,9 +56,6 @@ export default function RootRouter() {
         },
       ],
     },
-    { path: "/login", element: <Login /> },
-    { path: "/forget-password", element: <ForgetPassoword /> },
-    { path: "/register", element: <Register /> },
     {
       path: "/404",
       element: <NotFound />,
