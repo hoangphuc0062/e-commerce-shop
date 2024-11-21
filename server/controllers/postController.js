@@ -6,10 +6,17 @@ const getAllPost = asyncHandler(async (req, res) => {
   const sortBy = req.query.sort;
   const order = req.query.order === "asc" ? 1 : -1;
   const posts = await Post.find()
-    .populate("author", "name")
+    .populate("author", "name avatar")
 
     .populate("category", "name slug")
-    .populate("tags", "name");
+    .populate("tags", "name")
+    .populate({
+      path: "rating",
+      populate: {
+        path: "customer",
+        select: "name avatar",
+      },
+    });
   return res.status(200).json(posts);
 });
 
@@ -19,9 +26,16 @@ const getPostBySlug = asyncHandler(async (req, res) => {
     return res.status(400).json({ mes: "Missing slug" });
   }
   const post = await Post.findOne({ slug })
-    .populate("author", "name")
+    .populate("author", "name avatar")
     .populate("category", "name slug")
-    .populate("tags", "name");
+    .populate("tags", "name")
+    .populate({
+      path: "rating",
+      populate: {
+        path: "customer",
+        select: "name avatar",
+      },
+    });
 
   return res.status(200).json(post);
 });
@@ -33,9 +47,16 @@ const getPostById = asyncHandler(async (req, res) => {
     return res.status(400).json({ mes: "bid hasnt founded" });
   }
   const post = await Post.findById(bid)
-    .populate("author", "name")
+    .populate("author", "name avatar")
     .populate("category", "name slug")
-    .populate("tags", "name");
+    .populate("tags", "name")
+    .populate({
+      path: "rating",
+      populate: {
+        path: "customer",
+        select: "name avatar",
+      },
+    });
   return res.status(200).json(post);
 });
 
@@ -115,6 +136,51 @@ const deleteManyPost = asyncHandler(async (req, res) => {
     mes: post ? "Delete posts is successful" : "Some thing went wrong",
   });
 });
+
+const ratingPosts = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { star, comment, bid } = req.body;
+  if (!star || !bid) throw new Error("Missing inputs");
+  const ratingPosts = await Post.findById(bid);
+  const alreadyRating = ratingPosts?.rating?.find(
+    (el) => el.customer.toString() === _id.toString()
+  );
+  if (alreadyRating) {
+    // Update star and comment
+    await Post.updateOne(
+      {
+        rating: { $elemMatch: alreadyRating },
+      },
+      {
+        $set: { "rating.$.star": star, "rating.$.comment": comment },
+      },
+      { new: true }
+    );
+  } else {
+    // Add star and comment
+    await Post.findByIdAndUpdate(
+      bid,
+      {
+        $push: { rating: { star, comment, customer: _id } },
+      },
+      { new: true }
+    );
+  }
+  // totalRating
+  const updatePost = await Post.findById(bid);
+  const ratingCount = updatePost.rating.length;
+  const sumRating = updatePost.rating.reduce((sum, el) => sum + +el.star, 0);
+  updatePost.totalRating = Math.round((sumRating * 10) / ratingCount) / 10;
+
+  await updatePost.save();
+
+  return res.status(200).json({
+    status: true,
+    mes: "Rating post is successful",
+    updatePost,
+  });
+});
+
 module.exports = {
   getAllPost,
   getPostBySlug,
@@ -123,4 +189,5 @@ module.exports = {
   updatePost,
   deletePost,
   deleteManyPost,
+  ratingPosts,
 };
