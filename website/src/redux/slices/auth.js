@@ -31,13 +31,6 @@ export const register = createAsyncThunk("auth/register", (data, thunkAPI) =>
   handleAsyncThunk(AuthService.register, [data], thunkAPI)
 );
 
-// finalregister
-export const finalregister = createAsyncThunk(
-  "auth/finalregister",
-  (token, thunkAPI) =>
-    handleAsyncThunk(AuthService.finalregister, [token], thunkAPI)
-);
-
 // logout
 
 export const logout = createAsyncThunk("auth/logout", (_, thunkAPI) =>
@@ -88,7 +81,6 @@ const auth = createSlice({
     statusDeleteCart: "idle",
     statusAddCart: "idle",
     statusUpdateCart: "idle",
-    statusFinalRegister: "idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -186,16 +178,6 @@ const auth = createSlice({
       })
       .addCase(updateCart.rejected, (state) => {
         state.statusUpdateCart = "failed";
-      });
-    builder
-      .addCase(finalregister.pending, (state) => {
-        state.statusFinalRegister = "loading";
-      })
-      .addCase(finalregister.fulfilled, (state) => {
-        state.statusFinalRegister = "success";
-      })
-      .addCase(finalregister.rejected, (state) => {
-        state.statusFinalRegister = "failed";
       });
   },
 });
