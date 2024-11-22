@@ -1,0 +1,43 @@
+/* Áp dụng cho toàn bộ trang */
+::-webkit-scrollbar {
+  width: 8px; /* Độ rộng thanh cuộn dọc */
+  height: 8px; /* Độ cao thanh cuộn ngang */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Màu thanh cuộn */
+  border-radius: 4px; /* Bo góc thanh cuộn */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Màu khi hover vào thanh cuộn */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Màu nền phía sau thanh cuộn */
+  border-radius: 4px; /* Bo góc nền */
+}
+
+/* Tùy chỉnh chỉ cho vùng scroll cụ thể */
+.custom-scrollbar {
+  overflow-y: auto; /* Kích hoạt cuộn dọc */
+  overflow-x: hidden; /* Ẩn cuộn ngang (nếu có) */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
