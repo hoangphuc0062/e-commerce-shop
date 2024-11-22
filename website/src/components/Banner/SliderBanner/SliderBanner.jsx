@@ -100,7 +100,7 @@ export default function SliderBanner({ data }) {
           swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
         }}
         modules={[FreeMode, Navigation, Thumbs]}
-        className="contentSwiper"
+        className="contentSwiper md:h-[80%]"
       >
         {data &&
           data[0].banner &&
@@ -110,7 +110,7 @@ export default function SliderBanner({ data }) {
                 <img
                   src={img.src}
                   alt={img.title}
-                  className="w-full object-cover"
+                  className="w-full h-full object-fill"
                 />
               </Link>
             </SwiperSlide>
@@ -129,8 +129,7 @@ export default function SliderBanner({ data }) {
           delay: 1000,
           disableOnInteraction: false,
         }}
-        className="bannerSwiper hidden lg:flex lg:items-center lg:justify-center"
-        style={{ height: "120px" }}
+        className="bannerSwiper md:h-[20%] hidden lg:flex lg:items-center lg:justify-center"
       >
         {data &&
           data[0].banner &&
@@ -144,7 +143,7 @@ export default function SliderBanner({ data }) {
                 alignItems: "center",
               }}
             >
-              <button className="flex flex-col justify-center items-center p-2 line-clamp-2 h-full">
+              <button className="flex flex-col justify-center items-center p-2 line-clamp-2 w-full h-full hover:bg-slate-100">
                 <h1>{img.title}</h1>
                 <p>{img.description}</p>
               </button>
