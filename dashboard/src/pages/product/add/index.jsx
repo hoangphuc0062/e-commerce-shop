@@ -1,23 +1,28 @@
 /* eslint-disable react/no-unescaped-entities */
-import React, { useState } from "react";
-import { Formik, Form, FieldArray } from "formik";
+import React, { useEffect, useState } from "react";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
 import {
   TextField,
   Button,
   Box,
   Typography,
   Grid,
-  IconButton,
   CircularProgress,
   Divider,
   Autocomplete,
+  Checkbox,
 } from "@mui/material";
-import { Add, Delete } from "@mui/icons-material";
 import CustomDropdown from "../../../components/Dropdown";
 import Attributes from "./Attributes";
-
+import Variants from "./variants";
+import { useDispatch, useSelector } from "react-redux";
+import { getCategory } from "../../../redux/slices/category";
+import { getBrand } from "../../../redux/slices/brand";
+import { getAllCollections } from "../../../redux/slices/collection";
+import { getAllTags as getTags } from "../../../redux/slices/tags";
+import { getAllWarehouses } from "../../../redux/slices/warehouse";
+import slugify from "../../../utils/slugify";
 const CreateProduct = () => {
   const [isVariant, setIsVariant] = useState(false);
 
@@ -66,32 +71,17 @@ const CreateProduct = () => {
         onStock: "",
         inComing: "",
         thumbnail: "",
-        children: [
-          {
-            key: "",
-            value: "",
-            SKU: "",
-            price: "",
-            discount: "",
-            inventory: "",
-            minInventory: "",
-            maxInventory: "",
-            onStock: "",
-            inComing: "",
-            thumbnail: "",
-          },
-        ],
       },
     ],
     filter: {},
   };
 
   const validationSchema = Yup.object({
-    name: Yup.string().required("Tên sản phẩm là bắt buộc"),
-    slug: Yup.string().required("Slug là bắt buộc"),
-    price: Yup.number().typeError("Phải là một số").required("Giá là bắt buộc"),
-    discount: Yup.number().typeError("Phải là một số"),
-    inventory: Yup.number().typeError("Phải là một số"),
+    // name: Yup.string().required("Tên sản phẩm là bắt buộc"),
+    // slug: Yup.string().required("Slug là bắt buộc"),
+    // price: Yup.number().typeError("Phải là một số").required("Giá là bắt buộc"),
+    // discount: Yup.number().typeError("Phải là một số"),
+    // inventory: Yup.number().typeError("Phải là một số"),
   });
 
   const handleSubmit = async (values, { resetForm }) => {
@@ -99,21 +89,111 @@ const CreateProduct = () => {
   };
 
   const [openRows, setOpenRows] = React.useState({});
+  const [variantopenRows, setVariantopenRows] = useState([]);
 
   const toggleRow = (index) => {
     setOpenRows((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
+  const toggleVariantRow = (index) => {
+    setVariantopenRows((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+
+  const [categorySelect, setCategorySelect] = useState([]);
+  const [brandSelect, setBrandSelect] = useState([]);
+  const [seriesSelect, setSeriesSelect] = useState([]);
+  const [tagsSelect, setTagsSelect] = useState([]);
+  const [warehouseSelect, setWarehouseSelect] = useState([]);
+  const dispatch = useDispatch();
+  const statusGetCategory = useSelector((state) => state.category.status);
+  const dataCategory = useSelector((state) => state.category.data.categories);
+  const statusBrand = useSelector((state) => state.brand.status);
+  const dataBrand = useSelector((state) => state.brand.data);
+  const statusSeries = useSelector((state) => state.collection.status);
+  const dataSeries = useSelector((state) => state.collection.data);
+  const statusTag = useSelector((state) => state.tag.status);
+  const dataTag = useSelector((state) => state.tag.data.tags);
+  const statusWarehouse = useSelector((state) => state.warehouse.status);
+  const dataWarehouse = useSelector((state) => state.warehouse.data.wareHouses);
+  useEffect(() => {
+    dispatch(getCategory());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getBrand());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getAllCollections());
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(getTags());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getAllWarehouses());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (statusGetCategory === "success") {
+      const categories = dataCategory
+        .filter((item) => item.type === "product") // Filter categories by type
+        .map((item) => ({
+          value: item._id,
+          label: item.name,
+        }));
+      setCategorySelect(categories);
+    }
+  }, [statusGetCategory, dataCategory]);
+  useEffect(() => {
+    if (statusBrand === "success") {
+      const brands = dataBrand.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setBrandSelect(brands);
+    }
+  }, [statusBrand, dataBrand]);
+
+  useEffect(() => {
+    if (statusSeries === "succeeded") {
+      const series = dataSeries.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setSeriesSelect(series);
+    }
+  }, [statusSeries, dataSeries]);
+
+  useEffect(() => {
+    if (statusTag === "succeeded") {
+      const tags = dataTag.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setTagsSelect(tags);
+    }
+  }, [statusTag, dataTag]);
+
+  useEffect(() => {
+    if (statusWarehouse === "success") {
+      const warehouses = dataWarehouse.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setWarehouseSelect(warehouses);
+    }
+  }, [statusWarehouse, dataWarehouse]);
+  const handleNameChange = (e, setFieldValue) => {
+    const nameValue = e.target.value;
+    const slugified = slugify(nameValue);
+
+    setFieldValue("name", nameValue); // Cập nhật trường name
+    setFieldValue("slug", slugified); // Cập nhật trường slug
+  };
+
   return (
-    <Box
-      sx={{
-        backgroundColor: "background.paper",
-        p: 4,
-        mx: "auto",
-        borderRadius: 2,
-        boxShadow: 3,
-      }}
-    >
+    <Box>
       {/* Toggle Product Type */}
       <Box sx={{ mb: 4 }}>
         <Button
@@ -146,21 +226,36 @@ const CreateProduct = () => {
           handleChange,
           handleBlur,
           isSubmitting,
+          setFieldValue,
         }) => (
           <Form>
             {/* General Information */}
-            <Typography variant="h6" sx={{ mb: 1 }}>
-              Thông tin sản phẩm
-            </Typography>
-            <Divider />
-            <Grid container spacing={3}>
+
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                backgroundColor: "background.default",
+                p: 4,
+                mx: "auto",
+                borderRadius: 2,
+                boxShadow: 1,
+                mb: 4,
+                width: { xs: "100%", sm: "100%" },
+              }}
+            >
+              <Grid item xs={12}>
+                <Typography variant="h6" sx={{ mb: 1 }}>
+                  Thông tin sản phẩm
+                </Typography>
+              </Grid>
               <Grid item xs={12} sm={4}>
                 <TextField
                   fullWidth
                   label="Tên sản phẩm"
                   name="name"
                   value={values.name}
-                  onChange={handleChange}
+                  onChange={(e) => handleNameChange(e, setFieldValue)} // Pass setFieldValue here
                   onBlur={handleBlur}
                   error={touched.name && Boolean(errors.name)}
                   helperText={touched.name && errors.name}
@@ -181,13 +276,13 @@ const CreateProduct = () => {
               <Grid item xs={12} sm={4}>
                 <TextField
                   fullWidth
-                  label="Slug"
-                  name="slug"
-                  value={values.slug}
+                  label="SKU"
+                  name="SKU"
+                  value={values.SKU}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  error={touched.slug && Boolean(errors.slug)}
-                  helperText={touched.slug && errors.slug}
+                  error={touched.SKU && Boolean(errors.SKU)}
+                  helperText={touched.SKU && errors.SKU}
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -243,11 +338,23 @@ const CreateProduct = () => {
               </Grid>
             </Grid>
             {/* Description Section */}
-            <Typography variant="h6" sx={{ mt: 4, mb: 1 }}>
-              Mô tả sản phẩm
-            </Typography>
-            <Divider />
-            <Grid container spacing={3}>
+
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                backgroundColor: "background.default",
+                p: 4,
+                mx: "auto",
+                borderRadius: 2,
+                boxShadow: 1,
+                mb: 4,
+                width: { xs: "100%", sm: "100%" },
+              }}
+            >
+              <Grid item xs={12}>
+                <Typography variant="h6">Mô tả sản phẩm</Typography>
+              </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
@@ -279,39 +386,54 @@ const CreateProduct = () => {
             </Grid>
 
             {/* Classification section */}
-            <Typography variant="h6" sx={{ mt: 4, mb: 1 }}>
-              Phân loại sản phẩm
-            </Typography>
-            <Divider />
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={4}>
+
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                backgroundColor: "background.default",
+                p: 4,
+                mx: "auto",
+                borderRadius: 2,
+                boxShadow: 3,
+                mb: 4,
+                width: { xs: "100%", sm: "100%" },
+              }}
+            >
+              <Grid item xs={12}>
+                <Typography variant="h6">Phân loại sản phẩm</Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
                 <CustomDropdown
                   label="Danh mục"
                   name="category"
-                  value={values.category}
+                  value={values.category || ""}
                   onChange={handleChange}
-                  options={[
-                    { label: "Danh mục 1", value: "category1" },
-                    { label: "Danh mục 2", value: "category2" },
-                  ]}
+                  options={categorySelect}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={6}>
                 <CustomDropdown
                   label="Thương hiệu"
                   name="brand"
-                  value={values.brand}
+                  value={values.brand || ""}
                   onChange={handleChange}
-                  options={[
-                    { label: "Thương hiệu 1", value: "brand1" },
-                    { label: "Thương hiệu 2", value: "brand2" },
-                  ]}
+                  options={brandSelect}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={6}>
+                <CustomDropdown
+                  label="Dòng sản phẩm"
+                  name="series"
+                  value={values.series || ""}
+                  onChange={handleChange}
+                  options={seriesSelect}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
                 <Autocomplete
                   multiple
-                  options={["Tag1", "Tag2", "Tag3", "Tag4"]}
+                  options={tagsSelect}
                   value={values.tagsProduct}
                   onChange={(event, newValue) => {
                     handleChange({
@@ -321,10 +443,17 @@ const CreateProduct = () => {
                       },
                     });
                   }}
+                  disableCloseOnSelect // Để giữ menu mở khi chọn checkbox
+                  renderOption={(props, option, { selected }) => (
+                    <li {...props}>
+                      <Checkbox style={{ marginRight: 8 }} checked={selected} />
+                      {option.label}
+                    </li>
+                  )}
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Select Tags"
+                      label="Tags"
                       placeholder="Choose tags"
                       error={Boolean(errors.tagsProduct && touched.tagsProduct)}
                       helperText={touched.tagsProduct && errors.tagsProduct}
@@ -334,11 +463,24 @@ const CreateProduct = () => {
               </Grid>
             </Grid>
             {/* Inventory Section */}
-            <Typography variant="h6" sx={{ mt: 4, mb: 1 }}>
-              Thông tin kho hàng
-            </Typography>
+
             <Divider />
-            <Grid container spacing={3}>
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                backgroundColor: "background.default",
+                p: 4,
+                mx: "auto",
+                borderRadius: 2,
+                boxShadow: 1,
+                mb: 4,
+                width: { xs: "100%", sm: "100%" },
+              }}
+            >
+              <Grid item xs={12}>
+                <Typography variant="h6">Thông tin kho hàng</Typography>
+              </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
@@ -355,12 +497,9 @@ const CreateProduct = () => {
                 <CustomDropdown
                   label="Kho hàng"
                   name="warehouse"
-                  value={values.warehouse}
+                  value={values.warehouse || ""}
                   onChange={handleChange}
-                  options={[
-                    { label: "Kho A", value: "warehouseA" },
-                    { label: "Kho B", value: "warehouseB" },
-                  ]}
+                  options={warehouseSelect}
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -408,15 +547,28 @@ const CreateProduct = () => {
               handleChange={handleChange}
               handleBlur={handleBlur}
               openRows={openRows}
-              toggleRow={toggleRow}
+              toggleRow={(index) => toggleRow(index)}
             />
 
             {/* SEO Information */}
-            <Typography variant="h6" sx={{ mt: 4, mb: 1 }}>
-              SEO
-            </Typography>
+
             <Divider />
-            <Grid container spacing={3}>
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                backgroundColor: "background.default",
+                p: 4,
+                mx: "auto",
+                borderRadius: 2,
+                boxShadow: 1,
+                mb: 4,
+                width: { xs: "100%", sm: "100%" },
+              }}
+            >
+              <Grid item xs={12}>
+                <Typography variant="h6">SEO</Typography>
+              </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
@@ -452,57 +604,15 @@ const CreateProduct = () => {
             {/* Variants Section */}
             {isVariant && (
               <>
-                <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>
-                  Biến thể sản phẩm
-                </Typography>
-                <Divider sx={{ mb: 3 }} />
-                <FieldArray
-                  name="variants"
-                  render={(arrayHelpers) => (
-                    <>
-                      {values.variants.map((variant, index) => (
-                        <Grid container spacing={3} key={index}>
-                          <Grid item xs={5}>
-                            <TextField
-                              fullWidth
-                              label="Tên biến thể"
-                              name={`variants[${index}].key`}
-                              value={variant.key}
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                            />
-                          </Grid>
-                          <Grid item xs={5}>
-                            <TextField
-                              fullWidth
-                              label="Giá trị biến thể"
-                              name={`variants[${index}].value`}
-                              value={variant.value}
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                            />
-                          </Grid>
-                          <Grid item xs={2}>
-                            <IconButton
-                              color="error"
-                              onClick={() => arrayHelpers.remove(index)}
-                            >
-                              <Delete />
-                            </IconButton>
-                          </Grid>
-                        </Grid>
-                      ))}
-                      <Button
-                        variant="outlined"
-                        onClick={() =>
-                          arrayHelpers.push({ key: "", value: "" })
-                        }
-                        startIcon={<Add />}
-                      >
-                        Thêm biến thể
-                      </Button>
-                    </>
-                  )}
+                <Variants
+                  values={values}
+                  errors={errors}
+                  touched={touched}
+                  handleChange={handleChange}
+                  handleBlur={handleBlur}
+                  openRows={variantopenRows}
+                  setOpenRows={setVariantopenRows}
+                  toggleRow={toggleVariantRow}
                 />
               </>
             )}
