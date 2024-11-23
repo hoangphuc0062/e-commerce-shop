@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllTags } from "../../../redux/slices/tags";
 import { Skeleton } from "@mui/material";
 
-import "../Sidebar/Sidebar.css";
+import "./TopicCard.css";
 
 function TopicCard() {
   const dispatch = useDispatch();
@@ -21,12 +21,15 @@ function TopicCard() {
     if (status === "succeeded" && Array.isArray(tagData)) {
       setTimeout(() => {
         setData(
-          tagData.map((item) => ({
-            status: item.status,
-            id: item._id,
-            name: item.name,
-            image: item.image,
-          }))
+          tagData
+            .map((item) => ({
+              status: item.status,
+              id: item._id,
+              name: item.name,
+              image: item.image,
+              createdAt: item.createdAt,
+            }))
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         );
         setLoading(false);
       }, 2000);
@@ -36,14 +39,9 @@ function TopicCard() {
   return (
     <div>
       {loading ? (
-        <div className="flex overflow-x-auto space-x-4 py-4 scrollbar-hide">
+        <div className="flex space-x-4 py-4 overflow-x-auto custom-scrollbar scroll-smooth">
           {Array.from({ length: 5 }).map((_, index) => (
-            <div
-              key={index}
-              className={`flex-shrink-0 w-48 h-32 relative p-4 ${
-                index === 2 ? "border-b-0" : "border-b"
-              }`}
-            >
+            <div key={index} className={`flex-shrink-0 w-48 h-32 relative p-4`}>
               <Skeleton
                 variant="rectangular"
                 width={192}
@@ -54,10 +52,10 @@ function TopicCard() {
           ))}
         </div>
       ) : (
-        <div className="flex overflow-x-auto space-x-4 py-4 scrollbar-hide">
+        <div className="flex space-x-4 py-4 overflow-x-auto custom-scrollbar scroll-smooth">
           {data?.map((tags) => (
             <Link
-              to={`/forum/tag/${tags.name}`}
+              to={`/tag/${tags.name}`}
               key={tags.id}
               className="flex-shrink-0 relative w-48 h-32 rounded-lg overflow-hidden cursor-pointer hover:underline"
             >

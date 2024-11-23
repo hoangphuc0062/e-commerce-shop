@@ -17,6 +17,17 @@ export const GetBySlug = createAsyncThunk("post/getBySlug", (slug, thunkAPI) =>
   handleAsyncThunk(PostSevice.getBySlug, [slug], thunkAPI)
 );
 
+export const submitRating = createAsyncThunk(
+  "post/ratings",
+  async ({ bid, star, comment }, thunkAPI) => {
+    return await handleAsyncThunk(
+      PostSevice.ratings,
+      [{ bid, star, comment }],
+      thunkAPI
+    );
+  }
+);
+
 export const resetState = createAsyncThunk(
   "state/resetState",
   async (payload, thunkAPI) => {

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import CategoryService from "../../services/category.service";
+
 const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
   try {
     const response = await asyncFunction(...args);

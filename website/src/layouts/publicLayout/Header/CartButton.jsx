@@ -267,7 +267,7 @@ function CartButton({ data }) {
         onClick={toggleDrawer("right", true)}
       >
         <div className="flex items-center justify-center relative">
-          <Icon icon="carbon:shopping-bag" width="2rem" height="2rem" />
+          <Icon icon="uil:cart" width="2rem" height="2rem" />
           <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full px-1 text-[10px]">
             {cartData?.length || 0}
           </span>

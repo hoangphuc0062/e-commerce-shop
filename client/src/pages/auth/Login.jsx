@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginCustomer } from "../../redux/slices/customer";
 import { handleToast } from "../../ultils/toast";
@@ -13,7 +12,8 @@ import { useAuth } from "../../context/AuthContext";
 
 export const Login = () => {
   const { login, setCustomerData } = useAuth();
-
+  const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [captchaValue, setCaptchaValue] = useState(null);
   const { handleSubmit, register } = useForm();
@@ -29,11 +29,16 @@ export const Login = () => {
       return;
     }
     // console.log(data);
+
     dispatch(loginCustomer(data)).then((res) => {
       if (res.type === "customer/login/fulfilled") {
         handleToast("success", "Đăng nhập thành công");
         login();
         setCustomerData(res.payload.customer);
+
+        // Điều hướng về trang trước đó (hoặc trang mặc định)
+        const from = location.state?.from || "/";
+        navigate(from, { replace: true });
       } else {
         setErrors("Số điện thoại hoặc mật khẩu không đúng");
       }
@@ -41,7 +46,7 @@ export const Login = () => {
   };
 
   return (
-    <section className="mx-2 my-4">
+    <section className="mx-2 my-4 pt-16">
       <div className="container flex justify-center">
         <div className="flex-1">
           <div>
