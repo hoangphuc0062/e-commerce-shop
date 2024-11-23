@@ -34,17 +34,19 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
   return (
     <>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-        <DialogTitle sx={{ fontSize: "1.5rem", textAlign: 'center' }}>
+        <DialogTitle sx={{ fontSize: "1.5rem", textAlign: "center" }}>
           Chỉnh sửa thông tin
         </DialogTitle>
         <form onSubmit={formik.handleSubmit}>
-          <DialogContent sx={{ padding: '24px' }}>
+          <DialogContent sx={{ padding: "24px" }}>
             <Grid container spacing={2}>
               <Grid item xs={4}>
                 <ImageUploader
                   onUploadComplete={(url) => formik.setFieldValue("logo", url)}
                   imageUrl={formik.values.logo}
                   fooder={"Ảnh đại diện"}
+                  idupload="webconfig"
+                  dataImage={formik.values.logo ? [formik.values.logo] : []}
                   sx={{ mb: 2 }}
                 />
               </Grid>
@@ -58,7 +60,9 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
                       value={formik.values.title}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      error={formik.touched.title && Boolean(formik.errors.title)}
+                      error={
+                        formik.touched.title && Boolean(formik.errors.title)
+                      }
                       helperText={formik.touched.title && formik.errors.title}
                       sx={{ mb: 2 }}
                     />
@@ -71,7 +75,9 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
                       value={formik.values.email}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      error={formik.touched.email && Boolean(formik.errors.email)}
+                      error={
+                        formik.touched.email && Boolean(formik.errors.email)
+                      }
                       helperText={formik.touched.email && formik.errors.email}
                       sx={{ mb: 2 }}
                     />
@@ -84,7 +90,9 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
                       value={formik.values.phone}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      error={formik.touched.phone && Boolean(formik.errors.phone)}
+                      error={
+                        formik.touched.phone && Boolean(formik.errors.phone)
+                      }
                       helperText={formik.touched.phone && formik.errors.phone}
                       sx={{ mb: 2 }}
                     />
@@ -97,8 +105,12 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
                       value={formik.values.address}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      error={formik.touched.address && Boolean(formik.errors.address)}
-                      helperText={formik.touched.address && formik.errors.address}
+                      error={
+                        formik.touched.address && Boolean(formik.errors.address)
+                      }
+                      helperText={
+                        formik.touched.address && formik.errors.address
+                      }
                       sx={{ mb: 2 }}
                     />
                   </Grid>
@@ -110,8 +122,13 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
                       value={formik.values.facebook}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      error={formik.touched.facebook && Boolean(formik.errors.facebook)}
-                      helperText={formik.touched.facebook && formik.errors.facebook}
+                      error={
+                        formik.touched.facebook &&
+                        Boolean(formik.errors.facebook)
+                      }
+                      helperText={
+                        formik.touched.facebook && formik.errors.facebook
+                      }
                       sx={{ mb: 2 }}
                     />
                   </Grid>
@@ -123,7 +140,9 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
                       value={formik.values.tiktok}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
-                      error={formik.touched.tiktok && Boolean(formik.errors.tiktok)}
+                      error={
+                        formik.touched.tiktok && Boolean(formik.errors.tiktok)
+                      }
                       helperText={formik.touched.tiktok && formik.errors.tiktok}
                       sx={{ mb: 2 }}
                     />
@@ -132,11 +151,22 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions sx={{ padding: '16px' }}>
-            <Button onClick={onClose} size="large" variant="outlined" color="error" sx={{ marginRight: 2 }}>
+          <DialogActions sx={{ padding: "16px" }}>
+            <Button
+              onClick={onClose}
+              size="large"
+              variant="outlined"
+              color="error"
+              sx={{ marginRight: 2 }}
+            >
               Hủy
             </Button>
-            <Button type="submit" variant="contained" color="primary" size="large">
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              size="large"
+            >
               Lưu
             </Button>
           </DialogActions>
