@@ -18,4 +18,5 @@
   opacity: 1;
   border-bottom: 3px solid #1e40af;
   font-weight: 700;
+  transition: opacity 0.3s ease, border-bottom 0.3s ease, box-shadow 0.3s ease;
 }

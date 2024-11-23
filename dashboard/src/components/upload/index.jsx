@@ -4,7 +4,7 @@ import {
   uploadBytesResumable,
   deleteObject,
 } from "firebase/storage";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Box, IconButton, Typography, Avatar } from "@mui/material";
 import UploadIcon from "@mui/icons-material/PhotoCamera";
@@ -22,11 +22,16 @@ const ImageUploader = ({
   allowedFormats = ["PNG", "JPG"],
   fooder, // Dynamic folder path for upload
   idupload,
+  dataImage = [],
 }) => {
   const [downloadURLs, setDownloadURLs] = useState([]);
   const [imageRefs, setImageRefs] = useState([]);
   const [uploadError, setUploadError] = useState(null);
-
+  useEffect(() => {
+    if (dataImage.length > 0) {
+      setDownloadURLs(dataImage);
+    }
+  }, [dataImage]);
   // Handle file upload
   const handleFileUpload = useCallback(
     (e) => {
@@ -48,46 +53,52 @@ const ImageUploader = ({
           return;
         }
 
-        const storageRef = ref(imageDb, `${fooder}/${uuidv4()}`); // Correct template literal for dynamic path
+        const storageRef = ref(imageDb, `${fooder}/${uuidv4()}`);
         const uploadTask = uploadBytesResumable(storageRef, file);
 
         uploadTask.on(
           "state_changed",
-          null, // No progress tracking
+          null,
           (error) => {
             console.error("Upload failed:", error);
             setUploadError("Vui lòng tải lên hình ảnh PNG hoặc JPG hợp lệ.");
           },
           () => {
-            // On successful upload, get the download URL
             getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-              setDownloadURLs((prevURLs) => [...prevURLs, url]); // Add new URL
-              setImageRefs((prevRefs) => [...prevRefs, storageRef]); // Add new reference
+              setDownloadURLs((prevURLs) => [...prevURLs, url]);
+              setImageRefs((prevRefs) => [...prevRefs, storageRef]);
               if (onUploadComplete) onUploadComplete(url);
             });
           }
         );
       });
     },
-    [onUploadComplete, fooder] // Ensure fooder is in the dependency array
+    [onUploadComplete, fooder]
   );
 
-  // Handle delete action for individual images
   const handleDelete = useCallback(
     (index) => {
-      if (!imageRefs[index]) return;
+      const imageRef = imageRefs[index];
 
-      deleteObject(imageRefs[index])
-        .then(() => {
-          console.log("File deleted successfully");
-          setDownloadURLs((prevURLs) => prevURLs.filter((_, i) => i !== index)); // Remove URL
-          setImageRefs((prevRefs) => prevRefs.filter((_, i) => i !== index)); // Remove reference
-          if (onDelete) onDelete();
-        })
-        .catch((error) => {
-          console.error("Error deleting file:", error);
-          setUploadError("Error deleting the file, please try again later.");
-        });
+      if (imageRef) {
+        deleteObject(imageRefs[index])
+          .then(() => {
+            console.log("File deleted successfully");
+            setDownloadURLs((prevURLs) =>
+              prevURLs.filter((_, i) => i !== index)
+            ); // Remove URL
+            setImageRefs((prevRefs) => prevRefs.filter((_, i) => i !== index));
+            if (onDelete) onDelete();
+          })
+          .catch((error) => {
+            console.error("Error deleting file:", error);
+            setUploadError("Error deleting the file, please try again later.");
+          });
+      } else {
+        setDownloadURLs((prevURLs) => prevURLs.filter((_, i) => i !== index));
+        setImageRefs((prevRefs) => prevRefs.filter((_, i) => i !== index));
+        if (onDelete) onDelete();
+      }
     },
     [imageRefs, onDelete]
   );
@@ -154,7 +165,7 @@ const ImageUploader = ({
             mt: 4,
           }}
         >
-          {downloadURLs.map((url, index) => (
+          {downloadURLs?.map((url, index) => (
             <Box
               key={index}
               sx={{
@@ -168,7 +179,9 @@ const ImageUploader = ({
                 sx={{
                   width: avatarSize,
                   height: avatarSize,
+                  objectFit: "cover",
                 }}
+                variant="rounded"
               />
               {CustomButton ? (
                 <CustomButton onClick={() => handleDelete(index)} />
@@ -210,6 +223,7 @@ ImageUploader.propTypes = {
   allowedFormats: propTypes.arrayOf(propTypes.string),
   fooder: propTypes.string.isRequired, // Required prop for dynamic folder path
   idupload: propTypes.string,
+  dataImage: propTypes.arrayOf(propTypes.string),
 };
 
 export default ImageUploader;
