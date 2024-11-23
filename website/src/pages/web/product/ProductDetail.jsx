@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { SwiperSlide, Swiper } from "swiper/react";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
@@ -20,6 +20,7 @@ import { getProductBySlug, getProducts } from "./../../../redux/slices/product";
 import { extractTextFromHtml } from "./../../../../../dashboard/src/utils/extractTextFromHtml";
 import { addCart, getCart, resetState } from "../../../redux/slices/auth";
 import { handleToast } from "../../../ultils/toast";
+import Drawer from "@mui/material/Drawer";
 
 const ProductDetail = () => {
   const { category, brand, product } = useParams();
@@ -34,7 +35,7 @@ const ProductDetail = () => {
   const products = useSelector((state) => state.product.data.products);
   const statusLP = useSelector((state) => state.product.status);
   const [activeIndex, setActiveIndex] = useState(null);
-
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   useEffect(() => {
     if (product) {
       dispatch(getProductBySlug(product));
@@ -190,7 +191,37 @@ const ProductDetail = () => {
               height="1rem"
               className="inline"
             />
-            <span className="inline">So sánh</span>
+            <span className="inline" onClick={() => setIsDrawerOpen(true)}>
+              So sánh
+            </span>
+            <Drawer
+              anchor="bottom"
+              open={isDrawerOpen}
+              onClose={() => {
+                setIsDrawerOpen(false);
+              }}
+            >
+              <div className="h-[200px] grid grid-cols-4 p-4">
+                <div className="flex flex-col items-center justify-center border-r-2">
+                  <Icon icon="ph:plus-square-thin" width="3rem" height="3rem" />
+                  <div>Thêm sản phẩm</div>
+                </div>
+                <div className="flex flex-col items-center justify-center border-r-2">
+                  <Icon icon="ph:plus-square-thin" width="3rem" height="3rem" />
+                  <div>Thêm sản phẩm</div>
+                </div>
+                <div className="flex flex-col items-center justify-center border-r-2">
+                  <Icon icon="ph:plus-square-thin" width="3rem" height="3rem" />
+                  <div>Thêm sản phẩm</div>
+                </div>
+                <div className="flex flex-col items-center justify-center border-r-2 gap-2">
+                  <div>Đã chọn 1 sản phẩm</div>
+                  <Link className="bg-main text-white p-2 rounded-lg">
+                    So sánh ngay
+                  </Link>
+                </div>
+              </div>
+            </Drawer>
           </button>
         </div>
         <div className="flex flex-col md:flex md:flex-row  gap-4">
