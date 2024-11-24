@@ -20,6 +20,7 @@ import {
 import { ProtectedRoute } from "./ProtectedRoute";
 import { Cart } from "../pages/web/cart";
 import Finalregister from "../pages/web/auth/finalregister";
+import { ViewOrder } from "../pages/web/order/ViewOrder";
 
 export default function RootRouter() {
   const routes = useRoutes([
@@ -32,6 +33,7 @@ export default function RootRouter() {
         { path: "/forget-password", element: <ForgetPassoword /> },
         { path: "register", element: <Register /> },
         { path: "/cart", element: <Cart /> },
+        { path: "/look-up-order", element: <ViewOrder /> },
         {
           path: "/:category",
           element: <Product />,

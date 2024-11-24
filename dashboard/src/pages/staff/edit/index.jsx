@@ -126,6 +126,8 @@ const EditStaff = () => {
                   {...getErrorProps("avatar")}
                   onBlur={formik.handleBlur}
                   fooder="staff"
+                  idupload="uploadFile"
+                  dataImage={formik.values.avatar ? [formik.values.avatar] : []}
                 />
               </Box>
             </Paper>

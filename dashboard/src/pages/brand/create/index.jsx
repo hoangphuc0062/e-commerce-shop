@@ -71,6 +71,7 @@ export default function BrandForm({
                         errors.image && touched.image ? errors.image : ""
                       }
                       fooder="brand" // Dynamic folder for image upload
+                      dataImage={values.image ? [values.image] : []} // Initial image data
                     />
                   </Grid>
 

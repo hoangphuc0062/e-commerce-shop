@@ -1,22 +1,22 @@
-/* eslint-disable react/prop-types */
+import { Add, Delete, ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
-  Typography,
+  Box,
   Button,
-  TableContainer,
+  Collapse,
+  Grid,
+  IconButton,
   Table,
+  TableBody,
+  TableCell,
+  TableContainer,
   TableHead,
   TableRow,
-  TableCell,
-  TableBody,
-  IconButton,
   TextField,
-  Collapse,
-  Box,
+  Typography,
 } from "@mui/material";
-import React from "react";
-import { Grid } from "@mui/material";
-import { Add, Delete, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { FieldArray } from "formik";
+import React from "react";
+
 export default function Attributes({
   values,
   errors,
@@ -24,15 +24,27 @@ export default function Attributes({
   handleChange,
   handleBlur,
   openRows,
+  setOpenRows,
   toggleRow,
 }) {
   return (
     <>
-      <Typography variant="h6" sx={{ mt: 4, mb: 1 }}>
-        Thuộc tính sản phẩm
-      </Typography>
-
-      <Grid container spacing={2}>
+      <Grid
+        container
+        spacing={3}
+        sx={{
+          backgroundColor: "background.default",
+          p: 4,
+          mx: "auto",
+          borderRadius: 2,
+          boxShadow: 1,
+          mb: 4,
+          width: { xs: "100%", sm: "100%" },
+        }}
+      >
+        <Grid item xs={12}>
+          <Typography variant="h6">Thuộc tính sản phẩm</Typography>
+        </Grid>
         <Grid item xs={12}>
           <FieldArray
             name="attributes"
@@ -42,45 +54,15 @@ export default function Attributes({
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell />
                         <TableCell>Tiêu đề thuộc tính</TableCell>
-                        <TableCell align="right">Hành động</TableCell>
+                        <TableCell>Hành động</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      <TableRow>
-                        <TableCell colSpan={3} align="right">
-                          <Button
-                            variant="outlined"
-                            startIcon={<Add />}
-                            onClick={() =>
-                              arrayHelpers.push({
-                                title: "",
-                                details: [{ key: "", value: "" }],
-                              })
-                            }
-                            sx={{ mt: 2 }}
-                          >
-                            Thêm thuộc tính
-                          </Button>
-                        </TableCell>
-                      </TableRow>
                       {values.attributes.map((attribute, attributeIndex) => (
                         <React.Fragment key={attributeIndex}>
                           {/* Main Attribute Row */}
-
                           <TableRow>
-                            <TableCell>
-                              <IconButton
-                                onClick={() => toggleRow(attributeIndex)}
-                              >
-                                {openRows[attributeIndex] ? (
-                                  <ExpandLess />
-                                ) : (
-                                  <ExpandMore />
-                                )}
-                              </IconButton>
-                            </TableCell>
                             <TableCell>
                               <TextField
                                 fullWidth
@@ -103,19 +85,34 @@ export default function Attributes({
                               <Button
                                 variant="outlined"
                                 color="error"
-                                onClick={() =>
-                                  arrayHelpers.remove(attributeIndex)
-                                }
+                                onClick={() => {
+                                  arrayHelpers.remove(attributeIndex);
+                                  setOpenRows((prev) =>
+                                    prev.filter(
+                                      (_, index) => index !== attributeIndex
+                                    )
+                                  );
+                                }}
                                 startIcon={<Delete />}
                               >
                                 Xóa
                               </Button>
+                              <IconButton
+                                onClick={() => toggleRow(attributeIndex)}
+                                sx={{ marginLeft: 1 }}
+                              >
+                                {openRows[attributeIndex] ? (
+                                  <ExpandLess />
+                                ) : (
+                                  <ExpandMore />
+                                )}
+                              </IconButton>
                             </TableCell>
                           </TableRow>
 
                           {/* Collapsible Details Row */}
                           <TableRow>
-                            <TableCell colSpan={3} style={{ padding: 0 }}>
+                            <TableCell colSpan={2} style={{ padding: 0 }}>
                               <Collapse
                                 in={openRows[attributeIndex]}
                                 timeout="auto"
@@ -123,42 +120,19 @@ export default function Attributes({
                               >
                                 <Box sx={{ margin: 2 }}>
                                   <Table size="small">
-                                    <TableHead>
-                                      <TableRow>
-                                        <TableCell>Tên chi tiết</TableCell>
-                                        <TableCell>Giá trị chi tiết</TableCell>
-                                        <TableCell>Hành động</TableCell>
-                                      </TableRow>
-                                    </TableHead>
                                     <TableBody>
                                       <FieldArray
                                         name={`attributes[${attributeIndex}].details`}
                                         render={(detailArrayHelpers) => (
                                           <>
-                                            <TableRow>
-                                              <TableCell
-                                                colSpan={3}
-                                                align="right"
-                                              >
-                                                <Button
-                                                  variant="outlined"
-                                                  startIcon={<Add />}
-                                                  onClick={() =>
-                                                    detailArrayHelpers.push({
-                                                      key: "",
-                                                      value: "",
-                                                    })
-                                                  }
-                                                >
-                                                  Thêm chi tiết
-                                                </Button>
-                                              </TableCell>
-                                            </TableRow>
-
                                             {attribute.details.map(
                                               (detail, detailIndex) => (
                                                 <TableRow key={detailIndex}>
-                                                  <TableCell>
+                                                  <TableCell
+                                                    sx={{
+                                                      borderBottom: "none",
+                                                    }}
+                                                  >
                                                     <TextField
                                                       fullWidth
                                                       label="Tên chi tiết"
@@ -192,7 +166,11 @@ export default function Attributes({
                                                       }
                                                     />
                                                   </TableCell>
-                                                  <TableCell>
+                                                  <TableCell
+                                                    sx={{
+                                                      borderBottom: "none",
+                                                    }}
+                                                  >
                                                     <TextField
                                                       fullWidth
                                                       label="Giá trị chi tiết"
@@ -226,7 +204,12 @@ export default function Attributes({
                                                       }
                                                     />
                                                   </TableCell>
-                                                  <TableCell align="right">
+                                                  <TableCell
+                                                    align="right"
+                                                    sx={{
+                                                      borderBottom: "none",
+                                                    }}
+                                                  >
                                                     <IconButton
                                                       color="error"
                                                       onClick={() =>
@@ -241,6 +224,26 @@ export default function Attributes({
                                                 </TableRow>
                                               )
                                             )}
+                                            <TableRow>
+                                              <TableCell
+                                                sx={{ borderBottom: "none" }}
+                                                colSpan={3}
+                                                align="right"
+                                              >
+                                                <Button
+                                                  variant="outlined"
+                                                  startIcon={<Add />}
+                                                  onClick={() =>
+                                                    detailArrayHelpers.push({
+                                                      key: "",
+                                                      value: "",
+                                                    })
+                                                  }
+                                                >
+                                                  Thêm chi tiết
+                                                </Button>
+                                              </TableCell>
+                                            </TableRow>
                                           </>
                                         )}
                                       />
@@ -255,6 +258,21 @@ export default function Attributes({
                     </TableBody>
                   </Table>
                 </TableContainer>
+                {/* Add Attribute Button */}
+                <Box sx={{ textAlign: "right", marginTop: 2 }}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<Add />}
+                    onClick={() => {
+                      arrayHelpers.push({
+                        title: "",
+                        details: [{ key: "", value: "" }],
+                      });
+                    }}
+                  >
+                    Thêm thuộc tính
+                  </Button>
+                </Box>
               </>
             )}
           />

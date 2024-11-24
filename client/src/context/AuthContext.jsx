@@ -1,14 +1,20 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import React, { createContext, useContext, useState, useEffect } from "react";
+import Cookies from "js-cookie";
 
 // Tạo Context
 const AuthContext = createContext();
 
-// Provider để bọc ứng dụng của bạn
-export const AuthProvider = ({ children }) => {
-  const [islogin, setIslogin] = useState(false);
-  const [customerData, setCustomerData] = useState({});
+export const AuthProvider = ({ children, reduxCustomerData, isLoginned }) => {
+  const [islogin, setIslogin] = useState(isLoginned);
+  const [customerData, setCustomerData] = useState(reduxCustomerData);
+
+  // Đồng bộ hóa trạng thái với Redux
+  useEffect(() => {
+    setIslogin(isLoginned);
+    setCustomerData(reduxCustomerData);
+  }, [isLoginned, reduxCustomerData]);
 
   const login = () => {
     setIslogin(true);
@@ -16,6 +22,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setIslogin(false);
+    setCustomerData({});
+    Cookies.remove("access_token");
   };
 
   return (

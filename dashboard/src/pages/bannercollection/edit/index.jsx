@@ -204,6 +204,9 @@ function EditBannerCollection() {
                         {...getErrorProps(`banner[${index}].urlImage`)} // This includes error handling
                         onBlur={formik.handleBlur}
                         fooder="banner"
+                        dataImage={
+                          bannerItem.urlImage ? [bannerItem.urlImage] : []
+                        }
                       />
                       {formik.touched.banner?.[index]?.urlImage &&
                         formik.errors.banner?.[index]?.urlImage && (

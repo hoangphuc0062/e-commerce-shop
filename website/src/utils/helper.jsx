@@ -18,3 +18,8 @@ export const formatCurrency = (number) => {
     currency: "VND",
   }).format(number);
 };
+
+export const getDisplayName = (name) => {
+  const nameParts = name.split(" ");
+  return nameParts.slice(-2).join(" ");
+};

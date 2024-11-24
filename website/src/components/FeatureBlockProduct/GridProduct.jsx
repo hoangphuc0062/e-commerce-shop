@@ -29,23 +29,33 @@ export default function GridProduct({ data, cat }) {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <Link to={`/${cat}`}>
-          {" "}
-          <h1 className="text-2xl font-bold uppercase ">{dataCategory.name}</h1>
-        </Link>
+      <div className="flex flex-col md:flex-row justify-between gap-2 overflow-auto ">
+        <div className="flex justify-between items-center">
+          <Link to={`/${cat}`}>
+            {" "}
+            <h1 className="text-2xl font-bold uppercase ">
+              {dataCategory.name}
+            </h1>
+          </Link>
+          <Link
+            className=" text-center p-2 h-fit min-w-fit rounded md:hidden hover:underline"
+            to={`/${data[0]?.category?.slug}`}
+          >
+            Xem tất cả
+          </Link>
+        </div>
         <div className="flex gap-1 overflow-scroll scroll-smooth md:overflow-hidden  ">
           {dataCategory?.brand?.map((brand, index) => (
             <Link
               to={`/${cat}/${brand?.slug}`}
-              className="bg-slate-200 text-center p-2 rounded hover:underline"
+              className="bg-slate-200 h-fit min-w-fit text-center truncate p-2 rounded hover:underline"
               key={index}
             >
               {brand?.name}
             </Link>
           ))}
           <Link
-            className="bg-slate-200 text-center p-2  rounded hover:underline"
+            className="hidden bg-slate-200 text-center p-2 h-fit min-w-fit md:block rounded hover:underline"
             to={`/${data[0]?.category?.slug}`}
           >
             Xem tất cả
