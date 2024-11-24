@@ -22,9 +22,11 @@ router.delete("/delete-all-cart", verifyAccessToken, ctrl.deleteManyCart);
 router.get("/", ctrl.getCustomer);
 router.get("/get-cookie", verifyAccessToken, ctrl.getCustomerByCookie);
 router.get("/get-current", verifyAccessToken, ctrl.getCurrentCustomer);
+router.put("/user/:_id", verifyAccessToken, ctrl.updateCustomer);
+
 router.use([verifyAccessToken, isAdmin]);
 router.delete("/:_id", ctrl.deleteCustomer);
-router.put("/:_id", verifyAccessToken, ctrl.updateCustomer);
+
 router.put("/:_id", ctrl.updateCustomerBYAdmin);
 
 module.exports = router;

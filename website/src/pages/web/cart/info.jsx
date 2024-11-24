@@ -105,7 +105,7 @@ export default function Info({
                 (prov) => prov.id === parseInt(selectedProvinceId)
               );
               if (province) {
-                setFieldValue("address.province", province.name);
+                setFieldValue("address.province", province.name); 
               }
             }}
           >
