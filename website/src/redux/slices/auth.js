@@ -72,6 +72,13 @@ export const updateCart = createAsyncThunk(
   (data, thunkAPI) =>
     handleAsyncThunk(CartServices.updateCart, [data], thunkAPI)
 );
+
+// cap nhap thong tin khach hang
+export const updateCustomer = createAsyncThunk("customer/update", (
+  {id, data}, thunkAPI) =>
+  handleAsyncThunk(AuthService.updateCustomer, [id, data], thunkAPI)
+);
+
 const auth = createSlice({
   name: "auth",
 
@@ -89,6 +96,7 @@ const auth = createSlice({
     statusAddCart: "idle",
     statusUpdateCart: "idle",
     statusFinalRegister: "idle",
+    statusUpdateCustomer: "idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -196,6 +204,16 @@ const auth = createSlice({
       })
       .addCase(finalregister.rejected, (state) => {
         state.statusFinalRegister = "failed";
+      });
+    builder
+      .addCase(updateCustomer.pending, (state) => {
+        state.statusUpdateCustomer = "loading";
+      })
+      .addCase(updateCustomer.fulfilled, (state) => {
+        state.statusUpdateCustomer = "success";
+      })
+      .addCase(updateCustomer.rejected, (state) => {
+        state.statusUpdateCustomer = "failed";
       });
   },
 });
