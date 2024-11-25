@@ -23,8 +23,15 @@ import { getAllCollections } from "../../../redux/slices/collection";
 import { getAllTags as getTags } from "../../../redux/slices/tags";
 import { getAllWarehouses } from "../../../redux/slices/warehouse";
 import slugify from "../../../utils/slugify";
+import Textarea from "../../../components/textarea";
+import ImageUploader from "../../../components/upload";
+import { createProduct } from "./../../../redux/slices/product";
+import { handleToast } from "./../../../utils/toast";
+
 const CreateProduct = () => {
   const [isVariant, setIsVariant] = useState(false);
+  const [isSEO, setIsSEO] = useState(false);
+  const [discount, setDiscount] = useState(false);
 
   const initialValues = {
     name: "",
@@ -73,19 +80,48 @@ const CreateProduct = () => {
         thumbnail: "",
       },
     ],
-    filter: {},
   };
 
   const validationSchema = Yup.object({
-    // name: Yup.string().required("Tên sản phẩm là bắt buộc"),
-    // slug: Yup.string().required("Slug là bắt buộc"),
-    // price: Yup.number().typeError("Phải là một số").required("Giá là bắt buộc"),
-    // discount: Yup.number().typeError("Phải là một số"),
-    // inventory: Yup.number().typeError("Phải là một số"),
+    name: Yup.string().required("Tên sản phẩm không được để trống"),
+    slug: Yup.string().required("Slug không được để trống"),
+    SKU: Yup.string().required("SKU không được để trống"),
+    price: Yup.number().required("Giá bán không được để trống"),
+    historicalPrice: Yup.number().required("Giá gốc không được để trống"),
+    priceInMarket: Yup.number().required("Giá thị trường không được để trống"),
+    category: Yup.string().required("Danh mục không được để trống"),
+    brand: Yup.string().required("Thương hiệu không được để trống"),
+    series: Yup.string().required("Dòng sản phẩm không được để trống"),
+    tagsProduct: Yup.array().required("Tags không được để trống"),
+    warehouse: Yup.string().required("Kho hàng không được để trống"),
+    inventory: Yup.number().required("Tồn kho không được để trống"),
   });
 
+  const transformValues = (values) => {
+    return {
+      ...values,
+      attributes: values.attributes.reduce((acc, attr) => {
+        if (attr.title && attr.details.length > 0) {
+          acc[attr.title] = attr.details
+            .filter((detail) => detail.key && detail.value)
+            .map((detail) => `${detail.key}: ${detail.value}`)
+            .join(", ");
+        }
+        return acc;
+      }, {}),
+    };
+  };
+
   const handleSubmit = async (values, { resetForm }) => {
-    console.log(values);
+    const data = transformValues(values);
+    dispatch(createProduct(data)).then((a) => {
+      if (a.type === "product/createProduct/fulfilled") {
+        resetForm();
+        handleToast("success", "Tạo sản phẩm thành công");
+      } else {
+        handleToast("error", "Tạo sản phẩm thất bại");
+      }
+    });
   };
 
   const [openRows, setOpenRows] = React.useState({});
@@ -184,6 +220,7 @@ const CreateProduct = () => {
       setWarehouseSelect(warehouses);
     }
   }, [statusWarehouse, dataWarehouse]);
+
   const handleNameChange = (e, setFieldValue) => {
     const nameValue = e.target.value;
     const slugified = slugify(nameValue);
@@ -240,14 +277,12 @@ const CreateProduct = () => {
                 mx: "auto",
                 borderRadius: 2,
                 boxShadow: 1,
-                mb: 4,
+                mb: 6,
                 width: { xs: "100%", sm: "100%" },
               }}
             >
               <Grid item xs={12}>
-                <Typography variant="h6" sx={{ mb: 1 }}>
-                  Thông tin sản phẩm
-                </Typography>
+                <Typography variant="h6">Thông tin sản phẩm</Typography>
               </Grid>
               <Grid item xs={12} sm={4}>
                 <TextField
@@ -323,22 +358,80 @@ const CreateProduct = () => {
                   helperText={touched.priceInMarket && errors.priceInMarket}
                 />
               </Grid>
-
               <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Giảm giá"
-                  name="discount"
-                  value={values.discount}
+                <label htmlFor="isBattery" style={{ marginRight: "8px" }}>
+                  Có pin
+                </label>
+                <Checkbox
+                  id="isBattery"
+                  checked={values.isBattery}
                   onChange={handleChange}
+                  name="isBattery"
+                />
+
+                <label htmlFor="isStopSelling" style={{ marginRight: "8px" }}>
+                  Ngừng bán
+                </label>
+                <Checkbox
+                  id="isStopSelling"
+                  checked={values.isStopSelling}
+                  onChange={handleChange}
+                  name="isStopSelling"
+                />
+                <CustomDropdown
+                  label="Trạng thái"
+                  name="status"
+                  value={values.status || ""}
+                  onChange={handleChange}
+                  options={[
+                    { value: "active", label: "Kích hoạt" },
+                    { value: "inactive", label: "Ngưng kích hoạt" },
+                    { value: "draft", label: "Bản nháp" },
+                    { value: "pending", label: "Chờ duyệt" },
+                    { value: "trash", label: "Thùng rác" },
+                  ]}
+                  error={touched.status && Boolean(errors.status)}
+                  helperText={touched.status && errors.status}
                   onBlur={handleBlur}
-                  error={touched.discount && Boolean(errors.discount)}
-                  helperText={touched.discount && errors.discount}
                 />
               </Grid>
+              <Grid item xs={12}>
+                <Button
+                  variant={discount ? "contained" : "outlined"}
+                  color="primary"
+                  onClick={() => setDiscount(true)}
+                  sx={{ textTransform: "none", fontWeight: "bold", mr: 2 }}
+                >
+                  Thêm giảm giá
+                </Button>
+                {discount && (
+                  <Button
+                    variant={!discount ? "contained" : "outlined"}
+                    color="error"
+                    onClick={() => setDiscount(false)}
+                    sx={{ textTransform: "none", fontWeight: "bold" }}
+                  >
+                    X
+                  </Button>
+                )}
+              </Grid>
+              {discount && (
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Giảm giá"
+                    name="discount"
+                    value={values.discount}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.discount && Boolean(errors.discount)}
+                    helperText={touched.discount && errors.discount}
+                  />
+                </Grid>
+              )}
             </Grid>
-            {/* Description Section */}
 
+            {/* Description Section */}
             <Grid
               container
               spacing={3}
@@ -348,7 +441,79 @@ const CreateProduct = () => {
                 mx: "auto",
                 borderRadius: 2,
                 boxShadow: 1,
-                mb: 4,
+                mb: 6,
+                width: { xs: "100%", sm: "100%" },
+              }}
+            >
+              <Grid item xs={12} sm={6}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography variant="h6">Hình ảnh đại diện</Typography>
+
+                  <ImageUploader
+                    idupload="productThumbnail"
+                    avatarSize={100}
+                    name="thumbnail"
+                    onUploadComplete={(url) => setFieldValue("thumbnail", url)}
+                    onDelete={(url) => {
+                      setFieldValue("thumbnail", "");
+                    }}
+                    fooder={"products"}
+                    error={touched.thumbnail && Boolean(errors.thumbnail)}
+                    helperText={touched.thumbnail && errors.thumbnail}
+                    dataImage={values.thumbnail ? [values.thumbnail] : []}
+                  />
+                </div>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography variant="h6">Hình ảnh sản phẩm</Typography>
+
+                  <ImageUploader
+                    idupload="productImages"
+                    name="images"
+                    onUploadComplete={(url) => {
+                      const newImages = url.map((item) => item);
+                      setFieldValue("images", newImages);
+                      console.log(newImages);
+                    }}
+                    onDelete={(url) => {
+                      const newImages = values.images.filter(
+                        (item) => item !== url
+                      );
+                      setFieldValue("images", newImages);
+                    }}
+                    fooder={"products"}
+                    error={touched.images && Boolean(errors.images)}
+                    helperText={touched.images && errors.images}
+                    dataImage={values.images ? values.images : []}
+                  />
+                </div>
+              </Grid>
+            </Grid>
+            <Grid
+              container
+              spacing={3}
+              sx={{
+                backgroundColor: "background.default",
+                p: 4,
+                mx: "auto",
+                borderRadius: 2,
+                boxShadow: 1,
+                mb: 6,
                 width: { xs: "100%", sm: "100%" },
               }}
             >
@@ -356,31 +521,25 @@ const CreateProduct = () => {
                 <Typography variant="h6">Mô tả sản phẩm</Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
+                <Textarea
                   label="Mô tả ngắn"
                   name="shortDescription"
                   value={values.shortDescription}
                   onChange={handleChange}
-                  onBlur={handleBlur}
                   error={
                     touched.shortDescription && Boolean(errors.shortDescription)
                   }
-                  helperText={
-                    touched.shortDescription && errors.shortDescription
-                  }
+                  errorMessage={errors.shortDescription}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Mô tả"
+                <Textarea
+                  label="Mô tả chi tiết"
                   name="description"
                   value={values.description}
                   onChange={handleChange}
-                  onBlur={handleBlur}
                   error={touched.description && Boolean(errors.description)}
-                  helperText={touched.description && errors.description}
+                  errorMessage={errors.description}
                 />
               </Grid>
             </Grid>
@@ -396,7 +555,7 @@ const CreateProduct = () => {
                 mx: "auto",
                 borderRadius: 2,
                 boxShadow: 3,
-                mb: 4,
+                mb: 6,
                 width: { xs: "100%", sm: "100%" },
               }}
             >
@@ -410,6 +569,9 @@ const CreateProduct = () => {
                   value={values.category || ""}
                   onChange={handleChange}
                   options={categorySelect}
+                  error={touched.category && Boolean(errors.category)}
+                  helperText={touched.category && errors.category}
+                  onBlur={handleBlur}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -419,6 +581,9 @@ const CreateProduct = () => {
                   value={values.brand || ""}
                   onChange={handleChange}
                   options={brandSelect}
+                  error={touched.brand && Boolean(errors.brand)}
+                  helperText={touched.brand && errors.brand}
+                  onBlur={handleBlur}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -428,37 +593,43 @@ const CreateProduct = () => {
                   value={values.series || ""}
                   onChange={handleChange}
                   options={seriesSelect}
+                  error={touched.series && Boolean(errors.series)}
+                  helperText={touched.series && errors.series}
+                  onBlur={handleBlur}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Autocomplete
                   multiple
                   options={tagsSelect}
-                  value={values.tagsProduct}
+                  getOptionLabel={(option) => option.label}
+                  value={values.tagsProduct
+                    .map((tag, index) => {
+                      const foundTag = tagsSelect.find(
+                        (item) => item.value === tag
+                      );
+                      return foundTag ? { ...foundTag, key: index } : null;
+                    })
+                    .filter(Boolean)}
                   onChange={(event, newValue) => {
-                    handleChange({
-                      target: {
-                        name: "tagsProduct",
-                        value: newValue,
-                      },
-                    });
+                    const values = newValue.map((item) => item.value);
+                    setFieldValue("tagsProduct", values);
                   }}
-                  disableCloseOnSelect // Để giữ menu mở khi chọn checkbox
-                  renderOption={(props, option, { selected }) => (
-                    <li {...props}>
-                      <Checkbox style={{ marginRight: 8 }} checked={selected} />
-                      {option.label}
-                    </li>
-                  )}
                   renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Tags"
-                      placeholder="Choose tags"
-                      error={Boolean(errors.tagsProduct && touched.tagsProduct)}
-                      helperText={touched.tagsProduct && errors.tagsProduct}
-                    />
+                    <TextField {...params} label="Tags" />
                   )}
+                  renderOption={(props, option, { selected }) => {
+                    const { key, ...rest } = props;
+                    return (
+                      <li key={key} {...rest}>
+                        <Checkbox
+                          checked={selected}
+                          style={{ marginRight: 8 }}
+                        />
+                        {option.label}
+                      </li>
+                    );
+                  }}
                 />
               </Grid>
             </Grid>
@@ -474,7 +645,7 @@ const CreateProduct = () => {
                 mx: "auto",
                 borderRadius: 2,
                 boxShadow: 1,
-                mb: 4,
+                mb: 6,
                 width: { xs: "100%", sm: "100%" },
               }}
             >
@@ -552,54 +723,76 @@ const CreateProduct = () => {
 
             {/* SEO Information */}
 
-            <Divider />
-            <Grid
-              container
-              spacing={3}
-              sx={{
-                backgroundColor: "background.default",
-                p: 4,
-                mx: "auto",
-                borderRadius: 2,
-                boxShadow: 1,
-                mb: 4,
-                width: { xs: "100%", sm: "100%" },
-              }}
-            >
-              <Grid item xs={12}>
-                <Typography variant="h6">SEO</Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Tiêu đề SEO"
-                  name="titleSEO"
-                  value={values.titleSEO}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Từ khóa SEO"
-                  name="keywords"
-                  value={values.keywords}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Mô tả SEO"
-                  name="descriptionSEO"
-                  value={values.descriptionSEO}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-              </Grid>
-            </Grid>
+            <Box sx={{ mb: 4 }}>
+              <Button
+                variant={isSEO ? "contained" : "outlined"}
+                color="primary"
+                onClick={() => setIsSEO(true)}
+                sx={{ textTransform: "none", fontWeight: "bold", mr: 2 }}
+              >
+                Thêm SEO
+              </Button>
+              {isSEO && (
+                <Button
+                  variant={!isSEO ? "contained" : "outlined"}
+                  color="error"
+                  onClick={() => setIsSEO(false)}
+                  sx={{ textTransform: "none", fontWeight: "bold" }}
+                >
+                  X
+                </Button>
+              )}
+            </Box>
+
+            {isSEO && (
+              <>
+                <Grid
+                  container
+                  spacing={3}
+                  sx={{
+                    backgroundColor: "background.default",
+                    p: 4,
+                    mx: "auto",
+                    borderRadius: 2,
+                    boxShadow: 1,
+                    mb: 6,
+                    width: { xs: "100%", sm: "100%" },
+                  }}
+                >
+                  <Grid item xs={12}>
+                    <Typography variant="h6">SEO</Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Tiêu đề SEO"
+                      name="titleSEO"
+                      value={values.titleSEO}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Từ khóa SEO"
+                      name="keywords"
+                      value={values.keywords}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Textarea
+                      label="Mô tả SEO"
+                      name="descriptionSEO"
+                      value={values.descriptionSEO}
+                      onChange={handleChange}
+                    />
+                  </Grid>
+                </Grid>
+              </>
+            )}
 
             {/* Variants Section */}
             {isVariant && (
