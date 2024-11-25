@@ -363,6 +363,7 @@ const resetPassword = asyncHandler(async (req, res) => {
 
 const updateCustomer = asyncHandler(async (req, res) => {
   const { _id } = req.params;
+  console.log(_id)
   if (!_id || Object.keys(req.body).length === 0) {
     return res.status(400).json({
       message: "Missing required fields",
@@ -370,7 +371,7 @@ const updateCustomer = asyncHandler(async (req, res) => {
   }
   const customer = await Customer.findByIdAndUpdate(_id, req.body, {
     new: true,
-  }).select("-role -refreshToken");
+  })
   return res.status(200).json(customer);
 });
 
