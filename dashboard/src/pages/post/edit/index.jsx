@@ -162,6 +162,9 @@ function EditPost() {
                     {...getErrorProps("thumbnail")}
                     onBlur={formik.handleBlur}
                     fooder="post" // You can make it dynamic if needed
+                    dataImage={
+                      formik.values.thumbnail ? [formik.values.thumbnail] : []
+                    }
                   />
                 </Box>
               </Box>

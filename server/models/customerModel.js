@@ -96,7 +96,7 @@ var customerSchema = new mongoose.Schema(
     avatar: {
       type: String,
       default:
-        "https://asset.cloudinary.com/dgthe0zuj/426512c1702396bd962a4de573a60b15",
+        "https://cdn2.cellphones.com.vn/300x300,webp,q100/media/wysiwyg/Shipper_CPS3_1.png",
     },
     birthday: {
       type: Date,
