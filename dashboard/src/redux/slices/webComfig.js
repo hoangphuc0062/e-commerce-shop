@@ -39,8 +39,8 @@ const webConfig = createSlice({
     data: [],
     status: "idle",
     error: null,
-    // statusCreate: "idle",
-    // deleteStatus: "idle",
+    statusCreate: "idle",
+    deleteStatus: "idle",
     updateStatus: "idle",
   },
   extraReducers: (builder) => {
