@@ -8,6 +8,7 @@ import { UserMenu } from "./UserMenu";
 import CartButton from "./CartButton";
 import Drawer from "@mui/material/Drawer";
 import { getCart, resetState } from "../../../redux/slices/auth";
+import { getWebConfig } from "../../../redux/slices/webConfig";
 
 const bottonContacts = [
   {
@@ -29,6 +30,7 @@ const bottonContacts = [
 export const Header = () => {
   const dispatch = useDispatch();
   const [data, setData] = useState(null);
+  const [dataWebConFig, setDataWbeConFig] = useState([])
   const status = useSelector((state) => state.auth?.statusGetMe || "idle");
   const user = useSelector((state) => state.auth?.data?.rs || null);
   const statusGetCart = useSelector((state) => state.auth.statusGetCart);
@@ -37,6 +39,9 @@ export const Header = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const location = useLocation();
+
+  const statusWebConFig = useSelector((state) => state.webConfig.status);
+  const webConfig = useSelector((state) => state.webConfig.data);
 
   useEffect(() => {
     const currentPath = window.location.pathname;
@@ -69,6 +74,17 @@ export const Header = () => {
     dispatch(resetState({ key: "statusGetCart", value: "idle" }));
   }, [statusGetCart, datacard, dispatch]);
 
+  useEffect(() => {
+    dispatch(getWebConfig());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (statusWebConFig === "succeeded") {
+      setDataWbeConFig(webConfig);
+    }
+  }, [statusWebConFig, dataWebConFig]);
+
+
   return (
     <>
       {/* desktop header */}
@@ -82,7 +98,14 @@ export const Header = () => {
                 className="flex items-center space-x-3 rtl:space-x-reverse"
               >
                 <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-                  Logo
+                  {
+                    dataWebConFig && (
+
+                      <img src={dataWebConFig[0]?.logo} alt=""
+                        width={120}
+                      />
+                    )
+                  }
                 </span>
               </Link>
             </div>
@@ -159,7 +182,14 @@ export const Header = () => {
       <header className="lg:hidden bg-main sticky top-0 z-50 p-2">
         <nav className="flex text-semi gap-2">
           <Link to="/" className="text-center w-fit">
-            Logo
+            {
+              dataWebConFig && (
+
+                <img src={dataWebConFig[0]?.logoMobie} alt=""
+                  width={50}
+                />
+              )
+            }
           </Link>
           <div className="w-full">
             <SearchInput />
@@ -182,9 +212,8 @@ export const Header = () => {
         <nav className="bg-white h-[64px] flex shadow-lg font-bold">
           <Link
             onClick={() => setActiveIndex(0)}
-            className={`flex flex-col items-center justify-center w-full h-full ${
-              activeIndex === 0 ? "text-main" : ""
-            } `}
+            className={`flex flex-col items-center justify-center w-full h-full ${activeIndex === 0 ? "text-main" : ""
+              } `}
             to="/"
           >
             <Icon icon="carbon:home" width="1.5rem" height="1.5rem" />
@@ -195,18 +224,16 @@ export const Header = () => {
               setActiveIndex(1);
               setIsDrawerOpen(true);
             }}
-            className={`flex flex-col items-center justify-center w-full h-full  ${
-              activeIndex === 1 ? "text-main" : ""
-            } `}
+            className={`flex flex-col items-center justify-center w-full h-full  ${activeIndex === 1 ? "text-main" : ""
+              } `}
           >
             <Icon icon="carbon:book" width="1.5rem" height="1.5rem" />
             <p className="text-[10px]">Danh mục</p>
           </Link>
           <Link
             onClick={() => setActiveIndex(2)}
-            className={`flex flex-col items-center justify-center w-full h-full  ${
-              activeIndex === 2 ? "text-main" : ""
-            }`}
+            className={`flex flex-col items-center justify-center w-full h-full  ${activeIndex === 2 ? "text-main" : ""
+              }`}
             to="/look-up-order"
           >
             <Icon icon="carbon:location" width="1.5rem" height="1.5rem" />
@@ -216,18 +243,16 @@ export const Header = () => {
             <Link
               to={"/profile"}
               onClick={() => setActiveIndex(3)}
-              className={`flex flex-col items-center justify-center w-full h-full  ${
-                activeIndex === 3 ? "text-main" : ""
-              } `}
+              className={`flex flex-col items-center justify-center w-full h-full  ${activeIndex === 3 ? "text-main" : ""
+                } `}
             >
               <UserMenu data={data} />
             </Link>
           ) : (
             <Link
               onClick={() => setActiveIndex(3)}
-              className={`flex flex-col items-center justify-center w-full h-full  ${
-                activeIndex === 3 ? "text-main" : ""
-              } `}
+              className={`flex flex-col items-center justify-center w-full h-full  ${activeIndex === 3 ? "text-main" : ""
+                } `}
               to="/login"
             >
               <Icon icon="carbon:user-avatar" width="1.5rem" height="1.5rem" />

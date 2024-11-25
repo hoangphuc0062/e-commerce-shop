@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Add, Delete, ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
   Box,
@@ -24,7 +25,6 @@ export default function Attributes({
   handleChange,
   handleBlur,
   openRows,
-  setOpenRows,
   toggleRow,
 }) {
   return (
@@ -43,7 +43,7 @@ export default function Attributes({
         }}
       >
         <Grid item xs={12}>
-          <Typography variant="h6">Thuộc tính sản phẩm</Typography>
+          <Typography variant="h6">Thông số sản phẩm</Typography>
         </Grid>
         <Grid item xs={12}>
           <FieldArray
@@ -54,7 +54,7 @@ export default function Attributes({
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell>Tiêu đề thuộc tính</TableCell>
+                        <TableCell>Tên Thông số</TableCell>
                         <TableCell>Hành động</TableCell>
                       </TableRow>
                     </TableHead>
@@ -63,10 +63,14 @@ export default function Attributes({
                         <React.Fragment key={attributeIndex}>
                           {/* Main Attribute Row */}
                           <TableRow>
-                            <TableCell>
+                            <TableCell
+                              sx={{
+                                borderBottom: "none",
+                              }}
+                            >
                               <TextField
                                 fullWidth
-                                label="Tiêu đề thuộc tính"
+                                label="Tiêu đề thông số"
                                 name={`attributes[${attributeIndex}].title`}
                                 value={attribute.title}
                                 onChange={handleChange}
@@ -81,17 +85,17 @@ export default function Attributes({
                                 }
                               />
                             </TableCell>
-                            <TableCell align="right">
+                            <TableCell
+                              align="right"
+                              sx={{
+                                borderBottom: "none",
+                              }}
+                            >
                               <Button
                                 variant="outlined"
                                 color="error"
                                 onClick={() => {
                                   arrayHelpers.remove(attributeIndex);
-                                  setOpenRows((prev) =>
-                                    prev.filter(
-                                      (_, index) => index !== attributeIndex
-                                    )
-                                  );
                                 }}
                                 startIcon={<Delete />}
                               >
@@ -125,105 +129,135 @@ export default function Attributes({
                                         name={`attributes[${attributeIndex}].details`}
                                         render={(detailArrayHelpers) => (
                                           <>
-                                            {attribute.details.map(
-                                              (detail, detailIndex) => (
-                                                <TableRow key={detailIndex}>
-                                                  <TableCell
-                                                    sx={{
-                                                      borderBottom: "none",
-                                                    }}
-                                                  >
-                                                    <TextField
-                                                      fullWidth
-                                                      label="Tên chi tiết"
-                                                      name={`attributes[${attributeIndex}].details[${detailIndex}].key`}
-                                                      value={detail.key}
-                                                      onChange={handleChange}
-                                                      onBlur={handleBlur}
-                                                      error={Boolean(
-                                                        errors.attributes?.[
-                                                          attributeIndex
-                                                        ]?.details?.[
-                                                          detailIndex
-                                                        ]?.key &&
-                                                          touched.attributes?.[
-                                                            attributeIndex
-                                                          ]?.details?.[
-                                                            detailIndex
-                                                          ]?.key
-                                                      )}
-                                                      helperText={
-                                                        touched.attributes?.[
-                                                          attributeIndex
-                                                        ]?.details?.[
-                                                          detailIndex
-                                                        ]?.key &&
-                                                        errors.attributes?.[
-                                                          attributeIndex
-                                                        ]?.details?.[
-                                                          detailIndex
-                                                        ]?.key
-                                                      }
-                                                    />
-                                                  </TableCell>
-                                                  <TableCell
-                                                    sx={{
-                                                      borderBottom: "none",
-                                                    }}
-                                                  >
-                                                    <TextField
-                                                      fullWidth
-                                                      label="Giá trị chi tiết"
-                                                      name={`attributes[${attributeIndex}].details[${detailIndex}].value`}
-                                                      value={detail.value}
-                                                      onChange={handleChange}
-                                                      onBlur={handleBlur}
-                                                      error={Boolean(
-                                                        errors.attributes?.[
-                                                          attributeIndex
-                                                        ]?.details?.[
-                                                          detailIndex
-                                                        ]?.value &&
-                                                          touched.attributes?.[
-                                                            attributeIndex
-                                                          ]?.details?.[
-                                                            detailIndex
-                                                          ]?.value
-                                                      )}
-                                                      helperText={
-                                                        touched.attributes?.[
-                                                          attributeIndex
-                                                        ]?.details?.[
-                                                          detailIndex
-                                                        ]?.value &&
-                                                        errors.attributes?.[
-                                                          attributeIndex
-                                                        ]?.details?.[
-                                                          detailIndex
-                                                        ]?.value
-                                                      }
-                                                    />
-                                                  </TableCell>
-                                                  <TableCell
-                                                    align="right"
-                                                    sx={{
-                                                      borderBottom: "none",
-                                                    }}
-                                                  >
-                                                    <IconButton
-                                                      color="error"
-                                                      onClick={() =>
-                                                        detailArrayHelpers.remove(
-                                                          detailIndex
-                                                        )
-                                                      }
+                                            <ul
+                                              style={{
+                                                padding: 0,
+                                                margin: 0,
+                                              }}
+                                            >
+                                              {attribute.details.map(
+                                                (detail, detailIndex) => (
+                                                  <li key={detailIndex}>
+                                                    <TableRow
+                                                      sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent:
+                                                          "space-between",
+                                                      }}
                                                     >
-                                                      <Delete />
-                                                    </IconButton>
-                                                  </TableCell>
-                                                </TableRow>
-                                              )
-                                            )}
+                                                      {/* Key Input */}
+                                                      <TableCell
+                                                        sx={{
+                                                          borderBottom: "none",
+                                                          flex: 1,
+                                                        }}
+                                                      >
+                                                        <TextField
+                                                          fullWidth
+                                                          label="Thông số"
+                                                          name={`attributes[${attributeIndex}].details[${detailIndex}].key`}
+                                                          value={detail.key}
+                                                          onChange={
+                                                            handleChange
+                                                          }
+                                                          onBlur={handleBlur}
+                                                          error={Boolean(
+                                                            errors.attributes?.[
+                                                              attributeIndex
+                                                            ]?.details?.[
+                                                              detailIndex
+                                                            ]?.key &&
+                                                              touched
+                                                                .attributes?.[
+                                                                attributeIndex
+                                                              ]?.details?.[
+                                                                detailIndex
+                                                              ]?.key
+                                                          )}
+                                                          helperText={
+                                                            touched
+                                                              .attributes?.[
+                                                              attributeIndex
+                                                            ]?.details?.[
+                                                              detailIndex
+                                                            ]?.key &&
+                                                            errors.attributes?.[
+                                                              attributeIndex
+                                                            ]?.details?.[
+                                                              detailIndex
+                                                            ]?.key
+                                                          }
+                                                        />
+                                                      </TableCell>
+                                                      {/* Value Input */}
+                                                      <TableCell
+                                                        sx={{
+                                                          borderBottom: "none",
+                                                          flex: 1,
+                                                        }}
+                                                      >
+                                                        <TextField
+                                                          fullWidth
+                                                          label="Giá trị thông số"
+                                                          name={`attributes[${attributeIndex}].details[${detailIndex}].value`}
+                                                          value={detail.value}
+                                                          onChange={
+                                                            handleChange
+                                                          }
+                                                          onBlur={handleBlur}
+                                                          error={Boolean(
+                                                            errors.attributes?.[
+                                                              attributeIndex
+                                                            ]?.details?.[
+                                                              detailIndex
+                                                            ]?.value &&
+                                                              touched
+                                                                .attributes?.[
+                                                                attributeIndex
+                                                              ]?.details?.[
+                                                                detailIndex
+                                                              ]?.value
+                                                          )}
+                                                          helperText={
+                                                            touched
+                                                              .attributes?.[
+                                                              attributeIndex
+                                                            ]?.details?.[
+                                                              detailIndex
+                                                            ]?.value &&
+                                                            errors.attributes?.[
+                                                              attributeIndex
+                                                            ]?.details?.[
+                                                              detailIndex
+                                                            ]?.value
+                                                          }
+                                                        />
+                                                      </TableCell>
+                                                      {/* Remove Button */}
+                                                      <TableCell
+                                                        align="right"
+                                                        sx={{
+                                                          borderBottom: "none",
+                                                        }}
+                                                      >
+                                                        <IconButton
+                                                          color="error"
+                                                          onClick={() =>
+                                                            detailArrayHelpers.remove(
+                                                              detailIndex
+                                                            )
+                                                          }
+                                                        >
+                                                          <Delete />
+                                                        </IconButton>
+                                                      </TableCell>
+                                                    </TableRow>
+                                                  </li>
+                                                )
+                                              )}
+                                            </ul>
+                                            {/* Add New Detail Button */}
                                             <TableRow>
                                               <TableCell
                                                 sx={{ borderBottom: "none" }}
