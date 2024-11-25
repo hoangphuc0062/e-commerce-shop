@@ -1,6 +1,7 @@
 const userRouter = require("./userRoute");
 const productRouter = require("./productRoute");
 const categoryRouter = require("./catogoryRoute");
+const settingFilterRouter = require("./settingFilterRoute");
 const couponRouter = require("./couponRoute");
 const orderRouter = require("./orderRoute");
 const customerRouter = require("./customerRoute");
@@ -24,6 +25,7 @@ const initRoutes = (app) => {
   app.use("/api/users", userRouter);
   app.use("/api/products", productRouter);
   app.use("/api/categories", categoryRouter);
+  app.use("/api/setting-filters", settingFilterRouter);
   app.use("/api/coupon", couponRouter);
   app.use("/api/orders", orderRouter);
 
