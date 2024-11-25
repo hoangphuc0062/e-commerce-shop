@@ -16,6 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { FieldArray } from "formik";
+import ImageUploader from "../../../components/upload";
 
 const fields = [
   { label: "SKU", field: "SKU" },
@@ -26,9 +27,8 @@ const fields = [
   { label: "Tồn kho", field: "inventory" },
   { label: "Tồn kho tối thiểu", field: "minInventory" },
   { label: "Tồn kho tối đa", field: "maxInventory" },
-  { label: "Trạng thái", field: "onStock" },
-  { label: "Đang nhập", field: "inComing" },
-  { label: "Hình thu nhỏ", field: "thumbnail" },
+  { label: "Trong kho", field: "onStock" },
+  { label: "Sắp về", field: "inComing" },
 ];
 
 function VariantsRow({
@@ -112,7 +112,11 @@ function VariantsRow({
               <TableBody>
                 {fields.map(({ label, field }) => (
                   <TableRow key={field}>
-                    <TableCell>
+                    <TableCell
+                      sx={{
+                        borderBottom: "none",
+                      }}
+                    >
                       <TextField
                         fullWidth
                         label={label}
@@ -132,6 +136,32 @@ function VariantsRow({
                     </TableCell>
                   </TableRow>
                 ))}
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography variant="h6">Hình ảnh Biến thể</Typography>
+
+                  <ImageUploader
+                    idupload={`variants[${variantIndex}].thumbnail`}
+                    avatarSize={100}
+                    downloadURLs={variant.thumbnail}
+                    setDownloadURLs={(url) => {
+                      arrayHelpers.replace(variantIndex, {
+                        ...variant,
+                        thumbnail: url,
+                      });
+                    }}
+                    fooder="productThumbnailVariant"
+                    error={errors.variants?.[variantIndex]?.thumbnail}
+                    helperText={touched.variants?.[variantIndex]?.thumbnail}
+                  />
+                </div>
               </TableBody>
             </Table>
           </Collapse>
@@ -150,7 +180,6 @@ export default function Variants({
   handleChange,
   handleBlur,
   openRows,
-  setOpenRows,
   toggleRow,
 }) {
   return (
