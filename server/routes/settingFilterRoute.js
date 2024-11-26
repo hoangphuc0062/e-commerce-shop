@@ -8,6 +8,7 @@ const {
 } = require("../middlewares/vertifyToken");
 
 router.get("/filter/", ctrl.getAllSettingFilter);
+
 router.use([verifyAccessToken, isStaff]);
 router.post("/filter/", ctrl.createSettingFilter);
 router.put("/filter/:_id", ctrl.updateSettingFilter);

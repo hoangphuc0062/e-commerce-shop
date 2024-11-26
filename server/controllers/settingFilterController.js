@@ -4,13 +4,15 @@ const Category = require("../models/categoryModel");
 
 const getAllSettingFilter = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 10, search } = req.query;
 
-    const settingFilters = await SettingFilter.find()
+    const query = search ? { category: { $regex: search, $options: "i" } } : {};
+
+    const settingFilters = await SettingFilter.find(query)
       .limit(parseInt(limit))
       .skip((page - 1) * limit);
 
-    const total = await SettingFilter.countDocuments();
+    const total = await SettingFilter.countDocuments(query);
 
     return res.status(200).json({
       settingFilters,
@@ -21,6 +23,7 @@ const getAllSettingFilter = async (req, res) => {
     res.status(500).json({ mes: "Server error", error });
   }
 };
+
 const createSettingFilter = async (req, res) => {
   const { category, filter } = req.body;
 
