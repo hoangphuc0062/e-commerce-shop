@@ -41,7 +41,7 @@ const sections = [
 
 export const Footer = () => {
   const [expandedSection, setExpandedSection] = useState(null);
-  const [dataWebConFig, setDataWbeConFig] = useState([])
+  const [dataWebConFig, setDataWbeConFig] = useState([]);
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
   };
@@ -58,13 +58,13 @@ export const Footer = () => {
     <section className="bg-main font-sans">
       <footer className="font-sans tracking-wide px-8 py-12 container">
         <div className="grid grid-cols-1  lg:grid-cols-5 gap-x-6 gap-y-10">
-          <div className="md:col-span-1">
+<<<<<<< Updated upstream
+          <div className="flex justify-center items-center md:col-span-1">
+=======
+          <div className="flex justify-center md:col-span-1">
+>>>>>>> Stashed changes
             <Link to="/">
-              <img
-                src={dataWebConFig[0]?.logo}
-                alt="logo"
-                className="w-44"
-              />
+              <img src={dataWebConFig[0]?.logo} alt="logo" className="w-44" />
             </Link>
           </div>
 
@@ -79,8 +79,9 @@ export const Footer = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   width="16px"
                   height="16px"
-                  className={`absolute right-0 top-1 fill-[#d6d6d6] lg:hidden transition-transform transform ${expandedSection === title ? "rotate-180" : ""
-                    }`}
+                  className={`absolute right-0 top-1 fill-[#d6d6d6] lg:hidden transition-transform transform ${
+                    expandedSection === title ? "rotate-180" : ""
+                  }`}
                   viewBox="0 0 24 24"
                 >
                   <path d="M12 16l-6-6a1 1 0 011.42-1.42L12 13.58l5.29-5.29A1 1 0 0118.71 10l-6 6a1 1 0 01-.71.29z" />
@@ -88,8 +89,9 @@ export const Footer = () => {
               </h4>
 
               <ul
-                className={`mt-6 space-y-5 lg:block ${expandedSection === title ? "block" : "hidden"
-                  }`}
+                className={`mt-6 space-y-5 lg:block ${
+                  expandedSection === title ? "block" : "hidden"
+                }`}
               >
                 {links.map((link) => (
                   <li key={link}>

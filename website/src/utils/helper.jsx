@@ -20,6 +20,9 @@ export const formatCurrency = (number) => {
 };
 
 export const getDisplayName = (name) => {
+  if (!name) {
+    return "";
+  }
   const nameParts = name.split(" ");
   return nameParts.slice(-2).join(" ");
 };
