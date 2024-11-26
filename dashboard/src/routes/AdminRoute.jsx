@@ -33,6 +33,7 @@ import EditBannerCollection from "../pages/bannercollection/edit";
 import TagPage from "../pages/tags";
 import ShippingPage from "../pages/shippingConfig";
 import CreateProduct from "../pages/product/add";
+import ProductEdit from "../pages/product/edit";
 
 const AdminRoute = () => {
   return (
@@ -185,15 +186,15 @@ const AdminRoute = () => {
           />
         }
       />
-      {/* <Route
+      <Route
         path="product/update/:id"
         element={
           <PrivateRoute
-            element={<EditProduct />}
+            element={<ProductEdit />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
-      /> */}
+      />
 
       {/* order */}
 
