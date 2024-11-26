@@ -69,7 +69,7 @@ const SliderPostCategory = () => {
                 />
                 <div className="p-3">
                   <Link
-                    to={`/forum/${post.slug}`}
+                    to={`/${post.slug}`}
                     className="text-base font-semibold mb-1 lg:line-clamp-2 line-clamp-1 cursor-pointer hover:text-main"
                   >
                     {post.postTitle}
