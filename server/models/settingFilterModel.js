@@ -5,13 +5,12 @@ const settingFilterSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      unique: true,
     },
     filter: [
       {
         label: { type: String, required: true },
         key: { type: String, required: true },
-        option: [{ type: String, required: true }],
+        values: { type: String, required: true },
       },
     ],
   },
