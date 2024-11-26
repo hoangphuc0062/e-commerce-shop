@@ -7,6 +7,9 @@ var WebConfigSchema = new mongoose.Schema({
   logo: {
     type: String,
   },
+  logoMobie: {
+    type: String,
+  },
   contact: {
     type: String,
   },
