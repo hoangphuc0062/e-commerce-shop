@@ -102,6 +102,27 @@ const menuItems = {
             },
           ],
         },
+        // OrderByStaff
+        {
+          id: "orderByStaff",
+          title: "Tạo đơn hàng",
+          type: "collapse",
+          icon: "feather icon-server",
+          children: [
+            {
+              id: "Create-orderByStaff",
+              title: "Tạo đơn hàng",
+              type: "item",
+              url: "/dashboard/orderByStaff/create",
+            },
+            {
+              id: "all-orderByStaff",
+              title: "Tất cả đơn hàng đã tạo",
+              type: "item",
+              url: "/dashboard/orderByStaff",
+            },
+          ],
+        },
         {
           id: "personnel",
           title: "Nhân viên",
