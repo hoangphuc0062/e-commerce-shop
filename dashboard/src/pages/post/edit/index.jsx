@@ -72,7 +72,7 @@ function EditPost() {
         metaDescription: post.metaDescription,
         shortSeoDescription: post.shortSeoDescription,
         content: post.content,
-        category: post.category._id,
+        category: post.category ? post.category._id : "",
         status: post.status,
       });
     }
@@ -162,6 +162,9 @@ function EditPost() {
                     {...getErrorProps("thumbnail")}
                     onBlur={formik.handleBlur}
                     fooder="post" // You can make it dynamic if needed
+                    dataImage={
+                      formik.values.thumbnail ? [formik.values.thumbnail] : []
+                    }
                   />
                 </Box>
               </Box>

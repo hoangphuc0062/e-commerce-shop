@@ -204,7 +204,29 @@ const Product = () => {
           ))}
         </div>
       </section>
-      <section>filter here</section>
+      <section>
+        <h1 className="text-[20px] font-bold">Lọc theo tiêu chí</h1>
+        <div className=" sticky">
+          <div className="flex gap-2">
+            <button className="flex gap-2 items-center bg-gray-200 p-2 rounded-lg">
+              <Icon icon="cil:filter" width="1rem" height="1rem" />
+              Bộ lọc
+            </button>
+            <button className="flex gap-2 items-center bg-gray-200 p-2 rounded-lg">
+              <Icon icon="iconoir:delivery-truck" width="1rem" height="1rem" />
+              Sẵn hàng
+            </button>
+            <button className="flex gap-2 items-center bg-gray-200 p-2 rounded-lg">
+              <Icon icon="bi:cash-coin" width="1rem" height="1rem" />
+              Giá
+            </button>
+            <button className="flex gap-2 items-center bg-gray-200 p-2 rounded-lg">
+              <Icon icon="bi:cash-coin" width="1rem" height="1rem" />
+              Nhu cầu sử dụng
+            </button>
+          </div>
+        </div>
+      </section>
       <section>
         <div>
           <h1 className="text-[20px] font-semibold">Sắp xếp theo</h1>

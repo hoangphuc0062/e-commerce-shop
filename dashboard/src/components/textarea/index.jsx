@@ -14,11 +14,7 @@ export default function Textarea({
 }) {
   return (
     <div>
-      <label
-        style={{ display: "block", marginBottom: "8px", fontWeight: "bold" }}
-      >
-        {label}
-      </label>
+      <label style={{ display: "block", marginBottom: "8px" }}>{label}</label>
       <div
         style={{
           border: error ? "2px solid red" : "1px solid #ccc",

@@ -1,27 +1,18 @@
 /* eslint-disable react/prop-types */
-
-const CartItem = ({ product, onQuantityChange, isChecked, onCheck }) => {
-  const handleDecreaseQuantity = () => {
-    if (product.quantity > 1) {
-      onQuantityChange(product.id, product.quantity - 1);
-    }
-  };
-
-  const handleIncreaseQuantity = () => {
-    onQuantityChange(product.id, product.quantity + 1);
-  };
-
-  const handleCheckboxChange = () => {
-    onCheck(product.id);
-  };
-
+const CartItem = ({
+  product,
+  onQuantityChange,
+  isChecked,
+  onCheck,
+  setProducts,
+}) => {
   return (
     <div className="flex items-center justify-between border-b pb-4 mb-4">
-      <div className="flex items-center">
+      <div className="flex items-center cursor-pointer" onClick={onCheck}>
         <input
           type="checkbox"
           checked={isChecked}
-          onChange={handleCheckboxChange}
+          onChange={onCheck}
           className="mr-4"
         />
         <img
@@ -41,17 +32,48 @@ const CartItem = ({ product, onQuantityChange, isChecked, onCheck }) => {
       </div>
       <div className="flex items-center">
         <div className="flex items-center border px-2 py-1 rounded-md mr-4">
-          <button className="px-2" onClick={handleDecreaseQuantity}>
+          <button
+            className="px-2"
+            onClick={() => {
+              const value = Math.max(1, product.quantity - 1);
+              onQuantityChange(
+                product.productId,
+                product.attributeValue?.id,
+                value
+              );
+            }}
+          >
             -
           </button>
           <input
+            id={product.productId}
             type="text"
             value={product.quantity}
             className="w-8 text-center"
             min={1}
-            readOnly
+            onChange={(e) => {
+              const value = Math.max(1, parseInt(e.target.value) || 1);
+              setProducts((prev) =>
+                prev.map((item) =>
+                  item.productId === product.productId &&
+                  item.attributeValue?.id === product.attributeValue?.id
+                    ? { ...item, quantity: value }
+                    : item
+                )
+              );
+            }}
           />
-          <button className="px-2" onClick={handleIncreaseQuantity}>
+          <button
+            className="px-2"
+            onClick={() => {
+              const value = product.quantity + 1;
+              onQuantityChange(
+                product.productId,
+                product.attributeValue?.id,
+                value
+              );
+            }}
+          >
             +
           </button>
         </div>

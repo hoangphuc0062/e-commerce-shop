@@ -10,8 +10,6 @@ import UserPage from "../pages/user";
 import WarehousePage from "../pages/warehouse";
 import AddWarehouse from "../pages/warehouse/create";
 import ProductPage from "../pages/product";
-import VariantForm from "../pages/product/variant/create";
-import VariantPage from "../pages/product/variant";
 import OrderPage from "../pages/order";
 import SiteConfig from "../pages/webconfig";
 import PaymentConfig from "../pages/paymentconfig";
@@ -31,10 +29,16 @@ import BrandPage from "../pages/brand";
 import CollectionPage from "../pages/collection";
 import AddBannerConllection from "../pages/bannercollection/create";
 import EditBannerCollection from "../pages/bannercollection/edit";
-import CreateProduct from "../pages/product/create";
-import EditProduct from "../pages/product/update";
+
 import TagPage from "../pages/tags";
 import ShippingPage from "../pages/shippingConfig";
+import CreateProduct from "../pages/product/add";
+
+import OrderByStaff from "../pages/orderByStaff";
+import CreateOrderByStaff from "../pages/orderByStaff/create";
+
+import ProductEdit from "../pages/product/edit";
+
 
 const AdminRoute = () => {
   return (
@@ -191,25 +195,7 @@ const AdminRoute = () => {
         path="product/update/:id"
         element={
           <PrivateRoute
-            element={<EditProduct />}
-            roles={["customer", "staff", "admin", "superadmin"]}
-          />
-        }
-      />
-      <Route
-        path="product/variant"
-        element={
-          <PrivateRoute
-            element={<VariantPage />}
-            roles={["customer", "staff", "admin", "superadmin"]}
-          />
-        }
-      />
-      <Route
-        path="product/variant/create"
-        element={
-          <PrivateRoute
-            element={<VariantForm />}
+            element={<ProductEdit />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
@@ -222,6 +208,25 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<OrderPage />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      {/* odByStaff */}
+      <Route
+        path="orderByStaff"
+        element={
+          <PrivateRoute
+            element={<OrderByStaff />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="orderByStaff/create"
+        element={
+          <PrivateRoute
+            element={<CreateOrderByStaff />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }

@@ -31,6 +31,13 @@ export const register = createAsyncThunk("auth/register", (data, thunkAPI) =>
   handleAsyncThunk(AuthService.register, [data], thunkAPI)
 );
 
+// finalregister
+export const finalregister = createAsyncThunk(
+  "auth/finalregister",
+  (token, thunkAPI) =>
+    handleAsyncThunk(AuthService.finalregister, [token], thunkAPI)
+);
+
 // logout
 
 export const logout = createAsyncThunk("auth/logout", (_, thunkAPI) =>
@@ -65,6 +72,13 @@ export const updateCart = createAsyncThunk(
   (data, thunkAPI) =>
     handleAsyncThunk(CartServices.updateCart, [data], thunkAPI)
 );
+
+// cap nhap thong tin khach hang
+export const updateCustomer = createAsyncThunk("customer/update", (
+  {id, data}, thunkAPI) =>
+  handleAsyncThunk(AuthService.updateCustomer, [id, data], thunkAPI)
+);
+
 const auth = createSlice({
   name: "auth",
 
@@ -81,6 +95,8 @@ const auth = createSlice({
     statusDeleteCart: "idle",
     statusAddCart: "idle",
     statusUpdateCart: "idle",
+    statusFinalRegister: "idle",
+    statusUpdateCustomer: "idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -178,6 +194,26 @@ const auth = createSlice({
       })
       .addCase(updateCart.rejected, (state) => {
         state.statusUpdateCart = "failed";
+      });
+    builder
+      .addCase(finalregister.pending, (state) => {
+        state.statusFinalRegister = "loading";
+      })
+      .addCase(finalregister.fulfilled, (state) => {
+        state.statusFinalRegister = "success";
+      })
+      .addCase(finalregister.rejected, (state) => {
+        state.statusFinalRegister = "failed";
+      });
+    builder
+      .addCase(updateCustomer.pending, (state) => {
+        state.statusUpdateCustomer = "loading";
+      })
+      .addCase(updateCustomer.fulfilled, (state) => {
+        state.statusUpdateCustomer = "success";
+      })
+      .addCase(updateCustomer.rejected, (state) => {
+        state.statusUpdateCustomer = "failed";
       });
   },
 });

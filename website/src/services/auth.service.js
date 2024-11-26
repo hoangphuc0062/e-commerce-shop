@@ -5,6 +5,9 @@ const AuthServices = {
   register: (data) => sendRequest("post", "/customers/register", data),
   logout: () => sendRequest("get", "/customers/logout"),
   getme: () => sendRequest("get", "/customers/get-current"),
+  updateCustomer: (id, data) => sendRequest("put", `/customers/user/${id}`, data),
+  finalregister: (token) =>
+    sendRequest("get", `/customers/finalregister/${token}`),
 };
 
 export default AuthServices;

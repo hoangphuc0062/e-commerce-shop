@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { UserContext } from "../../../context/AuthContext";
 import { handleToast } from "../../../ultils/toast";
 import { logout, resetState } from "../../../redux/slices/auth";
+import { getDisplayName } from "../../../utils/helper";
 
 export const UserMenu = ({ data }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -52,7 +53,9 @@ export const UserMenu = ({ data }) => {
           className="flex flex-col items-center justify-center text-[12px] hover:bg-hv p-2 rounded-lg"
         >
           <Icon icon="carbon:user-avatar" width="1.5rem" height="1.5rem" />
-          <p className="line-clamp-2">{data.name || "Người dùng"}</p>
+          <p className="text-[10px] md:text-[12px] line-clamp-2 ">
+            {getDisplayName(data.name) || "Người dùng"}
+          </p>
         </button>
       ) : (
         <Link
@@ -65,7 +68,7 @@ export const UserMenu = ({ data }) => {
       )}
 
       {isDropdownOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg z-10">
+        <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg z-10">
           <ul className="py-2">
             <li>
               <Link

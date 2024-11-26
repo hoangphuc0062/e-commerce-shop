@@ -15,11 +15,12 @@ function CartButton({ data }) {
   const [state, setState] = useState({ right: false });
   const [cartData, setCartData] = useState([]);
   const [checkedItems, setCheckedItems] = useState([]);
-  const [selectAll, setSelectAll] = useState(false);
+  const [selectAll, setSelectAll] = useState(true);
   const dispatch = useDispatch();
 
   useEffect(() => {
     setCartData(data);
+    setCheckedItems(data.map((_, index) => index));
   }, [data]);
 
   const toggleDrawer = (anchor, open) => (event) => {
@@ -39,9 +40,9 @@ function CartButton({ data }) {
 
   const handleSelectAll = () => {
     if (selectAll) {
-      setCheckedItems([]);
-    } else {
       setCheckedItems(cartData.map((_, index) => index));
+    } else {
+      setCheckedItems([]);
     }
     setSelectAll(!selectAll);
   };
@@ -57,7 +58,14 @@ function CartButton({ data }) {
 
   const handleDelete = useCallback(() => {
     const productIds = checkedItems.map((index) => cartData[index].productId);
-    const itemsToDelete = productIds.map((id) => ({ productId: id }));
+    const attributeIds = checkedItems.map(
+      (index) => cartData[index]?.attributeValue?.id?.[0] || null
+    );
+    const itemsToDelete = productIds.map((productId, index) => ({
+      productId,
+      attributeId: attributeIds[index] || null,
+    }));
+
     dispatch(deleteCart(itemsToDelete)).then((result) => {
       if (result.type === "auth/deleteCart/fulfilled") {
         handleToast("success", "Xoá sản phẩm thành công");
@@ -79,19 +87,30 @@ function CartButton({ data }) {
   const handleUpdateCart = () => {
     const updatedItems = checkedItems.map((index) => {
       const item = cartData[index];
+      const price = item.attributeValue?.price || item.price;
       return {
         productId: item.productId,
-        attributeId: item.attribute._id,
+        attributeId: item.attributeValue?.id || "null",
         quantity: item.quantity,
+        price: price,
       };
     });
 
     dispatch(updateCart(updatedItems)).then((result) => {
+      console.log(result);
       if (result.type === "auth/updateCart/fulfilled") {
         handleToast("success", "Cập nhật giỏ hàng thành công");
         dispatch(getCart());
         setCheckedItems([]);
         setSelectAll(false);
+      } else if (result.type === "auth/updateCart/rejected") {
+        const mes = result.payload.message;
+        if (mes === "Assignment to constant variable") {
+          handleToast(
+            "error",
+            "Số lượng sản phẩm trong giỏ hàng vượt quá số lượng tồn kho"
+          );
+        }
       }
     });
   };
@@ -248,7 +267,7 @@ function CartButton({ data }) {
         onClick={toggleDrawer("right", true)}
       >
         <div className="flex items-center justify-center relative">
-          <Icon icon="carbon:shopping-bag" width="2rem" height="2rem" />
+          <Icon icon="uil:cart" width="2rem" height="2rem" />
           <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full px-1 text-[10px]">
             {cartData?.length || 0}
           </span>
