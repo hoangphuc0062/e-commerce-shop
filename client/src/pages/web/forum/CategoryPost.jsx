@@ -9,12 +9,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { getPosts } from "../../../redux/slices/post";
 import Skeleton from "@mui/material/Skeleton";
+import { Helmet } from "react-helmet-async";
 
 const CategoryPost = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { categorySlug } = useParams();
   const postData = useSelector((state) => state.post.data);
+  const categories = useSelector((state) => state.category.data.categories);
   const [visibleItemCount, setVisibleItemCount] = useState(6);
   const [loading, setLoading] = useState(true);
   const observerRef = useRef();
@@ -52,10 +54,15 @@ const CategoryPost = () => {
   };
 
   useEffect(() => {
-    if (formattedData.length === 0) {
-      navigate("/404");
+    if (categories && Array.isArray(categories)) {
+      const categoryExists = categories.some(
+        (category) => category.slug === categorySlug
+      );
+      if (!categoryExists) {
+        navigate("/404", { replace: true });
+      }
     }
-  }, [formattedData, navigate]);
+  }, [categories, categorySlug, navigate]);
 
   const lastPostRef = useCallback(
     (node) => {
@@ -77,6 +84,12 @@ const CategoryPost = () => {
 
   return (
     <div className="container w-full mb-8">
+      <Helmet>
+        <title>
+          Danh mục |{" "}
+          {categorySlug.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
+        </title>
+      </Helmet>
       <div className="flex flex-col md:flex-row w-full pt-16">
         <div className="md:w-1/4 lg:w-1/5">
           <Sidebar />

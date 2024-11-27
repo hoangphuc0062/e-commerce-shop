@@ -8,6 +8,7 @@ import { formatDay } from "../../../ultils/helper";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getPosts } from "../../../redux/slices/post";
+import { Helmet } from "react-helmet-async";
 
 const TagPost = () => {
   const dispatch = useDispatch();
@@ -63,6 +64,12 @@ const TagPost = () => {
   };
   return (
     <div className="container w-full mb-8">
+      <Helmet>
+        <title>
+          Tags |{" "}
+          {tagsName.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
+        </title>
+      </Helmet>
       <div className="flex flex-col md:flex-row w-full pt-16">
         <div className="md:w-1/4 lg:w-1/5">
           <Sidebar />

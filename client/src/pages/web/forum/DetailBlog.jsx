@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { FaArrowTrendUp } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { GetBySlug, submitRating } from "../../../redux/slices/post";
@@ -34,6 +34,7 @@ const style = {
 const DetailBlog = () => {
   const { slug } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   // Lấy trạng thái và dữ liệu bài viết từ Redux
   const status = useSelector((state) => state.post.getBySlugStatus);
   const slugData = useSelector((state) => state.post.slugData);
@@ -107,7 +108,14 @@ const DetailBlog = () => {
       });
     }
   }, [status, slugData]);
-  if (status !== "success" || !data) {
+
+  useEffect(() => {
+    if (status === "error" || (status === "success" && !slugData)) {
+      navigate("/404");
+    }
+  }, [status, slugData, navigate]);
+
+  if (!data) {
     return null;
   }
 
