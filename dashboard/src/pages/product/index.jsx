@@ -10,6 +10,8 @@ import {
 } from "../../redux/slices/product";
 import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
 import { useNavigate } from "react-router-dom";
+import ImportExcelModal from "../../components/excel/ImportExcelModal";
+import { Avatar } from "@mui/material";
 
 export default function ProductPage() {
   const navigate = useNavigate();
@@ -105,6 +107,46 @@ export default function ProductPage() {
 
     setOpen(false);
   };
+  const renderImage = (params) => {
+    return (
+      <Avatar
+        src={params.value}
+        alt="Product Image"
+        variant="square"
+        sx={{ width: 50, height: 50 }}
+      />
+    );
+  };
+  const columnss = [
+    { field: "name", headerName: "Danh mục", width: 200 },
+    {
+      field: "imageURL",
+      headerName: "Hình ảnh",
+      width: 100,
+      // valueFormatter: (params) => renderUrl(params, backEnd),
+      renderCell: renderImage,
+    },
+    { field: "slug", headerName: "Slug", width: 100 },
+    { field: "parentId", headerName: "Danh mục cha", width: 100 },
+    { field: "status", headerName: "Trạng thái", width: 200 },
+    { field: "order", headerName: "Vị trí", width: 200 },
+    { field: "views", headerName: "Lượt xem", width: 100 },
+    { field: "description", headerName: "Mô tả", width: 100 },
+    { field: "createdAt", headerName: "Ngày tạo", width: 200 },
+    { field: "updatedAt", headerName: "Ngày nhập", width: 200 },
+  ];
+
+  const validateKey = [
+    "_id",
+    "name",
+    "slug",
+    "parentId",
+    "status",
+    "order",
+    "views",
+    "description",
+    "imageURL",
+  ];
   return (
     <>
       <ReusableTable
@@ -128,6 +170,19 @@ export default function ProductPage() {
         setSelectedSize={handleSizeChange}
         tabValue={tabValue}
         handleTabChange={handleTabChange}
+      />
+      <ImportExcelModal
+        validateKey={validateKey}
+        columns={columnss
+          .filter(
+            (col) =>
+              col.field !== "createdAt" &&
+              col.field !== "updatedAt" &&
+              col.field !== "actions"
+          )
+          .map((col) => col)}
+        onSave={handleSave}
+        // loading={statusCreate === "loading"}
       />
     </>
   );

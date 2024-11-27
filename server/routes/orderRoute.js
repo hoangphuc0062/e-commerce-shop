@@ -2,12 +2,22 @@ const router = require("express").Router();
 
 const ctrl = require("../controllers/orderController");
 
-const { verifyAccessToken, isAdmin } = require("../middlewares/vertifyToken");
+const {
+  verifyAccessToken,
+  isAdmin,
+  isStaff,
+} = require("../middlewares/vertifyToken");
 
 router.post("/", verifyAccessToken, ctrl.createOrder);
 
 router.get("/", verifyAccessToken, isAdmin, ctrl.getAllOrder);
 router.put("/status/:oid", verifyAccessToken, isAdmin, ctrl.updateStatus);
+router.post(
+  "/create-in-store-order",
+  verifyAccessToken,
+  isStaff,
+  ctrl.createInStoreOrder
+);
 router.get("/user", verifyAccessToken, ctrl.getOrderByUser);
 // router.use([verifyAccessToken, isAdmin]);
 

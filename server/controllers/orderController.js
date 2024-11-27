@@ -1,9 +1,10 @@
-const Order = require("../models/orderModel");
-const Customer = require("../models/customerModel");
-const Coupon = require("../models/couponModel");
 const asyncHandler = require("express-async-handler");
 const StatusCodes = require("http-status-codes");
 const moment = require("moment");
+
+const Order = require("../models/orderModel");
+const Customer = require("../models/customerModel");
+const Coupon = require("../models/couponModel");
 const sendMail = require("../ultils/sendMail");
 
 const getAllOrder = asyncHandler(async (req, res) => {
@@ -21,47 +22,65 @@ const getOrderByUser = asyncHandler(async (req, res) => {
 
 const createOrder = asyncHandler(async (req, res) => {
   const userId = req.user._id;
+
+  // thông tin giỏ hàng
   const userCart = await Customer.findById(userId).select("cart");
-  let products = [];
-  var total = 0;
-  var shippingFee = 0;
-  if (userCart) {
-    products = userCart.cart.map((el) => ({
-      pid: el.pid,
-      attributeId: el.attributeId,
-      quantity: el.quantity,
-      price: el.price,
-    }));
-    if (products.length > 0) {
-      total = req.body.total;
-    }
-    if (req.body.coupon) {
-      const coupon = await Coupon.findOne({ code: req.body.coupon });
-      if (coupon) {
-        total = total - (total * coupon.discount) / 100;
-      }
-    }
+  if (!userCart || !userCart.cart || userCart.cart.length === 0) {
+    return res.status(400).json({ message: "Cart is empty" });
+  }
 
-    if (req.body.shippingFee) {
-      shippingFee = req.body.shippingFee;
+  const products = userCart.cart.map((el) => ({
+    pid: el.pid,
+    attributeId: el.attributeId,
+    quantity: el.quantity,
+    price: el.price,
+  }));
+
+  let total = req.body.total || 0;
+  if (req.body.coupon) {
+    const coupon = await Coupon.findOne({ code: req.body.coupon });
+    if (coupon) {
+      total -= (total * coupon.discount) / 100;
     }
   }
 
-  let updateAddress = `${req.body.address.province}, ${req.body.address.district}, ${req.body.address.ward}, ${req.body.address.street}`;
-  let updateCustomer = {
-    address: [updateAddress],
-    name: req.body.name,
-    phone: req.body.phone,
-    sex: req.body.sex,
-  };
-  const rs = await Customer.findById(userId);
-  if (rs) {
-    await rs.UpdateCustomer(updateCustomer);
-    // res.json(rs);
-  } else {
-    res.status(404).json({ message: "Customer not found" });
+  const shippingFee = req.body.shippingFee || 0;
+  total += shippingFee;
+
+  const { address, name, phone, sex } = req.body;
+  if (
+    !address ||
+    !address.district ||
+    !address.ward ||
+    !address.street ||
+    !address.province
+  ) {
+    return res.status(400).json({ message: "Address is required" });
   }
 
+  const formattedAddress = [
+    address.province,
+    address.district,
+    address.ward,
+    address.street,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  // Cập nhật thông tin khách hàng
+  const customer = await Customer.findById(userId);
+  if (!customer) {
+    return res.status(404).json({ message: "Customer not found" });
+  }
+
+  await customer.UpdateCustomer({
+    address: [formattedAddress],
+    name,
+    phone,
+    sex,
+  });
+
+  // Tạo đơn hàng mới
   let order = new Order({
     products,
     orderBy: userId,
@@ -71,13 +90,13 @@ const createOrder = asyncHandler(async (req, res) => {
     shippingFee,
     note: req.body.note,
   });
+
   order = await order.save();
 
-  if (order) {
-    await Customer.findByIdAndUpdate(userId, {
-      $push: { purchaseHistory: { pid: order._id, date: Date.now() } },
-    });
-  }
+  // Cập nhật lịch sử mua hàng
+  await Customer.findByIdAndUpdate(userId, {
+    $push: { purchaseHistory: { pid: order._id, date: Date.now() } },
+  });
 
   return res.status(201).json(order);
 });
@@ -93,6 +112,77 @@ const updateStatus = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Order not found");
   }
+});
+
+// nhan vien ban hang tao don hang cho khach hang
+// thanh toán tiền mặt
+
+const createInStoreOrder = asyncHandler(async (req, res) => {
+  const {
+    customerId,
+    total,
+    shippingFee,
+    name,
+    email,
+    phone,
+    sex,
+    products,
+    coupon,
+  } = req.body;
+  let customer;
+
+  if (customerId) {
+    customer = await Customer.findById(customerId);
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+  } else {
+    // Create a new customer if customerId is not provided
+    if (!name || !email || !phone) {
+      return res
+        .status(400)
+        .json({ message: "Customer information is required" });
+    }
+
+    customer = new Customer({
+      name,
+      email,
+      phone,
+      sex,
+    });
+    await customer.save();
+  }
+
+  let orderTotal = total || 0;
+  if (coupon) {
+    const couponDoc = await Coupon.findOne({ code: coupon });
+    if (couponDoc) {
+      orderTotal -= (orderTotal * couponDoc.discount) / 100;
+    }
+  }
+  orderTotal += shippingFee || 0;
+
+  if (!products || !Array.isArray(products) || products.length === 0) {
+    return res.status(400).json({ message: "Product information is required" });
+  }
+
+  const orderProducts = products.map((product) => ({
+    pid: product.productsId,
+    attributeId: product.attributeId,
+    quantity: product.quantity,
+    price: product.price,
+  }));
+
+  const order = new Order({
+    products: orderProducts,
+    orderBy: customer._id,
+    total: orderTotal,
+    paymentMethod: "Cash",
+    shippingFee: shippingFee || 0,
+  });
+
+  await order.save();
+  return res.status(201).json(order);
 });
 
 // thanh toán vnpay
@@ -287,4 +377,5 @@ module.exports = {
   vnpay_return,
   sendSuccessEmail,
   getOrderByUser,
+  createInStoreOrder,
 };
