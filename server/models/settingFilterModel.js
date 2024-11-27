@@ -6,7 +6,7 @@ const settingFilterSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    filter: [
+    filterButton: [
       {
         label: { type: String, required: true },
         key: { type: String, required: true },
