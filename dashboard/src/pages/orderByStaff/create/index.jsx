@@ -206,7 +206,7 @@ export default function CreateOrderByStaff() {
                 padding: 3,
                 border: "1px solid #ddd",
                 borderRadius: 2,
-                backgroundColor: "#f9f9f9",
+                backgroundColor: "#ffffff",
                 boxShadow: 2,
             }}
         >
