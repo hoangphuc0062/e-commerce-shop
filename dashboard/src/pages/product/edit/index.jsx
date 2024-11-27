@@ -1,100 +1,206 @@
-/* eslint-disable react/no-unescaped-entities */
-import React, { useEffect, useState } from "react";
-import { Formik, Form } from "formik";
-import * as Yup from "yup";
-import {
-  TextField,
-  Button,
-  Box,
-  Typography,
-  Grid,
-  CircularProgress,
-  Divider,
-  Autocomplete,
-  Checkbox,
-} from "@mui/material";
-import CustomDropdown from "../../../components/Dropdown";
-import Attributes from "./Attributes";
-import Variants from "./variants";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { getProductById, updateProduct } from "../../../redux/slices/product";
+import { getAllWarehouses } from "../../../redux/slices/warehouse";
 import { getCategory } from "../../../redux/slices/category";
 import { getBrand } from "../../../redux/slices/brand";
-import { getAllCollections } from "../../../redux/slices/collection";
-import { getAllTags as getTags } from "../../../redux/slices/tags";
-import { getAllWarehouses } from "../../../redux/slices/warehouse";
-import slugify from "../../../utils/slugify";
-import Textarea from "../../../components/textarea";
+
+import { getAllTags } from "../../../redux/slices/tags";
+import * as Yup from "yup";
+import { Form, Formik } from "formik";
+import {
+  Autocomplete,
+  Box,
+  Checkbox,
+  CircularProgress,
+  Grid,
+  TextField,
+  Typography,
+  Button,
+} from "@mui/material";
+
+import CustomDropdown from "../../../components/Dropdown";
 import ImageUploader from "../../../components/upload";
-import { createProduct } from "./../../../redux/slices/product";
-import { handleToast } from "./../../../utils/toast";
+import Textarea from "../../../components/textarea";
+import slugify from "../../../utils/slugify";
+import Attributes from "./Attributes";
+import Variants from "./variants";
+import { handleToast } from "../../../utils/toast";
 
-const CreateProduct = () => {
+export default function ProductEdit() {
+  const { id } = useParams();
+
+  const [dataProduct, setDataProduct] = useState([]);
+  const [warehouseSelect, setWarehouseSelect] = useState([]);
+  const [categorySelect, setCategorySelect] = useState([]);
+  const [brandSelect, setBrandSelect] = useState([]);
+
+  const [tagsSelect, setTagsSelect] = useState([]);
   const [isVariant, setIsVariant] = useState(false);
-  const [isSEO, setIsSEO] = useState(false);
   const [discount, setDiscount] = useState(false);
+  const [isSEO, setIsSEO] = useState(false);
 
-  const initialValues = {
-    name: "",
-    slug: "",
-    SKU: "",
-    historicalPrice: "",
-    priceInMarket: "",
-    price: "",
-    discount: "",
-    inventory: "",
-    onStock: "",
-    inComing: "",
-    minInventory: "",
-    maxInventory: "",
-    isBattery: true,
-    isStopSelling: false,
-    status: "",
-    description: "",
-    shortDescription: "",
-    keywords: "",
-    titleSEO: "",
-    descriptionSEO: "",
-    thumbnail: "",
-    images: [],
-    videos: "",
-    views: 1,
-    category: "",
-    brand: "",
-    warehouse: "",
-    tagsProduct: [],
-    attributes: [{ title: "", details: [{ key: "", value: "" }] }],
-    variants: [
-      {
-        key: "",
-        value: "",
-        SKU: "",
-        price: "",
-        priceInMarket: "",
-        historicalPrice: "",
-        discount: "",
-        inventory: "",
-        minInventory: "",
-        maxInventory: "",
-        onStock: "",
-        inComing: "",
-        thumbnail: "",
-      },
-    ],
+  const statusGetById = useSelector((state) => state.product.statusGetById);
+  const productData = useSelector((state) => state.product.data?.products);
+  const statusWarehouse = useSelector((state) => state.warehouse.status);
+  const dataWarehouse = useSelector((state) => state.warehouse.data.wareHouses);
+  const statusGetCategory = useSelector((state) => state.category.status);
+  const dataCategory = useSelector((state) => state.category.data.categories);
+  const statusBrand = useSelector((state) => state.brand.status);
+  const dataBrand = useSelector((state) => state.brand.data);
+  const statusTag = useSelector((state) => state.tag.status);
+  const dataTag = useSelector((state) => state.tag.data.tags);
+  const dispatch = useDispatch();
+  const reverseTransformValues = (data) => {
+    return {
+      ...data[0],
+      attributes: Object.entries(data[0].attributes).map(
+        ([title, details]) => ({
+          title,
+          details: details.split(", ").map((detail) => {
+            const [key, value] = detail.split(": ");
+            return { key, value };
+          }),
+        })
+      ),
+    };
   };
 
+  useEffect(() => {
+    dispatch(getProductById(id));
+  }, [dispatch, id]);
+  useEffect(() => {
+    dispatch(getAllWarehouses());
+  }, [dispatch]);
+  useEffect(() => {
+    dispatch(getCategory());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getBrand());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getAllTags());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (statusGetById === "success" && productData) {
+      setDataProduct(productData);
+    }
+  }, [statusGetById, productData]);
+
+  useEffect(() => {
+    if (statusWarehouse === "success") {
+      const warehouses = dataWarehouse.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setWarehouseSelect(warehouses);
+    }
+  }, [statusWarehouse, dataWarehouse]);
+  useEffect(() => {
+    if (statusGetCategory === "success") {
+      const categories = dataCategory.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setCategorySelect(categories);
+    }
+  }, [statusGetCategory, dataCategory]);
+  useEffect(() => {
+    if (statusBrand === "success") {
+      const brands = dataBrand.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setBrandSelect(brands);
+    }
+  }, [statusBrand, dataBrand]);
+
+  useEffect(() => {
+    if (statusTag === "succeeded") {
+      const tags = dataTag.map((item) => ({
+        value: item._id,
+        label: item.name,
+      }));
+      setTagsSelect(tags);
+    }
+  }, [statusTag, dataTag]);
+  useEffect(() => {
+    if (statusGetById === "success" && productData) {
+      const data = reverseTransformValues(productData);
+      setDataProduct(data);
+    }
+  }, [statusGetById, productData]);
+
+  const initialValues = {
+    name: dataProduct.name || "",
+    slug: dataProduct.slug || "",
+    SKU: dataProduct.SKU || "",
+    historicalPrice: dataProduct.historicalPrice || "",
+    priceInMarket: dataProduct.priceInMarket || "",
+    price: dataProduct.price || "",
+    discount: dataProduct.discount || "",
+    inventory: dataProduct.inventory || "",
+    onStock: dataProduct.onStock || "",
+    inComing: dataProduct.inComing || "",
+    minInventory: dataProduct.minInventory || "",
+    maxInventory: dataProduct.maxInventory || "",
+    isBattery: dataProduct.isBattery || false,
+    isStopSelling: dataProduct.isStopSelling || false,
+    status: dataProduct.status || "",
+    description: dataProduct.description || "",
+    shortDescription: dataProduct.shortDescription || "",
+    keywords: dataProduct.keywords || "",
+    titleSEO: dataProduct.titleSEO || "",
+    descriptionSEO: dataProduct.descriptionSEO || "",
+    thumbnail: dataProduct.thumbnail || "",
+    images: dataProduct.images || [],
+    videos: dataProduct.videos || "",
+    views: dataProduct.views || "",
+    category: dataProduct.category || "",
+    brand: dataProduct.brand || "",
+    warehouse: dataProduct.warehouse || "",
+    tagsProduct: dataProduct.tagsProduct || [],
+    attributes:
+      dataProduct.attributes?.map((item) => ({
+        title: item.title,
+        details: item.details.map((detail) => {
+          return { key: detail.key, value: detail.value };
+        }),
+      })) || [],
+    variants:
+      dataProduct.variants?.map((item) => ({
+        key: item.key,
+        value: item.value,
+        SKU: item.SKU,
+        price: item.price,
+        priceInMarket: item.priceInMarket,
+        historicalPrice: item.historicalPrice,
+        discount: item.discount,
+        inventory: item.inventory,
+        minInventory: item.minInventory,
+        maxInventory: item.maxInventory,
+        onStock: item.onStock,
+        inComing: item.inComing,
+        thumbnail: item.thumbnail,
+      })) || [],
+  };
   const validationSchema = Yup.object({
-    name: Yup.string().required("Tên sản phẩm không được để trống"),
-    slug: Yup.string().required("Slug không được để trống"),
-    SKU: Yup.string().required("SKU không được để trống"),
-    price: Yup.number().required("Giá bán không được để trống"),
-    historicalPrice: Yup.number().required("Giá gốc không được để trống"),
-    priceInMarket: Yup.number().required("Giá thị trường không được để trống"),
-    category: Yup.string().required("Danh mục không được để trống"),
-    brand: Yup.string().required("Thương hiệu không được để trống"),
-    series: Yup.string().required("Dòng sản phẩm không được để trống"),
-    tagsProduct: Yup.array().required("Tags không được để trống"),
-    warehouse: Yup.string().required("Kho hàng không được để trống"),
-    inventory: Yup.number().required("Tồn kho không được để trống"),
+    // name: Yup.string().required("Tên sản phẩm không được để trống"),
+    // slug: Yup.string().required("Slug không được để trống"),
+    // SKU: Yup.string().required("SKU không được để trống"),
+    // price: Yup.number().required("Giá bán không được để trống"),
+    // historicalPrice: Yup.number().required("Giá gốc không được để trống"),
+    // priceInMarket: Yup.number().required("Giá thị trường không được để trống"),
+    // category: Yup.string().required("Danh mục không được để trống"),
+    // brand: Yup.string().required("Thương hiệu không được để trống"),
+    // series: Yup.string().required("Dòng sản phẩm không được để trống"),
+    // tagsProduct: Yup.array().required("Tags không được để trống"),
+    // warehouse: Yup.string().required("Kho hàng không được để trống"),
+    // inventory: Yup.number().required("Tồn kho không được để trống"),
   });
 
   const transformValues = (values) => {
@@ -111,122 +217,38 @@ const CreateProduct = () => {
       }, {}),
     };
   };
-
-  const handleSubmit = async (values, { resetForm }) => {
+  const handleSubmit = (values, { resetForm }) => {
     const data = transformValues(values);
-    dispatch(createProduct(data)).then((a) => {
-      if (a.type === "product/createProduct/fulfilled") {
-        resetForm();
-        handleToast("success", "Tạo sản phẩm thành công");
-      } else {
-        handleToast("error", "Tạo sản phẩm thất bại");
+    console.log("Dữ liệu gửi lên:", data);
+
+    dispatch(updateProduct({ productId: id, data: { data } })).then(
+      (unwrapResult) => {
+        if (unwrapResult.type === "product/updateProduct/fulfilled") {
+          handleToast("success", "Sửa sản phẩm thành công");
+          resetForm();
+        } else {
+          handleToast("error", "Sửa sản phẩm thất bại");
+        }
       }
-    });
+    );
   };
 
-  const [openRows, setOpenRows] = React.useState({});
-  const [variantopenRows, setVariantopenRows] = useState([]);
+  const handleNameChange = (e, setFieldValue) => {
+    const nameValue = e.target.value;
+    const slugified = slugify(nameValue);
 
+    setFieldValue("name", nameValue);
+    setFieldValue("slug", slugified);
+  };
+
+  const [openRows, setOpenRows] = useState([]);
+  const [variantopenRows, setVariantopenRows] = useState([]);
   const toggleRow = (index) => {
     setOpenRows((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
   const toggleVariantRow = (index) => {
     setVariantopenRows((prev) => ({ ...prev, [index]: !prev[index] }));
-  };
-
-  const [categorySelect, setCategorySelect] = useState([]);
-  const [brandSelect, setBrandSelect] = useState([]);
-  const [seriesSelect, setSeriesSelect] = useState([]);
-  const [tagsSelect, setTagsSelect] = useState([]);
-  const [warehouseSelect, setWarehouseSelect] = useState([]);
-  const dispatch = useDispatch();
-  const statusGetCategory = useSelector((state) => state.category.status);
-  const dataCategory = useSelector((state) => state.category.data.categories);
-  const statusBrand = useSelector((state) => state.brand.status);
-  const dataBrand = useSelector((state) => state.brand.data);
-  const statusSeries = useSelector((state) => state.collection.status);
-  const dataSeries = useSelector((state) => state.collection.data);
-  const statusTag = useSelector((state) => state.tag.status);
-  const dataTag = useSelector((state) => state.tag.data.tags);
-  const statusWarehouse = useSelector((state) => state.warehouse.status);
-  const dataWarehouse = useSelector((state) => state.warehouse.data.wareHouses);
-  useEffect(() => {
-    dispatch(getCategory());
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(getBrand());
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(getAllCollections());
-  }, [dispatch]);
-  useEffect(() => {
-    dispatch(getTags());
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(getAllWarehouses());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (statusGetCategory === "success") {
-      const categories = dataCategory
-        .filter((item) => item.type === "product") // Filter categories by type
-        .map((item) => ({
-          value: item._id,
-          label: item.name,
-        }));
-      setCategorySelect(categories);
-    }
-  }, [statusGetCategory, dataCategory]);
-  useEffect(() => {
-    if (statusBrand === "success") {
-      const brands = dataBrand.map((item) => ({
-        value: item._id,
-        label: item.name,
-      }));
-      setBrandSelect(brands);
-    }
-  }, [statusBrand, dataBrand]);
-
-  useEffect(() => {
-    if (statusSeries === "succeeded") {
-      const series = dataSeries.map((item) => ({
-        value: item._id,
-        label: item.name,
-      }));
-      setSeriesSelect(series);
-    }
-  }, [statusSeries, dataSeries]);
-
-  useEffect(() => {
-    if (statusTag === "succeeded") {
-      const tags = dataTag.map((item) => ({
-        value: item._id,
-        label: item.name,
-      }));
-      setTagsSelect(tags);
-    }
-  }, [statusTag, dataTag]);
-
-  useEffect(() => {
-    if (statusWarehouse === "success") {
-      const warehouses = dataWarehouse.map((item) => ({
-        value: item._id,
-        label: item.name,
-      }));
-      setWarehouseSelect(warehouses);
-    }
-  }, [statusWarehouse, dataWarehouse]);
-
-  const handleNameChange = (e, setFieldValue) => {
-    const nameValue = e.target.value;
-    const slugified = slugify(nameValue);
-
-    setFieldValue("name", nameValue); // Cập nhật trường name
-    setFieldValue("slug", slugified); // Cập nhật trường slug
   };
 
   return (
@@ -254,6 +276,7 @@ const CreateProduct = () => {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
+        enableReinitialize
         onSubmit={handleSubmit}
       >
         {({
@@ -266,8 +289,6 @@ const CreateProduct = () => {
           setFieldValue,
         }) => (
           <Form>
-            {/* General Information */}
-
             <Grid
               container
               spacing={3}
@@ -290,7 +311,7 @@ const CreateProduct = () => {
                   label="Tên sản phẩm"
                   name="name"
                   value={values.name}
-                  onChange={(e) => handleNameChange(e, setFieldValue)} // Pass setFieldValue here
+                  onChange={(e) => handleNameChange(e, setFieldValue)}
                   onBlur={handleBlur}
                   error={touched.name && Boolean(errors.name)}
                   helperText={touched.name && errors.name}
@@ -463,6 +484,7 @@ const CreateProduct = () => {
                     onUploadComplete={(url) => setFieldValue("thumbnail", url)}
                     onDelete={(url) => {
                       setFieldValue("thumbnail", "");
+                      console.log(url);
                     }}
                     fooder={"products"}
                     error={touched.thumbnail && Boolean(errors.thumbnail)}
@@ -586,19 +608,8 @@ const CreateProduct = () => {
                   onBlur={handleBlur}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <CustomDropdown
-                  label="Dòng sản phẩm"
-                  name="series"
-                  value={values.series || ""}
-                  onChange={handleChange}
-                  options={seriesSelect}
-                  error={touched.series && Boolean(errors.series)}
-                  helperText={touched.series && errors.series}
-                  onBlur={handleBlur}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
+
+              <Grid item xs={12}>
                 <Autocomplete
                   multiple
                   options={tagsSelect}
@@ -635,7 +646,6 @@ const CreateProduct = () => {
             </Grid>
             {/* Inventory Section */}
 
-            <Divider />
             <Grid
               container
               spacing={3}
@@ -820,7 +830,7 @@ const CreateProduct = () => {
                 disabled={isSubmitting}
                 startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
               >
-                {isSubmitting ? "Đang tạo..." : "Tạo sản phẩm"}
+                {isSubmitting ? "Đang Sửa..." : "Sửa sản phẩm"}
               </Button>
             </Box>
           </Form>
@@ -828,6 +838,4 @@ const CreateProduct = () => {
       </Formik>
     </Box>
   );
-};
-
-export default CreateProduct;
+}

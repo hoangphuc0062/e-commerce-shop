@@ -53,7 +53,7 @@ export const UserMenu = ({ data }) => {
           className="flex flex-col items-center justify-center text-[12px] hover:bg-hv p-2 rounded-lg"
         >
           <Icon icon="carbon:user-avatar" width="1.5rem" height="1.5rem" />
-          <p className="line-clamp-2">
+          <p className="text-[10px] md:text-[12px] line-clamp-2 ">
             {getDisplayName(data.name) || "Người dùng"}
           </p>
         </button>

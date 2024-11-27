@@ -137,35 +137,30 @@ function VariantsRow({
                   </TableRow>
                 ))}
 
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Typography variant="h6">Hình ảnh Biến thể</Typography>
+                <TableRow>
+                  <TableCell colSpan={3} align="center">
+                    <Typography variant="h6">Hình ảnh Biến thể</Typography>
 
-                  <ImageUploader
-                    idupload={`variants[${variantIndex}].thumbnail`}
-                    avatarSize={100}
-                    onUploadComplete={(url) => {
-                      arrayHelpers.replace(variantIndex, {
-                        ...variant,
-                        thumbnail: url,
-                      });
-                    }}
-                    onDelete={() => {
-                      arrayHelpers.replace(variantIndex, {
-                        ...variant,
-                        thumbnail: "",
-                      });
-                    }}
-                    fooder="productThumbnailVariant"
-                    error={errors.variants?.[variantIndex]?.thumbnail}
-                  />
-                </div>
+                    <ImageUploader
+                      idupload={`variants[${variantIndex}].thumbnail`}
+                      avatarSize={100}
+                      onUploadComplete={(url) => {
+                        arrayHelpers.replace(variantIndex, {
+                          ...variant,
+                          thumbnail: url,
+                        });
+                      }}
+                      onDelete={() => {
+                        arrayHelpers.replace(variantIndex, {
+                          ...variant,
+                          thumbnail: "",
+                        });
+                      }}
+                      fooder="productThumbnailVariant"
+                      dataImage={variant.thumbnail ? [variant.thumbnail] : []}
+                    />
+                  </TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </Collapse>

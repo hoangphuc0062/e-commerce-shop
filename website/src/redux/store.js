@@ -4,6 +4,8 @@ import categoryReducer from "./slices/category";
 import bannerReducer from "./slices/barnner";
 import productReducer from "./slices/product";
 import orderReducer from "./slices/order";
+import webConfigReducer from "./slices/webConfig";
+import settingFilterReducer from "./slices/settingFilter";
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -11,6 +13,8 @@ const store = configureStore({
     banner: bannerReducer,
     product: productReducer,
     order: orderReducer,
+    webConfig: webConfigReducer,
+    settingFilter: settingFilterReducer,
   },
 });
 

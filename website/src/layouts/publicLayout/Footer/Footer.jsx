@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const sections = [
@@ -40,21 +41,26 @@ const sections = [
 
 export const Footer = () => {
   const [expandedSection, setExpandedSection] = useState(null);
-
+  const [dataWebConFig, setDataWbeConFig] = useState([]);
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
   };
+
+  const statusWebConFig = useSelector((state) => state.webConfig.status);
+  const webConfig = useSelector((state) => state.webConfig.data);
+
+  useEffect(() => {
+    if (statusWebConFig === "succeeded") {
+      setDataWbeConFig(webConfig);
+    }
+  }, [statusWebConFig, dataWebConFig]);
   return (
     <section className="bg-main font-sans">
       <footer className="font-sans tracking-wide px-8 py-12 container">
         <div className="grid grid-cols-1  lg:grid-cols-5 gap-x-6 gap-y-10">
-          <div className="md:col-span-1">
+          <div className="flex justify-center items-center md:col-span-1">
             <Link to="/">
-              <img
-                src="https://readymadeui.com/readymadeui-white.svg"
-                alt="logo"
-                className="w-44"
-              />
+              <img src={dataWebConFig[0]?.logo} alt="logo" className="w-44" />
             </Link>
           </div>
 

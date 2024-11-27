@@ -20,3 +20,10 @@
   font-weight: 700;
   transition: opacity 0.3s ease, border-bottom 0.3s ease, box-shadow 0.3s ease;
 }
+
+@media (max-width: 768px) {
+  .swiper-button-next,
+  .swiper-button-prev {
+    display: none;
+  }
+}
