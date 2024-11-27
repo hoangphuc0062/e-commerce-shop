@@ -15,6 +15,7 @@
     "@iconify/react": "^5.0.2",
     "@mui/icons-material": "^6.0.2",
     "@mui/material": "^6.0.2",
+    "@mui/x-data-grid": "^7.22.3",
     "@reduxjs/toolkit": "^2.2.7",
     "@tinymce/tinymce-react": "^5.1.1",
     "axios": "^1.7.7",
@@ -38,6 +39,7 @@
     "sweetalert2": "^11.14.1",
     "swiper": "^11.1.14",
     "uuid": "^10.0.0",
+    "xlsx": "^0.18.5",
     "yup": "^1.4.0"
   },
   "devDependencies": {
