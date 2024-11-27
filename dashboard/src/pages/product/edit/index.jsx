@@ -223,6 +223,7 @@ export default function ProductEdit() {
 
     dispatch(updateProduct({ productId: id, data: { data } })).then(
       (unwrapResult) => {
+        console.log("Dữ liệu", unwrapResult);
         if (unwrapResult.type === "product/updateProduct/fulfilled") {
           handleToast("success", "Sửa sản phẩm thành công");
           resetForm();
