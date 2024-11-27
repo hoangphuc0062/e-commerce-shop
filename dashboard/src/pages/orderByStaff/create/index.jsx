@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { useReactToPrint } from 'react-to-print';  // Add this import
 import {
     Box,
     TextField,
@@ -16,9 +17,11 @@ import {
     TableHead,
     TableRow,
     Paper,
+    Autocomplete,
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
+import InvoiceComponent from "../InvoiceComponent";
 
 export default function CreateOrderByStaff() {
     const productsList = [
@@ -41,20 +44,32 @@ export default function CreateOrderByStaff() {
         {
             id: 3,
             name: "Đồng hồ Casio",
-            variants: [],
-            price: 3000000, // Sản phẩm đơn, không có biến thể
+            variants: [], // Sản phẩm đơn, không có biến thể
+            price: 3000000,
         },
     ];
+
     const staffList = [
         { id: 1, name: "Nguyễn Văn A" },
         { id: 2, name: "Trần Thị B" },
         { id: 3, name: "Phạm Văn C" },
         { id: 4, name: "Lê Thị D" },
     ];
+
+    const storeLocations = [
+        { id: 1, name: "Cửa hàng Quận 1" },
+        { id: 2, name: "Cửa hàng Quận 7" },
+        { id: 3, name: "Cửa hàng Bình Thạnh" },
+        { id: 4, name: "Cửa hàng Gò Vấp" },
+    ];
+
     const [formData, setFormData] = useState({
         customerName: "",
         staffName: "",
+        storeLocation: "",
         products: [],
+        receivedAmount: 0,
+        change: 0,
     });
 
     const [newProduct, setNewProduct] = useState({
@@ -76,6 +91,23 @@ export default function CreateOrderByStaff() {
         });
     };
 
+    const handleReceivedAmountChange = (e) => {
+        const value = e.target.value;
+        setFormData((prevData) => {
+            const change = value - calculateTotalPrice();
+            return {
+                ...prevData,
+                receivedAmount: value,
+                change: change,
+            };
+        });
+    };
+    const calculateTotalPrice = () => {
+        return formData.products.reduce(
+            (total, product) => total + product.price * product.quantity,
+            0
+        );
+    };
     const handleProductChange = (e) => {
         const { name, value } = e.target;
         if (name === "productId") {
@@ -137,18 +169,34 @@ export default function CreateOrderByStaff() {
 
     const removeProduct = (index) => {
         const updatedProducts = formData.products.filter((_, i) => i !== index);
-        setFormData({ ...formData, products: updatedProducts });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Dữ liệu đơn hàng:", formData);
+        setFormData({
+            ...formData,
+            products: updatedProducts,
+        });
     };
 
     // Lọc sản phẩm theo từ khóa tìm kiếm
     const filteredProducts = productsList.filter((product) =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    // tạo và in hóa đơn
+    const invoiceRef = useRef();
+    const handlePrintInvoice = useReactToPrint({
+        content: () => {
+            if (invoiceRef.current) {
+                return invoiceRef.current;
+            }
+            alert("Không có dữ liệu để in.");
+            return null;
+        },
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log("Dữ liệu đơn hàng:", formData);
+        handlePrintInvoice(); // Gọi hàm in hóa đơn sau khi tạo đơn hàng
+    };
 
     return (
         <Box
@@ -175,27 +223,39 @@ export default function CreateOrderByStaff() {
                     margin="normal"
                     required
                 />
+                <Autocomplete
+                    options={staffList}
+                    getOptionLabel={(option) => option.name}
+                    value={staffList.find((staff) => staff.name === formData.staffName) || null}
+                    onChange={(event, value) => {
+                        setFormData({
+                            ...formData,
+                            staffName: value ? value.name : "", // Cập nhật tên nhân viên hoặc để trống nếu không chọn
+                        });
+                    }}
+                    renderInput={(params) => (
+                        <TextField {...params} label="Nhân viên xử lý" fullWidth required />
+                    )}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                />
                 <FormControl fullWidth margin="normal">
-                    <InputLabel>Nhân viên xử lý</InputLabel>
+                    <InputLabel>Vị trí cửa hàng</InputLabel>
                     <Select
-                        name="staffName"
-                        value={formData.staffName}
+                        name="storeLocation"
+                        value={formData.storeLocation}
                         onChange={handleFormChange}
                         required
                     >
-                        {staffList.map((staff) => (
-                            <MenuItem key={staff.id} value={staff.name}>
-                                {staff.name}
+                        {storeLocations.map((store) => (
+                            <MenuItem key={store.id} value={store.name}>
+                                {store.name}
                             </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
-
                 <Typography variant="h6" gutterBottom sx={{ marginTop: 2 }}>
                     Thông tin sản phẩm
                 </Typography>
-
-                {/* Ô nhập liệu tìm kiếm sản phẩm */}
                 <TextField
                     label="Tìm kiếm sản phẩm"
                     value={searchQuery}
@@ -203,22 +263,6 @@ export default function CreateOrderByStaff() {
                     fullWidth
                     margin="normal"
                 />
-
-                <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
-                    <Button
-                        variant={newProduct.isVariant ? "outlined" : "contained"}
-                        onClick={() => setNewProduct({ ...newProduct, isVariant: false })}
-                    >
-                        Sản phẩm đơn
-                    </Button>
-                    <Button
-                        variant={newProduct.isVariant ? "contained" : "outlined"}
-                        onClick={() => setNewProduct({ ...newProduct, isVariant: true })}
-                    >
-                        Sản phẩm có biến thể
-                    </Button>
-                </Box>
-
                 <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
                     <FormControl fullWidth>
                         <InputLabel>Sản phẩm</InputLabel>
@@ -243,11 +287,14 @@ export default function CreateOrderByStaff() {
                                     value={newProduct.variant}
                                     onChange={handleProductChange}
                                 >
-                                    {filteredProducts
-                                        .find((product) => product.id === parseInt(newProduct.productId))
-                                        .variants.map((v, index) => (
-                                            <MenuItem key={index} value={v.variant}>
-                                                {v.variant}
+                                    {productsList
+                                        .find(
+                                            (product) =>
+                                                product.id === parseInt(newProduct.productId)
+                                        )
+                                        ?.variants.map((variant) => (
+                                            <MenuItem key={variant.variant} value={variant.variant}>
+                                                {variant.variant}
                                             </MenuItem>
                                         ))}
                                 </Select>
@@ -269,28 +316,32 @@ export default function CreateOrderByStaff() {
                             fullWidth
                         />
                     )}
-
                     <TextField
                         label="Số lượng"
                         name="quantity"
-                        type="number"
                         value={newProduct.quantity}
                         onChange={handleProductChange}
+                        type="number"
                         fullWidth
                     />
-                    <IconButton color="primary" onClick={addProduct}>
+                    <IconButton
+                        color="primary"
+                        onClick={addProduct}
+                        sx={{ alignSelf: "flex-end", marginTop: "auto" }}
+                    >
                         <AddCircleIcon />
                     </IconButton>
                 </Box>
 
-                <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+                {/* Danh sách các sản phẩm đã chọn */}
+                <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Tên sản phẩm</TableCell>
+                                <TableCell>Sản phẩm</TableCell>
                                 <TableCell>Biến thể</TableCell>
+                                <TableCell>Giá (VND)</TableCell>
                                 <TableCell>Số lượng</TableCell>
-                                <TableCell>Giá</TableCell>
                                 <TableCell>Thao tác</TableCell>
                             </TableRow>
                         </TableHead>
@@ -298,9 +349,9 @@ export default function CreateOrderByStaff() {
                             {formData.products.map((product, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{product.productName}</TableCell>
-                                    <TableCell>{product.variant || "Không có biến thể"}</TableCell>
+                                    <TableCell>{product.variant || "Không có"}</TableCell>
+                                    <TableCell>{product.price}</TableCell>
                                     <TableCell>{product.quantity}</TableCell>
-                                    <TableCell>{product.price.toLocaleString()}</TableCell>
                                     <TableCell>
                                         <IconButton
                                             color="error"
@@ -315,10 +366,31 @@ export default function CreateOrderByStaff() {
                     </Table>
                 </TableContainer>
 
-                <Button type="submit" variant="contained" fullWidth sx={{ marginTop: 2 }}>
-                    Xác nhận đơn hàng
+                {/* Tổng tiền và nhận tiền */}
+                <Typography variant="h6" sx={{ marginTop: 2 }}>
+                    Tổng tiền: {calculateTotalPrice()} đ
+                </Typography>
+
+                <TextField
+                    label="Tiền nhận"
+                    name="receivedAmount"
+                    type="number"
+                    value={formData.receivedAmount}
+                    onChange={handleReceivedAmountChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+
+                <Typography variant="h6" sx={{ marginTop: 2 }}>
+                    Tiền thối lại: {formData.change} đ
+                </Typography>
+
+                <Button variant="contained" color="primary" type="submit">
+                    Tạo đơn hàng
                 </Button>
             </form>
+            <InvoiceComponent ref={invoiceRef} orderData={formData} />
         </Box>
     );
 }
