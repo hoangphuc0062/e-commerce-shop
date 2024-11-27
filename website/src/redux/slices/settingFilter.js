@@ -18,7 +18,7 @@ export const resetState = createAsyncThunk(
   }
 );
 
-// get webConfig
+// get setting filter
 export const getSettingFilter = createAsyncThunk(
   "settingFilter/getSettingFilter",
   async (params, { rejectWithValue }) => {

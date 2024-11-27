@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const SettingFilter = require("../models/settingFilterModel");
-const Category = require("../models/categoryModel");
 
 const getAllSettingFilter = async (req, res) => {
   try {
@@ -25,10 +24,10 @@ const getAllSettingFilter = async (req, res) => {
 };
 
 const createSettingFilter = async (req, res) => {
-  const { category, filter } = req.body;
+  const { category, filterButton } = req.body;
 
   try {
-    if (!category || !filter) {
+    if (!category || !filterButton) {
       return res.status(400).json({ mes: "Missing inputs" });
     }
 
@@ -41,7 +40,7 @@ const createSettingFilter = async (req, res) => {
 
     const newSettingFilter = new SettingFilter({
       category,
-      filter,
+      filterButton,
     });
 
     const savedSettingFilter = await newSettingFilter.save();

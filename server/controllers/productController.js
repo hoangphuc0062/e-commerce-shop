@@ -170,7 +170,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     });
   }
 
-  const product = await Product.findByIdAndUpdate(pid, req.body, {
+  const product = await Product.findByIdAndUpdate(pid, req.body.data, {
     new: true,
   });
 
