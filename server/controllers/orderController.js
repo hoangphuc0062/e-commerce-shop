@@ -11,6 +11,14 @@ const getAllOrder = asyncHandler(async (req, res) => {
   return res.status(200).json(orders);
 });
 
+const getOrderByUser = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const orders = await Order.find({
+    orderBy: userId,
+  }).populate("products.pid");
+  return res.status(200).json(orders);
+});
+
 const createOrder = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const userCart = await Customer.findById(userId).select("cart");
@@ -278,4 +286,5 @@ module.exports = {
   create_payment_url,
   vnpay_return,
   sendSuccessEmail,
+  getOrderByUser,
 };

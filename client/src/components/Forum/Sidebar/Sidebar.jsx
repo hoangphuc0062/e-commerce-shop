@@ -1,7 +1,7 @@
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import "./Sidebar.css";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { getCategory } from "../../../redux/slices/category";
 import Iconify from "./Iconify";
 

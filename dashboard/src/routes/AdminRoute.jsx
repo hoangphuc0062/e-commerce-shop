@@ -34,6 +34,12 @@ import TagPage from "../pages/tags";
 import ShippingPage from "../pages/shippingConfig";
 import CreateProduct from "../pages/product/add";
 
+import OrderByStaff from "../pages/orderByStaff";
+import CreateOrderByStaff from "../pages/orderByStaff/create";
+
+import ProductEdit from "../pages/product/edit";
+
+
 const AdminRoute = () => {
   return (
     <>
@@ -185,15 +191,15 @@ const AdminRoute = () => {
           />
         }
       />
-      {/* <Route
+      <Route
         path="product/update/:id"
         element={
           <PrivateRoute
-            element={<EditProduct />}
+            element={<ProductEdit />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
-      /> */}
+      />
 
       {/* order */}
 
@@ -202,6 +208,25 @@ const AdminRoute = () => {
         element={
           <PrivateRoute
             element={<OrderPage />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      {/* odByStaff */}
+      <Route
+        path="orderByStaff"
+        element={
+          <PrivateRoute
+            element={<OrderByStaff />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="orderByStaff/create"
+        element={
+          <PrivateRoute
+            element={<CreateOrderByStaff />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
