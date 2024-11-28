@@ -20,7 +20,7 @@ const SliderPostTag = () => {
   const status = useSelector((state) => state.post.status);
   const postData = useSelector((state) => state.post.data);
   const [data, setData] = useState([]);
-
+ 
   useEffect(() => {
     dispatch(getPosts());
   }, [dispatch]);
@@ -42,10 +42,11 @@ const SliderPostTag = () => {
             rating: item.rating,
             slug: item.slug,
             date: item.createdAt,
+            totalRating: item.totalRating,
             thumbnail: item.thumbnail,
             tags: item.tags.map((tag) => tag.name),
           }))
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .sort((a, b) => b.totalRating - a.totalRating)
       );
     }
   }, [status, postData]);
