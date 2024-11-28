@@ -34,7 +34,6 @@ import TagPage from "../pages/tags";
 import ShippingPage from "../pages/shippingConfig";
 import CreateProduct from "../pages/product/add";
 
-import OrderByStaff from "../pages/orderByStaff";
 import CreateOrderByStaff from "../pages/orderByStaff/create";
 
 import ProductEdit from "../pages/product/edit";
@@ -221,15 +220,6 @@ const AdminRoute = () => {
         }
       />
       {/* odByStaff */}
-      <Route
-        path="orderByStaff"
-        element={
-          <PrivateRoute
-            element={<OrderByStaff />}
-            roles={["customer", "staff", "admin", "superadmin"]}
-          />
-        }
-      />
       <Route
         path="orderByStaff/create"
         element={
