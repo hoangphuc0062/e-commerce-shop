@@ -81,10 +81,10 @@ const menuItems = {
             },
 
             {
-              id: "variant",
-              title: "Danh sách biến thể",
+              id: "filter",
+              title: "Danh sách bộ lọc",
               type: "item",
-              url: "/dashboard/product/variant",
+              url: "/dashboard/product/filter",
             },
           ],
         },
