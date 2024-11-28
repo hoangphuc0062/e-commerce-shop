@@ -1,6 +1,7 @@
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   HeadingSection,
+  OptionPost,
   Sidebar,
   SlidePostCategory,
 } from "../../../components/Forum";
@@ -20,6 +21,11 @@ const CategoryPost = () => {
   const [visibleItemCount, setVisibleItemCount] = useState(6);
   const [loading, setLoading] = useState(true);
   const observerRef = useRef();
+  const [sortOption, setSortOption] = useState("newest");
+
+  const handleSortChange = (option) => {
+    setSortOption(option);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -40,15 +46,29 @@ const CategoryPost = () => {
             author: item.author?.name || "Unknown",
             category: item.category,
             rating: item.rating,
+            totalRating: item.totalRating,
             slug: item.slug,
             date: item.createdAt,
             thumbnail: item.thumbnail,
           }))
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
       : [];
   }, [postData, categorySlug]);
 
-  const visibleData = formattedData.slice(0, visibleItemCount);
+  const sortedData = useMemo(() => {
+    const data = [...formattedData];
+    switch (sortOption) {
+      case "newest":
+        return data.sort((a, b) => new Date(b.date) - new Date(a.date));
+      case "oldest":
+        return data.sort((a, b) => new Date(a.date) - new Date(b.date));
+      case "highestRating":
+        return data.sort((a, b) => b.totalRating - a.totalRating);
+      default:
+        return data;
+    }
+  }, [formattedData, sortOption]);
+
+  const visibleData = sortedData.slice(0, visibleItemCount);
   const handleLoadMore = () => {
     setVisibleItemCount((prevCount) => prevCount + 6);
   };
@@ -87,7 +107,9 @@ const CategoryPost = () => {
       <Helmet>
         <title>
           Danh mục |{" "}
-          {categorySlug.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
+          {categorySlug
+            .replace(/-/g, " ")
+            .replace(/\b\w/g, (char) => char.toUpperCase())}
         </title>
       </Helmet>
       <div className="flex flex-col md:flex-row w-full pt-16">
@@ -97,7 +119,10 @@ const CategoryPost = () => {
         <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col">
           <SlidePostCategory />
           <section className="w-full">
-            <HeadingSection title="Tin Mới Nhất" />
+            <div className="flex justify-between items-center">
+              <HeadingSection title="Tin mới nhất" />
+              <OptionPost onSortChange={handleSortChange} />
+            </div>
             <div className="space-y-4">
               {loading ? (
                 Array.from({ length: 6 }).map((_, index) => (
