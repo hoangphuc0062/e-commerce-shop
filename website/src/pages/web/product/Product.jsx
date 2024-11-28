@@ -1,10 +1,13 @@
 import { useEffect, useState, useCallback, act, useRef } from "react";
-import Skeleton from "@mui/material/Skeleton";
-import { Box } from "@mui/system";
-import SimpleSlide from "../../../components/Banner/SliderBanner/SimpleSlide";
-import ProductCard from "../../../components/FeatureBlockProduct/Card";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react";
+
+import Skeleton from "@mui/material/Skeleton";
+import { Box } from "@mui/system";
+import Slider from "@mui/material/Slider";
+
+import SimpleSlide from "../../../components/Banner/SliderBanner/SimpleSlide";
+import ProductCard from "../../../components/FeatureBlockProduct/Card";
 
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts, resetState } from "../../../redux/slices/product";
@@ -14,7 +17,8 @@ import {
 } from "../../../redux/slices/category";
 import { getBanners } from "../../../redux/slices/barnner";
 import { getSettingFilter } from "../../../redux/slices/settingFilter";
-import { splitValues } from "../../../utils/helper";
+
+import { formatCurrency, splitValues } from "../../../utils/helper";
 
 const Product = () => {
   const { category, brand } = useParams();
@@ -37,6 +41,11 @@ const Product = () => {
   const [active, setActive] = useState({});
   const [hidden, setHidden] = useState({});
   const [activeChild, setActiveChild] = useState({});
+  const [minPrice, setMinPrice] = useState();
+  const [maxPrice, setMaxPrice] = useState();
+  const [userMinPrice, setUserMinPrice] = useState();
+  const [userMaxPrice, setUserMaxPrice] = useState();
+
   const dialogRefs = useRef([]);
 
   const statusProduct = useSelector((state) => state.product.status);
@@ -209,6 +218,23 @@ const Product = () => {
     };
   }, [filters]);
 
+  useEffect(() => {
+    if (filters) {
+      filters.forEach((filter) => {
+        if (filter?.label === "Giá") {
+          const minMaxPrice = splitValues(filter?.values);
+          const regex = /\d+/g;
+          const minPrice = minMaxPrice[0].match(regex)?.[0];
+          const maxPrice = minMaxPrice[1].match(regex)?.[0];
+          setMinPrice(Number(minPrice));
+          setMaxPrice(Number(maxPrice));
+          setUserMinPrice(Number(minPrice));
+          setUserMaxPrice(Number(maxPrice));
+        }
+      });
+    }
+  }, [filters]);
+
   return (
     <div className="flex flex-col gap-3">
       <div>breadcrumb here</div>
@@ -254,13 +280,12 @@ const Product = () => {
               <Icon icon="iconoir:delivery-truck" width="1rem" height="1rem" />
               Sẵn hàng
             </button>
-            <button className="flex gap-2 items-center bg-gray-200 p-2 rounded-lg">
-              <Icon icon="bi:cash-coin" width="1rem" height="1rem" />
-              Giá
-            </button>
+
             {filters &&
               filters.map((filter, index) => (
                 <div className="relative" key={index}>
+                  {/* Nếu filter có label là "Giá", trích xuất min và max */}
+
                   {/* render setting filter here */}
                   <div>
                     <button
@@ -286,6 +311,7 @@ const Product = () => {
                       />
                     </button>
                   </div>
+
                   {/* value render here */}
                   {active?.[index] && (
                     <div
@@ -296,35 +322,106 @@ const Product = () => {
                     >
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-wrap gap-2 w-[300px]">
-                          {splitValues(filter?.values).map((value, inx) => (
-                            <button
-                              key={inx}
-                              onClick={() => {
-                                setActiveChild((prevActiveChild) => ({
-                                  ...prevActiveChild,
-                                  [index]: {
-                                    ...prevActiveChild[index],
-                                    [inx]: !prevActiveChild[index]?.[inx], // Chỉ thay đổi phần tử bạn muốn.
-                                  },
-                                }));
-                              }}
-                              className={`relative bg-gray-200 w-max p-3 rounded-lg ${
-                                activeChild[index]?.[inx] ? "active" : ""
-                              }`}
-                            >
-                              {value}
-                              {activeChild[index]?.[inx] && (
-                                <div className="absolute top-0 left-0 bg-main text-white rounded-tl-lg rounded-br-lg">
-                                  <Icon
-                                    icon="material-symbols-light:check"
-                                    width="1rem"
-                                    height="1rem"
-                                  />
-                                </div>
-                              )}
-                            </button>
-                          ))}
+                          {filter?.label !== "Giá" &&
+                            splitValues(filter?.values).map((value, inx) => (
+                              <button
+                                key={inx}
+                                onClick={() => {
+                                  setActiveChild((prevActiveChild) => ({
+                                    ...prevActiveChild,
+                                    [index]: {
+                                      ...prevActiveChild[index],
+                                      [inx]: !prevActiveChild[index]?.[inx],
+                                    },
+                                  }));
+                                }}
+                                className={`relative bg-gray-200 w-max p-3 rounded-lg ${
+                                  activeChild[index]?.[inx] ? "active" : ""
+                                }`}
+                              >
+                                {value}
+                                {activeChild[index]?.[inx] && (
+                                  <div className="absolute top-0 left-0 bg-main text-white rounded-tl-lg rounded-br-lg">
+                                    <Icon
+                                      icon="material-symbols-light:check"
+                                      width="1rem"
+                                      height="1rem"
+                                    />
+                                  </div>
+                                )}
+                              </button>
+                            ))}
                         </div>
+
+                        {active?.[index] && filter?.label === "Giá" && (
+                          <div className="flex flex-col gap-4 p-4 bg-white rounded-lg">
+                            <div className="flex justify-between gap-2 text-sm">
+                              <p>{formatCurrency(userMinPrice)}</p>
+                              <p>{formatCurrency(userMaxPrice)}</p>
+                            </div>
+
+                            <Slider
+                              min={Number(minPrice)}
+                              max={Number(maxPrice)}
+                              value={[
+                                Number(userMinPrice),
+                                Number(userMaxPrice),
+                              ]}
+                              onChange={(e, newValue) => {
+                                setUserMinPrice(Number(newValue[0]));
+                                setUserMaxPrice(Number(newValue[1]));
+                              }}
+                              sx={{
+                                color: "#1E40AF",
+                                height: 8, // Độ dày của thanh trượt
+                                "& .MuiSlider-thumb": {
+                                  width: 20, // Kích thước của thumb (nút kéo)
+                                  height: 20,
+                                },
+                                "& .MuiSlider-rail": {
+                                  height: 8, // Độ dày của thanh "rail" (phần không được chọn)
+                                },
+                                "& .MuiSlider-track": {
+                                  height: 8, // Độ dày của thanh "track" (phần đã được chọn)
+                                },
+                              }}
+                            />
+
+                            <div className="flex gap-2">
+                              <button
+                                className="w-[50%] bg-blue-200 p-2 rounded-lg"
+                                onClick={() => {
+                                  setHidden((prevHidden) => ({
+                                    ...prevHidden,
+                                    [index]: !prevHidden[index],
+                                  }));
+                                  setActive((prevActive) => ({
+                                    ...prevActive,
+                                    [index]: !prevActive[index],
+                                  }));
+                                }}
+                              >
+                                Đóng
+                              </button>
+
+                              <button
+                                className="w-[50%] bg-main text-white rounded-lg p-2"
+                                onClick={() => {
+                                  const appliedFilters = {
+                                    minPrice: userMinPrice,
+                                    maxPrice: userMaxPrice,
+                                  };
+                                  console.log(
+                                    "Áp dụng lọc giá:",
+                                    appliedFilters
+                                  );
+                                }}
+                              >
+                                Xem kết quả
+                              </button>
+                            </div>
+                          </div>
+                        )}
                         {activeChild[index] && (
                           <div className="flex gap-2">
                             <button
@@ -428,42 +525,7 @@ const Product = () => {
           </div>
         </div>
       </section>
-      {/* <section>
-        {firstLoading ? (
-          loading()
-        ) : (
-          <div>
-            {(Array.isArray(sortedProducts) && sortedProducts.length > 0) ||
-            (Array.isArray(products) && products.length > 0) ? (
-              <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
-                {(sortedProducts.length > 0 ? sortedProducts : products).map(
-                  (product, index) => (
-                    <ProductCard key={index} data={product} />
-                  )
-                )}
-              </div>
-            ) : (
-              <div className="text-center text-red-500">
-                Không có sản phẩm nào
-              </div>
-            )}
-          </div>
-        )}
-        <div>{isLoading && loading()}</div>
-        <div className="flex justify-center my-2">
-          {hasMoreProducts && (
-            <button
-              className="bg-main text-white p-2 rounded-lg"
-              onClick={handleLoadMore}
-            >
-              Xem thêm sản phẩm
-            </button>
-          )}
-          {noFoundProduct && (
-            <div className="text-center text-red-500">{noFoundProduct}</div>
-          )}
-        </div>
-      </section> */}
+
       <section>
         {firstLoading ? (
           loading()
