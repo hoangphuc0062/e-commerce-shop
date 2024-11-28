@@ -1,9 +1,10 @@
-const Order = require("../models/orderModel");
-const Customer = require("../models/customerModel");
-const Coupon = require("../models/couponModel");
 const asyncHandler = require("express-async-handler");
 const StatusCodes = require("http-status-codes");
 const moment = require("moment");
+
+const Order = require("../models/orderModel");
+const Customer = require("../models/customerModel");
+const Coupon = require("../models/couponModel");
 const sendMail = require("../ultils/sendMail");
 
 const getAllOrder = asyncHandler(async (req, res) => {
