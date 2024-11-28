@@ -18,12 +18,18 @@ import {
     TableRow,
     Paper,
     Autocomplete,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Menu,
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import InvoiceComponent from "../InvoiceComponent";
 
 export default function CreateOrderByStaff() {
+
     const productsList = [
         {
             id: 1,
@@ -48,14 +54,14 @@ export default function CreateOrderByStaff() {
             price: 3000000,
         },
     ];
-
+    // lấy thông tin nhân viên khi login  không cần phải chọn
     const staffList = [
         { id: 1, name: "Nguyễn Văn A" },
         { id: 2, name: "Trần Thị B" },
         { id: 3, name: "Phạm Văn C" },
         { id: 4, name: "Lê Thị D" },
     ];
-
+    // vị trí lấy theo cơ sở  của nhân viên 
     const storeLocations = [
         { id: 1, name: "Cửa hàng Quận 1" },
         { id: 2, name: "Cửa hàng Quận 7" },
@@ -65,6 +71,7 @@ export default function CreateOrderByStaff() {
 
     const [formData, setFormData] = useState({
         customerName: "",
+        phone: "",
         staffName: "",
         storeLocation: "",
         products: [],
@@ -82,13 +89,45 @@ export default function CreateOrderByStaff() {
     });
 
     const [searchQuery, setSearchQuery] = useState(""); // State cho tìm kiếm sản phẩm
-
+    const [anchorEl, setAnchorEl] = useState(null); // Mở/đóng menu đề xuất
+    const [openDialog, setOpenDialog] = useState(false); // Use this state consistently
+    const handleDialogOpen = () => setOpenDialog(true); // Fix here
+    const handleDialogClose = () => setOpenDialog(false); // Fix here
     const handleFormChange = (e) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value,
         });
+    };
+    // Lọc sản phẩm theo từ khóa tìm kiếm
+    const filteredProducts = productsList.filter((product) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    // tạo và in hóa đơn
+    const invoiceRef = useRef();
+    const handlePrintInvoice = useReactToPrint({
+        content: () => {
+            if (invoiceRef.current) {
+                return invoiceRef.current;
+            }
+            alert("Không có dữ liệu để in.");
+            return null;
+        },
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log("Dữ liệu đơn hàng:", formData);
+        handlePrintInvoice(); // Gọi hàm in hóa đơn sau khi tạo đơn hàng
+    };
+    // const handleClickMenu = (event) => {
+    //     setAnchorEl(event.currentTarget);
+    // };
+
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
     };
 
     const handleReceivedAmountChange = (e) => {
@@ -143,7 +182,6 @@ export default function CreateOrderByStaff() {
             });
         }
     };
-
     const addProduct = () => {
         if (
             newProduct.productId &&
@@ -175,28 +213,7 @@ export default function CreateOrderByStaff() {
         });
     };
 
-    // Lọc sản phẩm theo từ khóa tìm kiếm
-    const filteredProducts = productsList.filter((product) =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
 
-    // tạo và in hóa đơn
-    const invoiceRef = useRef();
-    const handlePrintInvoice = useReactToPrint({
-        content: () => {
-            if (invoiceRef.current) {
-                return invoiceRef.current;
-            }
-            alert("Không có dữ liệu để in.");
-            return null;
-        },
-    });
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Dữ liệu đơn hàng:", formData);
-        handlePrintInvoice(); // Gọi hàm in hóa đơn sau khi tạo đơn hàng
-    };
 
     return (
         <Box
@@ -206,18 +223,32 @@ export default function CreateOrderByStaff() {
                 padding: 3,
                 border: "1px solid #ddd",
                 borderRadius: 2,
-                backgroundColor: "#f9f9f9",
+                backgroundColor: "#ffffff",
                 boxShadow: 2,
             }}
         >
-            <Typography variant="h5" gutterBottom>
-                Tạo Đơn Hàng Mới
-            </Typography>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="h5" gutterBottom>
+                    Tạo Đơn Hàng Mới
+                </Typography>
+                <Button variant="contained" onClick={handleDialogOpen}>
+                    Thêm sản phẩm
+                </Button>
+            </div>
             <form onSubmit={handleSubmit}>
                 <TextField
                     label="Tên khách hàng"
                     name="customerName"
                     value={formData.customerName}
+                    onChange={handleFormChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+                <TextField
+                    label="Số điện thoại"
+                    name="phone"
+                    value={formData.phone}
                     onChange={handleFormChange}
                     fullWidth
                     margin="normal"
@@ -253,86 +284,123 @@ export default function CreateOrderByStaff() {
                         ))}
                     </Select>
                 </FormControl>
-                <Typography variant="h6" gutterBottom sx={{ marginTop: 2 }}>
-                    Thông tin sản phẩm
-                </Typography>
-                <TextField
-                    label="Tìm kiếm sản phẩm"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    fullWidth
-                    margin="normal"
-                />
-                <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
-                    <FormControl fullWidth>
-                        <InputLabel>Sản phẩm</InputLabel>
-                        <Select
-                            name="productId"
-                            value={newProduct.productId}
-                            onChange={handleProductChange}
+                <Dialog open={openDialog} onClose={handleDialogClose} fullWidth>
+                    <DialogTitle>Thêm sản phẩm</DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            label="Tìm sản phẩm"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)} // Update the search query on input change
+                            fullWidth
+                            margin="normal"
+                            onClick={(e) => setAnchorEl(e.currentTarget)} // Open menu when user clicks on the input
+                        />
+
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl) && searchQuery.length > 0} // Only open if there's a search query
+                            onClose={handleCloseMenu}
+                            PaperProps={{
+                                style: {
+                                    maxHeight: 200,
+                                    width: 'auto',
+                                },
+                            }}
                         >
                             {filteredProducts.map((product) => (
-                                <MenuItem key={product.id} value={product.id}>
+                                <MenuItem
+                                    key={product.id}
+                                    onClick={() => {
+                                        setSearchQuery(product.name);
+                                        handleCloseMenu();
+                                        setNewProduct({
+                                            ...newProduct,
+                                            productId: product.id,
+                                            productName: product.name,
+                                            variant: "", // Reset variant when selecting product
+                                            price: product.variants.length ? 0 : product.price, // Set price based on variants
+                                            isVariant: product.variants.length > 0, // Check if product has variants
+                                        });
+                                    }}
+                                >
                                     {product.name}
                                 </MenuItem>
                             ))}
-                        </Select>
-                    </FormControl>
-                    {newProduct.isVariant ? (
-                        <>
+                        </Menu>
+                        <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
                             <FormControl fullWidth>
-                                <InputLabel>Biến thể</InputLabel>
+                                <InputLabel>Sản phẩm</InputLabel>
                                 <Select
-                                    name="variant"
-                                    value={newProduct.variant}
+                                    name="productId"
+                                    value={newProduct.productId}
                                     onChange={handleProductChange}
                                 >
-                                    {productsList
-                                        .find(
-                                            (product) =>
-                                                product.id === parseInt(newProduct.productId)
-                                        )
-                                        ?.variants.map((variant) => (
-                                            <MenuItem key={variant.variant} value={variant.variant}>
-                                                {variant.variant}
-                                            </MenuItem>
-                                        ))}
+                                    {filteredProducts.map((product) => (
+                                        <MenuItem key={product.id} value={product.id}>
+                                            {product.name}
+                                        </MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
+                            {newProduct.isVariant ? (
+                                <>
+                                    <FormControl fullWidth>
+                                        <InputLabel>Biến thể</InputLabel>
+                                        <Select
+                                            name="variant"
+                                            value={newProduct.variant}
+                                            onChange={handleProductChange}
+                                        >
+                                            {productsList
+                                                .find(
+                                                    (product) =>
+                                                        product.id === parseInt(newProduct.productId)
+                                                )
+                                                ?.variants.map((variant) => (
+                                                    <MenuItem key={variant.variant} value={variant.variant}>
+                                                        {variant.variant}
+                                                    </MenuItem>
+                                                ))}
+                                        </Select>
+                                    </FormControl>
+                                    <TextField
+                                        label="Giá (VND)"
+                                        name="price"
+                                        value={newProduct.price}
+                                        InputProps={{ readOnly: true }}
+                                        fullWidth
+                                    />
+                                </>
+                            ) : (
+                                <TextField
+                                    label="Giá (VND)"
+                                    name="price"
+                                    value={newProduct.price}
+                                    InputProps={{ readOnly: true }}
+                                    fullWidth
+                                />
+                            )}
                             <TextField
-                                label="Giá (VND)"
-                                name="price"
-                                value={newProduct.price}
-                                InputProps={{ readOnly: true }}
+                                label="Số lượng"
+                                name="quantity"
+                                value={newProduct.quantity}
+                                onChange={handleProductChange}
+                                type="number"
                                 fullWidth
                             />
-                        </>
-                    ) : (
-                        <TextField
-                            label="Giá (VND)"
-                            name="price"
-                            value={newProduct.price}
-                            InputProps={{ readOnly: true }}
-                            fullWidth
-                        />
-                    )}
-                    <TextField
-                        label="Số lượng"
-                        name="quantity"
-                        value={newProduct.quantity}
-                        onChange={handleProductChange}
-                        type="number"
-                        fullWidth
-                    />
-                    <IconButton
-                        color="primary"
-                        onClick={addProduct}
-                        sx={{ alignSelf: "flex-end", marginTop: "auto" }}
-                    >
-                        <AddCircleIcon />
-                    </IconButton>
-                </Box>
-
+                            <IconButton
+                                color="primary"
+                                onClick={addProduct}
+                                sx={{ alignSelf: "flex-end", marginTop: "auto" }}
+                            >
+                                <AddCircleIcon />
+                            </IconButton>
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDialogClose}>Đóng</Button>
+                    </DialogActions>
+                </Dialog>
                 {/* Danh sách các sản phẩm đã chọn */}
                 <TableContainer component={Paper}>
                     <Table>
@@ -383,7 +451,7 @@ export default function CreateOrderByStaff() {
                 />
 
                 <Typography variant="h6" sx={{ marginTop: 2 }}>
-                    Tiền thối lại: {formData.change} đ
+                    Tiền hoàn lại: {formData.change} đ
                 </Typography>
 
                 <Button variant="contained" color="primary" type="submit">

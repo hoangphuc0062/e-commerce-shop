@@ -15,6 +15,7 @@ const bottonContacts = [
     iconName: "carbon:phone",
     title: "Gọi ngay",
     content: "0773440062",
+    link: "tel:0773440062",
   },
   {
     iconName: "carbon:location",
@@ -82,6 +83,7 @@ export const Header = () => {
     if (statusWebConFig === "succeeded") {
       setDataWbeConFig(webConfig);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusWebConFig, dataWebConFig]);
 
   return (
@@ -89,12 +91,11 @@ export const Header = () => {
       {/* desktop header */}
       <header className="hidden lg:block bg-main sticky top-0 z-50">
         <div className="container text-semi p-3 w-full">
-          <nav className="grid grid-flow-col gap-4 items-center">
-            {/* Logo */}
-            <div>
+          <nav className="flex gap-4 items-center w-full">
+            <div className="flex w-1/2 xl:w-7/12 2xl:w-2/3 justify-center items-center gap-2">
               <Link
                 to="/"
-                className="flex items-center space-x-3 rtl:space-x-reverse"
+                className="flex items-center w-1/3 space-x-3 rtl:space-x-reverse"
               >
                 <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
                   {dataWebConFig && (
@@ -102,11 +103,7 @@ export const Header = () => {
                   )}
                 </span>
               </Link>
-            </div>
-
-            {/* Danh mục và Vị trí */}
-            <div className="justify-center flex gap-2">
-              <button className="flex items-center justify-center text-[12px] bg-hv p-2 rounded-lg">
+              <button className="flex items-center w-1/3 justify-center min-h-[54px] text-[12px] bg-hv p-2 rounded-lg">
                 <Icon
                   icon="carbon:book"
                   width="2rem"
@@ -115,7 +112,7 @@ export const Header = () => {
                 />
                 <p className="line-clamp-2">Danh mục</p>
               </button>
-              <button className="flex items-center justify-center text-[12px] bg-hv p-2 rounded-lg">
+              <button className="flex items-center justify-center text-[12px] min-h-[54px] min-w-[140px] bg-hv p-2 rounded-lg">
                 <Icon
                   icon="carbon:location"
                   width="2rem"
@@ -136,15 +133,11 @@ export const Header = () => {
                   </div>
                 </div>
               </button>
-            </div>
-
-            {/* Search Input */}
-            <div>
               <SearchInput />
             </div>
 
             {/* Contacts và User */}
-            <div className="flex gap-1 items-center">
+            <div className="flex md:w-1/2 xl:w-5/12  2xl:w-1/3 items-center justify-between gap-1">
               {bottonContacts.map((item, index) => (
                 <ButtonContact key={index} {...item} />
               ))}
@@ -154,12 +147,7 @@ export const Header = () => {
               ) : (
                 <button className="flex items-center justify-center text-[12px] w-[80px] hover:bg-hv p-2 rounded-lg">
                   <div className="flex items-center justify-center relative">
-                    <Icon
-                      icon="carbon:shopping-bag"
-                      width="2rem"
-                      height="2rem"
-                    />
-                    <span className="absolute text-[12px]">0</span>
+                    <Icon icon="uil:cart" width="2rem" height="2rem" />
                   </div>
                   <p className="line-clamp-2">Giỏ hàng</p>
                 </button>
