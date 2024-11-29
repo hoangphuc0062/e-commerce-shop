@@ -21,6 +21,7 @@ const InvoiceComponent = React.forwardRef(({ orderData, receivedAmount }, ref) =
 
             <div style={{ marginBottom: 20 }}>
                 <p><strong>Tên khách hàng:</strong> {orderData.customerName}</p>
+                <p><strong>Số điện thoại:</strong> {orderData.phone}</p>
                 <p><strong>Nhân viên xử lý:</strong> {orderData.staffName}</p>
                 <p><strong>Vị trí cửa hàng:</strong> {orderData.storeLocation}</p>
             </div>
@@ -63,7 +64,7 @@ const InvoiceComponent = React.forwardRef(({ orderData, receivedAmount }, ref) =
 
             {/* Calculate and display the change */}
             <Typography variant="h6" style={{ textAlign: "right", marginTop: 10 }}>
-                <strong>Số tiền trả lại: </strong>{formatCurrency(change)} VND
+                <strong>Số tiền hoàn lại: </strong>{formatCurrency(change)} VND
             </Typography>
 
             <p style={{ textAlign: "center", marginTop: 30 }}>
