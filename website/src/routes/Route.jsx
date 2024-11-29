@@ -15,6 +15,7 @@ import {
   Address,
   Order,
   Account,
+  Password,
   Coupon,
 } from "../pages/web/member";
 import { ProtectedRoute } from "./ProtectedRoute";
@@ -83,6 +84,14 @@ export default function RootRouter() {
               element: (
                 <ProtectedRoute>
                   <Address />
+                </ProtectedRoute>
+              ),
+            },
+            {
+              path: "change-password",  
+              element: (
+                <ProtectedRoute>
+                  <Password />
                 </ProtectedRoute>
               ),
             },

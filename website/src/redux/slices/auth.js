@@ -218,5 +218,55 @@ const auth = createSlice({
   },
 });
 
+// Async Thunk: Đổi mật khẩu
+export const updatePassword = createAsyncThunk(
+  "auth/updatePassword",
+  async ({ currentPassword, newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await AuthService.updatePassword({
+        currentPassword,
+        newPassword,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Đổi mật khẩu thất bại!");
+    }
+  }
+);
+
+// Slice Auth
+const authSlice = createSlice({
+  name: "auth",
+  initialState: {
+    user: null,
+    status: "idle", // idle | loading | success | failed
+    error: null,
+  },
+  reducers: {
+    resetAuthState: (state) => {
+      state.status = "idle";
+      state.error = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Update Password
+      .addCase(updatePassword.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(updatePassword.fulfilled, (state, action) => {
+        state.status = "success";
+        state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(updatePassword.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || "Có lỗi xảy ra!";
+      });
+  },
+});
+
+
 export default auth.reducer;
 export const { resetLogin } = auth.actions;

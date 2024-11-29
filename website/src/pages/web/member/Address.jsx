@@ -16,10 +16,6 @@ export default function Address() {
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
 
-  const handleAddAddress = () => {
-    setIsDialogOpen(true);
-  };
-
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
@@ -74,47 +70,69 @@ export default function Address() {
     setWards([]); // Reset lựa chọn phường/xã
   };
 
-  const [customerData, setCustomerData] = useState({
-    name: address?.name || "",
-    phone: address?.phone || "",
-  });
+  const handleSaveEdit = () => {
+    if (editingAddress) {
+      // Cập nhật địa chỉ với dữ liệu mới
+      const updatedAddress = {
+        ...address,
+        name: editingAddress.name,
+        phone: editingAddress.phone,
+        province: provinces.find(
+          (province) => province.code === selectedProvince
+        ),
+        district: districts.find(
+          (district) => district.code === selectedDistrict
+        ),
+        ward: wards.find((ward) => ward.code === editingAddress.ward?.code),
+        street: editingAddress.street,
+      };
 
-  const [errors, setErrors] = useState({});
-
-  const handleChange = (field, value) => {
-    setCustomerData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    // Xóa lỗi khi người dùng nhập
-    setErrors((prev) => ({
-      ...prev,
-      [field]: "",
-    }));
+      // Nếu không dùng Redux, chỉ cần cập nhật vào state tạm thời
+      setEditingAddress(updatedAddress);
+      setIsEditDialogOpen(false);
+    }
   };
 
   return (
     <div className="p-4 sm:p-6 md:p-8">
-      <div className="flex flex-col md:flex-row justify-between items-center p-2">
-        <h1 className="text-2xl text-center font-semibold md:text-lg">
+      <div className="flex flex-row justify-between items-center p-2">
+        <h1 className="text-2xl text-center font-semibold md:text-[26px]">
           Địa chỉ của tôi
         </h1>
+        <div className="flex justify-center">
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 sm:py-2 px-3 sm:px-4 rounded-md md:mt-0 text-sm flex items-center justify-center w-full"
+            onClick={() => setIsDialogOpen(true)}
+          >
+            <Icon
+              icon="ic:baseline-plus"
+              width="1.5rem"
+              height="1.5rem"
+              className="inline"
+            />
+            <span className="ml-2 hidden md:block ">Thêm địa chỉ</span>
+          </button>
+        </div>
       </div>
+
       <hr />
       {/* Address */}
       <div className="flex justify-between items-center p-2 mb-2">
         <div>
           <div>
-            <span className="text-gray-500 ">
-               {address && address.name}{" "}
-            </span>
-            <span className="text-gray-500 ">
-              | {address && address.phone}{" "}
-            </span>
-          </div>
-          <div className="text-gray-500 ">
-            {address && address.address.map((item) => item)}
+            <div>
+              <span className="text-gray-500 font-semibold md:text-lg">
+                {editingAddress?.name || address?.name}{" "}
+              </span>
+              <span className="text-gray-500 font-semibold md:text-lg">
+                | {editingAddress?.phone || address?.phone}{" "}
+              </span>
+            </div>
+            <div className="text-gray-500 ">
+              {editingAddress
+                ? `${editingAddress.street}, ${editingAddress.ward?.name}, ${editingAddress.district?.name}, ${editingAddress.province?.name}`
+                : address?.address.join(", ")}
+            </div>
           </div>
 
           <div className="outline outline-main text-main w-fit p-2 mt-2 rounded-sm">
@@ -141,23 +159,32 @@ export default function Address() {
                 height="1.5rem"
                 className="inline"
               />
+              <span>Sửa</span>
+            </button>
+            <button
+              className="text-red-500 text-lg mr-3"
+              onClick={() => console.log("delete")}
+            >
+              <Icon
+                icon="mdi:bin"
+                width="1.5rem"
+                height="1.5rem"
+                className="inline"
+              />
+              Xóa
+            </button>
+          </div>
+          <div>
+            <button
+              className="text-main "
+              onClick={() => console.log("cap nhap")}
+            >
+              Thiết lập mặc định
             </button>
           </div>
         </div>
       </div>
       <hr />
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 sm:py-2 px-3 sm:px-4 rounded-md mt-2 md:mt-0 text-sm flex items-center justify-center w-full"
-        onClick={handleAddAddress}
-      >
-        <Icon
-          icon="mdi-light:plus"
-          width="1.5rem"
-          height="1.5rem"
-          className="inline"
-        />
-        <span className="ml-2">Thêm địa chỉ mới</span>
-      </button>
 
       {/* Add Address Dialog */}
       {isDialogOpen && (
@@ -313,7 +340,8 @@ export default function Address() {
                     name="address.province"
                     className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
                     value={
-                      selectedProvince || editingAddress?.province?.code || ""
+                      // selectedProvince || editingAddress?.province?.code || ""
+                      address?.province
                     }
                     onChange={(e) => {
                       const provinceCode = e.target.value;
@@ -407,8 +435,9 @@ export default function Address() {
                   Hủy
                 </button>
                 <button
-                  type="submit"
+                  type="button"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                  onClick={handleSaveEdit}
                 >
                   Lưu
                 </button>
