@@ -1,32 +1,99 @@
-
-import { Box, IconButton, Tooltip } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import {
-  Delete,
-  Edit,
-  RemoveRedEye,
-
-  VisibilityOff,
-
-} from "@mui/icons-material";
+import { Box, Button, IconButton, Tooltip } from "@mui/material";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { Delete, Edit, RemoveRedEye, VisibilityOff } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import { useState, useEffect } from "react";
-import { getAllSettingFilter } from "../../../redux/slices/settingFilter";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import {
+  deleteAllSettingFilter,
+  deleteOneSettingFilter,
+  getAllSettingFilter,
+  getSlugByCategory,
+} from "../../../redux/slices/settingFilter";
+import { Link } from "react-router-dom";
+import { DeleteConfirmationModal } from "../../../utils/toast";
 
 export default function Filter() {
   const dispatch = useDispatch();
-  const [data, setData] = useState([]);
-  const [expandedCategories, setExpandedCategories] = useState(new Set()); // Track expanded categories
+  const [loading, setLoading] = useState(true);
+  const [expandedCategories, setExpandedCategories] = useState(new Set());
+  const [Data, setData] = useState([]);
 
-  const handleEdit = (row) => {
-    console.log("Edit", row);
-  };
+  const status = useSelector((state) => state.settingFilter.status);
+  const settingFilters = useSelector(
+    (state) => state.settingFilter.data.settingFilters
+  );
+  const categories = useSelector(
+    (state) => state.settingFilter.dataByCategory.rs
+  );
+  const statusDeleteAll = useSelector(
+    (state) => state.settingFilter.statusDeleteAll
+  );
+  const statusDeleteOne = useSelector(
+    (state) => state.settingFilter.statusDeleteOne
+  );
 
-  const handleDelete = (row) => {
-    console.log("Delete", row);
-  };
+  useEffect(() => {
+    if (statusDeleteOne === "success") {
+      dispatch(getAllSettingFilter());
+    }
+  }, [dispatch, statusDeleteOne]);
 
-  const toggleCategory = (category) => {
+  useEffect(() => {
+    if (statusDeleteAll === "success") {
+      dispatch(getAllSettingFilter());
+    }
+  }, [statusDeleteAll, dispatch]);
+
+  useEffect(() => {
+    dispatch(getAllSettingFilter());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (status === "success" && settingFilters?.length) {
+      const formattedData = {
+        category: settingFilters.map((filter) => filter.category),
+      };
+      setData(formattedData);
+    }
+  }, [status, settingFilters]);
+
+  const formattedData = useMemo(() => {
+    if (status === "success" && settingFilters?.length) {
+      return settingFilters.reduce((acc, filter) => {
+        acc.push({
+          id: filter._id,
+          category:
+            categories?.find((cat) => cat.slug === filter.category)?.name ||
+            filter.category,
+          categoryId: filter.category,
+          isParent: true,
+        });
+
+        filter.filterButton.forEach((item) => {
+          acc.push({
+            id: item._id,
+            idFilter: filter._id,
+            parentCategoryId: filter.category,
+            label: item.label,
+            key: item.key,
+            values: item.values,
+            isParent: false,
+          });
+        });
+
+        return acc;
+      }, []);
+    }
+    return [];
+  }, [status, settingFilters, categories]);
+
+  useEffect(() => {
+    if (Data) {
+      dispatch(getSlugByCategory(Data));
+    }
+  }, [dispatch, Data]);
+
+  const toggleCategory = useCallback((category) => {
     setExpandedCategories((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(category)) {
@@ -36,100 +103,109 @@ export default function Filter() {
       }
       return newSet;
     });
-  };
+  }, []);
 
-  const status = useSelector((state) => state.settingFilter.status);
-  const settingFilters = useSelector(
-    (state) => state.settingFilter.data.settingFilters
+  const visibleRows = useMemo(
+    () =>
+      formattedData.filter(
+        (row) => row.isParent || expandedCategories.has(row.parentCategoryId)
+      ),
+    [formattedData, expandedCategories]
   );
 
-  useEffect(() => {
-    dispatch(getAllSettingFilter());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (status === "success" && settingFilters?.length) {
-      const groupedData = [];
-
-      settingFilters.forEach((filter) => {
-        // Add parent row for category
-        groupedData.push({
-          id: filter._id, // Unique ID for category row
-          category: filter.category,
-          isParent: true, // Mark as parent row
-        });
-
-        // Add child rows for filter buttons
-        filter.filterButton.forEach((item) => {
-          groupedData.push({
-            id: `${filter._id}-${item._id}`, // Unique ID for child rows
-            parentCategory: filter.category, // Link to parent
-            label: item.label,
-            key: item.key,
-            values: item.values,
-            isParent: false, // Mark as child row
-          });
-        });
+  const handleDeleteAll = useCallback(
+    (index) => {
+      DeleteConfirmationModal({
+        title: "Xác nhận xóa bộ lọc",
+        content: "Bạn có chắc chắn muốn xóa tất cả bộ lọc này?",
+        onConfirm: () => dispatch(deleteAllSettingFilter(index.id)),
       });
-
-      setData(groupedData);
-    }
-  }, [status, settingFilters]);
-
-  // Filter rows dynamically based on expanded categories
-  const visibleRows = data.filter(
-    (row) => row.isParent || expandedCategories.has(row.parentCategory)
+    },
+    [dispatch]
   );
 
-  const columns = [
-    {
-      field: "category",
-      headerName: "Danh mục",
-      width: 200,
-      //   renderCell: (params) => {
-      //     if (params.row.isParent) {
-      //       const isExpanded = expandedCategories.has(params.row.category);
-      //       return (
-      //         <Box sx={{ display: "flex", alignItems: "center" }}>
-      //           <IconButton onClick={() => toggleCategory(params.row.category)}>
-      //             {isExpanded ? <RemoveRedEyeIcon /> : <VisibilityOffIcon />}
-      //           </IconButton>
-      //           <span>{params.row.category}</span>
-      //         </Box>
-      //       );
-      //     }
-      //     return params.row.category;
-      //   },
+  const handleDeleteOne = useCallback(
+    (index) => {
+      DeleteConfirmationModal({
+        title: "Xác nhận xóa bộ lọc",
+        content: "Bạn có chắc chắn muốn xóa bộ lọc này?",
+        onConfirm: () =>
+          dispatch(
+            deleteOneSettingFilter({
+              id: index.idFilter,
+              idButton: index.id,
+            })
+          ),
+      });
     },
-    { field: "label", headerName: "Tên bộ lọc", width: 200 },
-    { field: "key", headerName: "Khóa", width: 200 },
-    { field: "values", headerName: "Giá trị", width: 500 },
-    {
-      field: "action",
-      headerName: "Hành động",
-      width: 150,
-      renderCell: (params) => {
-        if (params.row.isParent) {
-          const isExpanded = expandedCategories.has(params.row.category);
-          return (
-            <Tooltip title={isExpanded ? "Ẩn" : "Hiển thị"}>
-              <IconButton onClick={() => toggleCategory(params.row.category)}>
-                {isExpanded ? < VisibilityOff/> : <RemoveRedEye />}
-              </IconButton>
-            </Tooltip>
-          );
-        }
-        return action({ row: params.row, handleEdit, handleDelete });
-      },
-    },
-  ];
+    [dispatch]
+  );
 
-  const action = ({ row, handleEdit, handleDelete }) => (
+  const handleProcessRowUpdate = useCallback((newRow) => {
+    // Extract only the fields we want to update
+    const { key, values, label } = newRow;
+
+    // Create the updated row with only these fields
+    const updatedRow = {
+      key,
+      values,
+      label,
+      id: newRow.id,
+      idFilter: newRow.idFilter,
+    };
+
+    console.log("Updated Row:", updatedRow);
+
+    // Here you would update your backend or state as needed
+    return { ...newRow, ...updatedRow }; // Return the updated row for DataGrid
+  }, []);
+
+  const columns = useMemo(
+    () => [
+      { field: "category", headerName: "Danh mục", width: 200 },
+      { field: "label", headerName: "Tên bộ lọc", width: 200, editable: true },
+      { field: "key", headerName: "Khóa", width: 200, editable: true },
+      { field: "values", headerName: "Giá trị", width: 500, editable: true },
+      {
+        field: "action",
+        headerName: "Hành động",
+        width: 150,
+        renderCell: (params) => {
+          if (params.row.isParent) {
+            const isExpanded = expandedCategories.has(params.row.categoryId);
+            return (
+              <>
+                <Tooltip title={isExpanded ? "Ẩn" : "Hiển thị"}>
+                  <IconButton
+                    onClick={() => toggleCategory(params.row.categoryId)}
+                  >
+                    {isExpanded ? <VisibilityOff /> : <RemoveRedEye />}
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete">
+                  <IconButton
+                    sx={{ color: "red", padding: "4px" }}
+                    onClick={() => handleDeleteAll(params.row)}
+                  >
+                    <Delete />
+                  </IconButton>
+                </Tooltip>
+              </>
+            );
+          }
+          return renderActionButtons(params.row);
+        },
+      },
+    ],
+    [expandedCategories, handleDeleteAll, toggleCategory]
+  );
+
+  const renderActionButtons = (row) => (
     <>
       <Tooltip title="Edit">
         <IconButton
           color="primary"
-          onClick={() => handleEdit(row)}
+          onClick={() => console.log("Edit", row)}
           sx={{ padding: "4px" }}
         >
           <Edit />
@@ -138,7 +214,7 @@ export default function Filter() {
       <Tooltip title="Delete">
         <IconButton
           sx={{ color: "red", padding: "4px" }}
-          onClick={() => handleDelete(row)}
+          onClick={() => handleDeleteOne(row)}
         >
           <Delete />
         </IconButton>
@@ -146,7 +222,13 @@ export default function Filter() {
     </>
   );
 
-  const loading = status === "loading";
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(status === "loading");
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [status]);
 
   return (
     <Box
@@ -154,14 +236,28 @@ export default function Filter() {
         height: 700,
         width: "100%",
         background: "#fff",
-        borderRadius: 3,
+        borderRadius: 1,
         boxShadow: 3,
       }}
     >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          padding: "10px",
+          marginBottom: "10px",
+        }}
+      >
+        <Link to="/dashboard/filter/create">
+          <Button variant="contained">Thêm bộ lọc</Button>
+        </Link>
+      </Box>
+
       <DataGrid
         rows={visibleRows}
         columns={columns}
         loading={loading}
+        processRowUpdate={handleProcessRowUpdate}
         getRowId={(row) => row.id}
         localeText={{
           noRowsLabel: "Không có dữ liệu",
@@ -176,6 +272,10 @@ export default function Filter() {
             },
           },
         }}
+        components={{
+          Toolbar: GridToolbar,
+        }}
+        experimentalFeatures={{ newEditingApi: true }}
         pageSizeOptions={[5, 10, 20]}
         checkboxSelection
         disableRowSelectionOnClick

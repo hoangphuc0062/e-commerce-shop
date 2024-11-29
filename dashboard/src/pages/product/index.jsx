@@ -88,7 +88,6 @@ export default function ProductPage() {
   }, [deleteStatus, dispatch]);
   const handleDelete = useCallback(
     (index) => {
-      console.log("Delete", index);
       DeleteConfirmationModal({
         title: "Xác nhận xóa sản phẩm",
         content: "Bạn có chắc chắn muốn xóa sản phẩm này?",
