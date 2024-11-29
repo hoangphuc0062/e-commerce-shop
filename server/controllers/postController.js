@@ -218,26 +218,6 @@ const deleteRating = asyncHandler(async (req, res) => {
   });
 });
 
-const deleteManyRating = asyncHandler(async (req, res) => {
-  const { rid } = req.params;
-  if (!rid) throw new Error("Missing rating id");
-
-  const updatedPost = await Post.findOneAndUpdate(
-    { "rating._id": rid },
-    { $pull: { rating: { _id: rid } } },
-    { new: true }
-  );
-
-  if (!updatedPost) {
-    return res.status(404).json({ mes: "Rating not found" });
-  }
-
-  return res.status(200).json({
-    mes: "Delete rating is successful",
-    post: updatedPost,
-  }); 
-});
-
 module.exports = {
   getAllPost,
   getPostBySlug,
