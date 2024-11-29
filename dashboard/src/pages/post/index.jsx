@@ -55,7 +55,7 @@ export default function PostList() {
 
   //  Giơi hạn hiển thị
   const truncateText = (text, maxLength = 50) => {
-    if (!text) return '';
+    if (!text) return "";
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
   };
   useEffect(() => {
@@ -72,6 +72,7 @@ export default function PostList() {
           postShortDescription: truncateText(item.shortDescription, 50),
           seoKeywords: item.seoKeyWords,
           rating: item.rating,
+          totalRating: item.totalRating, 
           content: item.content,
           dateStart: fDateVN(item.createdAt),
           slug: item.slug,

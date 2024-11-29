@@ -14,6 +14,7 @@ import Delete from "@mui/icons-material/Delete";
 import PropTypes from "prop-types";
 // thư viện he Giải mã các ký tự HTML như &acirc; và &agrave; thành "â" và "à
 import he from "he";
+import Comment from "./Comment";
 
 export default function EyePost({
   open,
@@ -97,7 +98,22 @@ export default function EyePost({
           </Grid>
           <Grid item xs={12}>
             <Typography variant="body1">
-              <strong>Đánh ghá:</strong> {selectedData?.rating}
+              <strong>Đánh giá:</strong>
+              {selectedData?.rating?.map((el) => (
+                <Comment
+                  key={el._id}
+                  star={el.star}
+                  comment={el.comment}
+                  name={el.customer?.name}
+                  avatar={el.customer?.avatar}
+                />
+              ))}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="body1">
+              <strong>Đánh giá trung bình:</strong>{" "}
+              {selectedData?.totalRating}
             </Typography>
           </Grid>
         </Grid>
