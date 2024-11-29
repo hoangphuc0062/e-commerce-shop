@@ -361,6 +361,22 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 
+const changePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  const customer = await Customer.findById(req.user._id).select("password");
+  // Check if the current password is correct
+  if (!(await customer.isCorrectPassword(currentPassword))) {
+    return res.status(400).json({ mes: "Current password is incorrect" });
+  }
+
+  // Update the password
+  customer.password = newPassword;
+  await customer.save();
+
+  return res.status(200).json({ mes: "Password updated successfully" });
+});
+
 const updateCustomer = asyncHandler(async (req, res) => {
   const { _id } = req.params;
   console.log(_id);
@@ -590,6 +606,7 @@ const deleteManyCart = asyncHandler(async (req, res) => {
 
 module.exports = {
   checkOTP,
+  changePassword,
   deleteCustomer,
   forgotPassword,
   getCustomer,
