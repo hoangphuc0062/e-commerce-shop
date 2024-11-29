@@ -35,15 +35,13 @@ const getCategoryNameInCategoryFilter = async (req, res) => {
   if (existCategory.length === 0)
     return res.status(400).json({ mes: "Category not found" });
 
-  const response = existCategory.map((item) => {
+  const rs = existCategory.map((item) => {
     return { name: item.name, slug: item.slug };
   });
 
   return res.status(200).json({
-    mes: response
-      ? "Get category name is successful"
-      : "Get category name is failed",
-    response,
+    mes: rs ? "Get category name is successful" : "Get category name is failed",
+    rs,
   });
 };
 
@@ -105,6 +103,10 @@ const updateSettingFilter = async (req, res) => {
 const deleteSettingFilter = async (req, res) => {
   const { _id } = req.params;
 
+  if (!_id) {
+    return res.status(400).json({ mes: "Missing inputs" });
+  }
+
   const existSettingFilter = await SettingFilter.findById(_id);
 
   if (!existSettingFilter) {
@@ -122,10 +124,37 @@ const deleteSettingFilter = async (req, res) => {
   });
 };
 
+const deleteSettingFilterOne = async (req, res) => {
+  const { _id, filterButtonId } = req.params;
+
+  if (!_id || !filterButtonId) {
+    return res.status(400).json({ mes: "Missing inputs" });
+  }
+
+  try {
+    const existSettingFilter = await SettingFilter.findById(_id);
+
+    if (!existSettingFilter) {
+      return res.status(404).json({ mes: "Setting filter not found" });
+    }
+
+    await SettingFilter.findByIdAndUpdate(
+      _id,
+      { $pull: { filterButton: { _id: filterButtonId } } },
+      { new: true }
+    );
+
+    return res.status(200).json({ mes: "Filter button deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ mes: "Server error", error: error.message });
+  }
+};
+
 module.exports = {
   getAllSettingFilter,
   createSettingFilter,
   updateSettingFilter,
   deleteSettingFilter,
   getCategoryNameInCategoryFilter,
+  deleteSettingFilterOne,
 };

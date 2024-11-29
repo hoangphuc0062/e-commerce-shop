@@ -31,12 +31,25 @@ const menuItems = {
               type: "item",
               url: "/dashboard/product/create",
             },
-
+          ],
+        },
+        {
+          id: "filter",
+          title: "Bộ lọc",
+          type: "collapse",
+          icon: "feather icon-filter",
+          children: [
             {
-              id: "filter",
+              id: "filter-list",
               title: "Danh sách bộ lọc",
               type: "item",
-              url: "/dashboard/product/filter",
+              url: "/dashboard/filter",
+            },
+            {
+              id: "add-filter",
+              title: "Thêm bộ lọc",
+              type: "item",
+              url: "/dashboard/filter/create",
             },
           ],
         },
@@ -188,7 +201,6 @@ const menuItems = {
               type: "item",
               url: "/dashboard/shippingConfig",
             },
-
           ],
         },
         {

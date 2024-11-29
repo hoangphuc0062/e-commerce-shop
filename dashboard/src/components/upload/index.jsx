@@ -22,6 +22,9 @@ const ImageUploader = ({
   allowedFormats = ["PNG", "JPG"],
   fooder, // Dynamic folder path for upload
   idupload,
+  //  tùy chỉnh hình ảnh full width và heigt 
+  isFullWidth = false,
+  isFullHeight = false,
   dataImage = [],
 }) => {
   const [downloadURLs, setDownloadURLs] = useState([]);
@@ -116,7 +119,7 @@ const ImageUploader = ({
       <label htmlFor={idupload || "uploadFile"}>
         <Box
           sx={{
-            width: avatarSize + 30,
+            width: isFullWidth ? "100%" : " width: avatarSize + 30",
             height: avatarSize + 30,
             borderRadius: "50%",
             backgroundColor: "#f0f0f0",
@@ -170,16 +173,16 @@ const ImageUploader = ({
               key={index}
               sx={{
                 position: "relative",
-                width: avatarSize,
-                height: avatarSize,
+                width: isFullWidth ? "100%" : avatarSize + 30, // xét điều kiện ở cha nếu thì 
+                height: isFullHeight ? "100%" : avatarSize + 30,
               }}
             >
               <Avatar
                 src={url}
                 sx={{
-                  width: avatarSize,
-                  height: avatarSize,
-                  objectFit: "cover",
+                  width: isFullWidth ? "100%" : avatarSize + 30,// xét điêuf kiệu nếu  thì
+                  height: isFullHeight ? "100%" : avatarSize + 30,
+                  objectFit: "contain",
                 }}
                 variant="rounded"
               />
@@ -208,8 +211,9 @@ const ImageUploader = ({
             </Box>
           ))}
         </Box>
-      )}
-    </Box>
+      )
+      }
+    </Box >
   );
 };
 

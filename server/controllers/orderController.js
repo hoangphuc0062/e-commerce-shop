@@ -101,19 +101,40 @@ const createOrder = asyncHandler(async (req, res) => {
   return res.status(201).json(order);
 });
 
-const updateStatus = asyncHandler(async (req, res) => {
-  const orderId = req.params.id;
-  const order = await Order.findById(orderId);
-  if (order) {
-    order.status = req.body.status;
-    const updatedOrder = await order.save();
-    return res.status(200).json(updatedOrder);
-  } else {
-    res.status(404);
-    throw new Error("Order not found");
+const updateOrder = asyncHandler(async (req, res) => {
+  const { _id } = req.params;
+
+  if (!_id || Object.keys(req.body).length === 0) {
+    return res.status(400).json({
+      mes: "Missing inputs",
+    });
   }
+
+  const rs = await Order.findByIdAndUpdate(_id, req.body, { new: true });
+
+  return res.status(200).json({
+    mes: rs ? "Update Order successfully" : "Update Order Failed",
+    rs
+  });
 });
 
+const deleteOrder = asyncHandler(async (req, res) => {
+
+  const { _id } = req.params;
+
+  if (!_id) return res.status(404).json({ mes: "Missing _id" });
+
+  const existOrder = await Order.findOne({ _id });
+
+  if (!existOrder) return res.status(404).json({ mes: "Order not found" });
+
+  const rs = await Order.findByIdAndDelete(_id);
+
+  return res.status(200).json({
+    mes: rs ? "Delete Order Successful" : "Delete Order Failed"
+  })
+
+});
 // nhan vien ban hang tao don hang cho khach hang
 // thanh toán tiền mặt
 
@@ -372,7 +393,8 @@ const sendMailOrderConfirmation = async (req, res) => {
 module.exports = {
   getAllOrder,
   createOrder,
-  updateStatus,
+  updateOrder,
+  deleteOrder,
   create_payment_url,
   vnpay_return,
   sendSuccessEmail,
