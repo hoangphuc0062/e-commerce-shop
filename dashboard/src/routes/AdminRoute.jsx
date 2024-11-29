@@ -38,6 +38,7 @@ import CreateOrderByStaff from "../pages/orderByStaff/create";
 
 import ProductEdit from "../pages/product/edit";
 import Filter from "../pages/product/filter";
+import CreateFilter from "../pages/product/filter/create";
 
 const AdminRoute = () => {
   return (
@@ -200,10 +201,19 @@ const AdminRoute = () => {
         }
       />
       <Route
-        path="product/filter"
+        path="filter"
         element={
           <PrivateRoute
             element={<Filter />}
+            roles={["customer", "staff", "admin", "superadmin"]}
+          />
+        }
+      />
+      <Route
+        path="filter/create"
+        element={
+          <PrivateRoute
+            element={<CreateFilter />}
             roles={["customer", "staff", "admin", "superadmin"]}
           />
         }
