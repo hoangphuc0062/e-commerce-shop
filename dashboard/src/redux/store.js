@@ -18,6 +18,7 @@ import webConfigReducer from "./slices/webComfig";
 import paymentReducer from "./slices/paynents";
 import couponReducer from "./slices/coupon";
 import bannerCollectionReducer from "./slices/BannerCollection";
+import settingFilterReducer from "./slices/settingFilter";
 
 const store = configureStore({
   reducer: {
@@ -38,6 +39,7 @@ const store = configureStore({
     payment: paymentReducer,
     coupon: couponReducer,
     bannerCollection: bannerCollectionReducer,
+    settingFilter: settingFilterReducer,
   },
 });
 

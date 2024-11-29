@@ -1,12 +1,13 @@
 import { Link, useParams } from "react-router-dom";
 import {
   HeadingSection,
+  OptionPost,
   Sidebar,
   SlidePostTag,
 } from "../../../components/Forum";
 import { formatDay } from "../../../ultils/helper";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getPosts } from "../../../redux/slices/post";
 import { Helmet } from "react-helmet-async";
 
@@ -17,6 +18,11 @@ const TagPost = () => {
   const postData = useSelector((state) => state.post.data);
   const [data, setData] = useState([]);
   const [visibleItemCount, setVisibleItemCount] = useState(6);
+  const [sortOption, setSortOption] = useState("newest");
+
+  const handleSortChange = (option) => {
+    setSortOption(option);
+  };
 
   // Lấy bài viết từ Redux
   useEffect(() => {
@@ -48,7 +54,22 @@ const TagPost = () => {
   }, [status, postData]);
 
   const filteredData = data.filter((post) => post.tags.includes(tagsName));
-  const visibleData = filteredData.slice(0, visibleItemCount);
+
+  const sortedData = useMemo(() => {
+    const data = [...filteredData]; // Không sửa đổi `filteredData`
+    switch (sortOption) {
+      case "newest":
+        return data.sort((a, b) => new Date(b.date) - new Date(a.date));
+      case "oldest":
+        return data.sort((a, b) => new Date(a.date) - new Date(b.date));
+      case "highestRating":
+        return data.sort((a, b) => b.totalRating - a.totalRating);
+      default:
+        return data;
+    }
+  }, [filteredData, sortOption]);
+
+  const visibleData = sortedData.slice(0, visibleItemCount);
 
   const handleLoadMore = () => {
     setVisibleItemCount((prevCount) => prevCount + 6);
@@ -66,7 +87,10 @@ const TagPost = () => {
         <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col">
           <SlidePostTag />
           <section className="w-full">
-            <HeadingSection title="Tin Mới Nhất" />
+            <div className="flex justify-between items-center">
+              <HeadingSection title="Tin Mới Nhất" />
+              <OptionPost onSortChange={handleSortChange} />
+            </div>
             <div className="space-y-4">
               {visibleData.length > 0 ? (
                 visibleData.map((post) => (
