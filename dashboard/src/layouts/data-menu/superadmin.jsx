@@ -95,31 +95,16 @@ const menuItems = {
           icon: "feather icon-server",
           children: [
             {
-              id: "all-orders",
-              title: "Tất cả đơn hàng",
-              type: "item",
-              url: "/dashboard/order",
-            },
-          ],
-        },
-        // OrderByStaff
-        {
-          id: "orderByStaff",
-          title: "Tạo đơn hàng",
-          type: "collapse",
-          icon: "feather icon-server",
-          children: [
-            {
               id: "Create-orderByStaff",
               title: "Tạo đơn hàng",
               type: "item",
               url: "/dashboard/orderByStaff/create",
             },
             {
-              id: "all-orderByStaff",
-              title: "Tất cả đơn hàng đã tạo",
+              id: "all-orders",
+              title: "Tất cả đơn hàng",
               type: "item",
-              url: "/dashboard/orderByStaff",
+              url: "/dashboard/order",
             },
           ],
         },

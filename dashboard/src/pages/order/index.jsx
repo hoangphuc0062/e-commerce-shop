@@ -7,6 +7,7 @@ export default function OrderPage() {
   const [currentStatus, setCurrentStatus] = useState("");
   const columns = [
     { label: "Mã đơn hàng", field: "orderCode" },
+    { label: "Nhân viên xử lý", field: "staffName" },
     { label: "Tên khách hàng", field: "name" },
     { label: "Ngày đặt hàng", field: "orderDate" },
     { label: "Tổng tiền", field: "total" },
@@ -16,6 +17,7 @@ export default function OrderPage() {
   const initialData = [
     {
       id: 1,
+      staffName: "melax",
       orderCode: "DH001",
       orderDate: "2021-08-01",
       total: "100000",
@@ -27,6 +29,7 @@ export default function OrderPage() {
     {
       id: 2,
       orderCode: "DH002",
+      staffName: "melax2",
       orderDate: "2021-08-02",
       total: "200000",
       orderStatus: "shipped",
@@ -36,6 +39,7 @@ export default function OrderPage() {
     {
       id: 3,
       orderCode: "DH003",
+      staffName: "melax3",
       orderDate: "2021-08-03",
       total: "300000",
       orderStatus: "pending",
@@ -80,6 +84,7 @@ export default function OrderPage() {
         handleEdit={handleEdit}
         handleDelete={handleDelete}
         StatusOrder={statusOptions}
+        navigate={"/dashboard/OrderByStaff/create"}
       />
       <EditStatusOrder
         open={open}
