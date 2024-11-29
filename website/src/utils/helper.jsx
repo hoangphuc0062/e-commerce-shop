@@ -26,3 +26,7 @@ export const getDisplayName = (name) => {
   const nameParts = name.split(" ");
   return nameParts.slice(-2).join(" ");
 };
+
+export const splitValues = (valuesString) => {
+  return valuesString.split(", ").map((value) => value.trim());
+};

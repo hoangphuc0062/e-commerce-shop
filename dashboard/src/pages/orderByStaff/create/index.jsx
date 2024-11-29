@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { useReactToPrint } from 'react-to-print';  // Add this import
 import {
     Box,
     TextField,
@@ -16,11 +17,19 @@ import {
     TableHead,
     TableRow,
     Paper,
+    Autocomplete,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Menu,
 } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
+import InvoiceComponent from "../InvoiceComponent";
 
 export default function CreateOrderByStaff() {
+
     const productsList = [
         {
             id: 1,
@@ -41,20 +50,33 @@ export default function CreateOrderByStaff() {
         {
             id: 3,
             name: "Đồng hồ Casio",
-            variants: [],
-            price: 3000000, // Sản phẩm đơn, không có biến thể
+            variants: [], // Sản phẩm đơn, không có biến thể
+            price: 3000000,
         },
     ];
+    // lấy thông tin nhân viên khi login  không cần phải chọn
     const staffList = [
         { id: 1, name: "Nguyễn Văn A" },
         { id: 2, name: "Trần Thị B" },
         { id: 3, name: "Phạm Văn C" },
         { id: 4, name: "Lê Thị D" },
     ];
+    // vị trí lấy theo cơ sở  của nhân viên 
+    const storeLocations = [
+        { id: 1, name: "Cửa hàng Quận 1" },
+        { id: 2, name: "Cửa hàng Quận 7" },
+        { id: 3, name: "Cửa hàng Bình Thạnh" },
+        { id: 4, name: "Cửa hàng Gò Vấp" },
+    ];
+
     const [formData, setFormData] = useState({
         customerName: "",
+        phone: "",
         staffName: "",
+        storeLocation: "",
         products: [],
+        receivedAmount: 0,
+        change: 0,
     });
 
     const [newProduct, setNewProduct] = useState({
@@ -67,7 +89,10 @@ export default function CreateOrderByStaff() {
     });
 
     const [searchQuery, setSearchQuery] = useState(""); // State cho tìm kiếm sản phẩm
-
+    const [anchorEl, setAnchorEl] = useState(null); // Mở/đóng menu đề xuất
+    const [openDialog, setOpenDialog] = useState(false); // Use this state consistently
+    const handleDialogOpen = () => setOpenDialog(true); // Fix here
+    const handleDialogClose = () => setOpenDialog(false); // Fix here
     const handleFormChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -75,7 +100,53 @@ export default function CreateOrderByStaff() {
             [name]: value,
         });
     };
+    // Lọc sản phẩm theo từ khóa tìm kiếm
+    const filteredProducts = productsList.filter((product) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
+    // tạo và in hóa đơn
+    const invoiceRef = useRef();
+    const handlePrintInvoice = useReactToPrint({
+        content: () => {
+            if (invoiceRef.current) {
+                return invoiceRef.current;
+            }
+            alert("Không có dữ liệu để in.");
+            return null;
+        },
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log("Dữ liệu đơn hàng:", formData);
+        handlePrintInvoice(); // Gọi hàm in hóa đơn sau khi tạo đơn hàng
+    };
+    // const handleClickMenu = (event) => {
+    //     setAnchorEl(event.currentTarget);
+    // };
+
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
+
+    const handleReceivedAmountChange = (e) => {
+        const value = e.target.value;
+        setFormData((prevData) => {
+            const change = value - calculateTotalPrice();
+            return {
+                ...prevData,
+                receivedAmount: value,
+                change: change,
+            };
+        });
+    };
+    const calculateTotalPrice = () => {
+        return formData.products.reduce(
+            (total, product) => total + product.price * product.quantity,
+            0
+        );
+    };
     const handleProductChange = (e) => {
         const { name, value } = e.target;
         if (name === "productId") {
@@ -111,7 +182,6 @@ export default function CreateOrderByStaff() {
             });
         }
     };
-
     const addProduct = () => {
         if (
             newProduct.productId &&
@@ -137,18 +207,13 @@ export default function CreateOrderByStaff() {
 
     const removeProduct = (index) => {
         const updatedProducts = formData.products.filter((_, i) => i !== index);
-        setFormData({ ...formData, products: updatedProducts });
+        setFormData({
+            ...formData,
+            products: updatedProducts,
+        });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("Dữ liệu đơn hàng:", formData);
-    };
 
-    // Lọc sản phẩm theo từ khóa tìm kiếm
-    const filteredProducts = productsList.filter((product) =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
 
     return (
         <Box
@@ -158,13 +223,18 @@ export default function CreateOrderByStaff() {
                 padding: 3,
                 border: "1px solid #ddd",
                 borderRadius: 2,
-                backgroundColor: "#f9f9f9",
+                backgroundColor: "#ffffff",
                 boxShadow: 2,
             }}
         >
-            <Typography variant="h5" gutterBottom>
-                Tạo Đơn Hàng Mới
-            </Typography>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="h5" gutterBottom>
+                    Tạo Đơn Hàng Mới
+                </Typography>
+                <Button variant="contained" onClick={handleDialogOpen}>
+                    Thêm sản phẩm
+                </Button>
+            </div>
             <form onSubmit={handleSubmit}>
                 <TextField
                     label="Tên khách hàng"
@@ -175,122 +245,171 @@ export default function CreateOrderByStaff() {
                     margin="normal"
                     required
                 />
+                <TextField
+                    label="Số điện thoại"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleFormChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+                <Autocomplete
+                    options={staffList}
+                    getOptionLabel={(option) => option.name}
+                    value={staffList.find((staff) => staff.name === formData.staffName) || null}
+                    onChange={(event, value) => {
+                        setFormData({
+                            ...formData,
+                            staffName: value ? value.name : "", // Cập nhật tên nhân viên hoặc để trống nếu không chọn
+                        });
+                    }}
+                    renderInput={(params) => (
+                        <TextField {...params} label="Nhân viên xử lý" fullWidth required />
+                    )}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                />
                 <FormControl fullWidth margin="normal">
-                    <InputLabel>Nhân viên xử lý</InputLabel>
+                    <InputLabel>Vị trí cửa hàng</InputLabel>
                     <Select
-                        name="staffName"
-                        value={formData.staffName}
+                        name="storeLocation"
+                        value={formData.storeLocation}
                         onChange={handleFormChange}
                         required
                     >
-                        {staffList.map((staff) => (
-                            <MenuItem key={staff.id} value={staff.name}>
-                                {staff.name}
+                        {storeLocations.map((store) => (
+                            <MenuItem key={store.id} value={store.name}>
+                                {store.name}
                             </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
+                <Dialog open={openDialog} onClose={handleDialogClose} fullWidth>
+                    <DialogTitle>Thêm sản phẩm</DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            label="Tìm sản phẩm"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)} // Update the search query on input change
+                            fullWidth
+                            margin="normal"
+                            onClick={(e) => setAnchorEl(e.currentTarget)} // Open menu when user clicks on the input
+                        />
 
-                <Typography variant="h6" gutterBottom sx={{ marginTop: 2 }}>
-                    Thông tin sản phẩm
-                </Typography>
-
-                {/* Ô nhập liệu tìm kiếm sản phẩm */}
-                <TextField
-                    label="Tìm kiếm sản phẩm"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    fullWidth
-                    margin="normal"
-                />
-
-                <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
-                    <Button
-                        variant={newProduct.isVariant ? "outlined" : "contained"}
-                        onClick={() => setNewProduct({ ...newProduct, isVariant: false })}
-                    >
-                        Sản phẩm đơn
-                    </Button>
-                    <Button
-                        variant={newProduct.isVariant ? "contained" : "outlined"}
-                        onClick={() => setNewProduct({ ...newProduct, isVariant: true })}
-                    >
-                        Sản phẩm có biến thể
-                    </Button>
-                </Box>
-
-                <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
-                    <FormControl fullWidth>
-                        <InputLabel>Sản phẩm</InputLabel>
-                        <Select
-                            name="productId"
-                            value={newProduct.productId}
-                            onChange={handleProductChange}
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl) && searchQuery.length > 0} // Only open if there's a search query
+                            onClose={handleCloseMenu}
+                            PaperProps={{
+                                style: {
+                                    maxHeight: 200,
+                                    width: 'auto',
+                                },
+                            }}
                         >
                             {filteredProducts.map((product) => (
-                                <MenuItem key={product.id} value={product.id}>
+                                <MenuItem
+                                    key={product.id}
+                                    onClick={() => {
+                                        setSearchQuery(product.name);
+                                        handleCloseMenu();
+                                        setNewProduct({
+                                            ...newProduct,
+                                            productId: product.id,
+                                            productName: product.name,
+                                            variant: "", // Reset variant when selecting product
+                                            price: product.variants.length ? 0 : product.price, // Set price based on variants
+                                            isVariant: product.variants.length > 0, // Check if product has variants
+                                        });
+                                    }}
+                                >
                                     {product.name}
                                 </MenuItem>
                             ))}
-                        </Select>
-                    </FormControl>
-                    {newProduct.isVariant ? (
-                        <>
+                        </Menu>
+                        <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
                             <FormControl fullWidth>
-                                <InputLabel>Biến thể</InputLabel>
+                                <InputLabel>Sản phẩm</InputLabel>
                                 <Select
-                                    name="variant"
-                                    value={newProduct.variant}
+                                    name="productId"
+                                    value={newProduct.productId}
                                     onChange={handleProductChange}
                                 >
-                                    {filteredProducts
-                                        .find((product) => product.id === parseInt(newProduct.productId))
-                                        .variants.map((v, index) => (
-                                            <MenuItem key={index} value={v.variant}>
-                                                {v.variant}
-                                            </MenuItem>
-                                        ))}
+                                    {filteredProducts.map((product) => (
+                                        <MenuItem key={product.id} value={product.id}>
+                                            {product.name}
+                                        </MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
+                            {newProduct.isVariant ? (
+                                <>
+                                    <FormControl fullWidth>
+                                        <InputLabel>Biến thể</InputLabel>
+                                        <Select
+                                            name="variant"
+                                            value={newProduct.variant}
+                                            onChange={handleProductChange}
+                                        >
+                                            {productsList
+                                                .find(
+                                                    (product) =>
+                                                        product.id === parseInt(newProduct.productId)
+                                                )
+                                                ?.variants.map((variant) => (
+                                                    <MenuItem key={variant.variant} value={variant.variant}>
+                                                        {variant.variant}
+                                                    </MenuItem>
+                                                ))}
+                                        </Select>
+                                    </FormControl>
+                                    <TextField
+                                        label="Giá (VND)"
+                                        name="price"
+                                        value={newProduct.price}
+                                        InputProps={{ readOnly: true }}
+                                        fullWidth
+                                    />
+                                </>
+                            ) : (
+                                <TextField
+                                    label="Giá (VND)"
+                                    name="price"
+                                    value={newProduct.price}
+                                    InputProps={{ readOnly: true }}
+                                    fullWidth
+                                />
+                            )}
                             <TextField
-                                label="Giá (VND)"
-                                name="price"
-                                value={newProduct.price}
-                                InputProps={{ readOnly: true }}
+                                label="Số lượng"
+                                name="quantity"
+                                value={newProduct.quantity}
+                                onChange={handleProductChange}
+                                type="number"
                                 fullWidth
                             />
-                        </>
-                    ) : (
-                        <TextField
-                            label="Giá (VND)"
-                            name="price"
-                            value={newProduct.price}
-                            InputProps={{ readOnly: true }}
-                            fullWidth
-                        />
-                    )}
-
-                    <TextField
-                        label="Số lượng"
-                        name="quantity"
-                        type="number"
-                        value={newProduct.quantity}
-                        onChange={handleProductChange}
-                        fullWidth
-                    />
-                    <IconButton color="primary" onClick={addProduct}>
-                        <AddCircleIcon />
-                    </IconButton>
-                </Box>
-
-                <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+                            <IconButton
+                                color="primary"
+                                onClick={addProduct}
+                                sx={{ alignSelf: "flex-end", marginTop: "auto" }}
+                            >
+                                <AddCircleIcon />
+                            </IconButton>
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDialogClose}>Đóng</Button>
+                    </DialogActions>
+                </Dialog>
+                {/* Danh sách các sản phẩm đã chọn */}
+                <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Tên sản phẩm</TableCell>
+                                <TableCell>Sản phẩm</TableCell>
                                 <TableCell>Biến thể</TableCell>
+                                <TableCell>Giá (VND)</TableCell>
                                 <TableCell>Số lượng</TableCell>
-                                <TableCell>Giá</TableCell>
                                 <TableCell>Thao tác</TableCell>
                             </TableRow>
                         </TableHead>
@@ -298,9 +417,9 @@ export default function CreateOrderByStaff() {
                             {formData.products.map((product, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{product.productName}</TableCell>
-                                    <TableCell>{product.variant || "Không có biến thể"}</TableCell>
+                                    <TableCell>{product.variant || "Không có"}</TableCell>
+                                    <TableCell>{product.price}</TableCell>
                                     <TableCell>{product.quantity}</TableCell>
-                                    <TableCell>{product.price.toLocaleString()}</TableCell>
                                     <TableCell>
                                         <IconButton
                                             color="error"
@@ -315,10 +434,31 @@ export default function CreateOrderByStaff() {
                     </Table>
                 </TableContainer>
 
-                <Button type="submit" variant="contained" fullWidth sx={{ marginTop: 2 }}>
-                    Xác nhận đơn hàng
+                {/* Tổng tiền và nhận tiền */}
+                <Typography variant="h6" sx={{ marginTop: 2 }}>
+                    Tổng tiền: {calculateTotalPrice()} đ
+                </Typography>
+
+                <TextField
+                    label="Tiền nhận"
+                    name="receivedAmount"
+                    type="number"
+                    value={formData.receivedAmount}
+                    onChange={handleReceivedAmountChange}
+                    fullWidth
+                    margin="normal"
+                    required
+                />
+
+                <Typography variant="h6" sx={{ marginTop: 2 }}>
+                    Tiền hoàn lại: {formData.change} đ
+                </Typography>
+
+                <Button variant="contained" color="primary" type="submit">
+                    Tạo đơn hàng
                 </Button>
             </form>
+            <InvoiceComponent ref={invoiceRef} orderData={formData} />
         </Box>
     );
 }

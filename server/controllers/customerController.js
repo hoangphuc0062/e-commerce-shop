@@ -363,7 +363,7 @@ const resetPassword = asyncHandler(async (req, res) => {
 
 const updateCustomer = asyncHandler(async (req, res) => {
   const { _id } = req.params;
-  console.log(_id)
+  console.log(_id);
   if (!_id || Object.keys(req.body).length === 0) {
     return res.status(400).json({
       message: "Missing required fields",
@@ -371,7 +371,7 @@ const updateCustomer = asyncHandler(async (req, res) => {
   }
   const customer = await Customer.findByIdAndUpdate(_id, req.body, {
     new: true,
-  })
+  });
   return res.status(200).json(customer);
 });
 
@@ -439,61 +439,6 @@ const getCart = asyncHandler(async (req, res) => {
 
   res.status(200).json(cart);
 });
-
-// update cart
-// const updateCart = asyncHandler(async (req, res) => {
-//   const items = req.body;
-//   const userId = req.user._id;
-
-//   // Find the customer's cart
-//   const customer = await Customer.findById(userId);
-
-//   if (!customer) {
-//     return res.status(404).json({ message: "Customer not found" });
-//   }
-//   items.forEach(({ productId, attributeId, quantity }) => {
-//     if (attributeId === "null") {
-//       attributeId = null;
-//     }
-
-//     const cartItemIndex = customer.cart.findIndex((item) => {
-//       const itemAttributeId = item.attributeId
-//         ? item.attributeId.toString()
-//         : null;
-//       const inputAttributeId = attributeId ? attributeId.toString() : null;
-//       return (
-//         item.pid.toString() === productId.toString() &&
-//         itemAttributeId === inputAttributeId
-//       );
-//     });
-
-//     if (cartItemIndex > -1) {
-
-//       if (quantity > 0) {
-//         customer.cart[cartItemIndex].quantity = quantity;
-//       } else {
-//         customer.cart.splice(cartItemIndex, 1);
-//       }
-//     } else {
-//       if (quantity > 0) {
-//         customer.cart.push({
-//           pid: productId,
-//           attributeId: attributeId,
-//           quantity: quantity,
-//         });
-//       } else {
-//         return res.status(400).json({ message: "Invalid quantity" });
-//       }
-//     }
-//   });
-
-//   await customer.save();
-
-//   res.status(200).json({
-//     message: "Cart updated successfully",
-//     cart: customer.cart,
-//   });
-// });
 
 const updateCart = asyncHandler(async (req, res) => {
   const items = req.body; // Expecting an array of items directly

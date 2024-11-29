@@ -14,6 +14,53 @@ const menuItems = {
           url: "/dashboard",
         },
         {
+          id: "products",
+          title: "Sản phẩm",
+          type: "collapse",
+          icon: "feather icon-box",
+          children: [
+            {
+              id: "product-list",
+              title: "Danh sách sản phẩm",
+              type: "item",
+              url: "/dashboard/product",
+            },
+            {
+              id: "add-product",
+              title: "Thêm sản phẩm",
+              type: "item",
+              url: "/dashboard/product/create",
+            },
+
+            {
+              id: "filter",
+              title: "Danh sách bộ lọc",
+              type: "item",
+              url: "/dashboard/product/filter",
+            },
+          ],
+        },
+        {
+          id: "orders",
+          title: "Đơn hàng",
+          type: "collapse",
+          icon: "feather icon-server",
+          children: [
+            {
+              id: "all-orders",
+              title: "Tất cả đơn hàng",
+              type: "item",
+              url: "/dashboard/order",
+            },
+            {
+              id: "Create-orderByStaff",
+              title: "Tạo đơn hàng",
+              type: "item",
+              url: "/dashboard/orderByStaff/create",
+            },
+          ],
+        },
+        {
           id: "categories",
           title: "Danh mục",
           type: "collapse",
@@ -61,68 +108,7 @@ const menuItems = {
             },
           ],
         },
-        {
-          id: "products",
-          title: "Sản phẩm",
-          type: "collapse",
-          icon: "feather icon-box",
-          children: [
-            {
-              id: "product-list",
-              title: "Danh sách sản phẩm",
-              type: "item",
-              url: "/dashboard/product",
-            },
-            {
-              id: "add-product",
-              title: "Thêm sản phẩm",
-              type: "item",
-              url: "/dashboard/product/create",
-            },
 
-            {
-              id: "variant",
-              title: "Danh sách biến thể",
-              type: "item",
-              url: "/dashboard/product/variant",
-            },
-          ],
-        },
-        {
-          id: "orders",
-          title: "Đơn hàng",
-          type: "collapse",
-          icon: "feather icon-server",
-          children: [
-            {
-              id: "all-orders",
-              title: "Tất cả đơn hàng",
-              type: "item",
-              url: "/dashboard/order",
-            },
-          ],
-        },
-        // OrderByStaff
-        {
-          id: "orderByStaff",
-          title: "Tạo đơn hàng",
-          type: "collapse",
-          icon: "feather icon-server",
-          children: [
-            {
-              id: "Create-orderByStaff",
-              title: "Tạo đơn hàng",
-              type: "item",
-              url: "/dashboard/orderByStaff/create",
-            },
-            {
-              id: "all-orderByStaff",
-              title: "Tất cả đơn hàng đã tạo",
-              type: "item",
-              url: "/dashboard/orderByStaff",
-            },
-          ],
-        },
         {
           id: "personnel",
           title: "Nhân viên",
@@ -130,17 +116,17 @@ const menuItems = {
           icon: "feather icon-user",
           children: [
             {
+              id: "personnel-list",
+              title: "Danh sách nhân viên",
+              type: "item",
+              url: "/dashboard/staff",
+            },
+            {
               id: "add-personnel",
               title: "Thêm nhân viên",
               type: "item",
               // url: "dashboard/staff/create",
               url: "/dashboard/staff/create",
-            },
-            {
-              id: "personnel-list",
-              title: "Danh sách nhân viên",
-              type: "item",
-              url: "/dashboard/staff",
             },
           ],
         },
@@ -212,16 +198,16 @@ const menuItems = {
           icon: "feather icon-package",
           children: [
             {
-              id: "add-warehouse",
-              title: "Thêm kho hàng",
-              type: "item",
-              url: "/dashboard/warehouse/create",
-            },
-            {
               id: "warehouse-list",
               title: "Danh sách kho hàng",
               type: "item",
               url: "/dashboard/warehouse",
+            },
+            {
+              id: "add-warehouse",
+              title: "Thêm kho hàng",
+              type: "item",
+              url: "/dashboard/warehouse/create",
             },
           ],
         },
@@ -232,16 +218,16 @@ const menuItems = {
           icon: "feather icon-file-text",
           children: [
             {
-              id: "add-blog",
-              title: "Thêm bài viết",
-              type: "item",
-              url: "/dashboard/post/create",
-            },
-            {
               id: "post-list",
               title: "Danh sách bài đăng",
               type: "item",
               url: "/dashboard/post",
+            },
+            {
+              id: "add-blog",
+              title: "Thêm bài viết",
+              type: "item",
+              url: "/dashboard/post/create",
             },
           ],
         },

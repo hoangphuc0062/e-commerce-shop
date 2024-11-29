@@ -24,11 +24,34 @@ const getAllSettingFilter = async (req, res) => {
   }
 };
 
+const getCategoryNameInCategoryFilter = async (req, res) => {
+  const { category } = req.body;
+
+  if (!Array.isArray(category))
+    return res.status(400).json({ mes: "Category must be array" });
+
+  const existCategory = await Category.find({ slug: { $in: category } });
+
+  if (existCategory.length === 0)
+    return res.status(400).json({ mes: "Category not found" });
+
+  const response = existCategory.map((item) => {
+    return { name: item.name, slug: item.slug };
+  });
+
+  return res.status(200).json({
+    mes: response
+      ? "Get category name is successful"
+      : "Get category name is failed",
+    response,
+  });
+};
+
 const createSettingFilter = async (req, res) => {
-  const { category, filter } = req.body;
+  const { category, filterButton } = req.body;
 
   try {
-    if (!category || !filter) {
+    if (!category || !filterButton) {
       return res.status(400).json({ mes: "Missing inputs" });
     }
 
@@ -41,7 +64,7 @@ const createSettingFilter = async (req, res) => {
 
     const newSettingFilter = new SettingFilter({
       category,
-      filter,
+      filterButton,
     });
 
     const savedSettingFilter = await newSettingFilter.save();
@@ -104,4 +127,5 @@ module.exports = {
   createSettingFilter,
   updateSettingFilter,
   deleteSettingFilter,
+  getCategoryNameInCategoryFilter,
 };

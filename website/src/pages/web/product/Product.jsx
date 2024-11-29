@@ -1,10 +1,14 @@
-import { useEffect, useState, useCallback } from "react";
-import Skeleton from "@mui/material/Skeleton";
-import { Box } from "@mui/system";
-import SimpleSlide from "../../../components/Banner/SliderBanner/SimpleSlide";
-import ProductCard from "../../../components/FeatureBlockProduct/Card";
+import { useEffect, useState, useCallback, act, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react";
+
+import Skeleton from "@mui/material/Skeleton";
+import { Box } from "@mui/system";
+import Slider from "@mui/material/Slider";
+
+import SimpleSlide from "../../../components/Banner/SliderBanner/SimpleSlide";
+import ProductCard from "../../../components/FeatureBlockProduct/Card";
+
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts, resetState } from "../../../redux/slices/product";
 import {
@@ -12,6 +16,9 @@ import {
   resetState as resetStateCategory,
 } from "../../../redux/slices/category";
 import { getBanners } from "../../../redux/slices/barnner";
+import { getSettingFilter } from "../../../redux/slices/settingFilter";
+
+import { formatCurrency, splitValues } from "../../../utils/helper";
 
 const Product = () => {
   const { category, brand } = useParams();
@@ -30,6 +37,16 @@ const Product = () => {
   const [firstHalfBanner, setFirstHalfBanner] = useState([]);
   const [secondHalfBanner, setSecondHalfBanner] = useState([]);
   const [noFoundProduct, setNoFoundProduct] = useState("");
+  const [filters, setFilters] = useState("");
+  const [active, setActive] = useState({});
+  const [hidden, setHidden] = useState({});
+  const [activeChild, setActiveChild] = useState({});
+  const [minPrice, setMinPrice] = useState();
+  const [maxPrice, setMaxPrice] = useState();
+  const [userMinPrice, setUserMinPrice] = useState();
+  const [userMaxPrice, setUserMaxPrice] = useState();
+
+  const dialogRefs = useRef([]);
 
   const statusProduct = useSelector((state) => state.product.status);
   const productsData = useSelector((state) => state.product.data.products);
@@ -47,13 +64,19 @@ const Product = () => {
       })
     );
   }, [brand, category, dispatch, productPerPage]);
-
+  useEffect(() => {}, [category]);
   useEffect(() => {
     loadInitialProducts();
     if (category) {
       dispatch(getCategoryBySlug(category)).then((data) => {
         if (data.type === "category/getBySlug/fulfilled") {
           setBrands(data.payload);
+        }
+      });
+      dispatch(getSettingFilter({ search: category })).then((data) => {
+        if (data.type === "settingFilter/getSettingFilter/fulfilled") {
+          setFilters(data.payload.settingFilters[0].filterButton);
+          // console.log(data.payload.settingFilters[0].filterButton);
         }
       });
     }
@@ -171,6 +194,48 @@ const Product = () => {
     setTimeout(() => setFirstLoading(false), 2000);
   }, []);
 
+  const handleClickOutside = (event) => {
+    filters.forEach((_, index) => {
+      if (
+        dialogRefs.current[index] &&
+        !dialogRefs.current[index].contains(event.target)
+      ) {
+        setHidden((prevHidden) => ({
+          ...prevHidden,
+          [index]: true,
+        }));
+        setActive((prevActive) => ({
+          ...prevActive,
+          [index]: false,
+        }));
+      }
+    });
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [filters]);
+
+  useEffect(() => {
+    if (filters) {
+      filters.forEach((filter) => {
+        if (filter?.label === "Giá") {
+          const minMaxPrice = splitValues(filter?.values);
+          const regex = /\d+/g;
+          const minPrice = minMaxPrice[0].match(regex)?.[0];
+          const maxPrice = minMaxPrice[1].match(regex)?.[0];
+          setMinPrice(Number(minPrice));
+          setMaxPrice(Number(maxPrice));
+          setUserMinPrice(Number(minPrice));
+          setUserMaxPrice(Number(maxPrice));
+        }
+      });
+    }
+  }, [filters]);
+
   return (
     <div className="flex flex-col gap-3">
       <div>breadcrumb here</div>
@@ -204,10 +269,10 @@ const Product = () => {
           ))}
         </div>
       </section>
-      <section>
+      <section className="flex flex-col gap-2">
         <h1 className="text-[20px] font-bold">Lọc theo tiêu chí</h1>
-        <div className=" sticky">
-          <div className="flex gap-2">
+        <div className="sticky z-10 ">
+          <div className="flex gap-2 flex-wrap">
             <button className="flex gap-2 items-center bg-gray-200 p-2 rounded-lg">
               <Icon icon="cil:filter" width="1rem" height="1rem" />
               Bộ lọc
@@ -216,13 +281,187 @@ const Product = () => {
               <Icon icon="iconoir:delivery-truck" width="1rem" height="1rem" />
               Sẵn hàng
             </button>
-            <button className="flex gap-2 items-center bg-gray-200 p-2 rounded-lg">
-              <Icon icon="bi:cash-coin" width="1rem" height="1rem" />
-              Giá
+
+            {filters &&
+              filters.map((filter, index) => (
+                <div className="relative" key={index}>
+                  {/* Nếu filter có label là "Giá", trích xuất min và max */}
+
+                  {/* render setting filter here */}
+                  <div>
+                    <button
+                      onClick={() => {
+                        setActive((prevActive) => ({
+                          ...prevActive,
+                          [index]: !prevActive[index],
+                        }));
+                        setHidden((prevHidden) => ({
+                          ...prevHidden,
+                          [index]: false,
+                        }));
+                      }}
+                      className={`flex gap-2 items-center z-20 bg-gray-200 p-2 rounded-lg ${
+                        active[index] ? "active" : ""
+                      }`}
+                    >
+                      {filter?.label}
+                      <Icon
+                        icon="mdi-light:chevron-down"
+                        width="1rem"
+                        height="1rem"
+                      />
+                    </button>
+                  </div>
+
+                  {/* value render here */}
+                  {active?.[index] && (
+                    <div
+                      ref={(el) => (dialogRefs.current[index] = el)}
+                      className={`absolute z-10 bg-white mt-1 p-2 rounded-lg shadow-custom ${
+                        hidden[index] === false ? "block" : "hidden"
+                      }`}
+                    >
+                      <div className="flex flex-col gap-2">
+                        <div className="flex flex-wrap gap-2 w-[300px]">
+                          {filter?.label !== "Giá" &&
+                            splitValues(filter?.values).map((value, inx) => (
+                              <button
+                                key={inx}
+                                onClick={() => {
+                                  setActiveChild((prevActiveChild) => ({
+                                    ...prevActiveChild,
+                                    [index]: {
+                                      ...prevActiveChild[index],
+                                      [inx]: !prevActiveChild[index]?.[inx],
+                                    },
+                                  }));
+                                }}
+                                className={`relative bg-gray-200 w-max p-3 rounded-lg ${
+                                  activeChild[index]?.[inx] ? "active" : ""
+                                }`}
+                              >
+                                {value}
+                                {activeChild[index]?.[inx] && (
+                                  <div className="absolute top-0 left-0 bg-main text-white rounded-tl-lg rounded-br-lg">
+                                    <Icon
+                                      icon="material-symbols-light:check"
+                                      width="1rem"
+                                      height="1rem"
+                                    />
+                                  </div>
+                                )}
+                              </button>
+                            ))}
+                        </div>
+
+                        {active?.[index] && filter?.label === "Giá" && (
+                          <div className="flex flex-col gap-4 p-4 bg-white rounded-lg">
+                            <div className="flex justify-between gap-2 text-sm">
+                              <p>{formatCurrency(userMinPrice)}</p>
+                              <p>{formatCurrency(userMaxPrice)}</p>
+                            </div>
+
+                            <Slider
+                              min={Number(minPrice)}
+                              max={Number(maxPrice)}
+                              value={[
+                                Number(userMinPrice),
+                                Number(userMaxPrice),
+                              ]}
+                              onChange={(e, newValue) => {
+                                setUserMinPrice(Number(newValue[0]));
+                                setUserMaxPrice(Number(newValue[1]));
+                              }}
+                              sx={{
+                                color: "#1E40AF",
+                                height: 8, // Độ dày của thanh trượt
+                                "& .MuiSlider-thumb": {
+                                  width: 20, // Kích thước của thumb (nút kéo)
+                                  height: 20,
+                                },
+                                "& .MuiSlider-rail": {
+                                  height: 8, // Độ dày của thanh "rail" (phần không được chọn)
+                                },
+                                "& .MuiSlider-track": {
+                                  height: 8, // Độ dày của thanh "track" (phần đã được chọn)
+                                },
+                              }}
+                            />
+
+                            <div className="flex gap-2">
+                              <button
+                                className="w-[50%] bg-blue-200 p-2 rounded-lg"
+                                onClick={() => {
+                                  setHidden((prevHidden) => ({
+                                    ...prevHidden,
+                                    [index]: !prevHidden[index],
+                                  }));
+                                  setActive((prevActive) => ({
+                                    ...prevActive,
+                                    [index]: !prevActive[index],
+                                  }));
+                                }}
+                              >
+                                Đóng
+                              </button>
+
+                              <button
+                                className="w-[50%] bg-main text-white rounded-lg p-2"
+                                onClick={() => {
+                                  const appliedFilters = {
+                                    minPrice: userMinPrice,
+                                    maxPrice: userMaxPrice,
+                                  };
+                                  console.log(
+                                    "Áp dụng lọc giá:",
+                                    appliedFilters
+                                  );
+                                }}
+                              >
+                                Xem kết quả
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                        {activeChild[index] && (
+                          <div className="flex gap-2">
+                            <button
+                              className="w-[50%] bg-blue-200 p-2 rounded-lg"
+                              onClick={() => {
+                                setHidden((prevHidden) => ({
+                                  ...prevHidden,
+                                  [index]: !prevHidden[index],
+                                }));
+                                setActive((prevActive) => ({
+                                  ...prevActive,
+                                  [index]: !prevActive[index],
+                                }));
+                              }}
+                            >
+                              Đóng
+                            </button>
+                            <button className="w-[50%] bg-main text-white rounded-lg p-2">
+                              Xem kết quả
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+          </div>
+        </div>
+        <div>
+          <h1 className="text-[20px] font-semibold">Đang lọc theo</h1>
+          <div className="flex gap-2 text-main">
+            <button className="flex justify-center items-center gap-2 bg-gray-200 p-2 rounded-lg outline outine-main">
+              <Icon icon="clarity:remove-line" width="1rem" height="1rem" />
+              <span>Lọc gì đó</span>
             </button>
-            <button className="flex gap-2 items-center bg-gray-200 p-2 rounded-lg">
-              <Icon icon="bi:cash-coin" width="1rem" height="1rem" />
-              Nhu cầu sử dụng
+            <button className="flex justify-center items-center gap-2 bg-gray-200 p-2 rounded-lg  outline outine-main">
+              <Icon icon="clarity:remove-line" width="1rem" height="1rem" />
+              <span>Bỏ chọn tất cả</span>
             </button>
           </div>
         </div>
@@ -287,42 +526,7 @@ const Product = () => {
           </div>
         </div>
       </section>
-      {/* <section>
-        {firstLoading ? (
-          loading()
-        ) : (
-          <div>
-            {(Array.isArray(sortedProducts) && sortedProducts.length > 0) ||
-            (Array.isArray(products) && products.length > 0) ? (
-              <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
-                {(sortedProducts.length > 0 ? sortedProducts : products).map(
-                  (product, index) => (
-                    <ProductCard key={index} data={product} />
-                  )
-                )}
-              </div>
-            ) : (
-              <div className="text-center text-red-500">
-                Không có sản phẩm nào
-              </div>
-            )}
-          </div>
-        )}
-        <div>{isLoading && loading()}</div>
-        <div className="flex justify-center my-2">
-          {hasMoreProducts && (
-            <button
-              className="bg-main text-white p-2 rounded-lg"
-              onClick={handleLoadMore}
-            >
-              Xem thêm sản phẩm
-            </button>
-          )}
-          {noFoundProduct && (
-            <div className="text-center text-red-500">{noFoundProduct}</div>
-          )}
-        </div>
-      </section> */}
+
       <section>
         {firstLoading ? (
           loading()
