@@ -1,52 +1,56 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReusableTable from "../../components/table";
 import EditStatusOrder from "./edit";
+import { useDispatch, useSelector } from "react-redux";
+import { getAll, resetState } from "../../redux/slices/orders";
+import { fDateVN, formatCurrency, formatDay } from "../../utils/format-time";
 
 export default function OrderPage() {
+  const dispatch = useDispatch();
+  const [data, setData] = useState([]);
+  const initialData = useSelector((state) => state.orders.data);
+  const status = useSelector((state) => state.orders.status);
+
   const [open, setOpen] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("");
   const columns = [
-    { label: "Mã đơn hàng", field: "orderCode" },
+    { label: "Mã đơn hàng", field: "_id" },
     { label: "Nhân viên xử lý", field: "staffName" },
     { label: "Tên khách hàng", field: "name" },
-    { label: "Ngày đặt hàng", field: "orderDate" },
+    { label: "Ngày đặt hàng", field: "date" },
     { label: "Tổng tiền", field: "total" },
     { label: "phương thức", field: "paymentMethod" },
-    { label: "Trạng thái", field: "orderStatus" },
+    { label: "Trạng thái", field: "status" },
   ];
-  const initialData = [
-    {
-      id: 1,
-      staffName: "melax",
-      orderCode: "DH001",
-      orderDate: "2021-08-01",
-      total: "100000",
-      orderStatus: "delivered",
-      name: "Nguyễn Văn A",
-      paymentMethod: "VNPAY",
-      address: "Hà Nội",
-    },
-    {
-      id: 2,
-      orderCode: "DH002",
-      staffName: "melax2",
-      orderDate: "2021-08-02",
-      total: "200000",
-      orderStatus: "shipped",
-      name: "Nguyễn Văn B",
-      paymentMethod: "COD",
-    },
-    {
-      id: 3,
-      orderCode: "DH003",
-      staffName: "melax3",
-      orderDate: "2021-08-03",
-      total: "300000",
-      orderStatus: "pending",
-      name: "Nguyễn Văn C",
-      paymentMethod: "MOMO",
-    },
-  ];
+  useEffect(() => {
+    dispatch(getAll());
+  }, [dispatch]);
+  //   cập nhập trạng thái đơn hàng
+  // useEffect(() => {
+  //   if (statusUpdateCustomer === "success") {
+  //     handleToast("success", "Cập nhật người dùng thành công", "top-right");
+  //     dispatch(resetState({ key: "statusUpdate", value: "idle" }));
+  //     dispatch(getCustomer()); 
+  //   }
+  // }, [statusUpdateCustomer, dispatch]);
+  useEffect(() => {
+    if (status === "success" && initialData) {
+      setData(
+        initialData.map((item) => ({
+          _id: item._id,
+          staffName: item.staffName || "Online",
+          name: item?.orderBy?.name || 'lỗi',
+          date: fDateVN(item.date),
+          total: formatCurrency(item.total),
+          paymentMethod: item.paymentMethod,
+          status: item.status,
+        }))
+      );
+
+      dispatch(resetState({ key: "getAllStatus", value: "idle" }));
+    }
+  }, [dispatch, status, initialData]);
+
   const statusOptions = [
     { value: "delivered", label: "Đã giao hàng" },
     { value: "shipped", label: "Đang giao hàng" },
@@ -80,7 +84,7 @@ export default function OrderPage() {
     <>
       <ReusableTable
         columns={columns}
-        data={initialData}
+        data={data}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
         StatusOrder={statusOptions}

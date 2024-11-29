@@ -19,6 +19,7 @@ import paymentReducer from "./slices/paynents";
 import couponReducer from "./slices/coupon";
 import bannerCollectionReducer from "./slices/BannerCollection";
 import settingFilterReducer from "./slices/settingFilter";
+import ordersReducer from "./slices/orders";
 
 const store = configureStore({
   reducer: {
@@ -40,6 +41,7 @@ const store = configureStore({
     coupon: couponReducer,
     bannerCollection: bannerCollectionReducer,
     settingFilter: settingFilterReducer,
+    orders: ordersReducer,
   },
 });
 
