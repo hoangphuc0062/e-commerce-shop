@@ -12,6 +12,7 @@ router.post("/checkOTP", ctrl.checkOTP);
 router.get("/logout", ctrl.logout);
 router.post("/forgotpassword", ctrl.forgotPassword);
 router.put("/resetpassword", ctrl.resetPassword);
+router.post("/change-password", verifyAccessToken, ctrl.changePassword);
 router.post("/refreshtoken", ctrl.refreshAccessToken);
 router.post("/add-cart", verifyAccessToken, ctrl.addCart);
 router.get("/get-cart", verifyAccessToken, ctrl.getCart);
