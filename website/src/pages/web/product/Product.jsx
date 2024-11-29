@@ -75,8 +75,8 @@ const Product = () => {
       });
       dispatch(getSettingFilter({ search: category })).then((data) => {
         if (data.type === "settingFilter/getSettingFilter/fulfilled") {
-          // setFilters(data.payload.settingFilters[0].filterButton);
-          console.log(data.payload.settingFilters[0].filterButton);
+          setFilters(data.payload.settingFilters[0].filterButton);
+          // console.log(data.payload.settingFilters[0].filterButton);
         }
       });
     }

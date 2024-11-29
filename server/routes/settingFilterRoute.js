@@ -1,13 +1,9 @@
 const router = require("express").Router();
 const ctrl = require("../controllers/settingFilterController");
-const {
-  verifyAccessToken,
-  isAdmin,
-  isStaff,
-  isSuperAdmin,
-} = require("../middlewares/vertifyToken");
+const { verifyAccessToken, isStaff } = require("../middlewares/vertifyToken");
 
 router.get("/filter/", ctrl.getAllSettingFilter);
+router.get("/filter/get-category", ctrl.getCategoryNameInCategoryFilter);
 
 router.use([verifyAccessToken, isStaff]);
 router.post("/filter/", ctrl.createSettingFilter);
