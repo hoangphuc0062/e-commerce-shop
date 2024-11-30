@@ -38,6 +38,7 @@ export const statusOrder = {
   paid: { label: "Đã thanh toán", color: "success" },
   unpaid: { label: "Chưa thanh toán", color: "error" },
   partial: { label: "Thanh toán một phần", color: "warning" },
+  success: { label: "Thành công", color: "success" },
 };
 
 export const statustPost = {

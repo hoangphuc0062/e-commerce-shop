@@ -89,6 +89,7 @@ const createOrder = asyncHandler(async (req, res) => {
     paymentMethod: req.body.paymentMethod,
     shippingFee,
     note: req.body.note,
+    SKU: `#${Math.floor(Math.random() * 1000000)}`,
   });
 
   order = await order.save();
@@ -114,12 +115,11 @@ const updateOrder = asyncHandler(async (req, res) => {
 
   return res.status(200).json({
     mes: rs ? "Update Order successfully" : "Update Order Failed",
-    rs
+    rs,
   });
 });
 
 const deleteOrder = asyncHandler(async (req, res) => {
-
   const { _id } = req.params;
 
   if (!_id) return res.status(404).json({ mes: "Missing _id" });
@@ -131,9 +131,8 @@ const deleteOrder = asyncHandler(async (req, res) => {
   const rs = await Order.findByIdAndDelete(_id);
 
   return res.status(200).json({
-    mes: rs ? "Delete Order Successful" : "Delete Order Failed"
-  })
-
+    mes: rs ? "Delete Order Successful" : "Delete Order Failed",
+  });
 });
 // nhan vien ban hang tao don hang cho khach hang
 // thanh toán tiền mặt

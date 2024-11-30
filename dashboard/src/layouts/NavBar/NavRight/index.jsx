@@ -10,7 +10,7 @@ const NavRight = () => {
   const { setUser, setLoginAuth } = React.useContext(UserContext);
 
   const status = useSelector((state) => state.staff.getMeStatus);
-  const data = useSelector((state) => state.staff.data);
+  const data = useSelector((state) => state.staff.dataMe);
   const [profileData, setProfileData] = useState({});
 
   useEffect(() => {
