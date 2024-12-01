@@ -29,7 +29,10 @@ export default function DetailWeb({ open, handleClose, selectedData }) {
                 e.target.src =
                   "https://via.placeholder.com/400x300?text=Image+Not+Available";
               }}
-              style={{ marginBottom: "20px" }} // Add margin below the image
+              style={{
+                marginBottom: "20px", // Add margin below the image
+                backgroundColor: "rgb(90, 145, 255)",
+              }}
             />
 
             <h2 id="company-details-dialog" className="dialog-title" style={{ fontSize: "24px", marginBottom: "20px" }}>
@@ -66,7 +69,7 @@ export default function DetailWeb({ open, handleClose, selectedData }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="dialog-link"
-                style={{ color: "#69c9d0" }} // Optional: add a color for TikTok link
+                style={{ color: "#3b5998" }} // Optional: add a color for TikTok link
               >
                 {selectedData.tiktok}
               </a>

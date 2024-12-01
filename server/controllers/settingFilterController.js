@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const SettingFilter = require("../models/settingFilterModel");
+const Category = require("../models/categoryModel");
 
 const getAllSettingFilter = async (req, res) => {
   try {
@@ -21,6 +22,43 @@ const getAllSettingFilter = async (req, res) => {
   } catch (error) {
     res.status(500).json({ mes: "Server error", error });
   }
+};
+
+const getAllSettingFilterById = async (req, res) => {
+  const { _id } = req.params;
+
+  if (!_id) {
+    return res.status(400).json({ mes: "Missing inputs" });
+  }
+
+  const settingFilter = await SettingFilter.findById(_id);
+  return res.status(200).json({
+    mes: settingFilter
+      ? "Get setting filter by id is successful"
+      : "Get setting filter by id is failed",
+    settingFilter,
+  });
+};
+
+const getCategoryNameInCategoryFilter = async (req, res) => {
+  const { category } = req.body;
+
+  if (!Array.isArray(category))
+    return res.status(400).json({ mes: "Category must be array" });
+
+  const existCategory = await Category.find({ slug: { $in: category } });
+
+  if (existCategory.length === 0)
+    return res.status(400).json({ mes: "Category not found" });
+
+  const rs = existCategory.map((item) => {
+    return { name: item.name, slug: item.slug };
+  });
+
+  return res.status(200).json({
+    mes: rs ? "Get category name is successful" : "Get category name is failed",
+    rs,
+  });
 };
 
 const createSettingFilter = async (req, res) => {
@@ -78,8 +116,42 @@ const updateSettingFilter = async (req, res) => {
   });
 };
 
+const updateSettingFilterOne = async (req, res) => {
+  const { _id, filterButtonId } = req.params;
+
+  if (!_id || !filterButtonId || Object.keys(req.body).length === 0) {
+    return res.status(400).json({ mes: "Missing inputs" });
+  }
+
+  try {
+    const existSettingFilter = await SettingFilter.findById(_id);
+
+    if (!existSettingFilter) {
+      return res.status(404).json({ mes: "Setting filter not found" });
+    }
+
+    const filterButton = existSettingFilter.filterButton.id(filterButtonId);
+
+    if (!filterButton) {
+      return res.status(404).json({ mes: "Filter button not found" });
+    }
+
+    filterButton.set(req.body);
+
+    await existSettingFilter.save();
+
+    return res.status(200).json({ mes: "Filter button updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ mes: "Server error", error: error.message });
+  }
+};
+
 const deleteSettingFilter = async (req, res) => {
   const { _id } = req.params;
+
+  if (!_id) {
+    return res.status(400).json({ mes: "Missing inputs" });
+  }
 
   const existSettingFilter = await SettingFilter.findById(_id);
 
@@ -98,9 +170,39 @@ const deleteSettingFilter = async (req, res) => {
   });
 };
 
+const deleteSettingFilterOne = async (req, res) => {
+  const { _id, filterButtonId } = req.params;
+
+  if (!_id || !filterButtonId) {
+    return res.status(400).json({ mes: "Missing inputs" });
+  }
+
+  try {
+    const existSettingFilter = await SettingFilter.findById(_id);
+
+    if (!existSettingFilter) {
+      return res.status(404).json({ mes: "Setting filter not found" });
+    }
+
+    await SettingFilter.findByIdAndUpdate(
+      _id,
+      { $pull: { filterButton: { _id: filterButtonId } } },
+      { new: true }
+    );
+
+    return res.status(200).json({ mes: "Filter button deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ mes: "Server error", error: error.message });
+  }
+};
+
 module.exports = {
   getAllSettingFilter,
+  getCategoryNameInCategoryFilter,
+  getAllSettingFilterById,
   createSettingFilter,
   updateSettingFilter,
+  updateSettingFilterOne,
   deleteSettingFilter,
+  deleteSettingFilterOne,
 };

@@ -207,6 +207,8 @@ function EditBannerCollection() {
                         dataImage={
                           bannerItem.urlImage ? [bannerItem.urlImage] : []
                         }
+                        isFullWidth
+                        isFullHeight
                       />
                       {formik.touched.banner?.[index]?.urlImage &&
                         formik.errors.banner?.[index]?.urlImage && (
@@ -286,8 +288,8 @@ function EditBannerCollection() {
                       rows="4"
                       className={
                         formik.touched.banner &&
-                        formik.touched.banner[index]?.shotDescription &&
-                        Boolean(formik.errors.banner?.[index]?.shotDescription)
+                          formik.touched.banner[index]?.shotDescription &&
+                          Boolean(formik.errors.banner?.[index]?.shotDescription)
                           ? "error"
                           : ""
                       }
@@ -427,8 +429,8 @@ function EditBannerCollection() {
                     value={
                       formik.values.startDate
                         ? new Date(formik.values.startDate)
-                            .toISOString()
-                            .split("T")[0]
+                          .toISOString()
+                          .split("T")[0]
                         : new Date().toISOString().split("T")[0]
                     }
                     onChange={formik.handleChange}
@@ -447,8 +449,8 @@ function EditBannerCollection() {
                     value={
                       formik.values.endDate
                         ? new Date(formik.values.endDate)
-                            .toISOString()
-                            .split("T")[0]
+                          .toISOString()
+                          .split("T")[0]
                         : new Date().toISOString().split("T")[0]
                     }
                     onChange={formik.handleChange}

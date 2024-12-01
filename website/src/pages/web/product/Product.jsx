@@ -37,6 +37,8 @@ const Product = () => {
   const [firstHalfBanner, setFirstHalfBanner] = useState([]);
   const [secondHalfBanner, setSecondHalfBanner] = useState([]);
   const [noFoundProduct, setNoFoundProduct] = useState("");
+
+  const dialogRefs = useRef([]);
   const [filters, setFilters] = useState("");
   const [active, setActive] = useState({});
   const [hidden, setHidden] = useState({});
@@ -45,8 +47,9 @@ const Product = () => {
   const [maxPrice, setMaxPrice] = useState();
   const [userMinPrice, setUserMinPrice] = useState();
   const [userMaxPrice, setUserMaxPrice] = useState();
-
-  const dialogRefs = useRef([]);
+  const [selectedFilters, setSelectedFilters] = useState({});
+  const [isPriceFilterApplied, setIsPriceFilterApplied] = useState(false);
+  const [renderFilter, setRenderFilter] = useState([]);
 
   const statusProduct = useSelector((state) => state.product.status);
   const productsData = useSelector((state) => state.product.data.products);
@@ -76,6 +79,7 @@ const Product = () => {
       dispatch(getSettingFilter({ search: category })).then((data) => {
         if (data.type === "settingFilter/getSettingFilter/fulfilled") {
           setFilters(data.payload.settingFilters[0].filterButton);
+          // console.log(data.payload.settingFilters[0].filterButton);
         }
       });
     }
@@ -235,6 +239,129 @@ const Product = () => {
     }
   }, [filters]);
 
+  const handleToggleActive = (index, setActive) => {
+    setActive((prevActive) => ({
+      ...prevActive,
+      [index]: !prevActive[index],
+    }));
+  };
+
+  const handleToggleHidden = (index, setHidden) => {
+    setHidden((prevHidden) => ({
+      ...prevHidden,
+      [index]: false,
+    }));
+  };
+
+  const handleChildClick = (label, value, index, inx, setActiveChild) => {
+    setActiveChild((prevActiveChild) => ({
+      ...prevActiveChild,
+      [index]: {
+        ...prevActiveChild[index],
+        [inx]: !prevActiveChild[index]?.[inx],
+      },
+    }));
+    handleSelectValue(label, value); // Cập nhật selectedFilters
+  };
+
+  const handleSelectValue = (label, value) => {
+    setSelectedFilters((prev) => {
+      // Nếu label là "Giá", lưu cấu trúc minPrice và maxPrice
+      if (label === "Giá") {
+        return {
+          ...prev,
+          [label]: {
+            minPrice: value.minPrice,
+            maxPrice: value.maxPrice,
+          },
+        };
+      }
+      // Đối với các label khác, lưu danh sách giá trị
+      const prevValues = prev[label] || [];
+      const updatedValues = prevValues.includes(value)
+        ? prevValues.filter((v) => v !== value) // Bỏ giá trị nếu đã chọn
+        : [...prevValues, value]; // Thêm giá trị mới
+
+      return {
+        ...prev,
+        [label]: updatedValues,
+      };
+    });
+  };
+
+  const cleanSelectedFilters = (filters) => {
+    return Object.entries(filters).reduce((acc, [key, value]) => {
+      if (Array.isArray(value) && value.length === 0) {
+        return acc; // Bỏ qua nếu là mảng rỗng
+      }
+      if (typeof value === "object" && Object.keys(value).length === 0) {
+        return acc; // Bỏ qua nếu là object rỗng
+      }
+      return { ...acc, [key]: value }; // Giữ lại các giá trị hợp lệ
+    }, {});
+  };
+
+  const isActiveLabel = (label) => {
+    const values = selectedFilters[label];
+
+    // Kiểm tra trạng thái "Giá"
+    if (label === "Giá") {
+      // Active nếu "Giá" có giá trị hợp lệ trong selectedFilters hoặc giá trị hiện tại khác mặc định
+      return (
+        (values?.minPrice !== undefined && values?.maxPrice !== undefined) ||
+        userMinPrice !== Number(minPrice) ||
+        userMaxPrice !== Number(maxPrice)
+      );
+    }
+
+    // Kiểm tra trạng thái các label khác
+    if (Array.isArray(values)) {
+      return values.length > 0; // Active nếu có giá trị trong mảng
+    }
+    if (typeof values === "object") {
+      return Object.keys(values).length > 0; // Active nếu object chứa giá trị
+    }
+    return false; // Không active nếu không có giá trị
+  };
+  const handleApplyFilters = (
+    index,
+    setActive,
+    setHidden,
+    selectedFilters,
+    userMinPrice,
+    userMaxPrice
+  ) => {
+    // Đồng bộ trạng thái giao diện
+    setActive((prevActive) => ({
+      ...prevActive,
+      [index]: !prevActive[index],
+    }));
+    setHidden((prevHidden) => ({
+      ...prevHidden,
+      [index]: false,
+    }));
+
+    // Kiểm tra xem có áp dụng bộ lọc Giá hay không
+    if (userMinPrice !== minPrice || userMaxPrice !== maxPrice) {
+      setIsPriceFilterApplied(true); // Đánh dấu là giá đã được áp dụng
+    } else {
+      setIsPriceFilterApplied(false); // Reset nếu giá không thay đổi
+    }
+
+    // Làm sạch dữ liệu bộ lọc
+    const cleanedFilters = cleanSelectedFilters({
+      ...selectedFilters,
+      ...(isPriceFilterApplied && {
+        Giá: {
+          minPrice: userMinPrice,
+          maxPrice: userMaxPrice,
+        },
+      }),
+    });
+
+    console.log("Kết quả sau khi lọc:", cleanedFilters);
+  };
+
   return (
     <div className="flex flex-col gap-3">
       <div>breadcrumb here</div>
@@ -284,24 +411,16 @@ const Product = () => {
             {filters &&
               filters.map((filter, index) => (
                 <div className="relative" key={index}>
-                  {/* Nếu filter có label là "Giá", trích xuất min và max */}
-
                   {/* render setting filter here */}
                   <div>
                     <button
                       onClick={() => {
-                        setActive((prevActive) => ({
-                          ...prevActive,
-                          [index]: !prevActive[index],
-                        }));
-                        setHidden((prevHidden) => ({
-                          ...prevHidden,
-                          [index]: false,
-                        }));
+                        handleToggleActive(index, setActive);
+                        handleToggleHidden(index, setHidden);
                       }}
-                      className={`flex gap-2 items-center z-20 bg-gray-200 p-2 rounded-lg ${
-                        active[index] ? "active" : ""
-                      }`}
+                      className={`flex gap-2 items-center z-20 bg-gray-200 p-2 rounded-lg 
+                    ${active[index] ? "active" : ""} 
+                    ${isActiveLabel(filter?.label) ? "active" : ""}`}
                     >
                       {filter?.label}
                       <Icon
@@ -316,9 +435,10 @@ const Product = () => {
                   {active?.[index] && (
                     <div
                       ref={(el) => (dialogRefs.current[index] = el)}
-                      className={`absolute z-10 bg-white mt-1 p-2 rounded-lg shadow-custom ${
-                        hidden[index] === false ? "block" : "hidden"
-                      }`}
+                      className={`absolute z-10 bg-white mt-1 p-2 rounded-lg shadow-custom
+                         ${hidden[index] === false ? "block" : "hidden"}
+                         
+                      `}
                     >
                       <div className="flex flex-col gap-2">
                         <div className="flex flex-wrap gap-2 w-[300px]">
@@ -326,18 +446,19 @@ const Product = () => {
                             splitValues(filter?.values).map((value, inx) => (
                               <button
                                 key={inx}
-                                onClick={() => {
-                                  setActiveChild((prevActiveChild) => ({
-                                    ...prevActiveChild,
-                                    [index]: {
-                                      ...prevActiveChild[index],
-                                      [inx]: !prevActiveChild[index]?.[inx],
-                                    },
-                                  }));
-                                }}
+                                onClick={() =>
+                                  handleChildClick(
+                                    filter?.label,
+                                    value,
+                                    index,
+                                    inx,
+                                    setActiveChild
+                                  )
+                                }
                                 className={`relative bg-gray-200 w-max p-3 rounded-lg ${
                                   activeChild[index]?.[inx] ? "active" : ""
-                                }`}
+                                }
+                                `}
                               >
                                 {value}
                                 {activeChild[index]?.[inx] && (
@@ -373,16 +494,16 @@ const Product = () => {
                               }}
                               sx={{
                                 color: "#1E40AF",
-                                height: 8, // Độ dày của thanh trượt
+                                height: 8,
                                 "& .MuiSlider-thumb": {
-                                  width: 20, // Kích thước của thumb (nút kéo)
+                                  width: 20,
                                   height: 20,
                                 },
                                 "& .MuiSlider-rail": {
-                                  height: 8, // Độ dày của thanh "rail" (phần không được chọn)
+                                  height: 8,
                                 },
                                 "& .MuiSlider-track": {
-                                  height: 8, // Độ dày của thanh "track" (phần đã được chọn)
+                                  height: 8,
                                 },
                               }}
                             />
@@ -391,14 +512,8 @@ const Product = () => {
                               <button
                                 className="w-[50%] bg-blue-200 p-2 rounded-lg"
                                 onClick={() => {
-                                  setHidden((prevHidden) => ({
-                                    ...prevHidden,
-                                    [index]: !prevHidden[index],
-                                  }));
-                                  setActive((prevActive) => ({
-                                    ...prevActive,
-                                    [index]: !prevActive[index],
-                                  }));
+                                  handleToggleHidden(index, setHidden);
+                                  handleToggleActive(index, setActive);
                                 }}
                               >
                                 Đóng
@@ -407,14 +522,16 @@ const Product = () => {
                               <button
                                 className="w-[50%] bg-main text-white rounded-lg p-2"
                                 onClick={() => {
-                                  const appliedFilters = {
-                                    minPrice: userMinPrice,
-                                    maxPrice: userMaxPrice,
-                                  };
-                                  console.log(
-                                    "Áp dụng lọc giá:",
-                                    appliedFilters
+                                  handleApplyFilters(
+                                    index,
+                                    setActive,
+                                    setHidden,
+                                    selectedFilters,
+                                    userMinPrice,
+                                    userMaxPrice,
+                                    setSelectedFilters
                                   );
+                                  setIsPriceFilterApplied(true);
                                 }}
                               >
                                 Xem kết quả
@@ -422,24 +539,29 @@ const Product = () => {
                             </div>
                           </div>
                         )}
+
                         {activeChild[index] && (
                           <div className="flex gap-2">
                             <button
                               className="w-[50%] bg-blue-200 p-2 rounded-lg"
                               onClick={() => {
-                                setHidden((prevHidden) => ({
-                                  ...prevHidden,
-                                  [index]: !prevHidden[index],
-                                }));
-                                setActive((prevActive) => ({
-                                  ...prevActive,
-                                  [index]: !prevActive[index],
-                                }));
+                                handleToggleHidden(index, setHidden);
+                                handleToggleActive(index, setActive);
                               }}
                             >
                               Đóng
                             </button>
-                            <button className="w-[50%] bg-main text-white rounded-lg p-2">
+                            <button
+                              className="w-[50%] bg-main text-white rounded-lg p-2"
+                              onClick={() =>
+                                handleApplyFilters(
+                                  index,
+                                  setActive,
+                                  setHidden,
+                                  selectedFilters
+                                )
+                              }
+                            >
                               Xem kết quả
                             </button>
                           </div>

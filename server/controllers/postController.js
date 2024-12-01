@@ -7,7 +7,6 @@ const getAllPost = asyncHandler(async (req, res) => {
   const order = req.query.order === "asc" ? 1 : -1;
   const posts = await Post.find()
     .populate("author", "name avatar")
-
     .populate("category", "name slug")
     .populate("tags", "name")
     .populate({

@@ -80,6 +80,7 @@ const staffSlice = createSlice({
   name: "staff",
   initialState: {
     data: [],
+    dataMe: [],
     status: "idle",
     statusMe: "idle",
     error: null,
@@ -176,7 +177,7 @@ const staffSlice = createSlice({
       })
       .addCase(getMe.fulfilled, (state, action) => {
         state.getMeStatus = "success";
-        state.data = action.payload;
+        state.dataMe = action.payload;
       })
       .addCase(getMe.rejected, (state, action) => {
         state.getMeStatus = "failed";
