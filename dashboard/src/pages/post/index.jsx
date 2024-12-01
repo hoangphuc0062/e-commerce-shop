@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import ReusableTablePost from "./table";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deletePost, getAll, resetState } from "../../redux/slices/post";
+import {
+  deletePost,
+  getAll,
+  resetState,
+  deleteRating,
+} from "../../redux/slices/post";
 import { fDateVN } from "../../utils/format-time";
 import { DeleteConfirmationModal, handleToast } from "../../utils/toast";
 
@@ -14,7 +19,6 @@ const columns = [
   { label: "Từ khóa SEO", field: "seoKeywords" },
   { label: "Ngày đăng ", field: "dateStart" },
 ];
-
 export default function PostList() {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -23,9 +27,10 @@ export default function PostList() {
   const [data, setData] = useState([]);
 
   const handleEdit = (id) => {
-    const postId = id.id;
+    const postId = id;
     navigate(`/dashboard/post/edit/${postId}`);
   };
+
   const handleDelete = useCallback(
     (index) => {
       DeleteConfirmationModal({
@@ -33,9 +38,25 @@ export default function PostList() {
         content: "Bạn có chắc chắn muốn xóa bài đăng này?",
         okText: "Xóa",
         cancelText: "Hủy",
+        className: "modal-confirmation",
         icon: "warning",
         confirmButtonText: "Xóa",
         onConfirm: () => dispatch(deletePost(index.id)),
+      });
+    },
+    [dispatch]
+  );
+
+  const handleDeleteRating = useCallback(
+    (ratingId) => {
+      DeleteConfirmationModal({
+        title: "Xác nhận xóa Đánh giá",
+        content: "Bạn có chắc chắn muốn xóa đánh giá này?",
+        okText: "Xóa",
+        cancelText: "Hủy",
+        icon: "warning",
+        confirmButtonText: "Xóa",
+        onConfirm: () => dispatch(deleteRating(ratingId)),
       });
     },
     [dispatch]
@@ -49,15 +70,19 @@ export default function PostList() {
   const handleClose = () => {
     setOpen(false);
   };
+
   const status = useSelector((state) => state.post.getAllStatus);
   const initialData = useSelector((state) => state.post.posts);
   const deleteStatus = useSelector((state) => state.post.deleteStatus);
+  const deleteRatingStatus = useSelector(
+    (state) => state.post.deleteRatingStatus
+  );
 
-  //  Giơi hạn hiển thị
   const truncateText = (text, maxLength = 50) => {
     if (!text) return "";
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
   };
+
   useEffect(() => {
     dispatch(getAll());
   }, [dispatch]);
@@ -72,7 +97,7 @@ export default function PostList() {
           postShortDescription: truncateText(item.shortDescription, 50),
           seoKeywords: item.seoKeyWords,
           rating: item.rating,
-          totalRating: item.totalRating, 
+          totalRating: item.totalRating,
           content: item.content,
           dateStart: fDateVN(item.createdAt),
           slug: item.slug,
@@ -95,6 +120,14 @@ export default function PostList() {
     }
   }, [dispatch, deleteStatus]);
 
+  useEffect(() => {
+    if (deleteRatingStatus === "success") {
+      dispatch(getAll());
+      dispatch(resetState({ key: "deleteRatingStatus", value: "idle" }));
+      handleToast("success", "Xóa đánh giá thành công");
+    }
+  }, [dispatch, deleteRatingStatus]);
+
   return (
     <>
       <ReusableTablePost
@@ -112,6 +145,7 @@ export default function PostList() {
           selectedData={selectedData}
           handleDelete={handleDelete}
           handleEdit={handleEdit}
+          handleDeleteRating={handleDeleteRating}
         />
       )}
     </>

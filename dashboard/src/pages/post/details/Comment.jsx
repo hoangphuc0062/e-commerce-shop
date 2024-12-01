@@ -1,7 +1,8 @@
+import { Delete } from "@mui/icons-material";
 import { renderStarFromNumber } from "../../../utils/format-star";
-import { Grid, Avatar, Typography, Box } from "@mui/material";
+import { Grid, Avatar, Typography, Box, IconButton } from "@mui/material";
 
-const Comment = ({ avatar, name = "Ẩn danh", star, comment }) => {
+const Comment = ({ avatar, name = "Ẩn danh", star, comment, onDelete }) => {
   return (
     <Grid
       container
@@ -33,6 +34,11 @@ const Comment = ({ avatar, name = "Ẩn danh", star, comment }) => {
           <Typography variant="body2" color="textSecondary" mt={1}>
             {comment}
           </Typography>
+        </Box>
+        <Box>
+          <IconButton aria-label="delete" onClick={onDelete}>
+            <Delete color="error" />
+          </IconButton>
         </Box>
       </Grid>
     </Grid>

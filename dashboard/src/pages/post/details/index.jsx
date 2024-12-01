@@ -109,7 +109,7 @@ export default function EyePost({
                 />
               ))}
             </Typography>
-          </Grid>
+          </Grid> 
           <Grid item xs={12}>
             <Typography variant="body1">
               <strong>Đánh giá trung bình:</strong>{" "}
