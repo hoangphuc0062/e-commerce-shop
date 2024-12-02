@@ -49,9 +49,9 @@ const login = asyncHandler(async (req, res) => {
       httpOnly: false,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     };
-    res.cookie("refreshToken", newRefreshToken, cookieOptions);
+    res.cookie("refresh_Token", newRefreshToken, cookieOptions);
 
-    res.cookie("accessToken", accessToken, {
+    res.cookie("access_Token", accessToken, {
       ...cookieOptions,
       httpOnly: false,
     });
@@ -101,12 +101,12 @@ const logout = asyncHandler(async (req, res) => {
   }
 
   // Clear relevant cookies individually
-  res.clearCookie("refreshToken", {
+  res.clearCookie("refresh_Token", {
     httpOnly: true,
     secure: true,
     sameSite: "strict", // Optional but improves security
   });
-  res.clearCookie("accessToken", {
+  res.clearCookie("access_Token", {
     httpOnly: true,
     secure: true,
     sameSite: "strict",

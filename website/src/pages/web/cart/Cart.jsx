@@ -49,15 +49,25 @@ export default function Cart() {
   const [ServiceId, setServiceId] = useState(null);
   const [wardID, setWardID] = useState(null);
   const [shippingFee, setShippingFee] = useState(0);
+  const [selectAll, setSelectAll] = useState(true);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [statusPayment, setStatusPayment] = useState();
+  const [products, setProducts] = useState([]);
 
+  // Get data from redux
+  const dataMe = useSelector((state) => state.auth.data.rs);
+  const statusGetCart = useSelector((state) => state.auth.statusGetCart);
+  const datacart = useSelector((state) => state.auth.dataCart);
+
+  // Formik
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      email: "",
-      name: "",
-      phone: "",
-      sex: "",
+      email: dataMe?.email ? dataMe?.email : "",
+      name: dataMe?.name ? dataMe?.name : "",
+      phone: dataMe?.phone ? dataMe?.phone : "",
+      sex: dataMe?.sex ? dataMe?.sex : "Nam",
       address: {
         province: "",
         district: "",
@@ -72,8 +82,17 @@ export default function Cart() {
       total: "",
     },
     validationSchema: Yup.object({
-      // Bổ sung các field cần thiết nếu muốn kiểm tra
+      email: Yup.string().email("Email không hợp lệ").required("Bắt buộc"),
+      name: Yup.string().required("Bắt buộc"),
+      phone: Yup.string().required("Bắt buộc"),
+      address: Yup.object().shape({
+        province: Yup.string().required("Bắt buộc"),
+        district: Yup.string().required("Bắt buộc"),
+        ward: Yup.string().required("Bắt buộc"),
+        street: Yup.string().required("Bắt buộc"),
+      }),
     }),
+
     onSubmit: async (values) => {
       dispatch(createOrder(values)).then((result) => {
         if (result.type === "order/createOrder/fulfilled") {
@@ -91,6 +110,7 @@ export default function Cart() {
           } else if (values.paymentMethod === "cash") {
             setCurrentStep((prev) => prev + 1);
             setStatusPayment(true);
+            dispatch(sendMail());
           }
         } else {
           handleToast("error", "Đặt hàng thất bại");
@@ -174,10 +194,6 @@ export default function Cart() {
     vnp_SecureHash,
   ]);
 
-  const statusGetCart = useSelector((state) => state.auth.statusGetCart);
-  const datacart = useSelector((state) => state.auth.dataCart);
-  const [products, setProducts] = useState([]);
-
   useEffect(() => {
     getProvinces().then((provinces) => {
       if (provinces) {
@@ -252,9 +268,6 @@ export default function Cart() {
     dispatch(resetState({ key: "statusGetCart", value: "idle" }));
   }, [statusGetCart, datacart, dispatch]);
 
-  const [selectAll, setSelectAll] = useState(false);
-  const [selectedProducts, setSelectedProducts] = useState([]);
-
   const handleQuantityChange = (productId, attributeId, newQuantity) => {
     setProducts((prevProducts) =>
       prevProducts.map((product) =>
@@ -304,8 +317,20 @@ export default function Cart() {
         ? prevSelected.filter((id) => id !== uniqueId)
         : [...prevSelected, uniqueId]
     );
-    setSelectAll(true);
+    setSelectAll(false);
   };
+  useEffect(() => {
+    if (selectAll) {
+      setSelectedProducts(
+        products.map(
+          (product) =>
+            `${product.productId}-${product.attributeValue?.id || "null"}`
+        )
+      );
+    } else {
+      setSelectedProducts([]);
+    }
+  }, [products, selectAll]);
 
   const handleRemoveSelected = () => {
     const updatedProducts = products
@@ -426,7 +451,7 @@ export default function Cart() {
 
   const handleNextStep = () => {
     if (currentStep === 0 && selectedProducts.length === 0) {
-      alert("Please select at least one product to proceed.");
+      handleToast("error", "Vui lòng chọn sản phẩm để tiếp tục");
       return;
     }
 
@@ -436,7 +461,7 @@ export default function Cart() {
           updateFormValues();
           setCurrentStep((prev) => prev + 1);
         } else {
-          alert("Please fill in all required information.");
+          handleToast("error", "Vui lòng điền đầy đủ thông tin");
         }
       });
       return;

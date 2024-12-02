@@ -23,8 +23,8 @@ export default function Info({
             <input
               type="radio"
               name="sex"
-              value="Anh"
-              checked={values.sex === "Anh"}
+              value="Nam"
+              checked={values.sex === "Nam"}
               onChange={() => setFieldValue("sex", "Nam")}
             />
             <span className="ml-1">Anh</span>
@@ -33,8 +33,8 @@ export default function Info({
             <input
               type="radio"
               name="sex"
-              value="Chị"
-              checked={values.sex === "Chị"}
+              value="Nữ"
+              checked={values.sex === "Nữ"}
               onChange={() => setFieldValue("sex", "Nữ")}
             />
             <span className="ml-1">Chị</span>
@@ -105,7 +105,7 @@ export default function Info({
                 (prov) => prov.id === parseInt(selectedProvinceId)
               );
               if (province) {
-                setFieldValue("address.province", province.name); 
+                setFieldValue("address.province", province.name);
               }
             }}
           >
