@@ -139,11 +139,24 @@ const deleteManyPost = asyncHandler(async (req, res) => {
 const ratingPosts = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { star, comment, bid } = req.body;
+
   if (!star || !bid) throw new Error("Missing inputs");
+
   const ratingPosts = await Post.findById(bid);
-  const alreadyRating = ratingPosts?.rating?.find(
+
+  // Nếu không tìm thấy bài viết
+  if (!ratingPosts) throw new Error("Post not found");
+
+  // Lọc các rating hợp lệ (loại bỏ những rating có `customer` đã bị xóa)
+  ratingPosts.rating = ratingPosts.rating.filter(async (el) => {
+    const customerExists = await Customer.findById(el.customer);
+    return customerExists !== null;
+  });
+
+  const alreadyRating = ratingPosts.rating.find(
     (el) => el.customer.toString() === _id.toString()
   );
+
   if (alreadyRating) {
     // Update star and comment
     await Post.updateOne(
@@ -165,6 +178,7 @@ const ratingPosts = asyncHandler(async (req, res) => {
       { new: true }
     );
   }
+
   // totalRating
   const updatePost = await Post.findById(bid);
   const ratingCount = updatePost.rating.length;
@@ -174,9 +188,32 @@ const ratingPosts = asyncHandler(async (req, res) => {
   await updatePost.save();
 
   return res.status(200).json({
-    status: true,
     mes: "Rating post is successful",
     updatePost,
+  });
+});
+
+const deleteRating = asyncHandler(async (req, res) => {
+  const { rid } = req.params;
+  if (!rid) throw new Error("Missing rating id");
+
+  const updatedPost = await Post.findOneAndUpdate(
+    { "rating._id": rid },
+    { $pull: { rating: { _id: rid } } },
+    { new: true }
+  );
+
+  if (!updatedPost) {
+    return res.status(404).json({ mes: "Rating not found" });
+  }
+  const totalRatings = updatedPost.rating.reduce((sum, r) => sum + r.star, 0);
+  updatedPost.totalRating = totalRatings;
+
+  await updatedPost.save();
+
+  return res.status(200).json({
+    mes: "Delete rating is successful",
+    post: updatedPost,
   });
 });
 
@@ -189,4 +226,5 @@ module.exports = {
   deletePost,
   deleteManyPost,
   ratingPosts,
+  deleteRating,
 };

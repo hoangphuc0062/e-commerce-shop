@@ -71,7 +71,7 @@ const postSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["draft", "published", "archived"],
+      enum: ["draft", "publish", "archived"],
       default: "draft",
     },
     thumbnail: {

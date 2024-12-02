@@ -24,24 +24,25 @@ function ForumPage() {
 
   useEffect(() => {
     if (status === "success" && Array.isArray(postData)) {
-      setData(
-        postData
-          .map((item) => ({
-            status: item.status,
-            id: item._id,
-            postTitle: item.postTitle,
-            shortDescription: item.shortDescription,
-            seoKeyWords: item.seoKeyWords,
-            content: item.content,
-            author: item.author?.name || "Unknown",
-            category: item.category?.name || "Unknown",
-            rating: item.rating,
-            slug: item.slug,
-            date: item.createdAt,
-            thumbnail: item.thumbnail,
-          }))
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
-      );
+      const filteredData = postData
+        .filter((item) => item.status === "publish")
+        .map((item) => ({
+          status: item.status,
+          id: item._id,
+          postTitle: item.postTitle,
+          shortDescription: item.shortDescription,
+          seoKeyWords: item.seoKeyWords,
+          content: item.content,
+          author: item.author?.name || "Unknown",
+          category: item.category?.name || "Unknown",
+          rating: item.rating,
+          slug: item.slug,
+          date: item.createdAt,
+          thumbnail: item.thumbnail,
+        }))
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      setData(filteredData);
     }
   }, [status, postData]);
 
