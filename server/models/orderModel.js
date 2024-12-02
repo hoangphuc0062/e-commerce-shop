@@ -59,6 +59,9 @@ const OrderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  SKU: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model("Order", OrderSchema);

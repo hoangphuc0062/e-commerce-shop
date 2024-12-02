@@ -64,11 +64,6 @@ export const Header = () => {
     }
   }, [location]);
   useEffect(() => {
-    setData(status === "success" ? user : null);
-    dispatch(getCart());
-  }, [status, user, dispatch]);
-
-  useEffect(() => {
     if (statusGetCart === "success" && datacard) {
       setDataCard(datacard);
     }
@@ -85,6 +80,12 @@ export const Header = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusWebConFig, dataWebConFig]);
+
+  useEffect(() => {
+    if (status === "success") {
+      setData(user);
+    }
+  }, [status, user]);
 
   return (
     <>

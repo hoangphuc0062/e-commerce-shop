@@ -10,5 +10,7 @@ router.post("/filter/", ctrl.createSettingFilter);
 router.put("/filter/:_id", ctrl.updateSettingFilter);
 router.delete("/filter/:_id", ctrl.deleteSettingFilter);
 router.delete("/filter/:_id/:filterButtonId", ctrl.deleteSettingFilterOne);
+router.put("/filter/update/:_id/:filterButtonId", ctrl.updateSettingFilterOne);
+router.get("/filter/:_id", ctrl.getAllSettingFilterById);
 
 module.exports = router;

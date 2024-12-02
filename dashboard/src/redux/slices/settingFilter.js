@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 
 import SettingFilterService from "../../services/settingFilter.service";
+import { update } from "./orders";
 const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
   try {
     const response = await asyncFunction(...args);
@@ -61,6 +62,35 @@ export const deleteOneSettingFilter = createAsyncThunk(
   }
 );
 
+export const updateSettingFilterOne = createAsyncThunk(
+  "settingFilter/updateOne",
+  async ({ id, idButton, data }, thunkAPI) => {
+    return handleAsyncThunk(
+      SettingFilterService.update,
+      [id, idButton, data],
+      thunkAPI
+    );
+  }
+);
+
+export const getSettingFilterById = createAsyncThunk(
+  "settingFilter/getById",
+  async (id, thunkAPI) => {
+    return handleAsyncThunk(SettingFilterService.getById, [id], thunkAPI);
+  }
+);
+
+export const updateSettingFilter = createAsyncThunk(
+  "settingFilter/update",
+  async ({ id, data }, thunkAPI) => {
+    return handleAsyncThunk(
+      SettingFilterService.updateSettingFilter,
+      [id, data],
+      thunkAPI
+    );
+  }
+);
+
 const settingFilterSlice = createSlice({
   name: "settingFilter",
   initialState: {
@@ -72,6 +102,9 @@ const settingFilterSlice = createSlice({
     statusCreate: "idle",
     statusDeleteAll: "idle",
     statusDeleteOne: "idle",
+    statusUpdateOne: "idle",
+    statusGetById: "idle",
+    statusUpdate: "idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -140,6 +173,42 @@ const settingFilterSlice = createSlice({
       })
       .addCase(deleteOneSettingFilter.rejected, (state, action) => {
         state.statusDeleteOne = "failed";
+        state.error = action.payload;
+      });
+    builder
+      .addCase(updateSettingFilterOne.pending, (state) => {
+        state.statusUpdateOne = "loading";
+      })
+      .addCase(updateSettingFilterOne.fulfilled, (state, action) => {
+        state.statusUpdateOne = "success";
+        state.data = action.payload;
+      })
+      .addCase(updateSettingFilterOne.rejected, (state, action) => {
+        state.statusUpdateOne = "failed";
+        state.error = action.payload;
+      });
+    builder
+      .addCase(getSettingFilterById.pending, (state) => {
+        state.statusGetById = "loading";
+      })
+      .addCase(getSettingFilterById.fulfilled, (state, action) => {
+        state.statusGetById = "success";
+        state.data = action.payload;
+      })
+      .addCase(getSettingFilterById.rejected, (state, action) => {
+        state.statusGetById = "failed";
+        state.error = action.payload;
+      });
+    builder
+      .addCase(updateSettingFilter.pending, (state) => {
+        state.statusUpdate = "loading";
+      })
+      .addCase(updateSettingFilter.fulfilled, (state, action) => {
+        state.statusUpdate = "success";
+        state.data = action.payload;
+      })
+      .addCase(updateSettingFilter.rejected, (state, action) => {
+        state.statusUpdate = "failed";
         state.error = action.payload;
       });
   },
