@@ -8,12 +8,14 @@ import {
   deleteOneSettingFilter,
   getAllSettingFilter,
   getSlugByCategory,
+  updateSettingFilterOne,
 } from "../../../redux/slices/settingFilter";
-import { Link } from "react-router-dom";
-import { DeleteConfirmationModal } from "../../../utils/toast";
+import { Link, useNavigate } from "react-router-dom";
+import { DeleteConfirmationModal, handleToast } from "../../../utils/toast";
 
 export default function Filter() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [expandedCategories, setExpandedCategories] = useState(new Set());
   const [Data, setData] = useState([]);
@@ -141,25 +143,37 @@ export default function Filter() {
     [dispatch]
   );
 
-  const handleProcessRowUpdate = useCallback((newRow) => {
-    // Extract only the fields we want to update
-    const { key, values, label } = newRow;
+  const handleProcessRowUpdate = useCallback(
+    (newRow) => {
+      const { key, values, label } = newRow;
 
-    // Create the updated row with only these fields
-    const updatedRow = {
-      key,
-      values,
-      label,
-      id: newRow.id,
-      idFilter: newRow.idFilter,
-    };
+      const updatedRow = {
+        key,
+        values,
+        label,
+      };
 
-    console.log("Updated Row:", updatedRow);
+      dispatch(
+        updateSettingFilterOne({
+          id: newRow.idFilter,
+          idButton: newRow.id,
+          data: updatedRow,
+        })
+      ).then((res) => {
+        if (res.type === "settingFilter/updateOne/fulfilled") {
+          dispatch(getAllSettingFilter());
+          handleToast("success", "Cập nhật bộ lọc thành công");
+        }
+      });
 
-    // Here you would update your backend or state as needed
-    return { ...newRow, ...updatedRow }; // Return the updated row for DataGrid
-  }, []);
+      return { ...newRow, ...updatedRow };
+    },
+    [dispatch]
+  );
 
+  const hansleEdit = (row) => {
+    navigate(`/dashboard/filter/update/${row.id}`);
+  };
   const columns = useMemo(
     () => [
       { field: "category", headerName: "Danh mục", width: 200 },
@@ -182,6 +196,15 @@ export default function Filter() {
                     {isExpanded ? <VisibilityOff /> : <RemoveRedEye />}
                   </IconButton>
                 </Tooltip>
+                <Tooltip title="Edit">
+                  <IconButton
+                    color="primary"
+                    onClick={() => hansleEdit(params.row)}
+                    sx={{ padding: "4px" }}
+                  >
+                    <Edit />
+                  </IconButton>
+                </Tooltip>
                 <Tooltip title="Delete">
                   <IconButton
                     sx={{ color: "red", padding: "4px" }}
@@ -202,15 +225,6 @@ export default function Filter() {
 
   const renderActionButtons = (row) => (
     <>
-      <Tooltip title="Edit">
-        <IconButton
-          color="primary"
-          onClick={() => console.log("Edit", row)}
-          sx={{ padding: "4px" }}
-        >
-          <Edit />
-        </IconButton>
-      </Tooltip>
       <Tooltip title="Delete">
         <IconButton
           sx={{ color: "red", padding: "4px" }}
