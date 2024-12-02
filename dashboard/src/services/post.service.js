@@ -11,6 +11,7 @@ const PostService = {
   getAll: () => sendRequest("get", "/blogs/"),
   getPostById: (id) => sendRequest("get", `/blogs/id/${id}`),
   getPostBySlug: (slug) => sendRequest("get", `/blogs/${slug}`),
+  deleteRating: (rid) => sendRequest("delete", `/blogs/delete-ratings/${rid}`),
 };
 
 export default PostService;

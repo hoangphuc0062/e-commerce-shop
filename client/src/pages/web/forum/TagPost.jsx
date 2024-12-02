@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   HeadingSection,
   OptionPost,
@@ -16,6 +16,7 @@ const TagPost = () => {
   const { tagsName } = useParams();
   const status = useSelector((state) => state.post.status);
   const postData = useSelector((state) => state.post.data);
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [visibleItemCount, setVisibleItemCount] = useState(6);
   const [sortOption, setSortOption] = useState("newest");
@@ -24,12 +25,10 @@ const TagPost = () => {
     setSortOption(option);
   };
 
-  // Lấy bài viết từ Redux
   useEffect(() => {
     dispatch(getPosts());
   }, [dispatch]);
 
-  // Format dữ liệu bài viết
   useEffect(() => {
     if (status === "success" && Array.isArray(postData)) {
       const formattedData = postData
@@ -55,8 +54,19 @@ const TagPost = () => {
 
   const filteredData = data.filter((post) => post.tags.includes(tagsName));
 
+  useEffect(() => {
+    if (status === "success") {
+      const allTags = postData
+        .flatMap((post) => post.tags)
+        .map((tag) => tag.name);
+      if (!allTags.includes(tagsName)) {
+        navigate("/404");
+      }
+    }
+  }, [status, tagsName, postData, navigate]);
+
   const sortedData = useMemo(() => {
-    const data = [...filteredData]; // Không sửa đổi `filteredData`
+    const data = [...filteredData];
     switch (sortOption) {
       case "newest":
         return data.sort((a, b) => new Date(b.date) - new Date(a.date));

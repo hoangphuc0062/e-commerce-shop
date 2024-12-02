@@ -65,6 +65,10 @@ export const resetState = createAsyncThunk(
     return payload;
   }
 );
+export const deleteRating = createAsyncThunk(
+  "post/deleteRating",
+  (rid, thunkAPI) => handleAsyncThunk(PostService.deleteRating, [rid], thunkAPI)
+);
 
 const postSlice = createSlice({
   name: "post",
@@ -79,6 +83,7 @@ const postSlice = createSlice({
     getBySlugStatus: "idle",
     getByIdStatus: "idle",
     deleteManyStatus: "idle",
+    deleteRatingStatus: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -159,6 +164,16 @@ const postSlice = createSlice({
             state[key] = value;
           }
         }
+      })
+      .addCase(deleteRating.pending, (state) => {
+        state.deleteRatingStatus = "loading";
+      })
+      .addCase(deleteRating.fulfilled, (state, action) => {
+        state.deleteRatingStatus = "success";
+        state.post = action.payload;
+      })
+      .addCase(deleteRating.rejected, (state) => {
+        state.deleteRatingStatus = "failed";
       });
   },
 });
