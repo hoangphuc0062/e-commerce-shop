@@ -27,7 +27,7 @@ export default function PostList() {
   const [data, setData] = useState([]);
 
   const handleEdit = (id) => {
-    const postId = id;
+    const postId = id.id;
     navigate(`/dashboard/post/edit/${postId}`);
   };
 
@@ -97,7 +97,6 @@ export default function PostList() {
           postShortDescription: truncateText(item.shortDescription, 50),
           seoKeywords: item.seoKeyWords,
           rating: item.rating,
-          totalRating: item.totalRating,
           content: item.content,
           dateStart: fDateVN(item.createdAt),
           slug: item.slug,
@@ -121,6 +120,7 @@ export default function PostList() {
   }, [dispatch, deleteStatus]);
 
   useEffect(() => {
+    console.log(deleteRatingStatus);
     if (deleteRatingStatus === "success") {
       dispatch(getAll());
       dispatch(resetState({ key: "deleteRatingStatus", value: "idle" }));
@@ -143,8 +143,6 @@ export default function PostList() {
           open={open}
           handleClose={handleClose}
           selectedData={selectedData}
-          handleDelete={handleDelete}
-          handleEdit={handleEdit}
           handleDeleteRating={handleDeleteRating}
         />
       )}

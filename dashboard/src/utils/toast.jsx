@@ -2,6 +2,7 @@
 import { toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
+import "../utils/sweetalert-custom.css";
 
 export const handleToast = (type, message, position) => {
   toast[type](message, {
@@ -32,6 +33,9 @@ export const DeleteConfirmationModal = ({
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: confirmButtonText,
+    customClass: {
+      popup: "swal2-zindex-high",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       onConfirm();

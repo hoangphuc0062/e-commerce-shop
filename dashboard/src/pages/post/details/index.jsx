@@ -6,11 +6,8 @@ import {
   Avatar,
   Box,
   Typography,
-  IconButton,
   Grid,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import Delete from "@mui/icons-material/Delete";
 import PropTypes from "prop-types";
 // thư viện he Giải mã các ký tự HTML như &acirc; và &agrave; thành "â" và "à
 import he from "he";
@@ -20,8 +17,7 @@ export default function EyePost({
   open,
   handleClose,
   selectedData,
-  handleDelete,
-  handleEdit,
+  handleDeleteRating
 }) {
   const truncateContent = (content, maxLength) => {
     if (!content) return "";
@@ -106,33 +102,15 @@ export default function EyePost({
                   comment={el.comment}
                   name={el.customer?.name}
                   avatar={el.customer?.avatar}
+                  onDelete={() => handleDeleteRating(el._id)}
                 />
               ))}
-            </Typography>
-          </Grid> 
-          <Grid item xs={12}>
-            <Typography variant="body1">
-              <strong>Đánh giá trung bình:</strong>{" "}
-              {selectedData?.totalRating}
             </Typography>
           </Grid>
         </Grid>
       </DialogContent>
 
       <DialogActions sx={{ padding: 2 }}>
-        <IconButton
-          aria-label="edit"
-          onClick={() => handleEdit(selectedData.id)}
-        >
-          <EditIcon />
-        </IconButton>
-        <IconButton
-          aria-label="delete"
-          onClick={() => handleDelete(selectedData.id)}
-        >
-          <Delete color="error" />
-        </IconButton>
-
         <Button
           onClick={handleClose}
           color="primary"
@@ -152,4 +130,5 @@ EyePost.propTypes = {
   selectedData: PropTypes.object,
   handleDelete: PropTypes.func.isRequired,
   handleEdit: PropTypes.func.isRequired,
+  handleDeleteRating: PropTypes.func.isRequired,
 };
