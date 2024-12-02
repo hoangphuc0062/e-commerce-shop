@@ -30,3 +30,18 @@ export const getDisplayName = (name) => {
 export const splitValues = (valuesString) => {
   return valuesString.split(", ").map((value) => value.trim());
 };
+
+export const updateSelectedFiltersWithKeys = (filters, selectedFilters) => {
+  const updatedFilters = {};
+
+  Object.entries(selectedFilters).forEach(([label, value]) => {
+    const filterMatch = filters.find((filter) => filter.label === label);
+
+    if (filterMatch) {
+      // Nếu tìm thấy filter có label khớp, lấy key từ filter và thêm vào kết quả
+      updatedFilters[filterMatch.key] = value;
+    }
+  });
+
+  return updatedFilters;
+};
