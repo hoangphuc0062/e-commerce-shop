@@ -26,6 +26,7 @@ export default function OrderPage() {
     if (status === "success" && initialData) {
       setData(
         initialData.map((item) => ({
+          sku: item.SKU,
           _id: item._id,
           staffName: item.staffName || "Chưa xác định",
           name: item?.orderBy?.name || "Khách vãng lai",
@@ -44,12 +45,22 @@ export default function OrderPage() {
   };
 
   const columns = [
-    { field: "_id", headerName: "Mã đơn hàng", width: 200 },
+    // { field: "_id", headerName: "Mã đơn hàng", width: 200, hide: true },
+    { field: "sku", headerName: "Mã đơn hàng", width: 200 },
     { field: "staffName", headerName: "Nhân viên xử lý", width: 200 },
     { field: "name", headerName: "Tên khách hàng", width: 200 },
     { field: "date", headerName: "Ngày đặt hàng", width: 200 },
     { field: "total", headerName: "Tổng tiền", width: 200 },
-    { field: "paymentMethod", headerName: "Phương thức", width: 200 },
+    {
+      field: "paymentMethod",
+      headerName: "Phương thức",
+      width: 200,
+      renderCell: (params) => {
+        return params.row.paymentMethod === "cash"
+          ? "Thanh toán khi nhận hàng"
+          : "Thanh toán online";
+      },
+    },
     {
       field: "status",
       headerName: "Trạng thái",

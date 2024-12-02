@@ -33,18 +33,20 @@ function CartButton({ data }) {
   };
 
   const handleCheckboxChange = (index) => {
-    setCheckedItems((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
-    );
+    if (checkedItems.includes(index)) {
+      setCheckedItems(checkedItems.filter((i) => i !== index));
+    } else {
+      setCheckedItems([...checkedItems, index]);
+    }
   };
 
   const handleSelectAll = () => {
     if (selectAll) {
-      setCheckedItems(cartData.map((_, index) => index));
-    } else {
       setCheckedItems([]);
+    } else {
+      setCheckedItems(cartData.map((_, index) => index));
     }
-    setSelectAll(!selectAll);
+    setSelectAll((prev) => !prev);
   };
 
   const updateQuantity = (index, amount) => {
@@ -104,8 +106,8 @@ function CartButton({ data }) {
         setCheckedItems([]);
         setSelectAll(false);
       } else if (result.type === "auth/updateCart/rejected") {
-        const mes = result.payload.message;
-        if (mes === "Assignment to constant variable") {
+        const mes = result.payload.mes;
+        if (mes === "Assignment to constant variable.") {
           handleToast(
             "error",
             "Số lượng sản phẩm trong giỏ hàng vượt quá số lượng tồn kho"
@@ -146,11 +148,17 @@ function CartButton({ data }) {
             <List>
               <div>
                 <Checkbox checked={selectAll} onChange={handleSelectAll} />
-                <span className="ml-2">Chọn tất cả</span>
+                <span className="ml-2 cursor-pointer" onClick={handleSelectAll}>
+                  Chọn tất cả
+                </span>
               </div>
 
               {cartData?.map((item, index) => (
-                <ListItem key={index} disablePadding>
+                <ListItem
+                  key={index}
+                  onClick={() => handleCheckboxChange}
+                  disablePadding
+                >
                   <Checkbox
                     checked={checkedItems.includes(index)}
                     onChange={() => handleCheckboxChange(index)}
