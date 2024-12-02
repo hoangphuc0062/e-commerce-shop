@@ -1,14 +1,46 @@
 const asyncHandler = require("express-async-handler");
 const StatusCodes = require("http-status-codes");
 const moment = require("moment");
+const juice = require("juice");
+const fs = require("fs");
+require("dotenv").config();
+const clipboardy = require("clipboardy");
 
 const Order = require("../models/orderModel");
 const Customer = require("../models/customerModel");
 const Coupon = require("../models/couponModel");
 const sendMail = require("../ultils/sendMail");
 
+const generateSKU = (length) => {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
+
+const generateUniqueSKU = async () => {
+  let sku;
+  let isUnique = false;
+
+  while (!isUnique) {
+    sku = generateSKU(10); // Adjust the length as needed
+    const existingOrder = await Order.findOne({ SKU: sku });
+    if (!existingOrder) {
+      isUnique = true;
+    }
+  }
+
+  return sku;
+};
+
 const getAllOrder = asyncHandler(async (req, res) => {
-  const orders = await Order.find().populate("orderBy", "name email");
+  const orders = await Order.find()
+    .populate("orderBy", "name email")
+    .sort({ date: -1 });
   return res.status(200).json(orders);
 });
 
@@ -80,6 +112,8 @@ const createOrder = asyncHandler(async (req, res) => {
     sex,
   });
 
+  const sku = await generateUniqueSKU();
+
   // Tạo đơn hàng mới
   let order = new Order({
     products,
@@ -89,7 +123,7 @@ const createOrder = asyncHandler(async (req, res) => {
     paymentMethod: req.body.paymentMethod,
     shippingFee,
     note: req.body.note,
-    SKU: `#${Math.floor(Math.random() * 1000000)}`,
+    SKU: sku,
   });
 
   order = await order.save();
@@ -311,35 +345,42 @@ const vnpay_return = async (req, res) => {
 
 const sendSuccessEmail = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user?._id;
+    if (!userId) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
 
-    // Fetch the order details
-    const order = await Order.findOne({ orderBy: userId }).populate(
-      "orderBy",
-      "email"
-    );
+    const order = await Order.findOne({ orderBy: userId })
+      .populate({
+        path: "orderBy",
+        select: "email name phone address",
+      })
+      .lean();
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    const orderId = order._id;
+    const { _id: orderId, SKU, date, paymentMethod, orderBy } = order;
 
-    // Update the order status
+    // Update order status
     await Order.findByIdAndUpdate(orderId, {
       status: "Success",
       statusPayment: "Paid",
     });
 
-    // Send the email
-    const email = order.orderBy.email;
-    const html = `<h1>Thank you for your order</h1>`;
-    const subject = "Order Success";
+    const email = orderBy.email;
+    const html = generateEmailTemplate({
+      SKU,
+      date,
+      paymentMethod,
+      orderBy,
+      baseUrl: `${process.env.WEB_URL}`,
+    });
 
-    // Ensure sendMail is awaited if it's an async function
-    await sendMail(email, html, subject);
+    const inlinedHtml = juice(html);
+    await sendMail(email, inlinedHtml, "Đặt hàng thành công");
 
-    // Respond with success
     res.status(200).json({ message: "Email sent successfully" });
   } catch (error) {
     console.error("Error sending success email:", error);
@@ -347,6 +388,89 @@ const sendSuccessEmail = async (req, res) => {
       .status(500)
       .json({ message: "An error occurred", error: error.message });
   }
+};
+
+const generateEmailTemplate = ({
+  SKU,
+  date,
+  paymentMethod,
+  orderBy,
+  baseUrl,
+}) => {
+  clipboardy.write(`${SKU}`);
+  return `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  </head>
+  <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0;">
+    <section style="background-color: #ffffff; padding: 16px; margin: 20px auto; max-width: 600px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+      <div style="padding: 16px;">
+        <h2 style="font-size: 24px; color: #333333; margin-bottom: 8px;">Cảm ơn bạn đã đặt hàng!</h2>
+        <p style="color: #555555; margin-bottom: 16px;">
+          Đơn hàng của bạn, mã đơn hàng của bạn:
+          <a 
+          style="
+            color: #007bff; 
+            text-decoration: none; 
+            font-weight: bold; 
+            cursor: pointer; 
+            border: 1px solid #007bff; 
+            padding: 8px 12px; 
+            border-radius: 5px; 
+            display: inline-block; 
+            transition: all 0.3s ease;
+           " 
+          >
+          ${SKU}, (bấm vào nút để sao chép).
+          </a>
+          sẽ được xử lý trong vòng 24 giờ trong ngày làm việc. Chúng tôi sẽ thông báo cho bạn qua email khi đơn hàng của bạn đã được chuyển đi.
+        </p>
+        <div style="background-color: #f8f9fa; border: 1px solid #e1e1e1; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+          <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <dt style="color: #888888;">Ngày</dt>
+            <dd style="color: #333333; font-weight: bold;">${new Date(
+              date
+            ).toLocaleDateString("vi-VN")}</dd>
+          </dl>
+          <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <dt style="color: #888888;">Phương thức thanh toán</dt>
+            <dd style="color: #333333; font-weight: bold;">${
+              paymentMethod === "cash"
+                ? "Thanh toán khi nhận hàng"
+                : "Thanh toán online"
+            }</dd>
+          </dl>
+          <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <dt style="color: #888888;">Tên</dt>
+            <dd style="color: #333333; font-weight: bold;">${orderBy.name}</dd>
+          </dl>
+          <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <dt style="color: #888888;">Địa chỉ</dt>
+            <dd style="color: #333333; font-weight: bold;">${
+              Array.isArray(orderBy.address)
+                ? orderBy.address.join(", ")
+                : orderBy.address
+            }</dd>
+          </dl>
+          <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <dt style="color: #888888;">Điện thoại</dt>
+            <dd style="color: #333333; font-weight: bold;">${orderBy.phone}</dd>
+          </dl>
+        </div>
+        <div style="text-align: center; margin-top: 16px;">
+          <a href="${baseUrl}/look-up-order" style="background-color: #007bff; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; display: inline-block; margin-right: 8px;">Theo dõi đơn hàng của bạn</a>
+          <a href="${baseUrl}/" style="background-color: #f8f9fa; color: #555555; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; display: inline-block; border: 1px solid #e1e1e1;">Quay lại mua sắm</a>
+        </div>
+      </div>
+    </section>
+  </body>
+  </html>
+  `;
 };
 
 const sendMailOrderConfirmation = async (req, res) => {
@@ -389,6 +513,20 @@ const sendMailOrderConfirmation = async (req, res) => {
   }
 };
 
+// get order by sku
+
+const getOrderBySKU = async (req, res) => {
+  const { sku } = req.params;
+  if (!sku) {
+    return res.status(400).json({ message: "SKU is required" });
+  }
+  const order = await Order.findOne({ SKU: sku }).populate("products.pid");
+  if (!order) {
+    return res.status(404).json({ message: "Order not found" });
+  }
+  return res.status(200).json(order);
+};
+
 module.exports = {
   getAllOrder,
   createOrder,
@@ -399,4 +537,5 @@ module.exports = {
   sendSuccessEmail,
   getOrderByUser,
   createInStoreOrder,
+  getOrderBySKU,
 };

@@ -18,6 +18,9 @@ router.post(
   isStaff,
   ctrl.createInStoreOrder
 );
+
+router.get("/code/:sku", ctrl.getOrderBySKU);
+
 router.get("/user", verifyAccessToken, ctrl.getOrderByUser);
 // router.use([verifyAccessToken, isAdmin]);
 

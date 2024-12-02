@@ -11,7 +11,7 @@ const UserContext = React.createContext();
 const UserProvider = ({ children }) => {
   const [user, setUser] = useState({});
   const [loginAuth, setLoginAuth] = useState(false);
-  const token = Cookies.get("accessToken");
+  const token = Cookies.get("access_Token");
   const dispatch = useDispatch();
 
   useMemo(() => {
