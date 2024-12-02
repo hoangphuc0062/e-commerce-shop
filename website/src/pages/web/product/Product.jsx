@@ -18,7 +18,11 @@ import {
 import { getBanners } from "../../../redux/slices/barnner";
 import { getSettingFilter } from "../../../redux/slices/settingFilter";
 
-import { formatCurrency, splitValues } from "../../../utils/helper";
+import {
+  formatCurrency,
+  splitValues,
+  updateSelectedFiltersWithKeys,
+} from "../../../utils/helper";
 
 const Product = () => {
   const { category, brand } = useParams();
@@ -48,7 +52,7 @@ const Product = () => {
   const [userMinPrice, setUserMinPrice] = useState();
   const [userMaxPrice, setUserMaxPrice] = useState();
   const [selectedFilters, setSelectedFilters] = useState({});
-  const [renderFilter, setRenderFilter] = useState();
+  const [queryFilter, setQueryFilter] = useState();
 
   const statusProduct = useSelector((state) => state.product.status);
   const productsData = useSelector((state) => state.product.data.products);
@@ -365,6 +369,28 @@ const Product = () => {
     console.log("Kết quả bộ lọc:", selectedFilters);
   };
 
+  const resetSelectedFilters = () => {
+    setSelectedFilters({}); // Xóa tất cả các bộ lọc đã chọn
+    setActive({}); // Xóa trạng thái active
+    setActiveChild({}); // Xóa trạng thái activeChild
+  };
+
+  const removeLabel = (key) => {
+    setSelectedFilters((prev) => {
+      const updatedFilters = { ...prev };
+      delete updatedFilters[key];
+      return updatedFilters;
+    });
+    setActiveChild({});
+  };
+
+  useEffect(() => {
+    setQueryFilter(updateSelectedFiltersWithKeys(filters, selectedFilters));
+    console.log("Updated selected filters:", queryFilter);
+  }, [filters, selectedFilters]);
+
+  const getKeyByLabel = (label) => {};
+
   return (
     <div className="flex flex-col gap-3">
       <div>breadcrumb here</div>
@@ -610,6 +636,7 @@ const Product = () => {
             <div className="flex flex-wrap gap-2 text-main">
               {Object.entries(selectedFilters).map(([key, value]) => (
                 <button
+                  onClick={() => removeLabel(key)}
                   key={key}
                   className="flex   justify-center items-center gap-2 bg-gray-200 p-2 rounded-lg outline outine-main"
                 >
@@ -633,7 +660,10 @@ const Product = () => {
                   </span>
                 </button>
               ))}
-              <button className="flex justify-center items-center gap-2 bg-gray-200 p-2 rounded-lg  outline outine-main">
+              <button
+                onClick={() => resetSelectedFilters()}
+                className="flex justify-center items-center gap-2 bg-gray-200 p-2 rounded-lg  outline outine-main"
+              >
                 <Icon icon="clarity:remove-line" width="1rem" height="1rem" />
                 <span>Bỏ chọn tất cả</span>
               </button>
