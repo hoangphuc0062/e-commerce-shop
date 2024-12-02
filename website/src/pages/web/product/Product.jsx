@@ -48,8 +48,7 @@ const Product = () => {
   const [userMinPrice, setUserMinPrice] = useState();
   const [userMaxPrice, setUserMaxPrice] = useState();
   const [selectedFilters, setSelectedFilters] = useState({});
-  const [isPriceFilterApplied, setIsPriceFilterApplied] = useState(false);
-  const [renderFilter, setRenderFilter] = useState([]);
+  const [renderFilter, setRenderFilter] = useState();
 
   const statusProduct = useSelector((state) => state.product.status);
   const productsData = useSelector((state) => state.product.data.products);
@@ -289,18 +288,6 @@ const Product = () => {
     });
   };
 
-  const cleanSelectedFilters = (filters) => {
-    return Object.entries(filters).reduce((acc, [key, value]) => {
-      if (Array.isArray(value) && value.length === 0) {
-        return acc; // Bỏ qua nếu là mảng rỗng
-      }
-      if (typeof value === "object" && Object.keys(value).length === 0) {
-        return acc; // Bỏ qua nếu là object rỗng
-      }
-      return { ...acc, [key]: value }; // Giữ lại các giá trị hợp lệ
-    }, {});
-  };
-
   const isActiveLabel = (label) => {
     const values = selectedFilters[label];
 
@@ -323,43 +310,59 @@ const Product = () => {
     }
     return false; // Không active nếu không có giá trị
   };
+
+  const cleanSelectedFilters = (filters) => {
+    return Object.entries(filters).reduce((acc, [key, value]) => {
+      if (Array.isArray(value) && value.length === 0) {
+        return acc; // Bỏ qua nếu là mảng rỗng
+      }
+      if (typeof value === "object" && Object.keys(value).length === 0) {
+        return acc; // Bỏ qua nếu là object rỗng
+      }
+      return { ...acc, [key]: value }; // Giữ lại các giá trị hợp lệ
+    }, {});
+  };
   const handleApplyFilters = (
     index,
-    setActive,
-    setHidden,
-    selectedFilters,
     userMinPrice,
-    userMaxPrice
+    userMaxPrice,
+    minPrice,
+    maxPrice,
+    selectedFilters,
+    setSelectedFilters,
+    setActive,
+    setHidden
   ) => {
-    // Đồng bộ trạng thái giao diện
-    setActive((prevActive) => ({
-      ...prevActive,
-      [index]: !prevActive[index],
-    }));
-    setHidden((prevHidden) => ({
-      ...prevHidden,
-      [index]: false,
-    }));
+    // Kiểm tra nếu người dùng thực sự áp dụng bộ lọc giá
+    let updatedFilters = { ...selectedFilters };
 
-    // Kiểm tra xem có áp dụng bộ lọc Giá hay không
-    if (userMinPrice !== minPrice || userMaxPrice !== maxPrice) {
-      setIsPriceFilterApplied(true); // Đánh dấu là giá đã được áp dụng
-    } else {
-      setIsPriceFilterApplied(false); // Reset nếu giá không thay đổi
-    }
-
-    // Làm sạch dữ liệu bộ lọc
-    const cleanedFilters = cleanSelectedFilters({
-      ...selectedFilters,
-      ...(isPriceFilterApplied && {
+    if (
+      userMinPrice !== Number(minPrice) || // Nếu giá trị người dùng khác giá trị mặc định
+      userMaxPrice !== Number(maxPrice)
+    ) {
+      updatedFilters = {
+        ...updatedFilters,
         Giá: {
           minPrice: userMinPrice,
           maxPrice: userMaxPrice,
         },
-      }),
-    });
+      };
+    }
 
-    console.log("Kết quả sau khi lọc:", cleanedFilters);
+    updatedFilters = cleanSelectedFilters(updatedFilters);
+
+    setSelectedFilters(updatedFilters);
+
+    // Đảm bảo label luôn active
+    setActive((prev) => ({
+      ...prev,
+      [index]: true,
+    }));
+
+    // Ẩn modal sau khi áp dụng
+    handleToggleHidden(index, setHidden);
+    handleToggleActive(index, setActive);
+    console.log("Kết quả bộ lọc:", selectedFilters);
   };
 
   return (
@@ -522,16 +525,39 @@ const Product = () => {
                               <button
                                 className="w-[50%] bg-main text-white rounded-lg p-2"
                                 onClick={() => {
-                                  handleApplyFilters(
-                                    index,
-                                    setActive,
-                                    setHidden,
-                                    selectedFilters,
-                                    userMinPrice,
-                                    userMaxPrice,
-                                    setSelectedFilters
+                                  const isDefaultRange =
+                                    userMinPrice === Number(minPrice) &&
+                                    userMaxPrice === Number(maxPrice);
+
+                                  // Gắn giá trị bộ lọc giá
+                                  const updatedFilters = {
+                                    ...(selectedFilters || {}),
+                                    Giá: isDefaultRange
+                                      ? {
+                                          minPrice: minPrice,
+                                          maxPrice: maxPrice,
+                                        } // Dùng giá trị mặc định
+                                      : {
+                                          minPrice: userMinPrice,
+                                          maxPrice: userMaxPrice,
+                                        }, // Dùng giá trị tùy chỉnh
+                                  };
+
+                                  setSelectedFilters(updatedFilters);
+
+                                  // Đảm bảo label luôn active
+                                  setActive((prev) => ({
+                                    ...prev,
+                                    [index]: true,
+                                  }));
+
+                                  // Ẩn modal sau khi áp dụng
+                                  handleToggleHidden(index, setHidden);
+                                  handleToggleActive(index, setActive);
+                                  console.log(
+                                    "Kết quả bộ lọc:",
+                                    updatedFilters
                                   );
-                                  setIsPriceFilterApplied(true);
                                 }}
                               >
                                 Xem kết quả
@@ -556,9 +582,14 @@ const Product = () => {
                               onClick={() =>
                                 handleApplyFilters(
                                   index,
+                                  userMinPrice,
+                                  userMaxPrice,
+                                  minPrice,
+                                  maxPrice,
+                                  selectedFilters,
+                                  setSelectedFilters,
                                   setActive,
-                                  setHidden,
-                                  selectedFilters
+                                  setHidden
                                 )
                               }
                             >
@@ -573,19 +604,42 @@ const Product = () => {
               ))}
           </div>
         </div>
-        <div>
-          <h1 className="text-[20px] font-semibold">Đang lọc theo</h1>
-          <div className="flex gap-2 text-main">
-            <button className="flex justify-center items-center gap-2 bg-gray-200 p-2 rounded-lg outline outine-main">
-              <Icon icon="clarity:remove-line" width="1rem" height="1rem" />
-              <span>Lọc gì đó</span>
-            </button>
-            <button className="flex justify-center items-center gap-2 bg-gray-200 p-2 rounded-lg  outline outine-main">
-              <Icon icon="clarity:remove-line" width="1rem" height="1rem" />
-              <span>Bỏ chọn tất cả</span>
-            </button>
+        {Object.keys(selectedFilters).length > 0 && (
+          <div>
+            <h1 className="text-[20px] font-semibold">Đang lọc theo</h1>
+            <div className="flex flex-wrap gap-2 text-main">
+              {Object.entries(selectedFilters).map(([key, value]) => (
+                <button
+                  key={key}
+                  className="flex   justify-center items-center gap-2 bg-gray-200 p-2 rounded-lg outline outine-main"
+                >
+                  <span>
+                    {" "}
+                    <Icon
+                      icon="clarity:remove-line"
+                      width="1rem"
+                      height="1rem"
+                    />
+                  </span>
+                  <span className="flex m-h-[24px]">
+                    <span>{key}: </span>
+                    <span className="flex ">
+                      {Array.isArray(value)
+                        ? value.join(", ")
+                        : `${formatCurrency(value.minPrice)} - ${formatCurrency(
+                            value.maxPrice
+                          )}`}
+                    </span>
+                  </span>
+                </button>
+              ))}
+              <button className="flex justify-center items-center gap-2 bg-gray-200 p-2 rounded-lg  outline outine-main">
+                <Icon icon="clarity:remove-line" width="1rem" height="1rem" />
+                <span>Bỏ chọn tất cả</span>
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </section>
       <section>
         <div>
