@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
@@ -18,11 +18,13 @@ import DialogTitle from "@mui/material/DialogTitle";
 import SingleProduct from "../../../components/FeatureBlockProduct/SingleProduct";
 import { getProductBySlug, getProducts } from "./../../../redux/slices/product";
 import { extractTextFromHtml } from "./../../../../../dashboard/src/utils/extractTextFromHtml";
-import { addCart, getCart, resetState } from "../../../redux/slices/auth";
+import { addCart, getCart } from "../../../redux/slices/auth";
 import { handleToast } from "../../../ultils/toast";
 import Drawer from "@mui/material/Drawer";
+import { UserContext } from "../../../context/AuthContext";
 
 const ProductDetail = () => {
+  const { loginAuth } = useContext(UserContext);
   const { category, brand, product } = useParams();
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
@@ -88,6 +90,10 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = useCallback(() => {
+    if (loginAuth === false) {
+      handleToast("error", "Vui lòng đăng nhập để thêm sản");
+      return;
+    }
     const attribute = data?.variants?.[activeIndex];
     const priceAttribute = attribute?.price ? attribute.price : data.price;
 
