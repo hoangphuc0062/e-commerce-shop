@@ -66,16 +66,21 @@ export default function UserPage() {
       handleToast("error", "Xóa người dùng thất bại", "top-right");
     }
   }, [deleteStatus, dispatch]);
+  // sử lý mảng ký
+  const truncateText = (text, maxLength = 250) => {
+    if (!text || text.length === 0) return "Địa chỉ chưa được cập nhập"; // Kiểm tra nếu mảng trống
+    const addressString = text.join(", "); // Nối các phần tử mảng thành một chuỗi
+    return addressString.length > maxLength ? addressString.slice(0, maxLength) + "..." : addressString;
+  };
 
-  // Map customer data for the table
   useEffect(() => {
     if (Array.isArray(dataCustomer)) {
       const initialData = dataCustomer.map((item) => ({
         id: item?._id,
         name: item?.name,
-        address: item?.address,
+        address: truncateText(item?.address), // Truyền mảng vào hàm
         email: item?.email,
-        sdt: item?.sdt,
+        sdt: item?.phone,
         sex: item?.sex,
         membership: item?.membership,
         totalAmount: item?.totalAmount,
@@ -91,9 +96,11 @@ export default function UserPage() {
     }
   }, [dataCustomer]);
 
+
+
   const columns = [
     { label: "Họ và tên", field: "name" },
-    { label: "Địa chỉ", field: "address" },
+    // { label: "Địa chỉ", field: "address" },
     { label: "Email", field: "email" },
     { label: "Số điện thoại", field: "sdt" },
     { label: "Giới tính", field: "sex" },
@@ -185,7 +192,7 @@ export default function UserPage() {
         open={open}
         handleClose={() => setOpen(false)}
         items={data}
-        onRemove={() => {}}
+        onRemove={() => { }}
       />
       <EditStatusDialog
         open={dialogOpen}
