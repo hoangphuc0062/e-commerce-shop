@@ -50,6 +50,7 @@ export default function RootRouter() {
           path: "finalregister/:token",
           element: <Finalregister />,
         },
+
         {
           path: "/profile",
           element: <ProfileLayout />,
