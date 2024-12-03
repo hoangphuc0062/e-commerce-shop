@@ -110,7 +110,12 @@ export default function Cart() {
           } else if (values.paymentMethod === "cash") {
             setCurrentStep((prev) => prev + 1);
             setStatusPayment(true);
-            dispatch(sendMail());
+            dispatch(sendMail()).then((result) => {
+              if (result.type === "order/sendMail/fulfilled") {
+                handleToast("success", " vui lòng kiểm tra email của bạn");
+                dispatch(getCart());
+              }
+            });
           }
         } else {
           handleToast("error", "Đặt hàng thất bại");
@@ -167,7 +172,12 @@ export default function Cart() {
           if (result.payload.statusPayment === "Paid") {
             setCurrentStep(3);
             setStatusPayment(true);
-            dispatch(sendMail());
+            dispatch(sendMail()).then((result) => {
+              if (result.type === "order/sendMail/fulfilled") {
+                handleToast("success", " vui lòng kiểm tra email của bạn");
+                dispatch(getCart());
+              }
+            });
           } else {
             setCurrentStep(3);
             setStatusPayment(false);

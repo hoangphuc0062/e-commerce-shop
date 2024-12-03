@@ -7,7 +7,7 @@ import { UserContext } from "../context/AuthContext";
 export const ProtectedRoute = ({ children }) => {
   const { loginAuth } = useContext(UserContext);
 
-  if (!loginAuth) {
+  if (loginAuth === false) {
     return <Navigate to="/login" />;
   }
 

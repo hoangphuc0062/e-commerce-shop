@@ -9,6 +9,7 @@ const clipboardy = require("clipboardy");
 const Order = require("../models/orderModel");
 const Customer = require("../models/customerModel");
 const Coupon = require("../models/couponModel");
+const Product = require("../models/productModel");
 const sendMail = require("../ultils/sendMail");
 
 const generateSKU = (length) => {
@@ -361,12 +362,30 @@ const sendSuccessEmail = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    const { _id: orderId, SKU, date, paymentMethod, orderBy } = order;
+    const { _id: orderId, SKU, date, paymentMethod, orderBy, products } = order;
 
-    // Update order status
     await Order.findByIdAndUpdate(orderId, {
       status: "Success",
       statusPayment: "Paid",
+    });
+
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      if (product.attributeId && product.attributeId !== null) {
+        await Product.updateOne(
+          { _id: product.pid, "variants.attributeId": product.attributeId },
+          { $inc: { "variants.$.onStock": -product.quantity } }
+        );
+      } else {
+        await Product.updateOne(
+          { _id: product.pid },
+          { $inc: { onStock: -product.quantity } }
+        );
+      }
+    }
+    await Customer.findByIdAndUpdate(orderBy._id, {
+      $set: { cart: [] }, // Clear the cart
+      $push: { purchaseHistory: { pid: order._id, date: Date.now() } },
     });
 
     const email = orderBy.email;
@@ -493,22 +512,17 @@ const sendMailOrderConfirmation = async (req, res) => {
     }
 
     const orderId = order._id;
-
-    // Update the order status
     await Order.findByIdAndUpdate(orderId, {
       status: "Success",
       statusPayment: "Paid",
     });
-
-    // Send the email
     const email = order.orderBy.email;
-    const html = `<h1>Thank you for your order</h1>`;
+    const html = `
+      <h1>Xác nhận đơn hàng</h1>
+      <button>Xác nhận đơn hàng</button>
+    `;
     const subject = "Order Success";
-
-    // Ensure sendMail is awaited if it's an async function
     await sendMail(email, html, subject);
-
-    // Respond with success
     res.status(200).json({ message: "Email sent successfully" });
   } catch (error) {
     console.error("Error sending success email:", error);
@@ -517,8 +531,6 @@ const sendMailOrderConfirmation = async (req, res) => {
       .json({ message: "An error occurred", error: error.message });
   }
 };
-
-// get order by sku
 
 const getOrderBySKU = async (req, res) => {
   const { sku } = req.params;
