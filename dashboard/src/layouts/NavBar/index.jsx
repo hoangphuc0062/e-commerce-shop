@@ -48,7 +48,12 @@ const NavBar = () => {
 
   let navBar = (
     <React.Fragment>
-      <div className="m-header">
+      <div
+        className="m-header"
+        style={{
+          justifyContent: "center",
+        }}
+      >
         <Link
           to="#"
           className={toggleClass.join(" ")}
@@ -57,9 +62,26 @@ const NavBar = () => {
         >
           <span />
         </Link>
-        <Link to="#" className="b-brand">
-          <img id="main-logo" src={logo} alt="" className="logo" />
+        <Link
+          to="/dashboard"
+          className="b-brand"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <img
+            id="main-logo"
+            src={logo}
+            alt="Logo"
+            style={{
+              width: "80px",
+              height: "auto",
+            }}
+          />
         </Link>
+
         <Link
           to="#"
           className={moreClass.join(" ")}
