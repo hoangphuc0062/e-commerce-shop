@@ -1,47 +1,33 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
-import React, { createContext, useContext, useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import React, { useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
+import { getMe } from "../redux/slices/auth";
 import Cookies from "js-cookie";
 
-// Tạo Context
-const AuthContext = createContext();
+const UserContext = React.createContext();
 
-export const AuthProvider = ({ children, reduxCustomerData, isLoginned }) => {
-  const [islogin, setIslogin] = useState(isLoginned);
-  const [customerData, setCustomerData] = useState(reduxCustomerData);
+const UserProvider = ({ children }) => {
+  const [user, setUser] = useState({});
+  const [loginAuth, setLoginAuth] = useState(false);
+  const token = Cookies.get("accessToken");
 
-  // Đồng bộ hóa trạng thái với Redux
-  useEffect(() => {
-    setIslogin(isLoginned);
-    setCustomerData(reduxCustomerData);
-  }, [isLoginned, reduxCustomerData]);
+  const dispatch = useDispatch();
+  useMemo(() => {
+    if (token) {
+      setLoginAuth(true);
+      dispatch(getMe());
+    }
+  }, [token, dispatch]);
 
-  const login = () => {
-    setIslogin(true);
-  };
-
-  const logout = () => {
-    setIslogin(false);
-    setCustomerData({});
-    Cookies.remove("access_token");
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        islogin,
-        login,
-        logout,
-        customerData,
-        setCustomerData,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ user, setUser, loginAuth, setLoginAuth }),
+    [user, setUser, loginAuth, setLoginAuth]
   );
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
-// Custom hook để sử dụng AuthContext
-export const useAuth = () => {
-  return useContext(AuthContext);
+UserProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
+export { UserContext, UserProvider };
