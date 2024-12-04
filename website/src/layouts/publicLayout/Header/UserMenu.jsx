@@ -2,7 +2,7 @@
 import { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { UserContext } from "../../../context/AuthContext";
 import { handleToast } from "../../../ultils/toast";
 import { logout, resetState } from "../../../redux/slices/auth";
@@ -22,26 +22,28 @@ export const UserMenu = ({ data }) => {
   };
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const status = useSelector((state) => state.auth.statusLogout);
   const { setLoginAuth } = useContext(UserContext);
   const handleLogout = () => {
-    dispatch(logout()).then((result) => {
-      if (result.type === "auth/logout/fulfilled") {
-        handleToast("success", "Đăng xuất thành công");
-        setLoginAuth(false);
-        setDropdownOpen(false);
-        navigate("/login");
-        dispatch(resetState({ key: "statusLogout", value: "idle" }));
-        dispatch(resetState({ key: "statusGetMe", value: "idle" }));
-      }
-    });
+    dispatch(logout());
   };
+  useEffect(() => {
+    if (status === "success") {
+      setLoginAuth(false);
+      handleToast("success", "Đăng xuất thành công");
+      navigate("/login");
+      dispatch(resetState({ key: "statusLogout", value: "idle" }));
+      dispatch(resetState({ key: "statusGetMe", value: "idle" }));
+      setDropdownOpen(false);
+    }
+  }, [status, setLoginAuth, navigate, dispatch]);
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, [isDropdownOpen]);
+  }, []);
 
   return (
     <div className="relative user-menu">
@@ -52,7 +54,7 @@ export const UserMenu = ({ data }) => {
         >
           <Icon icon="carbon:user-avatar" width="1.5rem" height="1.5rem" />
           <p className="text-[10px] md:text-[12px] line-clamp-2 ">
-            {getDisplayName(data?.name) || "Người dùng"}
+            {getDisplayName(data.name) || "Người dùng"}
           </p>
         </button>
       ) : (

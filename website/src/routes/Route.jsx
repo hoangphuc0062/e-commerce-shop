@@ -32,14 +32,7 @@ export default function RootRouter() {
         { path: "/login", element: <Login /> },
         { path: "/forget-password", element: <ForgetPassoword /> },
         { path: "register", element: <Register /> },
-        {
-          path: "/cart",
-          element: (
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          ),
-        },
+        { path: "/cart", element: <Cart /> },
         { path: "/look-up-order", element: <ViewOrder /> },
         {
           path: "/:category",
