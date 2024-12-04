@@ -54,7 +54,16 @@ const getOrderByUser = asyncHandler(async (req, res) => {
 
 const createOrder = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-
+  const {
+    address,
+    name,
+    phone,
+    sex,
+    coupon,
+    shippingFee,
+    note,
+    paymentMethod,
+  } = req.body;
   // thông tin giỏ hàng
   const userCart = await Customer.findById(userId).select("cart");
   if (!userCart || !userCart.cart || userCart.cart.length === 0) {
@@ -70,16 +79,15 @@ const createOrder = asyncHandler(async (req, res) => {
 
   let total = req.body.total || 0;
   if (req.body.coupon) {
-    const coupon = await Coupon.findOne({ code: req.body.coupon });
-    if (coupon) {
+    const couponExist = await Coupon.findOne({ code: coupon });
+    if (couponExist) {
       total -= (total * coupon.discount) / 100;
     }
   }
 
-  const shippingFee = req.body.shippingFee || 0;
-  total += shippingFee;
+  const fee = shippingFee || 0;
+  total += fee;
 
-  const { address, name, phone, sex } = req.body;
   if (
     !address ||
     !address.district ||
@@ -118,11 +126,11 @@ const createOrder = asyncHandler(async (req, res) => {
   let order = new Order({
     products,
     orderBy: userId,
-    coupon: req.body.coupon,
+    coupon: coupon,
     total,
-    paymentMethod: req.body.paymentMethod,
+    paymentMethod,
     shippingFee,
-    note: req.body.note,
+    note,
     SKU: sku,
   });
 
@@ -169,6 +177,7 @@ const deleteOrder = asyncHandler(async (req, res) => {
   });
 });
 // nhan vien ban hang tao don hang cho khach hang
+
 // thanh toán tiền mặt
 
 const createInStoreOrder = asyncHandler(async (req, res) => {
@@ -525,7 +534,11 @@ const getOrderBySKU = async (req, res) => {
   if (!sku) {
     return res.status(400).json({ message: "SKU is required" });
   }
-  const order = await Order.findOne({ SKU: sku }).populate("products.pid");
+  const order = await Order.findOne({ SKU: sku }).populate(
+    "products.pid",
+    "-SKU -slug -historicalPrice -priceInMarket -category -brand -inStock -onStock -inComing -minInventory -maxInventory"
+  );
+
   if (!order) {
     return res.status(404).json({ message: "Order not found" });
   }
