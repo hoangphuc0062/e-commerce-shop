@@ -58,3 +58,13 @@ export const translate = (key) => {
 
   return translations[key] || key;
 };
+
+export const transformAttributes = (attributes) => {
+  return Object.entries(attributes).map(([title, details]) => {
+    const detailArray = details.split(", ").map((item) => {
+      const [key, ...valueParts] = item.split(": ");
+      return { key: key.trim(), value: valueParts.join(": ").trim() };
+    });
+    return { title, details: detailArray };
+  });
+};
