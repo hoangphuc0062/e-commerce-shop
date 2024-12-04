@@ -91,7 +91,7 @@ const ProductDetail = () => {
 
   const handleAddToCart = useCallback(() => {
     if (loginAuth === false) {
-      handleToast("error", "Vui lòng đăng nhập để thêm sản");
+      handleToast("error", "Vui lòng đăng nhập để thêm sản phẩm");
       return;
     }
     const attribute = data?.variants?.[activeIndex];
@@ -113,7 +113,7 @@ const ProductDetail = () => {
       .catch(() => {
         handleToast("error", "Không thể thêm sản phẩm vào giỏ hàng");
       });
-  }, [dispatch, data, activeIndex]);
+  }, [dispatch, data, activeIndex, loginAuth]);
 
   const dataImg = [
     data?.thumbnail,
@@ -367,7 +367,13 @@ const ProductDetail = () => {
                 </button>
               ))}
             </div>
-
+            <div>
+              <span className="text-[24px] font-bold mr-2">
+                {data.onStock === 0
+                  ? "Hết hàng"
+                  : `Hàng còn (${data.onStock}) ${data.unit || ""}`}
+              </span>
+            </div>
             <div>
               <span className="text-[24px] font-bold mr-2">Giá:</span>
               <span className="text-[24px] font-bold">

@@ -22,7 +22,7 @@ export default function RootRouter() {
           loginAuth ? (
             <PrivateRoute
               element={<AdminLayout />}
-              roles={["customer", "staff", "admin", "superadmin"]}
+              roles={["author", "staff", "admin", "superadmin"]}
             />
           ) : (
             <Navigate to="/" />
