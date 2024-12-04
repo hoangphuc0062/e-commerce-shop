@@ -29,6 +29,17 @@ export const getProducts = createAsyncThunk(
   }
 );
 
+export const getProductsBySearch = createAsyncThunk(
+  "products/getProductsBySearch",
+  async (params, thunkAPI) => {
+    return handleAsyncThunk(
+      () => ProductServices.getProducts(params),
+      [],
+      thunkAPI
+    );
+  }
+);
+
 export const getProductBySlug = createAsyncThunk(
   "products/getProductBySlug",
   async (slug, thunkAPI) => {
@@ -45,10 +56,12 @@ const productSlice = createSlice({
   initialState: {
     data: [],
     dataDetail: [],
+    dataSearch: [],
     loading: false,
     error: null,
     status: "idle",
     statusDetail: "idle",
+    statusSearch: "idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -88,6 +101,21 @@ const productSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
         state.statusDetail = "failed";
+      });
+    builder
+      .addCase(getProductsBySearch.pending, (state) => {
+        state.loading = true;
+        state.statusSearch = "loading";
+      })
+      .addCase(getProductsBySearch.fulfilled, (state, action) => {
+        state.loading = false;
+        state.dataSearch = action.payload;
+        state.statusSearch = "success";
+      })
+      .addCase(getProductsBySearch.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.statusSearch = "failed";
       });
   },
 });

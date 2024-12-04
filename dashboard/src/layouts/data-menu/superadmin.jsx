@@ -9,9 +9,22 @@ const menuItems = {
         {
           id: "dashboard",
           title: "Quản lý",
-          type: "item",
+          type: "collapse",
           icon: "feather icon-home",
-          url: "/dashboard",
+          children: [
+            {
+              id: "dashboard-profile",
+              title: "Thông tin cá nhân",
+              type: "item",
+              url: "/dashboard/welcome",
+            },
+            {
+              id: "dashboard-home",
+              title: "Thống kê",
+              type: "item",
+              url: "/dashboard",
+            },
+          ],
         },
         {
           id: "products",
@@ -260,13 +273,7 @@ const menuItems = {
               id: "login",
               title: "Đăng nhập",
               type: "item",
-              url: "/dashboard/login",
-            },
-            {
-              id: "register",
-              title: "Đăng ký",
-              type: "item",
-              url: "/dashboard/register",
+              url: "/",
             },
           ],
         },

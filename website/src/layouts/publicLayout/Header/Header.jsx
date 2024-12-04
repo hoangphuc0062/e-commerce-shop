@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { UserMenu } from "./UserMenu";
 import CartButton from "./CartButton";
 import Drawer from "@mui/material/Drawer";
-import { resetState } from "../../../redux/slices/auth";
+import { getCart, resetState } from "../../../redux/slices/auth";
 import { getWebConfig } from "../../../redux/slices/webConfig";
 
 const bottonContacts = [
@@ -63,7 +63,6 @@ export const Header = () => {
         break;
     }
   }, [location]);
-
   useEffect(() => {
     if (statusGetCart === "success" && datacard) {
       setDataCard(datacard);
@@ -85,8 +84,6 @@ export const Header = () => {
   useEffect(() => {
     if (status === "success") {
       setData(user);
-    } else {
-      setData(null);
     }
   }, [status, user]);
 
@@ -146,16 +143,7 @@ export const Header = () => {
                 <ButtonContact key={index} {...item} />
               ))}
 
-              {Card.length > 0 ? (
-                <CartButton data={Card} />
-              ) : (
-                <button className="flex items-center justify-center text-[12px] w-[80px] hover:bg-hv p-2 rounded-lg">
-                  <div className="flex items-center justify-center relative">
-                    <Icon icon="uil:cart" width="2rem" height="2rem" />
-                  </div>
-                  <p className="line-clamp-2">Giỏ hàng</p>
-                </button>
-              )}
+              {Card && <CartButton data={Card} />}
               <div>
                 <UserMenu data={data} />
               </div>

@@ -16,6 +16,7 @@ import { UserContext } from "../../../contexts/AuthContext";
 import { handleToast } from "../../../utils/toast";
 import { resetState, login as loginAction } from "../../../redux/slices/staff";
 import { Navigate } from "react-router-dom";
+import ROLE from "../../../config/role";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -104,9 +105,9 @@ export default function SignIn() {
     };
     dispatch(loginAction(data));
   };
-
+  // const role = localStorage.getItem("role");
   if (loginAuth) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/dashboard/welcome" />;
   }
 
   const validateInputs = () => {

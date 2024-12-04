@@ -186,7 +186,7 @@ const Product = () => {
       const sortingCriteria = {
         "price-high-low": (a, b) => b.price - a.price,
         "price-low-high": (a, b) => a.price - b.price,
-        discount: (a, b) => b.discountPercent - a.discountPercent,
+        discount: (a, b) => b.discount - a.discount,
         views: (a, b) => b.views - a.views,
       };
       const sorted = [...products].sort(sortingCriteria[criteria]);
