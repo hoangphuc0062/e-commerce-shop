@@ -316,6 +316,7 @@ const finalRegister = asyncHandler(async (req, res) => {
     email: cookie.dataregister.email,
     password: cookie.dataregister.password,
     name: cookie.dataregister.name,
+    isBlocked: false,
   });
   res.clearCookie("dataregister");
   if (newUser) {
@@ -411,7 +412,31 @@ const addCart = asyncHandler(async (req, res) => {
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
+  const product = await Product.findById(productId);
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
 
+  if (attributeId) {
+    const variant = product.variants.find(
+      (variant) => variant.attributeId.toString() === attributeId.toString()
+    );
+    if (!variant) {
+      return res.status(404).json({ message: "Variant not found" });
+    }
+    if (variant.onStock < quantity) {
+      return res
+        .status(400)
+        .json({ message: "Insufficient stock for variant" });
+    }
+  } else {
+    // Check stock for the main product
+    if (product.onStock < quantity) {
+      return res
+        .status(400)
+        .json({ message: "Insufficient stock for product" });
+    }
+  }
   const updatedCart = await customer.addToCart(
     productId,
     attributeId,

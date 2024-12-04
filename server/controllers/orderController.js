@@ -5,7 +5,7 @@ const juice = require("juice");
 const fs = require("fs");
 require("dotenv").config();
 const clipboardy = require("clipboardy");
-
+const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const Customer = require("../models/customerModel");
 const Coupon = require("../models/couponModel");
@@ -377,7 +377,24 @@ const sendSuccessEmail = async (req, res) => {
       status: "Success",
       statusPayment: "Paid",
     });
-
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      if (product.attributeId && product.attributeId !== null) {
+        await Product.updateOne(
+          { _id: product.pid, "variants.attributeId": product.attributeId },
+          { $inc: { "variants.$.onStock": -product.quantity } }
+        );
+      } else {
+        await Product.updateOne(
+          { _id: product.pid },
+          { $inc: { onStock: -product.quantity } }
+        );
+      }
+    }
+    await Customer.findByIdAndUpdate(orderBy._id, {
+      $set: { cart: [] }, // Clear the cart
+      $push: { purchaseHistory: { pid: order._id, date: Date.now() } },
+    });
     const email = orderBy.email;
     const html = generateEmailTemplate({
       SKU,
