@@ -125,7 +125,7 @@ const loginCustomer = asyncHandler(async (req, res) => {
 
   // Check if the phone number exists
   const customer = await Customer.findOne({ email }).select(
-    "-code -resetPasswordToken -resetPasswordExpires -passwordResetExprires -passwordResetToken -refreshToken"
+    "-code -isBlocked -resetPasswordToken -resetPasswordExpires -passwordResetExprires -passwordResetToken -refreshToken"
   );
   if (!customer) {
     res.status(400);
@@ -316,7 +316,6 @@ const finalRegister = asyncHandler(async (req, res) => {
     email: cookie.dataregister.email,
     password: cookie.dataregister.password,
     name: cookie.dataregister.name,
-    isBlocked: false,
   });
   res.clearCookie("dataregister");
   if (newUser) {
@@ -413,40 +412,11 @@ const addCart = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Customer not found" });
   }
 
-  const product = await Product.findById(productId);
-  if (!product) {
-    return res.status(404).json({ message: "Product not found" });
-  }
-
-  if (attributeId) {
-    const variant = product.variants.find(
-      (variant) => variant.attributeId.toString() === attributeId.toString()
-    );
-    if (!variant) {
-      return res.status(404).json({ message: "Variant not found" });
-    }
-    if (variant.onStock < quantity) {
-      return res
-        .status(400)
-        .json({ message: "Insufficient stock for variant" });
-    }
-  } else {
-    // Check stock for the main product
-    if (product.onStock < quantity) {
-      return res
-        .status(400)
-        .json({ message: "Insufficient stock for product" });
-    }
-  }
-
-  // Proceed with the rest of your logic
-
   const updatedCart = await customer.addToCart(
     productId,
     attributeId,
     quantity
   );
-
   res.status(200).json({
     message: "Product with variant added to cart",
     cart: updatedCart,

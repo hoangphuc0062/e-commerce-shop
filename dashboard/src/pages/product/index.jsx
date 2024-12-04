@@ -72,15 +72,9 @@ export default function ProductPage() {
 
   useEffect(() => {
     if (status === "success") {
-      const updatedProducts = products.map((product) => {
-        if (product.onStock === 0) {
-          return { ...product, status: "outofstock" };
-        }
-        return product;
-      });
-      setData(updatedProducts);
-      dispatch(resetState({ key: "status", value: "idle" }));
+      setData(products);
     }
+    dispatch(resetState({ key: "status", value: "idle" }));
   }, [status, products, dispatch]);
 
   useEffect(() => {
