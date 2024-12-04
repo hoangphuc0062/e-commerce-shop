@@ -145,7 +145,7 @@ export default function OrderPage() {
           initialState={{
             pagination: {
               paginationModel: {
-                pageSize: 5,
+                pageSize: 10,
               },
             },
           }}
@@ -154,7 +154,7 @@ export default function OrderPage() {
           }}
           processRowUpdate={handleProcessRowUpdate}
           experimentalFeatures={{ newEditingApi: true }}
-          pageSizeOptions={[5, 10, 20]}
+          pageSizeOptions={[5, 10, 20, 50, 100]}
           checkboxSelection
           disableRowSelectionOnClick
         />

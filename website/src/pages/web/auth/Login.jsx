@@ -11,7 +11,7 @@ import { login, resetState } from "../../../redux/slices/auth";
 import { UserContext } from "../../../context/AuthContext";
 
 export default function Login() {
-  const { setUser, setLoginAuth } = useContext(UserContext);
+  const { setUser, setLoginAuth, loginAuth } = useContext(UserContext);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -44,20 +44,36 @@ export default function Login() {
   };
   const status = useSelector((state) => state.auth.status);
   const error = useSelector((state) => state.auth.error);
-  const data = useSelector((state) => state.auth.data.rs);
+  const data = useSelector((state) => state.auth.data?.customer);
+
   useEffect(() => {
     if (status === "success") {
-      handleToast("success", "Đăng nhập thành công.");
-      setLoginAuth(true);
-      setUser(data);
-      navigate("/");
-      dispatch(resetState({ key: "status", value: "idle" }));
+      if (data?.isBlocked === true) {
+        handleToast(
+          "error",
+          "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ với quản trị viên."
+        );
+        setLoginAuth(false);
+        dispatch(resetState({ key: "status", value: "idle" }));
+        return;
+      } else {
+        setUser(data);
+        setLoginAuth(true);
+
+        dispatch(resetState({ key: "status", value: "idle" }));
+        handleToast("success", "Đăng nhập thành công.");
+      }
     }
     if (status === "failed") {
       handleToast("error", error.mes);
     }
   }, [status, error, data, setUser, setLoginAuth, dispatch, navigate]);
 
+  useEffect(() => {
+    if (loginAuth === true) {
+      navigate("/");
+    }
+  }, [loginAuth, navigate]);
   return (
     <section className="mx-2 my-4">
       <div className="container flex justify-center">

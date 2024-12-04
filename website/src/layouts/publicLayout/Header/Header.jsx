@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { UserMenu } from "./UserMenu";
 import CartButton from "./CartButton";
 import Drawer from "@mui/material/Drawer";
-import { getCart, resetState } from "../../../redux/slices/auth";
+import { resetState } from "../../../redux/slices/auth";
 import { getWebConfig } from "../../../redux/slices/webConfig";
 
 const bottonContacts = [
@@ -63,6 +63,7 @@ export const Header = () => {
         break;
     }
   }, [location]);
+
   useEffect(() => {
     if (statusGetCart === "success" && datacard) {
       setDataCard(datacard);
@@ -84,6 +85,8 @@ export const Header = () => {
   useEffect(() => {
     if (status === "success") {
       setData(user);
+    } else {
+      setData(null);
     }
   }, [status, user]);
 
