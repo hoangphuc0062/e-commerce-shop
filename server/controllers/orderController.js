@@ -99,10 +99,10 @@ const createOrder = asyncHandler(async (req, res) => {
   }
 
   const formattedAddress = [
-    address.province,
-    address.district,
-    address.ward,
     address.street,
+    address.ward,
+    address.district,
+    address.province,
   ]
     .filter(Boolean)
     .join(", ");
@@ -534,10 +534,12 @@ const getOrderBySKU = async (req, res) => {
   if (!sku) {
     return res.status(400).json({ message: "SKU is required" });
   }
-  const order = await Order.findOne({ SKU: sku }).populate(
-    "products.pid",
-    "-SKU -slug -historicalPrice -priceInMarket -category -brand -inStock -onStock -inComing -minInventory -maxInventory"
-  );
+  const order = await Order.findOne({ SKU: sku })
+    .populate(
+      "products.pid",
+      "-SKU -slug -historicalPrice -priceInMarket -category -brand -inStock -onStock -inComing -minInventory -maxInventory"
+    )
+    .populate("orderBy", "name email phone address");
 
   if (!order) {
     return res.status(404).json({ message: "Order not found" });
