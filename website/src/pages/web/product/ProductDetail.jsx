@@ -26,7 +26,6 @@ import { UserContext } from "../../../context/AuthContext";
 
 import { transformAttributes } from "../../../utils/helper";
 
-
 const ProductDetail = () => {
   const { category, brand, product } = useParams();
   const { loginAuth } = useContext(UserContext);
@@ -126,8 +125,6 @@ const ProductDetail = () => {
     ...(data?.images ?? []),
     // ...(data?.attributes?.map((attr) => attr.images) ?? []),
   ];
-
-  const displayKeys = ["screenSize", "RAM", "storage"];
 
   return (
     <div className="container p-2 sm:p-4 lg:p-8 w-full flex flex-col gap-4">
@@ -282,44 +279,40 @@ const ProductDetail = () => {
                 </button>
               ))}
             </div> */}
-            <div className="grid grid-cols-3 gap-2">
-              {data?.variants?.map((variant, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAttributeClick(index, variant)}
-                  className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative ${
-                    activeIndex === index
-                      ? "border-blue-500"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {activeIndex === index && (
-                    <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
-                      <Icon
-                        icon="akar-icons:check"
-                        width="0.8rem"
-                        height="0.8rem"
-                        className="inline"
-                      />
-                    </span>
-                  )}
-                  <div className="h-[50px]">
-                    <img
-                      className="w-full h-full object-contain"
-                      src={variant.images || "default-image-url.jpg"}
-                      alt={`Variant ${variant.SKU}`}
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    {displayKeys.map((key) => (
-                      <span key={key} className="text-gray-700">
-                        {variant[key] || ""}
+            {data?.variants?.length > 1 && (
+              <div className="grid grid-cols-3 gap-2">
+                {data?.variants?.map((variant, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleAttributeClick(index, variant)}
+                    className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative ${
+                      activeIndex === index
+                        ? "border-blue-500"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    {activeIndex === index && (
+                      <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
+                        <Icon
+                          icon="akar-icons:check"
+                          width="0.8rem"
+                          height="0.8rem"
+                          className="inline"
+                        />
                       </span>
-                    ))}
-                  </div>
-                </button>
-              ))}
-            </div>
+                    )}
+                    <div className="h-[50px]">
+                      <img
+                        className="w-full h-full object-contain"
+                        src={variant.thumbnail || "default-image-url.jpg"}
+                        alt={`Variant ${variant.name}`}
+                      />
+                    </div>
+                    <div>{variant.name}</div>
+                  </button>
+                ))}
+              </div>
+            )}
             <div>
               <span className="text-[24px] font-bold mr-2">
                 {data.onStock === 0
@@ -419,13 +412,13 @@ const ProductDetail = () => {
             )}
           </button>
         </div>
-        <div className="w-full md:w-2/6 h-[350px] p-2 rounded-lg shadow-custom">
+        <div className="w-full md:w-2/6 min-h-[250px] p-2 rounded-lg shadow-custom">
           <div className="flex flex-col gap-3">
             <div>
               <h1>Thông số ký thuật</h1>
               {transformAttributes(data?.attributes || []).length > 0 ? (
                 transformAttributes(data?.attributes || [])
-                  .slice(0, 1)
+                  .slice(0, 2)
                   .map((spec, specIndex) => (
                     <div key={specIndex}>
                       <div className="font-semibold">{spec.title}</div>
