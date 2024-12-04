@@ -24,6 +24,9 @@ import Drawer from "@mui/material/Drawer";
 import { useContext } from "react";
 import { UserContext } from "../../../context/AuthContext";
 
+import { transformAttributes } from "../../../utils/helper";
+
+
 const ProductDetail = () => {
   const { category, brand, product } = useParams();
   const { loginAuth } = useContext(UserContext);
@@ -31,7 +34,7 @@ const ProductDetail = () => {
   const [data, setData] = useState([]);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [open, setOpen] = React.useState(false);
-  const [viewMoreDescription, setViewMoreDescription] = useState(false);
+  const [viewMoreDescription, setViewMoreDescription] = useState(true);
   const [productLP, setProductLP] = useState([]);
   const status = useSelector((state) => state.product.statusDetail);
   const DataProduct = useSelector((state) => state.product.dataDetail);
@@ -39,6 +42,7 @@ const ProductDetail = () => {
   const statusLP = useSelector((state) => state.product.status);
   const [activeIndex, setActiveIndex] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   useEffect(() => {
     if (product) {
       dispatch(getProductBySlug(product));
@@ -118,62 +122,10 @@ const ProductDetail = () => {
 
   const dataImg = [
     data?.thumbnail,
-    data?.videos ?? [],
+    // data?.videos ?? [],
     ...(data?.images ?? []),
     // ...(data?.attributes?.map((attr) => attr.images) ?? []),
   ];
-  const translations = {
-    bao_hanh_1_doi_1: "Bảo hành 1 đổi 1",
-    battery: "Dung lượng pin",
-    best_discount_price: "Giá khuyến mãi tốt nhất",
-    bluetooth: "Bluetooth",
-    change_layout_preorder: "Thay đổi bố cục khi đặt hàng trước",
-    cpu: "CPU",
-    dimensions: "Kích thước",
-    display_resolution: "Độ phân giải màn hình",
-    display_size: "Kích thước màn hình",
-    display_type: "Loại màn hình",
-    final_sale_price: "Giá bán cuối cùng",
-    flash_sale_from: "Bắt đầu flash sale",
-    flash_sale_price: "Giá flash sale",
-    hdd_sdd: "Bộ nhớ",
-    included_accessories: "Phụ kiện đi kèm",
-    key_selling_points: "Điểm nổi bật",
-    laptop_bao_mat: "Bảo mật",
-    laptop_camera_webcam: "Camera/Webcam",
-    laptop_cong_nghe_am_thanh: "Công nghệ âm thanh",
-    laptop_cpu: "CPU",
-    laptop_ram: "RAM",
-    macbook_bao_mat: "Bảo mật",
-    macbook_gpu: "GPU",
-    macbook_thoi_luong_pin: "Thời lượng pin",
-    manufacturer: "Hãng sản xuất",
-    nhu_cau_su_dung: "Nhu cầu sử dụng",
-    product_weight: "Khối lượng",
-    product_condition: "Tình trạng sản phẩm",
-    warranty_information: "Thông tin bảo hành",
-    weight: "Trọng lượng",
-    wlan: "Kết nối không dây",
-    // Add more translations as needed
-  };
-
-  // Translation function
-  const translateKey = (key) =>
-    translations[key] ||
-    key.replace(/_/g, " ").replace(/\d/g, "").toUpperCase();
-
-  // Updated transformAttributes function
-  const transformAttributes = (attributes) => {
-    return [
-      {
-        title: "Thông số kỹ thuật",
-        details: Object.entries(attributes).map(([key, value]) => ({
-          key: translateKey(key),
-          value,
-        })),
-      },
-    ];
-  };
 
   const displayKeys = ["screenSize", "RAM", "storage"];
 
@@ -441,9 +393,10 @@ const ProductDetail = () => {
               viewMoreDescription ? `h-[400px]` : `min-h-fit`
             } overflow-hidden`}
           >
-            {data?.description
-              ? extractTextFromHtml(data.description)
-              : "Không có mô tả sản phẩm"}
+            <div
+              dangerouslySetInnerHTML={{ __html: data?.description }}
+              className="prose prose-sm max-w-none"
+            />
           </div>
           <button
             onClick={handleViewMoreDescription}
@@ -466,15 +419,17 @@ const ProductDetail = () => {
             )}
           </button>
         </div>
-        <div className="w-full md:w-2/6 h-[300px] p-2 rounded-lg shadow-custom">
+        <div className="w-full md:w-2/6 h-[350px] p-2 rounded-lg shadow-custom">
           <div className="flex flex-col gap-3">
             <div>
-              <div className="h-full max-h-[300px]">
-                {transformAttributes(data?.attributes || []).map(
-                  (spec, specIndex) => (
+              <h1>Thông số ký thuật</h1>
+              {transformAttributes(data?.attributes || []).length > 0 ? (
+                transformAttributes(data?.attributes || [])
+                  .slice(0, 1)
+                  .map((spec, specIndex) => (
                     <div key={specIndex}>
                       <div className="font-semibold">{spec.title}</div>
-                      {spec.details.splice(0, 5).map((detail, detailIndex) => (
+                      {spec.details.map((detail, detailIndex) => (
                         <div
                           key={detailIndex}
                           className="flex justify-between p-1"
@@ -488,9 +443,10 @@ const ProductDetail = () => {
                         </div>
                       ))}
                     </div>
-                  )
-                )}
-              </div>
+                  ))
+              ) : (
+                <div>Không có thông số kỹ thuật có sẵn</div>
+              )}
             </div>
             <button
               onClick={handleClickOpen}

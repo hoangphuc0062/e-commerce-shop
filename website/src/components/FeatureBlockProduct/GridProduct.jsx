@@ -72,9 +72,10 @@ export default function GridProduct({ data, cat }) {
           {paginatedData.map((pageData, pageIndex) => (
             <SwiperSlide key={pageIndex}>
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5  gap-4 py-2">
-                {pageData?.map((item, index) => (
-                  <ProductCard key={index} data={item} />
-                ))}
+                {pageData &&
+                  pageData?.map((item, index) => (
+                    <ProductCard key={index} data={item} />
+                  ))}
               </div>
             </SwiperSlide>
           ))}
