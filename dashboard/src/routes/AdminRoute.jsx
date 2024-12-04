@@ -145,7 +145,7 @@ const AdminRoute = () => {
       {/** route user */}
 
       <Route
-        path="user"
+        path="customer"
         element={
           <PrivateRoute
             element={<UserPage />}
@@ -154,7 +154,7 @@ const AdminRoute = () => {
         }
       />
       <Route
-        path="user/create"
+        path="customer/create"
         element={
           <PrivateRoute
             element={<UserPage />}

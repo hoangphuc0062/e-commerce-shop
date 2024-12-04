@@ -18,12 +18,15 @@ import DialogTitle from "@mui/material/DialogTitle";
 import SingleProduct from "../../../components/FeatureBlockProduct/SingleProduct";
 import { getProductBySlug, getProducts } from "./../../../redux/slices/product";
 import { extractTextFromHtml } from "./../../../../../dashboard/src/utils/extractTextFromHtml";
-import { addCart, getCart, resetState } from "../../../redux/slices/auth";
+import { addCart, getCart } from "../../../redux/slices/auth";
 import { handleToast } from "../../../ultils/toast";
 import Drawer from "@mui/material/Drawer";
+import { useContext } from "react";
+import { UserContext } from "../../../context/AuthContext";
 
 const ProductDetail = () => {
   const { category, brand, product } = useParams();
+  const { loginAuth } = useContext(UserContext);
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -88,9 +91,8 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = useCallback(() => {
-
     if (loginAuth === false) {
-      handleToast("error", "Vui lòng đăng nhập để thêm sản phẩm");
+      handleToast("error", "Bạn cần đăng nhập");
       return;
     }
     const attribute = data?.variants?.[activeIndex];
