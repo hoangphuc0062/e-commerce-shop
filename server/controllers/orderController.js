@@ -9,7 +9,6 @@ const clipboardy = require("clipboardy");
 const Order = require("../models/orderModel");
 const Customer = require("../models/customerModel");
 const Coupon = require("../models/couponModel");
-const Product = require("../models/productModel");
 const sendMail = require("../ultils/sendMail");
 
 const generateSKU = (length) => {
@@ -100,10 +99,10 @@ const createOrder = asyncHandler(async (req, res) => {
   }
 
   const formattedAddress = [
-    address.province,
-    address.district,
-    address.ward,
     address.street,
+    address.ward,
+    address.district,
+    address.province,
   ]
     .filter(Boolean)
     .join(", ");
@@ -371,30 +370,12 @@ const sendSuccessEmail = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    const { _id: orderId, SKU, date, paymentMethod, orderBy, products } = order;
+    const { _id: orderId, SKU, date, paymentMethod, orderBy } = order;
 
+    // Update order status
     await Order.findByIdAndUpdate(orderId, {
       status: "Success",
       statusPayment: "Paid",
-    });
-
-    for (let i = 0; i < products.length; i++) {
-      const product = products[i];
-      if (product.attributeId && product.attributeId !== null) {
-        await Product.updateOne(
-          { _id: product.pid, "variants.attributeId": product.attributeId },
-          { $inc: { "variants.$.onStock": -product.quantity } }
-        );
-      } else {
-        await Product.updateOne(
-          { _id: product.pid },
-          { $inc: { onStock: -product.quantity } }
-        );
-      }
-    }
-    await Customer.findByIdAndUpdate(orderBy._id, {
-      $set: { cart: [] }, // Clear the cart
-      $push: { purchaseHistory: { pid: order._id, date: Date.now() } },
     });
 
     const email = orderBy.email;
@@ -521,17 +502,22 @@ const sendMailOrderConfirmation = async (req, res) => {
     }
 
     const orderId = order._id;
+
+    // Update the order status
     await Order.findByIdAndUpdate(orderId, {
       status: "Success",
       statusPayment: "Paid",
     });
+
+    // Send the email
     const email = order.orderBy.email;
-    const html = `
-      <h1>Xác nhận đơn hàng</h1>
-      <button>Xác nhận đơn hàng</button>
-    `;
+    const html = `<h1>Thank you for your order</h1>`;
     const subject = "Order Success";
+
+    // Ensure sendMail is awaited if it's an async function
     await sendMail(email, html, subject);
+
+    // Respond with success
     res.status(200).json({ message: "Email sent successfully" });
   } catch (error) {
     console.error("Error sending success email:", error);
@@ -541,15 +527,19 @@ const sendMailOrderConfirmation = async (req, res) => {
   }
 };
 
+// get order by sku
+
 const getOrderBySKU = async (req, res) => {
   const { sku } = req.params;
   if (!sku) {
     return res.status(400).json({ message: "SKU is required" });
   }
-  const order = await Order.findOne({ SKU: sku }).populate(
-    "products.pid",
-    "-SKU -slug -historicalPrice -priceInMarket -category -brand -inStock -onStock -inComing -minInventory -maxInventory"
-  );
+  const order = await Order.findOne({ SKU: sku })
+    .populate(
+      "products.pid",
+      "-SKU -slug -historicalPrice -priceInMarket -category -brand -inStock -onStock -inComing -minInventory -maxInventory"
+    )
+    .populate("orderBy", "name email phone address");
 
   if (!order) {
     return res.status(404).json({ message: "Order not found" });

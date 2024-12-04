@@ -25,6 +25,12 @@ export const createOrder = createAsyncThunk(
     handleAsyncThunk(OrderService.createOrder, [data], thunkAPI)
 );
 
+export const trackingOrder = createAsyncThunk(
+  "order/trackingOrder",
+  (data, thunkAPI) =>
+    handleAsyncThunk(OrderService.trackingOrder, [data], thunkAPI)
+);
+
 export const vnPay = createAsyncThunk("order/vnPay", (data, thunkAPI) =>
   handleAsyncThunk(OrderService.vnPay, [data], thunkAPI)
 );
@@ -49,6 +55,8 @@ const orderSlice = createSlice({
     statusVNPay: "idle",
     statusReturn: "idle",
     statusSendMail: "idle",
+    statusTracking: "idle",
+    trackingData: [],
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -69,6 +77,18 @@ const orderSlice = createSlice({
       })
       .addCase(createOrder.rejected, (state, action) => {
         state.status = "failed";
+        state.error = action.payload;
+      });
+    builder
+      .addCase(trackingOrder.pending, (state) => {
+        state.statusTracking = "loading";
+      })
+      .addCase(trackingOrder.fulfilled, (state, action) => {
+        state.statusTracking = "success";
+        state.trackingData = action.payload;
+      })
+      .addCase(trackingOrder.rejected, (state, action) => {
+        state.statusTracking = "failed";
         state.error = action.payload;
       });
     builder
