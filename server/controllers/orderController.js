@@ -46,9 +46,12 @@ const getAllOrder = asyncHandler(async (req, res) => {
 
 const getOrderByUser = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-  const orders = await Order.find({
-    orderBy: userId,
-  }).populate("products.pid");
+  const orders = await Order.find({ orderBy: userId })
+    .populate("products.pid")
+    .populate("orderBy", "name email");
+  if (!orders || orders.length === 0) {
+    return res.status(404).json({ message: "Order not found" });
+  }
   return res.status(200).json(orders);
 });
 
@@ -98,14 +101,13 @@ const createOrder = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Address is required" });
   }
 
-  const formattedAddress = [
-    address.street,
-    address.ward,
-    address.district,
-    address.province,
-  ]
-    .filter(Boolean)
-    .join(", ");
+  const formattedAddress = {
+    street: address.street,
+    wards: address.ward,
+    districts: address.district,
+    provinces: address.province,
+    isDefault: false,
+  };
 
   // Cập nhật thông tin khách hàng
   const customer = await Customer.findById(userId);
@@ -113,12 +115,18 @@ const createOrder = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Customer not found" });
   }
 
-  await customer.UpdateCustomer({
-    address: [formattedAddress],
-    name,
-    phone,
-    sex,
-  });
+  await Customer.findByIdAndUpdate(
+    customer._id,
+    {
+      $set: {
+        address: [formattedAddress],
+        name,
+        phone,
+        sex,
+      },
+    },
+    { new: true }
+  );
 
   const sku = await generateUniqueSKU();
 
@@ -393,7 +401,6 @@ const sendSuccessEmail = async (req, res) => {
     }
     await Customer.findByIdAndUpdate(orderBy._id, {
       $set: { cart: [] }, // Clear the cart
-      $push: { purchaseHistory: { pid: order._id, date: Date.now() } },
     });
     const email = orderBy.email;
     const html = generateEmailTemplate({
