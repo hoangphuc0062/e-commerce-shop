@@ -65,7 +65,7 @@ export const SearchInput = () => {
     setResults([]);
   };
   return (
-    <div className="relative w-5/6">
+    <div className="relative lg:w-5/6">
       <form className="w-full" onSubmit={(e) => e.preventDefault()}>
         <div className="relative">
           <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
