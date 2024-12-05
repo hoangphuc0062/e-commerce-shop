@@ -9,9 +9,22 @@ const menuItems = {
         {
           id: "dashboard",
           title: "Quản lý",
-          type: "item",
+          type: "collapse",
           icon: "feather icon-home",
-          url: "/dashboard",
+          children: [
+            {
+              id: "dashboard-profile",
+              title: "Thông tin cá nhân",
+              type: "item",
+              url: "/dashboard/welcome",
+            },
+            {
+              id: "dashboard-home",
+              title: "Thống kê",
+              type: "item",
+              url: "/dashboard",
+            },
+          ],
         },
         {
           id: "products",
@@ -31,12 +44,25 @@ const menuItems = {
               type: "item",
               url: "/dashboard/product/create",
             },
-
+          ],
+        },
+        {
+          id: "filter",
+          title: "Bộ lọc",
+          type: "collapse",
+          icon: "feather icon-filter",
+          children: [
             {
-              id: "filter",
+              id: "filter-list",
               title: "Danh sách bộ lọc",
               type: "item",
-              url: "/dashboard/product/filter",
+              url: "/dashboard/filter",
+            },
+            {
+              id: "add-filter",
+              title: "Thêm bộ lọc",
+              type: "item",
+              url: "/dashboard/filter/create",
             },
           ],
         },
@@ -188,7 +214,6 @@ const menuItems = {
               type: "item",
               url: "/dashboard/shippingConfig",
             },
-
           ],
         },
         {
@@ -248,13 +273,7 @@ const menuItems = {
               id: "login",
               title: "Đăng nhập",
               type: "item",
-              url: "/dashboard/login",
-            },
-            {
-              id: "register",
-              title: "Đăng ký",
-              type: "item",
-              url: "/dashboard/register",
+              url: "/",
             },
           ],
         },

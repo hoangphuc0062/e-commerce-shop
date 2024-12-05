@@ -9,6 +9,9 @@ const OrderServices = {
     }),
 
   sendMail: () => sendRequest("post", "/orders/send-mail"),
+  trackingOrder(sku) {
+    return sendRequest("get", `orders/code/${sku}`);
+  },
 };
 
 export default OrderServices;

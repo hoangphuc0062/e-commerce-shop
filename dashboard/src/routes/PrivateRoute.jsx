@@ -8,7 +8,7 @@ const PrivateRoute = ({ roles = [], element }) => {
   const userRole = roleFromCookie
     ? ROLE[roleFromCookie]?.trim().toLowerCase()
     : null;
-
+  console.log(userRole);
   // If no user role exists, redirect to login
   if (!userRole) {
     return <Navigate to="/" />;
@@ -16,7 +16,7 @@ const PrivateRoute = ({ roles = [], element }) => {
 
   // Convert the roles array to lowercase once for comparison
   const allowedRoles = roles.map((role) => role?.trim().toLowerCase());
-
+  console.log(allowedRoles);
   // Check if the user has one of the required roles
   const isAuthorized = allowedRoles.includes(userRole);
 

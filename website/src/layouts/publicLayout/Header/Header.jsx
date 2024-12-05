@@ -64,11 +64,6 @@ export const Header = () => {
     }
   }, [location]);
   useEffect(() => {
-    setData(status === "success" ? user : null);
-    dispatch(getCart());
-  }, [status, user, dispatch]);
-
-  useEffect(() => {
     if (statusGetCart === "success" && datacard) {
       setDataCard(datacard);
     }
@@ -85,6 +80,12 @@ export const Header = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusWebConFig, dataWebConFig]);
+
+  useEffect(() => {
+    if (status === "success") {
+      setData(user);
+    }
+  }, [status, user]);
 
   return (
     <>
@@ -142,16 +143,7 @@ export const Header = () => {
                 <ButtonContact key={index} {...item} />
               ))}
 
-              {Card.length > 0 ? (
-                <CartButton data={Card} />
-              ) : (
-                <button className="flex items-center justify-center text-[12px] w-[80px] hover:bg-hv p-2 rounded-lg">
-                  <div className="flex items-center justify-center relative">
-                    <Icon icon="uil:cart" width="2rem" height="2rem" />
-                  </div>
-                  <p className="line-clamp-2">Giỏ hàng</p>
-                </button>
-              )}
+              {Card && <CartButton data={Card} />}
               <div>
                 <UserMenu data={data} />
               </div>

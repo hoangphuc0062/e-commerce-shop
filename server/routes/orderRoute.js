@@ -9,15 +9,18 @@ const {
 } = require("../middlewares/vertifyToken");
 
 router.post("/", verifyAccessToken, ctrl.createOrder);
-
-router.get("/", verifyAccessToken, isAdmin, ctrl.getAllOrder);
-router.put("/status/:oid", verifyAccessToken, isAdmin, ctrl.updateStatus);
+router.get("/", verifyAccessToken, isStaff, ctrl.getAllOrder);
+router.put("/:_id", verifyAccessToken, isStaff, ctrl.updateOrder);
+router.delete("/:_id", verifyAccessToken, isStaff, ctrl.deleteOrder);
 router.post(
   "/create-in-store-order",
   verifyAccessToken,
   isStaff,
   ctrl.createInStoreOrder
 );
+
+router.get("/code/:sku", ctrl.getOrderBySKU);
+
 router.get("/user", verifyAccessToken, ctrl.getOrderByUser);
 // router.use([verifyAccessToken, isAdmin]);
 

@@ -16,6 +16,7 @@ const UserProvider = ({ children }) => {
     if (token) {
       setLoginAuth(true);
       dispatch(getMe());
+      dispatch(getCart());
     }
   }, [token, dispatch]);
 
