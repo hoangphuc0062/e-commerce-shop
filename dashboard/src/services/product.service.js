@@ -5,6 +5,7 @@ const ProductService = {
     sendRequest("get", "/products", {
       params: {
         sort: "-createdAt",
+        limit: 100,
       },
     }),
   delete: (id) => sendRequest("delete", `/products/${id}`),

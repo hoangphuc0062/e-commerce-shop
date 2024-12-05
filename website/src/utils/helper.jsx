@@ -1,3 +1,5 @@
+import { vnPay } from "../redux/slices/order";
+
 export const formatDay = (isoDateString) => {
   const date = new Date(isoDateString);
   const day = String(date.getDate()).padStart(2, "0");
@@ -44,4 +46,25 @@ export const updateSelectedFiltersWithKeys = (filters, selectedFilters) => {
   });
 
   return updatedFilters;
+};
+
+export const translate = (key) => {
+  const translations = {
+    cash: "Tiền mặt",
+    Processing: "Đang xử lý",
+    Success: "Thành công",
+    vnpay: "VNPay",
+  };
+
+  return translations[key] || key;
+};
+
+export const transformAttributes = (attributes) => {
+  return Object.entries(attributes).map(([title, details]) => {
+    const detailArray = details.split(", ").map((item) => {
+      const [key, ...valueParts] = item.split(": ");
+      return { key: key.trim(), value: valueParts.join(": ").trim() };
+    });
+    return { title, details: detailArray };
+  });
 };

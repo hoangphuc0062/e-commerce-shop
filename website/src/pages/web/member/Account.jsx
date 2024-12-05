@@ -150,6 +150,7 @@ export default function Account() {
           id="name"
           type="text"
           value={customerData.name || ""}
+          placeholder="Vui lòng nhập họ và tên"
           edit
           iconName="hugeicons:edit-01"
           onChange={(e) => handleChange("name", e.target.value)}
@@ -168,6 +169,7 @@ export default function Account() {
         <Input
           label="Số điện thoại"
           value={customerData.phone || ""}
+          placeholder="Vui lòng nhập số điện thoại"
           edit
           iconName="hugeicons:edit-01"
           onChange={(e) => handleChange("phone", e.target.value)}
@@ -178,6 +180,7 @@ export default function Account() {
           label="Ngày sinh"
           type="text"
           value={birthdayInput}
+          placeholder="Vui lòng nhập ngày sinh của bạn!"
           edit
           iconName="hugeicons:edit-01"
           onChange={(e) => handleChange("birthday", e.target.value)}

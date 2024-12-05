@@ -26,7 +26,7 @@ const getNavigationByRole = (role) => {
           <NavBar />
         </>
       );
-    case "customer":
+    case "author":
       return (
         <>
           <Customer />

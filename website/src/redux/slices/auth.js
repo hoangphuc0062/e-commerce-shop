@@ -44,6 +44,11 @@ export const logout = createAsyncThunk("auth/logout", (_, thunkAPI) =>
   handleAsyncThunk(AuthService.logout, [null], thunkAPI)
 );
 
+// change pasword
+export const changePassword = createAsyncThunk("auth/changePassword", (data, thunkAPI) =>
+  handleAsyncThunk(AuthService.changePassword, [data], thunkAPI)
+);
+
 // getMe
 export const getMe = createAsyncThunk("auth/getMe", (_, thunkAPI) =>
   handleAsyncThunk(AuthService.getme, [null], thunkAPI)
@@ -97,6 +102,7 @@ const auth = createSlice({
     statusUpdateCart: "idle",
     statusFinalRegister: "idle",
     statusUpdateCustomer: "idle",
+    statusChangePassword:"idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -141,6 +147,20 @@ const auth = createSlice({
       .addCase(logout.rejected, (state) => {
         state.statusLogout = "failed";
       });
+    builder
+    .addCase(changePassword.pending, (state) =>{
+      state.statusChangePassword = "loading";
+
+    })
+    .addCase(changePassword.fulfilled, (state, action) => {
+      state.statusChangePassword = "success"; 
+      state.data = action.payload;
+      })
+    .addCase(changePassword.rejected, (state) => {
+      state.statusChangePassword = "failed";
+
+    });
+    
     builder
       .addCase(getMe.pending, (state) => {
         state.statusGetMe = "loading";
@@ -217,6 +237,56 @@ const auth = createSlice({
       });
   },
 });
+
+// Async Thunk: Đổi mật khẩu
+export const updatePassword = createAsyncThunk(
+  "auth/updatePassword",
+  async ({ currentPassword, newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await AuthService.updatePassword({
+        currentPassword,
+        newPassword,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Đổi mật khẩu thất bại!");
+    }
+  }
+);
+
+// Slice Auth
+const authSlice = createSlice({
+  name: "auth",
+  initialState: {
+    user: null,
+    status: "idle", // idle | loading | success | failed
+    error: null,
+  },
+  reducers: {
+    resetAuthState: (state) => {
+      state.status = "idle";
+      state.error = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Update Password
+      .addCase(updatePassword.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(updatePassword.fulfilled, (state, action) => {
+        state.status = "success";
+        state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(updatePassword.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || "Có lỗi xảy ra!";
+      });
+  },
+});
+
 
 export default auth.reducer;
 export const { resetLogin } = auth.actions;

@@ -5,7 +5,7 @@ const juice = require("juice");
 const fs = require("fs");
 require("dotenv").config();
 const clipboardy = require("clipboardy");
-
+const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const Customer = require("../models/customerModel");
 const Coupon = require("../models/couponModel");
@@ -54,7 +54,16 @@ const getOrderByUser = asyncHandler(async (req, res) => {
 
 const createOrder = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-
+  const {
+    address,
+    name,
+    phone,
+    sex,
+    coupon,
+    shippingFee,
+    note,
+    paymentMethod,
+  } = req.body;
   // thông tin giỏ hàng
   const userCart = await Customer.findById(userId).select("cart");
   if (!userCart || !userCart.cart || userCart.cart.length === 0) {
@@ -70,16 +79,15 @@ const createOrder = asyncHandler(async (req, res) => {
 
   let total = req.body.total || 0;
   if (req.body.coupon) {
-    const coupon = await Coupon.findOne({ code: req.body.coupon });
-    if (coupon) {
+    const couponExist = await Coupon.findOne({ code: coupon });
+    if (couponExist) {
       total -= (total * coupon.discount) / 100;
     }
   }
 
-  const shippingFee = req.body.shippingFee || 0;
-  total += shippingFee;
+  const fee = shippingFee || 0;
+  total += fee;
 
-  const { address, name, phone, sex } = req.body;
   if (
     !address ||
     !address.district ||
@@ -91,10 +99,10 @@ const createOrder = asyncHandler(async (req, res) => {
   }
 
   const formattedAddress = [
-    address.province,
-    address.district,
-    address.ward,
     address.street,
+    address.ward,
+    address.district,
+    address.province,
   ]
     .filter(Boolean)
     .join(", ");
@@ -118,11 +126,11 @@ const createOrder = asyncHandler(async (req, res) => {
   let order = new Order({
     products,
     orderBy: userId,
-    coupon: req.body.coupon,
+    coupon: coupon,
     total,
-    paymentMethod: req.body.paymentMethod,
+    paymentMethod,
     shippingFee,
-    note: req.body.note,
+    note,
     SKU: sku,
   });
 
@@ -169,6 +177,7 @@ const deleteOrder = asyncHandler(async (req, res) => {
   });
 });
 // nhan vien ban hang tao don hang cho khach hang
+
 // thanh toán tiền mặt
 
 const createInStoreOrder = asyncHandler(async (req, res) => {
@@ -368,7 +377,24 @@ const sendSuccessEmail = async (req, res) => {
       status: "Success",
       statusPayment: "Paid",
     });
-
+    for (let i = 0; i < products.length; i++) {
+      const product = products[i];
+      if (product.attributeId && product.attributeId !== null) {
+        await Product.updateOne(
+          { _id: product.pid, "variants.attributeId": product.attributeId },
+          { $inc: { "variants.$.onStock": -product.quantity } }
+        );
+      } else {
+        await Product.updateOne(
+          { _id: product.pid },
+          { $inc: { onStock: -product.quantity } }
+        );
+      }
+    }
+    await Customer.findByIdAndUpdate(orderBy._id, {
+      $set: { cart: [] }, // Clear the cart
+      $push: { purchaseHistory: { pid: order._id, date: Date.now() } },
+    });
     const email = orderBy.email;
     const html = generateEmailTemplate({
       SKU,
@@ -399,77 +425,82 @@ const generateEmailTemplate = ({
 }) => {
   clipboardy.write(`${SKU}`);
   return `
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Confirmation</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-  </head>
-  <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0;">
-    <section style="background-color: #ffffff; padding: 16px; margin: 20px auto; max-width: 600px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-      <div style="padding: 16px;">
-        <h2 style="font-size: 24px; color: #333333; margin-bottom: 8px;">Cảm ơn bạn đã đặt hàng!</h2>
-        <p style="color: #555555; margin-bottom: 16px;">
-          Đơn hàng của bạn, mã đơn hàng của bạn:
-          <a 
-          style="
-            color: #007bff; 
-            text-decoration: none; 
-            font-weight: bold; 
-            cursor: pointer; 
-            border: 1px solid #007bff; 
-            padding: 8px 12px; 
-            border-radius: 5px; 
-            display: inline-block; 
-            transition: all 0.3s ease;
-           " 
-          >
-          ${SKU}, (bấm vào nút để sao chép).
-          </a>
-          sẽ được xử lý trong vòng 24 giờ trong ngày làm việc. Chúng tôi sẽ thông báo cho bạn qua email khi đơn hàng của bạn đã được chuyển đi.
-        </p>
-        <div style="background-color: #f8f9fa; border: 1px solid #e1e1e1; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-          <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <dt style="color: #888888;">Ngày</dt>
-            <dd style="color: #333333; font-weight: bold;">${new Date(
-              date
-            ).toLocaleDateString("vi-VN")}</dd>
-          </dl>
-          <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <dt style="color: #888888;">Phương thức thanh toán</dt>
-            <dd style="color: #333333; font-weight: bold;">${
-              paymentMethod === "cash"
-                ? "Thanh toán khi nhận hàng"
-                : "Thanh toán online"
-            }</dd>
-          </dl>
-          <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <dt style="color: #888888;">Tên</dt>
-            <dd style="color: #333333; font-weight: bold;">${orderBy.name}</dd>
-          </dl>
-          <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <dt style="color: #888888;">Địa chỉ</dt>
-            <dd style="color: #333333; font-weight: bold;">${
-              Array.isArray(orderBy.address)
-                ? orderBy.address.join(", ")
-                : orderBy.address
-            }</dd>
-          </dl>
-          <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-            <dt style="color: #888888;">Điện thoại</dt>
-            <dd style="color: #333333; font-weight: bold;">${orderBy.phone}</dd>
-          </dl>
+</head>
+
+<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0;">
+    <section
+        style="background-color: #ffffff; padding: 16px; margin: 20px auto; max-width: 600px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center;">
+        <div style="padding: 16px;">
+            <h2 style="font-size: 24px; color: #333333; margin-bottom: 8px;">Cảm ơn bạn đã đặt hàng!</h2>
+            <img src="https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/status%2Fsuccess.gif?alt=media&token=4b3eb1f3-abea-43a2-96a6-0e0c71b6d4b5" alt="Xác nhận đơn hàng thành công">
+            <div style="color: #555555; margin-bottom: 16px;">
+                <div style="style="text-align: center;">
+                <p style="font-size:" >Mã đơn hàng:</p>
+                <p style="border:none; color: #007bff; font-weight: 700; background: #ffffff; font-size: 16px;text-align: center;">
+                    ${SKU}
+                </p>
+               </div>
+                Đơn hàng của bạn sẽ được xử lý ít phút. Chúng tôi sẽ thông báo cho bạn qua email khi đơn hàng của bạn đã được chuyển đi.
+                </div>
+            </p>
+            <div
+                style="background-color: #f8f9fa; border: 1px solid #e1e1e1; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <dt style="color: #888888;">Ngày</dt>
+                    <dd style="color: #333333; font-weight: bold;">${new Date(
+                      date
+                    ).toLocaleDateString("vi-VN")}</dd>
+                </dl>
+                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <dt style="color: #888888;">Phương thức thanh toán</dt>
+                    <dd style="color: #333333; font-weight: bold;">${
+                      paymentMethod === "cash"
+                        ? "Thanh toán khi nhận hàng"
+                        : "Thanh toán online"
+                    }</dd>
+                </dl>
+                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <dt style="color: #888888;">Tên</dt>
+                    <dd style="color: #333333; font-weight: bold;">${
+                      orderBy.name
+                    }</dd>
+                </dl>
+                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <dt style="color: #888888;">Địa chỉ</dt>
+                    <dd style="color: #333333; font-weight: bold;">${
+                      Array.isArray(orderBy.address)
+                        ? orderBy.address.join(", ")
+                        : orderBy.address
+                    }</dd>
+                </dl>
+                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <dt style="color: #888888;">Điện thoại</dt>
+                    <dd style="color: #333333; font-weight: bold;">${
+                      orderBy.phone
+                    }</dd>
+                </dl>
+            </div>
+            <div style="text-align: center; margin-top: 16px;">
+                <a href="${baseUrl}/look-up-order"
+                    style="background-color: #007bff; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; display: inline-block; margin-right: 8px;">Theo
+                    dõi đơn hàng của bạn</a>
+                <a href="${baseUrl}/"
+                    style="background-color: #f8f9fa; color: #555555; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; display: inline-block; border: 1px solid #e1e1e1;">Quay
+                    lại mua sắm</a>
+            </div>
         </div>
-        <div style="text-align: center; margin-top: 16px;">
-          <a href="${baseUrl}/look-up-order" style="background-color: #007bff; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; display: inline-block; margin-right: 8px;">Theo dõi đơn hàng của bạn</a>
-          <a href="${baseUrl}/" style="background-color: #f8f9fa; color: #555555; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; display: inline-block; border: 1px solid #e1e1e1;">Quay lại mua sắm</a>
-        </div>
-      </div>
     </section>
-  </body>
-  </html>
+</body>
+
+</html>
   `;
 };
 
@@ -520,7 +551,13 @@ const getOrderBySKU = async (req, res) => {
   if (!sku) {
     return res.status(400).json({ message: "SKU is required" });
   }
-  const order = await Order.findOne({ SKU: sku }).populate("products.pid");
+  const order = await Order.findOne({ SKU: sku })
+    .populate(
+      "products.pid",
+      "-SKU -slug -historicalPrice -priceInMarket -category -brand -inStock -onStock -inComing -minInventory -maxInventory"
+    )
+    .populate("orderBy", "name email phone address");
+
   if (!order) {
     return res.status(404).json({ message: "Order not found" });
   }

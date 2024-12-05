@@ -186,7 +186,7 @@ const Product = () => {
       const sortingCriteria = {
         "price-high-low": (a, b) => b.price - a.price,
         "price-low-high": (a, b) => a.price - b.price,
-        discount: (a, b) => b.discountPercent - a.discountPercent,
+        discount: (a, b) => b.discount - a.discount,
         views: (a, b) => b.views - a.views,
       };
       const sorted = [...products].sort(sortingCriteria[criteria]);
@@ -428,15 +428,6 @@ const Product = () => {
         <h1 className="text-[20px] font-bold">Lọc theo tiêu chí</h1>
         <div className="sticky z-10 ">
           <div className="flex gap-2 flex-wrap">
-            <button className="flex gap-2 items-center bg-gray-200 p-2 rounded-lg">
-              <Icon icon="cil:filter" width="1rem" height="1rem" />
-              Bộ lọc
-            </button>
-            <button className="flex gap-2 items-center bg-gray-200 p-2 rounded-lg">
-              <Icon icon="iconoir:delivery-truck" width="1rem" height="1rem" />
-              Sẵn hàng
-            </button>
-
             {filters &&
               filters.map((filter, index) => (
                 <div className="relative" key={index}>

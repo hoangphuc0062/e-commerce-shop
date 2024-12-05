@@ -15,6 +15,7 @@ import {
   Address,
   Order,
   Account,
+  Password,
   Coupon,
 } from "../pages/web/member";
 import { ProtectedRoute } from "./ProtectedRoute";
@@ -32,7 +33,14 @@ export default function RootRouter() {
         { path: "/login", element: <Login /> },
         { path: "/forget-password", element: <ForgetPassoword /> },
         { path: "register", element: <Register /> },
-        { path: "/cart", element: <Cart /> },
+        {
+          path: "/cart",
+          element: (
+            <ProtectedRoute>
+              <Cart />
+            </ProtectedRoute>
+          ),
+        },
         { path: "/look-up-order", element: <ViewOrder /> },
         {
           path: "/:category",
@@ -50,6 +58,7 @@ export default function RootRouter() {
           path: "finalregister/:token",
           element: <Finalregister />,
         },
+
         {
           path: "/profile",
           element: <ProfileLayout />,
@@ -83,6 +92,14 @@ export default function RootRouter() {
               element: (
                 <ProtectedRoute>
                   <Address />
+                </ProtectedRoute>
+              ),
+            },
+            {
+              path: "change-password",  
+              element: (
+                <ProtectedRoute>
+                  <Password />
                 </ProtectedRoute>
               ),
             },
