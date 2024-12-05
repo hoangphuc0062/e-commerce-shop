@@ -35,6 +35,12 @@ const tabs = [
     link: "order",
     icon: "bx:bx-list-ul",
   },
+  {
+    id: "7",
+    name: "Đổi mật khẩu",
+    link: "change-password",
+    icon: "material-symbols:password",
+  },
 ];
 
 export const SideBar = () => {
