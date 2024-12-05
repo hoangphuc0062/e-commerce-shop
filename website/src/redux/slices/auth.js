@@ -44,6 +44,11 @@ export const logout = createAsyncThunk("auth/logout", (_, thunkAPI) =>
   handleAsyncThunk(AuthService.logout, [null], thunkAPI)
 );
 
+// change pasword
+export const changePassword = createAsyncThunk("auth/changePassword", (data, thunkAPI) =>
+  handleAsyncThunk(AuthService.changePassword, [data], thunkAPI)
+);
+
 // getMe
 export const getMe = createAsyncThunk("auth/getMe", (_, thunkAPI) =>
   handleAsyncThunk(AuthService.getme, [null], thunkAPI)
@@ -97,6 +102,7 @@ const auth = createSlice({
     statusUpdateCart: "idle",
     statusFinalRegister: "idle",
     statusUpdateCustomer: "idle",
+    statusChangePassword:"idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -141,6 +147,20 @@ const auth = createSlice({
       .addCase(logout.rejected, (state) => {
         state.statusLogout = "failed";
       });
+    builder
+    .addCase(changePassword.pending, (state) =>{
+      state.statusChangePassword = "loading";
+
+    })
+    .addCase(changePassword.fulfilled, (state, action) => {
+      state.statusChangePassword = "success"; 
+      state.data = action.payload;
+      })
+    .addCase(changePassword.rejected, (state) => {
+      state.statusChangePassword = "failed";
+
+    });
+    
     builder
       .addCase(getMe.pending, (state) => {
         state.statusGetMe = "loading";

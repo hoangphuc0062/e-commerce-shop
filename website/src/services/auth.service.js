@@ -10,9 +10,11 @@ const AuthServices = {
     sendRequest("get", `/customers/finalregister/${token}`),
 
   // Thêm phương thức đổi mật khẩu
-  updatePassword: (data) =>
+  changePassword: (data) =>
     sendRequest("post", "/customers/update-password", data),
+  
 };
+
 
 export default AuthServices;
 
