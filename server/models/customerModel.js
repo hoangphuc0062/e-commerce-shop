@@ -44,9 +44,18 @@ var customerSchema = new mongoose.Schema(
       },
     ],
     address: {
-      type: Array,
+      type: [
+        {
+          street: String,
+          wards: String,
+          districts: String,
+          provinces: String,
+          isDefault: { type: Boolean, default: false },
+        },
+      ],
       default: [],
     },
+
     wishlist: [{ type: mongoose.Types.ObjectId, ref: "Product" }],
 
     sex: {
