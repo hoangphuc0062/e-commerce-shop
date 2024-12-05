@@ -1,26 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import Person from "../../../components/Person";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSelector } from "react-redux";
 
 export default function Order() {
   const [activeTab, setActiveTab] = useState("all");
   const [expandedOrder, setExpandedOrder] = useState(null);
 
+  const [customerData, setCustomerData] = useState([]);
+  const status = useSelector((state) => state.auth.statusGetMe);
+  const data = useSelector((state) => state.auth.data.rs);
+  useEffect(() => {
+    if (status === "success") {
+      setCustomerData(data);
+    }
+  }, [status, data]);
+
   const tabs = [
     { id: "all", name: "Tất cả" },
-    { id: "Pending", name: "Đang chờ xử lý" },
-    { id: "Shipped", name: "Đã giao hàng" },
-    { id: "Delivered", name: "Đã nhận hàng" },
-    { id: "Cancelled", name: "Đã hủy" },
+    { id: "Đang chờ xử lý", name: "Đang chờ xử lý" },
+    { id: "Đã giao hàng", name: "Đã giao hàng" },
+    { id: "Đã nhận hàng", name: "Đã nhận hàng" },
+    { id: "Đã hủy", name: "Đã hủy" },
   ];
 
-  const data = [
+  const data1 = [
     {
       id: 1,
       date: "2023-01-01",
       total: "100,000 VND",
-      status: "Pending",
+      status: "Đang chờ xử lý",
       details: "Chi tiết 1",
       products: [
         {
@@ -29,84 +39,78 @@ export default function Order() {
           price: "50,000 VND",
           total: "50,000 VND",
         },
-        {
-          image: "image2.jpg",
-          quantity: 1,
-          price: "50,000 VND",
-          total: "50,000 VND",
-        },
       ],
     },
-    {
-      id: 2,
-      date: "2023-01-02",
-      total: "200,000 VND",
-      status: "Pending",
-      details: "Chi tiết 2",
-      products: [
-        {
-          image: "image3.jpg",
-          quantity: 2,
-          price: "100,000 VND",
-          total: "200,000 VND",
-        },
-      ],
-    },
-    {
-      id: 3,
-      date: "2023-01-03",
-      total: "300,000 VND",
-      status: "Shipped",
-      details: "Chi tiết 3",
-      products: [
-        {
-          image: "image4.jpg",
-          quantity: 3,
-          price: "100,000 VND",
-          total: "300,000 VND",
-        },
-      ],
-    },
-    {
-      id: 4,
-      date: "2023-01-04",
-      total: "400,000 VND",
-      status: "Delivered",
-      details: "Chi tiết 4",
-      products: [
-        {
-          image: "image5.jpg",
-          quantity: 4,
-          price: "100,000 VND",
-          total: "400,000 VND",
-        },
-      ],
-    },
-    {
-      id: 5,
-      date: "2023-01-05",
-      total: "500,000 VND",
-      status: "Cancelled",
-      details: "Chi tiết 5",
-      products: [
-        {
-          image: "image6.jpg",
-          quantity: 5,
-          price: "100,000 VND",
-          total: "500,000 VND",
-        },
-      ],
-    },
+    // {
+    //   id: 2,
+    //   date: "2023-01-02",
+    //   total: "200,000 VND",
+    //   status: "Đang chờ xử lý",
+    //   details: "Chi tiết 2",
+    //   products: [
+    //     {
+    //       image: "image3.jpg",
+    //       quantity: 2,
+    //       price: "100,000 VND",
+    //       total: "200,000 VND",
+    //     },
+    //   ],
+    // },
+    // {
+    //   id: 3,
+    //   date: "2023-01-03",
+    //   total: "300,000 VND",
+    //   status: "Đã giao hàng",
+    //   details: "Chi tiết 3",
+    //   products: [
+    //     {
+    //       image: "image4.jpg",
+    //       quantity: 3,
+    //       price: "100,000 VND",
+    //       total: "300,000 VND",
+    //     },
+    //   ],
+    // },
+    // {
+    //   id: 4,
+    //   date: "2023-01-04",
+    //   total: "400,000 VND",
+    //   status: "Đã nhận hàng",
+    //   details: "Chi tiết 4",
+    //   products: [
+    //     {
+    //       image: "image5.jpg",
+    //       quantity: 4,
+    //       price: "100,000 VND",
+    //       total: "400,000 VND",
+    //     },
+    //   ],
+    // },
+    // {
+    //   id: 5,
+    //   date: "2023-01-05",
+    //   total: "500,000 VND",
+    //   status: "Đã hủy",
+    //   details: "Chi tiết 5",
+    //   products: [
+    //     {
+    //       image: "image6.jpg",
+    //       quantity: 5,
+    //       price: "100,000 VND",
+    //       total: "500,000 VND",
+    //     },
+    //   ],
+    // },
   ];
   const getStatusClass = (status) => {
     switch (status) {
-      case "Pending":
+      case "Đang chờ xử lý":
         return `bg-blue-600`;
-      case "Shipped":
+      case "Đã giao hàng":
         return `bg-yellow-600`;
-      case "Delivered":
+      case "Đã nhận hàng":
         return `bg-gray-600`;
-      case "Cancelled":
+      case "Đã hủy":
         return `bg-red-600`;
       default:
         return "";
@@ -115,8 +119,8 @@ export default function Order() {
   const renderContent = () => {
     const filteredData =
       activeTab === "all"
-        ? data
-        : data.filter((item) => item.status === activeTab);
+        ? data1
+        : data1.filter((item) => item.status === activeTab);
 
     return (
       <table className="min-w-full divide-y divide-gray-200 text-center">
@@ -247,7 +251,7 @@ export default function Order() {
 
   return (
     <div>
-      <Person name="Phúc" phone="0773440062" role="Vip" />
+      <Person name={customerData.name} phone={customerData.phone} role="Vip" />
       <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
         <ul className="flex overflow-x-auto">
           {tabs.map((tab) => (

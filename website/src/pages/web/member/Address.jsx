@@ -11,13 +11,10 @@ export default function Address() {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
+  const [editingAddress, setEditingAddress] = useState(null);
 
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
-
-  const handleAddAddress = () => {
-    setIsDialogOpen(true);
-  };
 
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
@@ -73,27 +70,69 @@ export default function Address() {
     setWards([]); // Reset lựa chọn phường/xã
   };
 
+  const handleSaveEdit = () => {
+    if (editingAddress) {
+      // Cập nhật địa chỉ với dữ liệu mới
+      const updatedAddress = {
+        ...address,
+        name: editingAddress.name,
+        phone: editingAddress.phone,
+        province: provinces.find(
+          (province) => province.code === selectedProvince
+        ),
+        district: districts.find(
+          (district) => district.code === selectedDistrict
+        ),
+        ward: wards.find((ward) => ward.code === editingAddress.ward?.code),
+        street: editingAddress.street,
+      };
+
+      // Nếu không dùng Redux, chỉ cần cập nhật vào state tạm thời
+      setEditingAddress(updatedAddress);
+      setIsEditDialogOpen(false);
+    }
+  };
+
   return (
     <div className="p-4 sm:p-6 md:p-8">
-      <div className="flex flex-col md:flex-row justify-between items-center p-2">
-        <h1 className="text-2xl text-center font-semibold md:text-lg">
+      <div className="flex flex-row justify-between items-center p-2">
+        <h1 className="text-2xl text-center font-semibold md:text-[26px]">
           Địa chỉ của tôi
         </h1>
+        <div className="flex justify-center">
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 sm:py-2 px-3 sm:px-4 rounded-md md:mt-0 text-sm flex items-center justify-center w-full"
+            onClick={() => setIsDialogOpen(true)}
+          >
+            <Icon
+              icon="ic:baseline-plus"
+              width="1.5rem"
+              height="1.5rem"
+              className="inline"
+            />
+            <span className="ml-2 hidden md:block ">Thêm địa chỉ</span>
+          </button>
+        </div>
       </div>
+
       <hr />
       {/* Address */}
       <div className="flex justify-between items-center p-2 mb-2">
         <div>
           <div>
-            <span className="text-lg font-bold">
-              {address && address.name}{" "}
-            </span>
-            <span className="text-gray-500 ">
-              | {address && address.phone}{" "}
-            </span>
-          </div>
-          <div className="text-gray-500 ">
-            {address && address.address.map((item) => item)}
+            <div>
+              <span className="text-gray-500 font-semibold md:text-lg">
+                {editingAddress?.name || address?.name}{" "}
+              </span>
+              <span className="text-gray-500 font-semibold md:text-lg">
+                | {editingAddress?.phone || address?.phone}{" "}
+              </span>
+            </div>
+            <div className="text-gray-500 ">
+              {editingAddress
+                ? `${editingAddress.street}, ${editingAddress.ward?.name}, ${editingAddress.district?.name}, ${editingAddress.province?.name}`
+                : address?.address.join(", ")}
+            </div>
           </div>
 
           <div className="outline outline-main text-main w-fit p-2 mt-2 rounded-sm">
@@ -103,9 +142,16 @@ export default function Address() {
         <div className="flex flex-col gap-2 items-center">
           <div>
             <button
-              className="text-main text-lg mr-3 "
+              className="text-main text-lg mr-3"
               title="Cập nhật"
-              onClick={() => setIsEditDialogOpen(true)}
+              onClick={() => {
+                setEditingAddress(address); // Gán địa chỉ hiện tại vào state chỉnh sửa
+                setSelectedProvince(address?.province?.code || null);
+                fetchDistricts(address?.province?.code); // Lấy quận/huyện
+                setSelectedDistrict(address?.district?.code || null);
+                fetchWards(address?.district?.code); // Lấy phường/xã
+                setIsEditDialogOpen(true); // Mở dialog chỉnh sửa
+              }}
             >
               <Icon
                 icon="akar-icons:edit"
@@ -113,23 +159,32 @@ export default function Address() {
                 height="1.5rem"
                 className="inline"
               />
+              <span>Sửa</span>
+            </button>
+            <button
+              className="text-red-500 text-lg mr-3"
+              onClick={() => console.log("delete")}
+            >
+              <Icon
+                icon="mdi:bin"
+                width="1.5rem"
+                height="1.5rem"
+                className="inline"
+              />
+              Xóa
+            </button>
+          </div>
+          <div>
+            <button
+              className="text-main "
+              onClick={() => console.log("cap nhap")}
+            >
+              Thiết lập mặc định
             </button>
           </div>
         </div>
       </div>
       <hr />
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 sm:py-2 px-3 sm:px-4 rounded-md mt-2 md:mt-0 text-sm flex items-center justify-center w-full"
-        onClick={handleAddAddress}
-      >
-        <Icon
-          icon="mdi-light:plus"
-          width="1.5rem"
-          height="1.5rem"
-          className="inline"
-        />
-        <span className="ml-2">Thêm địa chỉ mới</span>
-      </button>
 
       {/* Add Address Dialog */}
       {isDialogOpen && (
@@ -138,9 +193,10 @@ export default function Address() {
           onClick={handleOverlayClick}
         >
           <div className="bg-white p-8 rounded-md w-full max-w-lg">
-            <h2 className="text-xl font-semibold mb-4 text-center text-[24px]">Thêm địa chỉ mới</h2>
+            <h2 className="text-xl font-semibold mb-4 text-center text-[24px]">
+              Thêm địa chỉ mới
+            </h2>
             <form>
-
               {/* Address Fields (Province, District, Ward) */}
               <div className="grid grid-cols-2 gap-4 mb-4">
                 {/* Province */}
@@ -242,13 +298,22 @@ export default function Address() {
           onClick={handleOverlayClickEdit}
         >
           <div className="bg-white p-8 rounded-md w-full max-w-lg">
-            <h2 className="text-xl font-semibold mb-4">Sửa địa chỉ</h2>
+            <h2 className="text-xl font-semibold mb-4">
+              Sửa thông tin địa chỉ
+            </h2>
             <form>
               <div className="mb-4">
                 <label className="font-semibold">Tên</label>
                 <input
                   type="text"
                   className="w-full p-2 border border-gray-300 rounded-md"
+                  value={editingAddress?.name || ""}
+                  onChange={(e) =>
+                    setEditingAddress({
+                      ...editingAddress,
+                      name: e.target.value,
+                    })
+                  }
                 />
               </div>
               <div className="mb-4">
@@ -256,17 +321,17 @@ export default function Address() {
                 <input
                   type="text"
                   className="w-full p-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="font-semibold">Địa chỉ</label>
-                <input
-                  type="text"
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  value={editingAddress?.phone || ""}
+                  onChange={(e) =>
+                    setEditingAddress({
+                      ...editingAddress,
+                      phone: e.target.value,
+                    })
+                  }
                 />
               </div>
 
-              {/* Address Fields (Province, District, Ward) */}
+              {/* Address Fields */}
               <div className="grid grid-cols-2 gap-4 mb-4">
                 {/* Province */}
                 <div>
@@ -274,6 +339,10 @@ export default function Address() {
                   <select
                     name="address.province"
                     className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
+                    value={
+                      // selectedProvince || editingAddress?.province?.code || ""
+                      address?.province
+                    }
                     onChange={(e) => {
                       const provinceCode = e.target.value;
                       setSelectedProvince(provinceCode);
@@ -295,6 +364,9 @@ export default function Address() {
                   <select
                     name="address.district"
                     className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
+                    value={
+                      selectedDistrict || editingAddress?.district?.code || ""
+                    }
                     onChange={(e) => {
                       const districtCode = e.target.value;
                       setSelectedDistrict(districtCode);
@@ -315,8 +387,15 @@ export default function Address() {
                 <div>
                   <label className="font-semibold">Phường/Xã</label>
                   <select
-                    className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
                     name="address.ward"
+                    className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
+                    value={editingAddress?.ward?.code || ""}
+                    onChange={(e) =>
+                      setEditingAddress({
+                        ...editingAddress,
+                        ward: { code: e.target.value },
+                      })
+                    }
                     disabled={!selectedDistrict}
                   >
                     <option>Chọn Phường, Xã</option>
@@ -336,20 +415,29 @@ export default function Address() {
                     name="address.street"
                     placeholder="Số nhà, tên đường"
                     className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
+                    value={editingAddress?.street || ""}
+                    onChange={(e) =>
+                      setEditingAddress({
+                        ...editingAddress,
+                        street: e.target.value,
+                      })
+                    }
                   />
                 </div>
               </div>
+
               <div className="flex justify-end">
                 <button
                   type="button"
                   className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2"
-                  onClick={handleCloseDialogEdit} // Gọi handleCloseDialogEdit khi nhấn "Hủy"
+                  onClick={handleCloseDialogEdit}
                 >
                   Hủy
                 </button>
                 <button
-                  type="submit"
+                  type="button"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                  onClick={handleSaveEdit}
                 >
                   Lưu
                 </button>
