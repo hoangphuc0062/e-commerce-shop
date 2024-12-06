@@ -5,8 +5,10 @@ import { Outlet } from "react-router-dom";
 export const PublicLayout = () => {
   return (
     <>
-      <Header />
-      <div className="container p-0 font-roboto ">
+      <div>
+        <Header />
+      </div>
+      <div className="container p-0 font-roboto">
         <Outlet />
       </div>
       <Footer />

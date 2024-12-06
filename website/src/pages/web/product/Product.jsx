@@ -23,6 +23,7 @@ import {
   splitValues,
   updateSelectedFiltersWithKeys,
 } from "../../../utils/helper";
+import BreadcrumbsCustom from "../../../components/Breadcrumbs/Breadcrumbs";
 
 const Product = () => {
   const { category, brand } = useParams();
@@ -392,8 +393,10 @@ const Product = () => {
   const getKeyByLabel = (label) => {};
 
   return (
-    <div className="flex flex-col gap-3">
-      <div>breadcrumb here</div>
+    <div className="container sm:p-4 lg:p-8 w-full flex flex-col gap-4">
+      <div>
+        <BreadcrumbsCustom />
+      </div>
       <section className="flex gap-1">
         <div className="hidden w-full md:block md:w-1/2">
           {firstHalfBanner.length > 0 && <SimpleSlide imgs={firstHalfBanner} />}
