@@ -1,13 +1,8 @@
 import { useRoutes } from "react-router-dom";
 import ForumLayout from "../Layout/ForumLayout/index";
 import { NotFound } from "../pages/404/NotFound";
-import Register from "../pages/auth/Register";
 import ForumPage from "../pages/web/forum";
 import DetailBlog from "../pages/web/forum/DetailBlog";
-import { ProtectedRoute } from "./ProtectedRoute";
-import { ProfileLayout } from "../Layout/ProfileLayout";
-import { Account } from "../pages/web/member/Account";
-import { HomeProfile } from "../pages/web/member/Home";
 import CategoryPost from "../pages/web/forum/CategoryPost";
 import TagPost from "../pages/web/forum/TagPost";
 import Login from "../pages/auth/Login";
@@ -25,33 +20,6 @@ export default function RootRouter() {
         { path: "category/:categorySlug", element: <CategoryPost /> },
         { path: "tag/:tagsName", element: <TagPost /> },
         { path: "/login", element: <Login /> },
-        { path: "/register", element: <Register /> },
-      ],
-    },
-    {
-      path: "/profile",
-      element: (
-        <ProtectedRoute>
-          <ProfileLayout />
-        </ProtectedRoute>
-      ),
-      children: [
-        {
-          path: "",
-          element: (
-            <ProtectedRoute>
-              <HomeProfile />
-            </ProtectedRoute>
-          ),
-        },
-        {
-          path: "account",
-          element: (
-            <ProtectedRoute>
-              <Account />
-            </ProtectedRoute>
-          ),
-        },
       ],
     },
     {

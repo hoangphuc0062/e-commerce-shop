@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { getMe } from "../redux/slices/auth";
 import Cookies from "js-cookie";
@@ -12,16 +12,19 @@ const UserProvider = ({ children }) => {
   const token = Cookies.get("accessToken");
 
   const dispatch = useDispatch();
-  useMemo(() => {
+
+  useEffect(() => {
     if (token) {
       setLoginAuth(true);
       dispatch(getMe());
+    } else {
+      setLoginAuth(false);
     }
   }, [token, dispatch]);
 
   const value = useMemo(
     () => ({ user, setUser, loginAuth, setLoginAuth }),
-    [user, setUser, loginAuth, setLoginAuth]
+    [user, loginAuth]
   );
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
@@ -30,4 +33,5 @@ const UserProvider = ({ children }) => {
 UserProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
+
 export { UserContext, UserProvider };

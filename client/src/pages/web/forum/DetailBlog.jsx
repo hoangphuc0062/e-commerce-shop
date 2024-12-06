@@ -38,7 +38,7 @@ const DetailBlog = () => {
   // Lấy trạng thái và dữ liệu bài viết từ Redux
   const status = useSelector((state) => state.post.getBySlugStatus);
   const slugData = useSelector((state) => state.post.slugData);
-  const isLoginned = useSelector((state) => state.customer.isLoginned);
+  const isLoginned = useSelector((state) => state.auth.isLogin);
   const [data, setData] = useState(null);
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
