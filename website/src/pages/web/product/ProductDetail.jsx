@@ -38,6 +38,7 @@ const ProductDetail = () => {
   const [productLP, setProductLP] = useState([]);
   const [activeIndex, setActiveIndex] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [values, setValues] = useState();
 
   const status = useSelector((state) => state.product.statusDetail);
   const DataProduct = useSelector((state) => state.product.dataDetail);
@@ -93,6 +94,7 @@ const ProductDetail = () => {
       ...prevData,
       price: attr.price,
     }));
+    setValues(attr.values);
   };
 
   const handleAddToCart = useCallback(() => {
@@ -250,43 +252,49 @@ const ProductDetail = () => {
             </div>
           </div>
           <div className="block__header--right flex flex-col p-4 w-full md:w-1/2 rounded-lg gap-3 ">
-            {DataProduct?.variants?.length > 1 && (
-              <div className="grid grid-cols-3 gap-2">
-                {DataProduct?.variants?.map((value, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleAttributeClick(index, value)}
-                    className={`w-full border-2 flex items-center gap-2 rounded-xl p-2 text-sm relative ${
-                      activeIndex === index ? "border-main" : "border-gray-300"
-                    }`}
-                  >
-                    {activeIndex === index && (
-                      <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
-                        <Icon
-                          icon="akar-icons:check"
-                          width="0.8rem"
-                          height="0.8rem"
-                          className="inline"
-                        />
-                      </span>
-                    )}
-
-                    <div className="flex flex-col justify-center items-center w-full">
-                      <span className="font-bold">{value?.key}</span>
-                      <span>{formatCurrency(value?.price)}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
             <div>
-              <h1 className="text-[18px] font-bold">Chọn màu sắc</h1>
+              {DataProduct?.variants?.length > 1 && (
+                <div className="grid grid-cols-3 gap-2">
+                  {DataProduct?.variants?.map((variant, index) => (
+                    <>
+                      <div className="" key={index}>
+                        <button
+                          onClick={() => handleAttributeClick(index, variant)}
+                          className={`w-full border-2 flex items-center gap-2 rounded-xl p-2 text-sm relative ${
+                            activeIndex === index
+                              ? "border-main"
+                              : "border-gray-300"
+                          }`}
+                        >
+                          {activeIndex === index && (
+                            <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
+                              <Icon
+                                icon="akar-icons:check"
+                                width="0.8rem"
+                                height="0.8rem"
+                                className="inline"
+                              />
+                            </span>
+                          )}
+                          <div className="flex flex-col justify-center items-center w-full">
+                            <span className="font-bold">{variant?.key}</span>
+                            <span>{formatCurrency(variant?.price)}</span>
+                          </div>
+                        </button>
+                      </div>
+                    </>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div>
+              <span className="text-[24px] font-bold">Màu sắc:</span>
             </div>
 
             <div>
               <span className="text-[24px] font-bold mr-2">Giá:</span>
               <span className="text-[24px] font-bold">
-                {data.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} đ
+                {formatCurrency(data?.price)}
               </span>
             </div>
             <div>
