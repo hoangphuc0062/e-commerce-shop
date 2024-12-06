@@ -24,7 +24,11 @@ import Drawer from "@mui/material/Drawer";
 import { useContext } from "react";
 import { UserContext } from "../../../context/AuthContext";
 
+import { transformAttributes } from "../../../utils/helper";
+import BreadcrumbsCustom from "../../../components/Breadcrumbs/Breadcrumbs";
+
 import { formatCurrency, transformAttributes } from "../../../utils/helper";
+
 
 const ProductDetail = () => {
   const { category, brand, product } = useParams();
@@ -160,7 +164,9 @@ const ProductDetail = () => {
 
   return (
     <div className="container p-2 sm:p-4 lg:p-8 w-full flex flex-col gap-4">
-      <div>breadcrumb here</div>
+      <div>
+        <BreadcrumbsCustom />
+      </div>
       <section className="block__product flex flex-col gap-3">
         <div className="block__header flex flex-col md:flex-row md:items-center text-[24px]  gap-2">
           <span className=" font-bold">{data?.name}</span>
