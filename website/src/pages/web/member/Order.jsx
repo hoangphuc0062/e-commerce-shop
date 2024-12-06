@@ -29,15 +29,15 @@ export default function Order() {
       setOrderData(
         dataOrder.map((item) => ({
           id: item.SKU,
-          date: new Date(item.date).toLocaleDateString("vi-VN"),
+          date: new Date(item?.date).toLocaleDateString("vi-VN"),
           total: `${item.total.toLocaleString()} VND`,
-          status: item.status,
+          status: item?.status,
           products: item?.products?.map((product) => ({
-            name: product.pid.name,
-            image: product.pid.thumbnail,
-            quantity: product.quantity,
-            price: `${product.pid.price.toLocaleString()} VND`,
-            fex: `${item.shippingFee.toLocaleString()} VND`,
+            name: product?.pid?.name,
+            image: product?.pid?.thumbnail,
+            quantity: product?.quantity,
+            price: `${product?.pid?.price.toLocaleString()} VND`,
+            fex: `${item?.shippingFee.toLocaleString()} VND`,
             total: `${item?.total.toLocaleString()} VND`,
           })),
         }))
