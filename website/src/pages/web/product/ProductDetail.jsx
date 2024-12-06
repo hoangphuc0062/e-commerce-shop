@@ -27,22 +27,30 @@ import { UserContext } from "../../../context/AuthContext";
 import { transformAttributes } from "../../../utils/helper";
 import BreadcrumbsCustom from "../../../components/Breadcrumbs/Breadcrumbs";
 
+import { formatCurrency, transformAttributes } from "../../../utils/helper";
+
+
 const ProductDetail = () => {
   const { category, brand, product } = useParams();
   const { loginAuth } = useContext(UserContext);
   const dispatch = useDispatch();
+
   const [data, setData] = useState([]);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [open, setOpen] = React.useState(false);
   const [viewMoreDescription, setViewMoreDescription] = useState(true);
   const [productLP, setProductLP] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(null);
+  const [activeValueIndex, setActiveValueIndex] = useState(null);
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [values, setValues] = useState();
+
   const status = useSelector((state) => state.product.statusDetail);
   const DataProduct = useSelector((state) => state.product.dataDetail);
   const products = useSelector((state) => state.product.data.products);
   const statusLP = useSelector((state) => state.product.status);
-  const [activeIndex, setActiveIndex] = useState(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [groupVariants, setGroupVariants] = useState();
+
   useEffect(() => {
     if (product) {
       dispatch(getProductBySlug(product));
@@ -88,11 +96,38 @@ const ProductDetail = () => {
 
   const handleAttributeClick = (index, attr) => {
     setActiveIndex(index);
+    // console.log(attr);
     setData((prevData) => ({
       ...prevData,
       price: attr.price,
+      onStock: attr.values[index].onStock,
     }));
+    setValues(attr.values);
   };
+
+  const handleValueClick = (index, value) => {
+    setActiveValueIndex(index);
+    // Thêm logic khác nếu cần, ví dụ: lưu value đã chọn, gửi request API, v.v.
+  };
+  useEffect(() => {
+    if (DataProduct?.variants?.length > 0) {
+      const lastVariantIndex = DataProduct.variants.length - 1;
+      setActiveIndex(lastVariantIndex);
+      handleAttributeClick(
+        lastVariantIndex,
+        DataProduct.variants[lastVariantIndex]
+      );
+    }
+
+    if (DataProduct?.variants?.[0]?.values?.length > 0) {
+      const lastValueIndex = DataProduct.variants[0].values.length - 1;
+      setActiveValueIndex(lastValueIndex);
+      handleValueClick(
+        lastValueIndex,
+        DataProduct.variants[0].values[lastValueIndex]
+      );
+    }
+  }, [DataProduct]);
 
   const handleAddToCart = useCallback(() => {
     if (loginAuth === false) {
@@ -127,17 +162,13 @@ const ProductDetail = () => {
     // ...(data?.attributes?.map((attr) => attr.images) ?? []),
   ];
 
-  useEffect(() => {
-    console.log(DataProduct);
-  }, [DataProduct]);
-
   return (
     <div className="container p-2 sm:p-4 lg:p-8 w-full flex flex-col gap-4">
       <div>
         <BreadcrumbsCustom />
       </div>
       <section className="block__product flex flex-col gap-3">
-        <div className="block__header flex items-center text-[24px]  gap-2">
+        <div className="block__header flex flex-col md:flex-row md:items-center text-[24px]  gap-2">
           <span className=" font-bold">{data?.name}</span>
           <span className="flex text-yellow-500">
             <Icon icon="ic:outline-star" />
@@ -188,7 +219,7 @@ const ProductDetail = () => {
           </button>
         </div>
         <div className="flex flex-col md:flex md:flex-row  gap-4">
-          <div className="block__header--left flex flex-col gap-3 w-full md:w-1/2 min-h-[400px] ">
+          <div className="block__header--left flex flex-col gap-3  md:w-1/2 min-h-[400px] ">
             <div className="rounded-lg border-2 p-2">
               <Swiper
                 style={{
@@ -249,82 +280,85 @@ const ProductDetail = () => {
             </div>
           </div>
           <div className="block__header--right flex flex-col p-4 w-full md:w-1/2 rounded-lg gap-3 ">
-            {/* bien the here */}
-            {/* <div className="grid grid-cols-3 gap-2">
-              {data?.variants?.map((attr, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAttributeClick(index, attr)}
-                  className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative ${
-                    activeIndex === index
-                      ? "border-blue-500"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {activeIndex === index && (
-                    <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
-                      <Icon
-                        icon="akar-icons:check"
-                        width="0.8rem"
-                        height="0.8rem"
-                        className="inline"
-                      />
-                    </span>
-                  )}
-                  <div className="h-[50px]">
-                    <img
-                      className="w-full h-full object-contain"
-                      src={attr.images || "default-image-url.jpg"}
-                      alt={`Variant ${attr.SKU}`}
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold">{attr.screenSize}</span>
-                    <span className="text-gray-700">{attr.RAM}</span>
-                    <span className="text-gray-700">{attr.storage}</span>
-                  </div>
-                </button>
-              ))}
-            </div> */}
-            {data?.variants?.length > 1 && (
-              <div className="grid grid-cols-3 gap-2">
-                {data?.variants?.map((variant, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleAttributeClick(index, variant)}
-                    className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative ${
-                      activeIndex === index
-                        ? "border-blue-500"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    {activeIndex === index && (
-                      <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
-                        <Icon
-                          icon="akar-icons:check"
-                          width="0.8rem"
-                          height="0.8rem"
-                          className="inline"
-                        />
-                      </span>
-                    )}
-                    <div className="h-[50px]">
-                      <img
-                        className="w-full h-full object-contain"
-                        src={variant.thumbnail || "default-image-url.jpg"}
-                        alt={`Variant ${variant.name}`}
-                      />
-                    </div>
-                    <div>{variant.name}</div>
-                  </button>
-                ))}
+            <div>
+              {DataProduct?.variants?.length > 1 && (
+                <div className="grid grid-cols-3 gap-2">
+                  {DataProduct?.variants?.map((variant, index) => (
+                    <>
+                      <div className="" key={index}>
+                        <button
+                          onClick={() => handleAttributeClick(index, variant)}
+                          className={`w-full border-2 flex items-center gap-2 rounded-xl p-2 text-sm relative ${
+                            activeIndex === index
+                              ? "border-main"
+                              : "border-gray-300"
+                          }`}
+                        >
+                          {activeIndex === index && (
+                            <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
+                              <Icon
+                                icon="akar-icons:check"
+                                width="0.8rem"
+                                height="0.8rem"
+                                className="inline"
+                              />
+                            </span>
+                          )}
+                          <div className="flex flex-col justify-center items-center w-full">
+                            <span className="font-bold">{variant?.key}</span>
+                            <span>{formatCurrency(variant?.price)}</span>
+                          </div>
+                        </button>
+                      </div>
+                    </>
+                  ))}
+                </div>
+              )}
+            </div>
+            {values && values.length > 0 && (
+              <div>
+                <span className="text-[20px] font-semibold">Chọn màu sắc</span>
+                <div className="grid grid-cols-3 gap-2">
+                  {values?.map((value, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleValueClick(index, value)}
+                      className={`flex w-full border-2 rounded-xl p-2 relative ${
+                        activeValueIndex === index
+                          ? "border-main"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      <img src={value?.thumbnail} alt="" />
+                      <div>
+                        <div className="text-left text-[14px]">
+                          {value?.name}
+                        </div>
+                        <div className="text-[14px] truncate">
+                          {formatCurrency(value?.price)}
+                        </div>
+                      </div>
+                      {activeValueIndex === index && (
+                        <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
+                          <Icon
+                            icon="akar-icons:check"
+                            width="0.8rem"
+                            height="0.8rem"
+                            className="inline"
+                          />
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                <div></div>
               </div>
             )}
 
             <div>
               <span className="text-[24px] font-bold mr-2">Giá:</span>
               <span className="text-[24px] font-bold">
-                {data.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} đ
+                {formatCurrency(data?.price)}
               </span>
             </div>
             <div>
