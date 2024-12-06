@@ -8,6 +8,15 @@ router.get("/finalregister/:token", ctrl.finalRegister);
 
 router.post("/login", ctrl.loginCustomer);
 
+router.post("/add-address", verifyAccessToken, ctrl.createAddress);
+router.get("/get-address", verifyAccessToken, ctrl.getAddresses);
+router.put("/update-address/:addressId", verifyAccessToken, ctrl.updateAddress);
+router.delete(
+  "/delete-address/:addressId",
+  verifyAccessToken,
+  ctrl.deleteAddress
+);
+
 router.post("/checkOTP", ctrl.checkOTP);
 router.get("/logout", ctrl.logout);
 router.post("/forgotpassword", ctrl.forgotPassword);

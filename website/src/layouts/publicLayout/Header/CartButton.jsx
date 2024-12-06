@@ -49,13 +49,27 @@ function CartButton({ data }) {
     setSelectAll((prev) => !prev);
   };
 
-  const updateQuantity = (index, amount) => {
-    const newQuantity = cartData[index].quantity + amount;
-    const newCartData = cartData.map((item, i) => {
-      if (i === index) return { ...item, quantity: newQuantity };
-      return item;
+  // const updateQuantity = (index, amount) => {
+  //   const newQuantity = cartData[index].quantity + amount;
+  //   const newCartData = cartData.map((item, i) => {
+  //     if (i === index) return { ...item, quantity: newQuantity };
+  //     return item;
+  //   });
+  //   setCartData(newCartData);
+  // };
+  const updateQuantity = (index, change) => {
+    setCartData((prevItems) => {
+      return prevItems.map((item, i) => {
+        if (i === index) {
+          const newQuantity = item.quantity + change;
+          return {
+            ...item,
+            quantity: newQuantity > 0 ? newQuantity : 1, // Ensure quantity does not go below 1
+          };
+        }
+        return item;
+      });
     });
-    setCartData(newCartData);
   };
 
   const handleDelete = useCallback(() => {
@@ -182,7 +196,7 @@ function CartButton({ data }) {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center border border-gray-300 rounded w-28 justify-between">
+                    <div className="flex items-center border border-gray-300 rounded w-40 justify-between">
                       <button
                         onClick={() => updateQuantity(index, -1)}
                         className="text-lg px-3 focus:outline-none hover:bg-gray-200"

@@ -12,6 +12,8 @@ const OrderServices = {
   trackingOrder(sku) {
     return sendRequest("get", `orders/code/${sku}`);
   },
+
+  getOrderByUser: () => sendRequest("get", "/orders/user"),
 };
 
 export default OrderServices;
