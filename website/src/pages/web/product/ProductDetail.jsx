@@ -24,11 +24,8 @@ import Drawer from "@mui/material/Drawer";
 import { useContext } from "react";
 import { UserContext } from "../../../context/AuthContext";
 
-import { transformAttributes } from "../../../utils/helper";
 import BreadcrumbsCustom from "../../../components/Breadcrumbs/Breadcrumbs";
-
 import { formatCurrency, transformAttributes } from "../../../utils/helper";
-
 
 const ProductDetail = () => {
   const { category, brand, product } = useParams();
@@ -100,7 +97,6 @@ const ProductDetail = () => {
     setData((prevData) => ({
       ...prevData,
       price: attr.price,
-      onStock: attr.values[index].onStock,
     }));
     setValues(attr.values);
   };
@@ -361,13 +357,7 @@ const ProductDetail = () => {
                 {formatCurrency(data?.price)}
               </span>
             </div>
-            <div>
-              <span className="text-[12px] mr-2">
-                {data.onStock === 0
-                  ? "Hết hàng"
-                  : `Hàng còn (${data.onStock}) ${data.unit || ""}`}
-              </span>
-            </div>
+
             {/* khuyen mai */}
             <div className="border rounded-lg">
               <div className="flex items-center w-full text-main bg-blue-200 p-2 gap-2 rounded-tr-lg rounded-tl-lg text-[16px] font-bold ">
