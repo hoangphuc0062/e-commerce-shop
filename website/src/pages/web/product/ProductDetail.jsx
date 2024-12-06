@@ -41,7 +41,7 @@ const ProductDetail = () => {
   const statusLP = useSelector((state) => state.product.status);
   const [activeIndex, setActiveIndex] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
+  const [groupVariants, setGroupVariants] = useState();
   useEffect(() => {
     if (product) {
       dispatch(getProductBySlug(product));
@@ -111,7 +111,7 @@ const ProductDetail = () => {
     dispatch(addCart(cartData))
       .unwrap()
       .then(() => {
-        handleToast("success", "Thêm sản phẩm vào giỏ hàng thành công");
+        handleToast("success", "Thêm sản phẩm vào giỏ hàng");
         dispatch(getCart());
       })
       .catch(() => {
@@ -125,6 +125,10 @@ const ProductDetail = () => {
     ...(data?.images ?? []),
     // ...(data?.attributes?.map((attr) => attr.images) ?? []),
   ];
+
+  useEffect(() => {
+    console.log(DataProduct);
+  }, [DataProduct]);
 
   return (
     <div className="container p-2 sm:p-4 lg:p-8 w-full flex flex-col gap-4">
@@ -313,20 +317,20 @@ const ProductDetail = () => {
                 ))}
               </div>
             )}
-            <div>
-              <span className="text-[24px] font-bold mr-2">
-                {data.onStock === 0
-                  ? "Hết hàng"
-                  : `Hàng còn (${data.onStock}) ${data.unit || ""}`}
-              </span>
-            </div>
+
             <div>
               <span className="text-[24px] font-bold mr-2">Giá:</span>
               <span className="text-[24px] font-bold">
                 {data.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} đ
               </span>
             </div>
-
+            <div>
+              <span className="text-[12px] mr-2">
+                {data.onStock === 0
+                  ? "Hết hàng"
+                  : `Hàng còn (${data.onStock}) ${data.unit || ""}`}
+              </span>
+            </div>
             {/* khuyen mai */}
             <div className="border rounded-lg">
               <div className="flex items-center w-full text-main bg-blue-200 p-2 gap-2 rounded-tr-lg rounded-tl-lg text-[16px] font-bold ">
@@ -335,6 +339,7 @@ const ProductDetail = () => {
                 </span>
                 <span>Khuyến mãi:</span>
               </div>
+
               <ul className="p-2">
                 <li className="flex gap-2">
                   <Icon icon="mdi:check" width="1rem" height="1rem" />
@@ -380,11 +385,12 @@ const ProductDetail = () => {
       </section>
 
       <section className="flex flex-col md:flex-row gap-4 p-2">
-        <div className="flex flex-col items-center justify-between w-full md:w-4/6 p-2 rounded-lg shadow-lg ">
+        <div className="flex flex-col items-center justify-between w-full md:w-4/6 p-2 rounded-lg shadow-custom ">
+          <h2 className="text-[24px] font-bold">Thông tin về sản phẩm</h2>
           <div
             className={`${
               viewMoreDescription ? `h-[400px]` : `min-h-fit`
-            } overflow-hidden`}
+            } overflow-hidden p-2 `}
           >
             <div
               dangerouslySetInnerHTML={{ __html: data?.description }}
@@ -393,11 +399,11 @@ const ProductDetail = () => {
           </div>
           <button
             onClick={handleViewMoreDescription}
-            className="w-[20%] p-2 text-center shadow-lg rounded-lg border-gray-300 border-2 hover:border-2 hover:border-main hover:text-main hover:bg-blue-100 focus:outline-main focus:bg-blue-100 "
+            className="min-w-[200px] p-2 text-center shadow-lg rounded-lg border-gray-300 border-2 hover:border-2 hover:border-main hover:text-main hover:bg-blue-100 focus:outline-main focus:bg-blue-100 "
           >
             {viewMoreDescription ? (
-              <div className="flex items-center justify-center">
-                <span>Xem thêm</span>
+              <div className="flex items-center justify-center ">
+                <span className="w-full">Xem thêm</span>
                 <span>
                   <Icon icon="ei:chevron-down" width="2rem" height="2rem" />
                 </span>
@@ -412,10 +418,10 @@ const ProductDetail = () => {
             )}
           </button>
         </div>
-        <div className="w-full md:w-2/6 min-h-[250px] p-2 rounded-lg shadow-custom">
+        <div className="w-full md:w-2/6 max-h-fit p-2 rounded-lg shadow-custom">
           <div className="flex flex-col gap-3">
             <div>
-              <h1>Thông số ký thuật</h1>
+              <h1 className="text-[24px] font-bold">Thông số kỹ thuật</h1>
               {transformAttributes(data?.attributes || []).length > 0 ? (
                 transformAttributes(data?.attributes || [])
                   .slice(0, 2)

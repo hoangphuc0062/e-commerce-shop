@@ -68,3 +68,41 @@ export const transformAttributes = (attributes) => {
     return { title, details: detailArray };
   });
 };
+export const handleGroupVariants = (data) => {
+  const groupedData = {};
+
+  data.forEach((item) => {
+    const { name = "Unknown", thumbnail = "" } = item;
+
+    // Xác định các trường biến thể tự động (trừ `name` và `thumbnail`)
+    const variants = Object.keys(item)
+      .filter(
+        (key) =>
+          key !== "name" &&
+          key !== "thumbnail" &&
+          key !== "inComing" &&
+          key !== "view" &&
+          key !== "topSelling" &&
+          key !== "minInventory" &&
+          key !== "maxInventory" &&
+          key !== "stopSelling" &&
+          key !== "inventory"
+      )
+      .reduce((acc, key) => {
+        acc[key] = item[key];
+        return acc;
+      }, {});
+
+    if (!groupedData[name]) {
+      groupedData[name] = {
+        name,
+        thumbnail,
+        variants: [],
+      };
+    }
+
+    groupedData[name].variants.push(variants);
+  });
+
+  return Object.values(groupedData);
+};
