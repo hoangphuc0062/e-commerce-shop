@@ -24,24 +24,26 @@ import Drawer from "@mui/material/Drawer";
 import { useContext } from "react";
 import { UserContext } from "../../../context/AuthContext";
 
-import { transformAttributes } from "../../../utils/helper";
+import { formatCurrency, transformAttributes } from "../../../utils/helper";
 
 const ProductDetail = () => {
   const { category, brand, product } = useParams();
   const { loginAuth } = useContext(UserContext);
   const dispatch = useDispatch();
+
   const [data, setData] = useState([]);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [open, setOpen] = React.useState(false);
   const [viewMoreDescription, setViewMoreDescription] = useState(true);
   const [productLP, setProductLP] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   const status = useSelector((state) => state.product.statusDetail);
   const DataProduct = useSelector((state) => state.product.dataDetail);
   const products = useSelector((state) => state.product.data.products);
   const statusLP = useSelector((state) => state.product.status);
-  const [activeIndex, setActiveIndex] = useState(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [groupVariants, setGroupVariants] = useState();
+
   useEffect(() => {
     if (product) {
       dispatch(getProductBySlug(product));
@@ -127,7 +129,9 @@ const ProductDetail = () => {
   ];
 
   useEffect(() => {
-    console.log(DataProduct);
+    if (DataProduct) {
+      console.log(DataProduct);
+    }
   }, [DataProduct]);
 
   return (
@@ -246,53 +250,14 @@ const ProductDetail = () => {
             </div>
           </div>
           <div className="block__header--right flex flex-col p-4 w-full md:w-1/2 rounded-lg gap-3 ">
-            {/* bien the here */}
-            {/* <div className="grid grid-cols-3 gap-2">
-              {data?.variants?.map((attr, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAttributeClick(index, attr)}
-                  className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative ${
-                    activeIndex === index
-                      ? "border-blue-500"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {activeIndex === index && (
-                    <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
-                      <Icon
-                        icon="akar-icons:check"
-                        width="0.8rem"
-                        height="0.8rem"
-                        className="inline"
-                      />
-                    </span>
-                  )}
-                  <div className="h-[50px]">
-                    <img
-                      className="w-full h-full object-contain"
-                      src={attr.images || "default-image-url.jpg"}
-                      alt={`Variant ${attr.SKU}`}
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold">{attr.screenSize}</span>
-                    <span className="text-gray-700">{attr.RAM}</span>
-                    <span className="text-gray-700">{attr.storage}</span>
-                  </div>
-                </button>
-              ))}
-            </div> */}
-            {data?.variants?.length > 1 && (
+            {DataProduct?.variants?.length > 1 && (
               <div className="grid grid-cols-3 gap-2">
-                {data?.variants?.map((variant, index) => (
+                {DataProduct?.variants?.map((value, index) => (
                   <button
                     key={index}
-                    onClick={() => handleAttributeClick(index, variant)}
-                    className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative ${
-                      activeIndex === index
-                        ? "border-blue-500"
-                        : "border-gray-300"
+                    onClick={() => handleAttributeClick(index, value)}
+                    className={`w-full border-2 flex items-center gap-2 rounded-xl p-2 text-sm relative ${
+                      activeIndex === index ? "border-main" : "border-gray-300"
                     }`}
                   >
                     {activeIndex === index && (
@@ -305,18 +270,18 @@ const ProductDetail = () => {
                         />
                       </span>
                     )}
-                    <div className="h-[50px]">
-                      <img
-                        className="w-full h-full object-contain"
-                        src={variant.thumbnail || "default-image-url.jpg"}
-                        alt={`Variant ${variant.name}`}
-                      />
+
+                    <div className="flex flex-col justify-center items-center w-full">
+                      <span className="font-bold">{value?.key}</span>
+                      <span>{formatCurrency(value?.price)}</span>
                     </div>
-                    <div>{variant.name}</div>
                   </button>
                 ))}
               </div>
             )}
+            <div>
+              <h1 className="text-[18px] font-bold">Chọn màu sắc</h1>
+            </div>
 
             <div>
               <span className="text-[24px] font-bold mr-2">Giá:</span>
