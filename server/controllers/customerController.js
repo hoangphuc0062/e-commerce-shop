@@ -125,7 +125,7 @@ const loginCustomer = asyncHandler(async (req, res) => {
 
   // Check if the phone number exists
   const customer = await Customer.findOne({ email }).select(
-    "-code -isBlocked -resetPasswordToken -resetPasswordExpires -passwordResetExprires -passwordResetToken -refreshToken"
+    "-code  -resetPasswordToken -resetPasswordExpires -passwordResetExprires -passwordResetToken -refreshToken"
   );
   if (!customer) {
     res.status(400);
@@ -316,6 +316,7 @@ const finalRegister = asyncHandler(async (req, res) => {
     email: cookie.dataregister.email,
     password: cookie.dataregister.password,
     name: cookie.dataregister.name,
+    isBlocked: false,
   });
   res.clearCookie("dataregister");
   if (newUser) {
@@ -411,7 +412,31 @@ const addCart = asyncHandler(async (req, res) => {
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
+  const product = await Product.findById(productId);
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
 
+  if (attributeId) {
+    const variant = product.variants.find(
+      (variant) => variant.attributeId.toString() === attributeId.toString()
+    );
+    if (!variant) {
+      return res.status(404).json({ message: "Variant not found" });
+    }
+    if (variant.onStock < quantity) {
+      return res
+        .status(400)
+        .json({ message: "Insufficient stock for variant" });
+    }
+  } else {
+    // Check stock for the main product
+    if (product.onStock < quantity) {
+      return res
+        .status(400)
+        .json({ message: "Insufficient stock for product" });
+    }
+  }
   const updatedCart = await customer.addToCart(
     productId,
     attributeId,
@@ -604,6 +629,116 @@ const deleteManyCart = asyncHandler(async (req, res) => {
   });
 });
 
+const createAddress = asyncHandler(async (req, res) => {
+  const { street, wards, districts, provinces, isDefault } = req.body;
+  const userId = req.user._id;
+
+  try {
+    if (isDefault) {
+      // Gỡ trạng thái mặc định của địa chỉ hiện tại (nếu có)
+      await Customer.updateOne(
+        { _id: userId, "address.isDefault": true },
+        { $set: { "address.$.isDefault": false } }
+      );
+    }
+
+    // Thêm địa chỉ mới
+    const newAddress = { street, wards, districts, provinces, isDefault };
+    await Customer.updateOne(
+      { _id: userId },
+      { $push: { address: newAddress } }
+    );
+
+    res.status(201).json({ message: "Thêm địa chỉ thành công" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: `Lỗi khi thêm địa chỉ mới: ${error.message}` });
+  }
+});
+
+const updateAddress = asyncHandler(async (req, res) => {
+  const { addressId } = req.params;
+  const { street, wards, districts, provinces, isDefault } = req.body;
+  const userId = req.user._id;
+
+  try {
+    if (isDefault) {
+      // Gỡ trạng thái mặc định của địa chỉ hiện tại (nếu có)
+      await Customer.updateOne(
+        { _id: userId, "address.isDefault": true },
+        { $set: { "address.$.isDefault": false } }
+      );
+    }
+
+    // Cập nhật địa chỉ cụ thể
+    const updatedCustomer = await Customer.updateOne(
+      { _id: userId, "address._id": addressId },
+      {
+        $set: {
+          "address.$.street": street,
+          "address.$.wards": wards,
+          "address.$.districts": districts,
+          "address.$.provinces": provinces,
+          "address.$.isDefault": isDefault,
+        },
+      }
+    );
+
+    if (updatedCustomer.matchedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy địa chỉ cần cập nhật" });
+    }
+
+    res.status(200).json({ message: "Cập nhật địa chỉ thành công" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: `Lỗi khi cập nhật địa chỉ: ${error.message}` });
+  }
+});
+
+const deleteAddress = asyncHandler(async (req, res) => {
+  const { addressId } = req.params;
+  const userId = req.user._id;
+
+  try {
+    const updatedCustomer = await Customer.updateOne(
+      { _id: userId },
+      { $pull: { address: { _id: addressId } } }
+    );
+
+    if (updatedCustomer.modifiedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy địa chỉ cần xóa" });
+    }
+
+    res.status(200).json({ message: "Xóa địa chỉ thành công" });
+  } catch (error) {
+    res.status(500).json({ error: `Lỗi khi xóa địa chỉ: ${error.message}` });
+  }
+});
+
+const getAddresses = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const customer = await Customer.findById(userId).select("address");
+
+    if (!customer) {
+      return res.status(404).json({ message: "Không tìm thấy khách hàng" });
+    }
+
+    res.status(200).json(customer.address);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: `Lỗi khi lấy danh sách địa chỉ: ${error.message}` });
+  }
+});
+
 module.exports = {
   checkOTP,
   changePassword,
@@ -625,4 +760,9 @@ module.exports = {
   updateCart,
   deleteCartItem,
   deleteManyCart,
+
+  createAddress,
+  updateAddress,
+  deleteAddress,
+  getAddresses,
 };

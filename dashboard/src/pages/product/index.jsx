@@ -44,7 +44,6 @@ export default function ProductPage() {
   };
 
   const handleEye = (index) => {
-    console.log("Eye", index);
     setProduct(index);
     setOpenDialog(true);
   };
@@ -71,9 +70,13 @@ export default function ProductPage() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (status === "success") {
-      setData(products);
-    }
+    const updatedProducts = products?.map((product) => {
+      if (product.onStock === 0) {
+        return { ...product, status: "outofstock" };
+      }
+      return product;
+    });
+    setData(updatedProducts);
     dispatch(resetState({ key: "status", value: "idle" }));
   }, [status, products, dispatch]);
 
@@ -148,14 +151,17 @@ export default function ProductPage() {
   ];
   return (
     <>
-      <ReusableTable
-        data={data}
-        columns={columns}
-        navigate={"/dashboard/product/create"}
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
-        handleEye={handleEye}
-      />
+      {data && (
+        <ReusableTable
+          columns={columns}
+          data={data}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+          handleEye={handleEye}
+          setOpen={setOpen}
+        />
+      )}
+
       <ProductDetailsDialog
         product={product}
         open={openDialog}

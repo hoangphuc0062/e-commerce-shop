@@ -18,17 +18,22 @@ import DialogTitle from "@mui/material/DialogTitle";
 import SingleProduct from "../../../components/FeatureBlockProduct/SingleProduct";
 import { getProductBySlug, getProducts } from "./../../../redux/slices/product";
 import { extractTextFromHtml } from "./../../../../../dashboard/src/utils/extractTextFromHtml";
-import { addCart, getCart, resetState } from "../../../redux/slices/auth";
+import { addCart, getCart } from "../../../redux/slices/auth";
 import { handleToast } from "../../../ultils/toast";
 import Drawer from "@mui/material/Drawer";
+import { useContext } from "react";
+import { UserContext } from "../../../context/AuthContext";
+
+import { transformAttributes } from "../../../utils/helper";
 
 const ProductDetail = () => {
   const { category, brand, product } = useParams();
+  const { loginAuth } = useContext(UserContext);
   const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [open, setOpen] = React.useState(false);
-  const [viewMoreDescription, setViewMoreDescription] = useState(false);
+  const [viewMoreDescription, setViewMoreDescription] = useState(true);
   const [productLP, setProductLP] = useState([]);
   const status = useSelector((state) => state.product.statusDetail);
   const DataProduct = useSelector((state) => state.product.dataDetail);
@@ -36,6 +41,7 @@ const ProductDetail = () => {
   const statusLP = useSelector((state) => state.product.status);
   const [activeIndex, setActiveIndex] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [groupVariants, setGroupVariants] = useState();
   useEffect(() => {
     if (product) {
       dispatch(getProductBySlug(product));
@@ -88,9 +94,8 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = useCallback(() => {
-
     if (loginAuth === false) {
-      handleToast("error", "Vui lòng đăng nhập để thêm sản phẩm");
+      handleToast("error", "Bạn cần đăng nhập");
       return;
     }
     const attribute = data?.variants?.[activeIndex];
@@ -106,7 +111,7 @@ const ProductDetail = () => {
     dispatch(addCart(cartData))
       .unwrap()
       .then(() => {
-        handleToast("success", "Thêm sản phẩm vào giỏ hàng thành công");
+        handleToast("success", "Thêm sản phẩm vào giỏ hàng");
         dispatch(getCart());
       })
       .catch(() => {
@@ -116,64 +121,14 @@ const ProductDetail = () => {
 
   const dataImg = [
     data?.thumbnail,
-    data?.videos ?? [],
+    // data?.videos ?? [],
     ...(data?.images ?? []),
     // ...(data?.attributes?.map((attr) => attr.images) ?? []),
   ];
-  const translations = {
-    bao_hanh_1_doi_1: "Bảo hành 1 đổi 1",
-    battery: "Dung lượng pin",
-    best_discount_price: "Giá khuyến mãi tốt nhất",
-    bluetooth: "Bluetooth",
-    change_layout_preorder: "Thay đổi bố cục khi đặt hàng trước",
-    cpu: "CPU",
-    dimensions: "Kích thước",
-    display_resolution: "Độ phân giải màn hình",
-    display_size: "Kích thước màn hình",
-    display_type: "Loại màn hình",
-    final_sale_price: "Giá bán cuối cùng",
-    flash_sale_from: "Bắt đầu flash sale",
-    flash_sale_price: "Giá flash sale",
-    hdd_sdd: "Bộ nhớ",
-    included_accessories: "Phụ kiện đi kèm",
-    key_selling_points: "Điểm nổi bật",
-    laptop_bao_mat: "Bảo mật",
-    laptop_camera_webcam: "Camera/Webcam",
-    laptop_cong_nghe_am_thanh: "Công nghệ âm thanh",
-    laptop_cpu: "CPU",
-    laptop_ram: "RAM",
-    macbook_bao_mat: "Bảo mật",
-    macbook_gpu: "GPU",
-    macbook_thoi_luong_pin: "Thời lượng pin",
-    manufacturer: "Hãng sản xuất",
-    nhu_cau_su_dung: "Nhu cầu sử dụng",
-    product_weight: "Khối lượng",
-    product_condition: "Tình trạng sản phẩm",
-    warranty_information: "Thông tin bảo hành",
-    weight: "Trọng lượng",
-    wlan: "Kết nối không dây",
-    // Add more translations as needed
-  };
 
-  // Translation function
-  const translateKey = (key) =>
-    translations[key] ||
-    key.replace(/_/g, " ").replace(/\d/g, "").toUpperCase();
-
-  // Updated transformAttributes function
-  const transformAttributes = (attributes) => {
-    return [
-      {
-        title: "Thông số kỹ thuật",
-        details: Object.entries(attributes).map(([key, value]) => ({
-          key: translateKey(key),
-          value,
-        })),
-      },
-    ];
-  };
-
-  const displayKeys = ["screenSize", "RAM", "storage"];
+  useEffect(() => {
+    console.log(DataProduct);
+  }, [DataProduct]);
 
   return (
     <div className="container p-2 sm:p-4 lg:p-8 w-full flex flex-col gap-4">
@@ -328,58 +283,54 @@ const ProductDetail = () => {
                 </button>
               ))}
             </div> */}
-            <div className="grid grid-cols-3 gap-2">
-              {data?.variants?.map((variant, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAttributeClick(index, variant)}
-                  className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative ${
-                    activeIndex === index
-                      ? "border-blue-500"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {activeIndex === index && (
-                    <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
-                      <Icon
-                        icon="akar-icons:check"
-                        width="0.8rem"
-                        height="0.8rem"
-                        className="inline"
-                      />
-                    </span>
-                  )}
-                  <div className="h-[50px]">
-                    <img
-                      className="w-full h-full object-contain"
-                      src={variant.images || "default-image-url.jpg"}
-                      alt={`Variant ${variant.SKU}`}
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    {displayKeys.map((key) => (
-                      <span key={key} className="text-gray-700">
-                        {variant[key] || ""}
+            {data?.variants?.length > 1 && (
+              <div className="grid grid-cols-3 gap-2">
+                {data?.variants?.map((variant, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleAttributeClick(index, variant)}
+                    className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative ${
+                      activeIndex === index
+                        ? "border-blue-500"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    {activeIndex === index && (
+                      <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
+                        <Icon
+                          icon="akar-icons:check"
+                          width="0.8rem"
+                          height="0.8rem"
+                          className="inline"
+                        />
                       </span>
-                    ))}
-                  </div>
-                </button>
-              ))}
-            </div>
-            <div>
-              <span className="text-[24px] font-bold mr-2">
-                {data.onStock === 0
-                  ? "Hết hàng"
-                  : `Hàng còn (${data.onStock}) ${data.unit || ""}`}
-              </span>
-            </div>
+                    )}
+                    <div className="h-[50px]">
+                      <img
+                        className="w-full h-full object-contain"
+                        src={variant.thumbnail || "default-image-url.jpg"}
+                        alt={`Variant ${variant.name}`}
+                      />
+                    </div>
+                    <div>{variant.name}</div>
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div>
               <span className="text-[24px] font-bold mr-2">Giá:</span>
               <span className="text-[24px] font-bold">
                 {data.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} đ
               </span>
             </div>
-
+            <div>
+              <span className="text-[12px] mr-2">
+                {data.onStock === 0
+                  ? "Hết hàng"
+                  : `Hàng còn (${data.onStock}) ${data.unit || ""}`}
+              </span>
+            </div>
             {/* khuyen mai */}
             <div className="border rounded-lg">
               <div className="flex items-center w-full text-main bg-blue-200 p-2 gap-2 rounded-tr-lg rounded-tl-lg text-[16px] font-bold ">
@@ -388,6 +339,7 @@ const ProductDetail = () => {
                 </span>
                 <span>Khuyến mãi:</span>
               </div>
+
               <ul className="p-2">
                 <li className="flex gap-2">
                   <Icon icon="mdi:check" width="1rem" height="1rem" />
@@ -433,23 +385,25 @@ const ProductDetail = () => {
       </section>
 
       <section className="flex flex-col md:flex-row gap-4 p-2">
-        <div className="flex flex-col items-center justify-between w-full md:w-4/6 p-2 rounded-lg shadow-lg ">
+        <div className="flex flex-col items-center justify-between w-full md:w-4/6 p-2 rounded-lg shadow-custom ">
+          <h2 className="text-[24px] font-bold">Thông tin về sản phẩm</h2>
           <div
             className={`${
               viewMoreDescription ? `h-[400px]` : `min-h-fit`
-            } overflow-hidden`}
+            } overflow-hidden p-2 `}
           >
-            {data?.description
-              ? extractTextFromHtml(data.description)
-              : "Không có mô tả sản phẩm"}
+            <div
+              dangerouslySetInnerHTML={{ __html: data?.description }}
+              className="prose prose-sm max-w-none"
+            />
           </div>
           <button
             onClick={handleViewMoreDescription}
-            className="w-[20%] p-2 text-center shadow-lg rounded-lg border-gray-300 border-2 hover:border-2 hover:border-main hover:text-main hover:bg-blue-100 focus:outline-main focus:bg-blue-100 "
+            className="min-w-[200px] p-2 text-center shadow-lg rounded-lg border-gray-300 border-2 hover:border-2 hover:border-main hover:text-main hover:bg-blue-100 focus:outline-main focus:bg-blue-100 "
           >
             {viewMoreDescription ? (
-              <div className="flex items-center justify-center">
-                <span>Xem thêm</span>
+              <div className="flex items-center justify-center ">
+                <span className="w-full">Xem thêm</span>
                 <span>
                   <Icon icon="ei:chevron-down" width="2rem" height="2rem" />
                 </span>
@@ -464,15 +418,17 @@ const ProductDetail = () => {
             )}
           </button>
         </div>
-        <div className="w-full md:w-2/6 h-[300px] p-2 rounded-lg shadow-custom">
+        <div className="w-full md:w-2/6 max-h-fit p-2 rounded-lg shadow-custom">
           <div className="flex flex-col gap-3">
             <div>
-              <div className="h-full max-h-[300px]">
-                {transformAttributes(data?.attributes || []).map(
-                  (spec, specIndex) => (
+              <h1 className="text-[24px] font-bold">Thông số kỹ thuật</h1>
+              {transformAttributes(data?.attributes || []).length > 0 ? (
+                transformAttributes(data?.attributes || [])
+                  .slice(0, 2)
+                  .map((spec, specIndex) => (
                     <div key={specIndex}>
                       <div className="font-semibold">{spec.title}</div>
-                      {spec.details.splice(0, 5).map((detail, detailIndex) => (
+                      {spec.details.map((detail, detailIndex) => (
                         <div
                           key={detailIndex}
                           className="flex justify-between p-1"
@@ -486,9 +442,10 @@ const ProductDetail = () => {
                         </div>
                       ))}
                     </div>
-                  )
-                )}
-              </div>
+                  ))
+              ) : (
+                <div>Không có thông số kỹ thuật có sẵn</div>
+              )}
             </div>
             <button
               onClick={handleClickOpen}

@@ -130,7 +130,7 @@ export const Header = () => {
                     />
                   </div>
                   <div>
-                    <h1>TP.Hồ Chí Minh</h1>
+                    <h1>Buôn Ma Thuột</h1>
                   </div>
                 </div>
               </button>

@@ -68,25 +68,31 @@ export default function UserPage() {
   }, [deleteStatus, dispatch]);
 
   // Map customer data for the table
+
   useEffect(() => {
     if (Array.isArray(dataCustomer)) {
-      const initialData = dataCustomer.map((item) => ({
-        id: item?._id,
-        name: item?.name,
-        address: item?.address,
-        email: item?.email,
-        sdt: item?.sdt,
-        sex: item?.sex,
-        membership: item?.membership,
-        totalAmount: item?.totalAmount,
-        status: item?.isBlocked ? "blocked" : "active",
-        cart:
-          item?.cart?.map((cartItem) => ({
-            name: cartItem.name,
-            price: cartItem.price,
-            quantity: cartItem.quantity,
-          })) || [],
-      }));
+      const initialData = dataCustomer.map((item) => {
+        const defaultAddress = item?.address.find((addr) => addr.isDefault);
+        return {
+          id: item?._id,
+          name: item?.name,
+          address: defaultAddress
+            ? `${defaultAddress.street}, ${defaultAddress.wards}, ${defaultAddress.districts}, ${defaultAddress.provinces}`
+            : "Chưa cập nhật",
+          email: item?.email,
+          sdt: item?.sdt,
+          sex: item?.sex,
+          membership: item?.membership,
+          totalAmount: item?.totalAmount,
+          status: item?.isBlocked ? "blocked" : "active",
+          cart:
+            item?.cart?.map((cartItem) => ({
+              name: cartItem.name,
+              price: cartItem.price,
+              quantity: cartItem.quantity,
+            })) || [],
+        };
+      });
       setItems(initialData);
     }
   }, [dataCustomer]);
