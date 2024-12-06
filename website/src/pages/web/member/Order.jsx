@@ -37,9 +37,8 @@ export default function Order() {
             image: product.pid.thumbnail,
             quantity: product.quantity,
             price: `${product.pid.price.toLocaleString()} VND`,
-            total: `${(
-              product.pid.price * product.quantity
-            ).toLocaleString()} VND`,
+            fex: `${item.shippingFee.toLocaleString()} VND`,
+            total: `${item?.total.toLocaleString()} VND`,
           })),
         }))
       );
@@ -54,23 +53,6 @@ export default function Order() {
     { id: "Đã hủy", name: "Đã hủy" },
   ];
 
-  const data1 = [
-    {
-      id: 1,
-      date: "2023-01-01",
-      total: "100,000 VND",
-      status: "Đang chờ xử lý",
-      details: "Chi tiết 1",
-      products: [
-        {
-          image: "image1.jpg",
-          quantity: 1,
-          price: "50,000 VND",
-          total: "50,000 VND",
-        },
-      ],
-    },
-  ];
   const getStatusClass = (status) => {
     switch (status) {
       case "Pending":
@@ -220,6 +202,9 @@ export default function Order() {
                               </p>
                               <p className="text-sm text-gray-500">
                                 Giá: {product.price}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                Phí vận chuyển: {product.fex}
                               </p>
                               <p className="text-sm text-gray-500">
                                 Thành tiền: {product.total}

@@ -73,14 +73,21 @@ const createOrder = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Cart is empty" });
   }
 
-  const products = userCart.cart.map((el) => ({
-    pid: el.pid,
-    attributeId: el.attributeId,
-    quantity: el.quantity,
-    price: el.price,
-  }));
+  const products = userCart.cart.map((el) => {
+    const product = el.pid;
+    const variant = product.variants?.find(
+      (v) => v.get("id") === el.attributeId
+    );
+    return {
+      pid: el.pid,
+      attributeId: el.attributeId,
+      quantity: el.quantity,
+      price: variant ? variant.price : product.price,
+    };
+  });
 
   let total = req.body.total || 0;
+
   if (req.body.coupon) {
     const couponExist = await Coupon.findOne({ code: coupon });
     if (couponExist) {
@@ -106,7 +113,7 @@ const createOrder = asyncHandler(async (req, res) => {
     wards: address.ward,
     districts: address.district,
     provinces: address.province,
-    isDefault: false,
+    isDefault: true,
   };
 
   // Cập nhật thông tin khách hàng
@@ -115,11 +122,20 @@ const createOrder = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Customer not found" });
   }
 
+  // Update existing addresses to set isDefault to false
+  const updatedAddresses = customer.address.map((addr) => ({
+    ...addr.toObject(),
+    isDefault: false,
+  }));
+
+  // Add the new address with isDefault set to true
+  updatedAddresses.push(formattedAddress);
+
   await Customer.findByIdAndUpdate(
     customer._id,
     {
       $set: {
-        address: [formattedAddress],
+        address: updatedAddresses,
         name,
         phone,
         sex,
@@ -399,9 +415,13 @@ const sendSuccessEmail = async (req, res) => {
         );
       }
     }
-    await Customer.findByIdAndUpdate(orderBy._id, {
-      $set: { cart: [] }, // Clear the cart
-    });
+    await Customer.findByIdAndUpdate(
+      orderBy._id,
+      {
+        $set: { cart: [] },
+      },
+      { new: true }
+    );
     const email = orderBy.email;
     const html = generateEmailTemplate({
       SKU,
