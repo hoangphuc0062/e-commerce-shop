@@ -37,6 +37,8 @@ const ProductDetail = () => {
   const [viewMoreDescription, setViewMoreDescription] = useState(true);
   const [productLP, setProductLP] = useState([]);
   const [activeIndex, setActiveIndex] = useState(null);
+  const [activeValueIndex, setActiveValueIndex] = useState(null);
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [values, setValues] = useState();
 
@@ -90,12 +92,38 @@ const ProductDetail = () => {
 
   const handleAttributeClick = (index, attr) => {
     setActiveIndex(index);
+    // console.log(attr);
     setData((prevData) => ({
       ...prevData,
       price: attr.price,
+      onStock: attr.values[index].onStock,
     }));
     setValues(attr.values);
   };
+
+  const handleValueClick = (index, value) => {
+    setActiveValueIndex(index);
+    // Thêm logic khác nếu cần, ví dụ: lưu value đã chọn, gửi request API, v.v.
+  };
+  useEffect(() => {
+    if (DataProduct?.variants?.length > 0) {
+      const lastVariantIndex = DataProduct.variants.length - 1;
+      setActiveIndex(lastVariantIndex);
+      handleAttributeClick(
+        lastVariantIndex,
+        DataProduct.variants[lastVariantIndex]
+      );
+    }
+
+    if (DataProduct?.variants?.[0]?.values?.length > 0) {
+      const lastValueIndex = DataProduct.variants[0].values.length - 1;
+      setActiveValueIndex(lastValueIndex);
+      handleValueClick(
+        lastValueIndex,
+        DataProduct.variants[0].values[lastValueIndex]
+      );
+    }
+  }, [DataProduct]);
 
   const handleAddToCart = useCallback(() => {
     if (loginAuth === false) {
@@ -130,17 +158,11 @@ const ProductDetail = () => {
     // ...(data?.attributes?.map((attr) => attr.images) ?? []),
   ];
 
-  useEffect(() => {
-    if (DataProduct) {
-      console.log(DataProduct);
-    }
-  }, [DataProduct]);
-
   return (
     <div className="container p-2 sm:p-4 lg:p-8 w-full flex flex-col gap-4">
       <div>breadcrumb here</div>
       <section className="block__product flex flex-col gap-3">
-        <div className="block__header flex items-center text-[24px]  gap-2">
+        <div className="block__header flex flex-col md:flex-row md:items-center text-[24px]  gap-2">
           <span className=" font-bold">{data?.name}</span>
           <span className="flex text-yellow-500">
             <Icon icon="ic:outline-star" />
@@ -191,7 +213,7 @@ const ProductDetail = () => {
           </button>
         </div>
         <div className="flex flex-col md:flex md:flex-row  gap-4">
-          <div className="block__header--left flex flex-col gap-3 w-full md:w-1/2 min-h-[400px] ">
+          <div className="block__header--left flex flex-col gap-3  md:w-1/2 min-h-[400px] ">
             <div className="rounded-lg border-2 p-2">
               <Swiper
                 style={{
@@ -287,9 +309,45 @@ const ProductDetail = () => {
                 </div>
               )}
             </div>
-            <div>
-              <span className="text-[24px] font-bold">Màu sắc:</span>
-            </div>
+            {values && values.length > 0 && (
+              <div>
+                <span className="text-[20px] font-semibold">Chọn màu sắc</span>
+                <div className="grid grid-cols-3 gap-2">
+                  {values?.map((value, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleValueClick(index, value)}
+                      className={`flex w-full border-2 rounded-xl p-2 relative ${
+                        activeValueIndex === index
+                          ? "border-main"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      <img src={value?.thumbnail} alt="" />
+                      <div>
+                        <div className="text-left text-[14px]">
+                          {value?.name}
+                        </div>
+                        <div className="text-[14px] truncate">
+                          {formatCurrency(value?.price)}
+                        </div>
+                      </div>
+                      {activeValueIndex === index && (
+                        <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
+                          <Icon
+                            icon="akar-icons:check"
+                            width="0.8rem"
+                            height="0.8rem"
+                            className="inline"
+                          />
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                <div></div>
+              </div>
+            )}
 
             <div>
               <span className="text-[24px] font-bold mr-2">Giá:</span>
