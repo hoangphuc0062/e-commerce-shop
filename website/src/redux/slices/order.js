@@ -46,6 +46,10 @@ export const vnPAYReturn = createAsyncThunk(
 export const sendMail = createAsyncThunk("order/sendMail", (data, thunkAPI) =>
   handleAsyncThunk(OrderService.sendMail, [data], thunkAPI)
 );
+
+export const userOrder = createAsyncThunk("order/userOrder", (_, thunkAPI) =>
+  handleAsyncThunk(OrderService.getOrderByUser, [null], thunkAPI)
+);
 const orderSlice = createSlice({
   name: "order",
   initialState: {
@@ -57,6 +61,7 @@ const orderSlice = createSlice({
     statusSendMail: "idle",
     statusTracking: "idle",
     trackingData: [],
+    statusUserOrder: "idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -125,6 +130,18 @@ const orderSlice = createSlice({
       })
       .addCase(sendMail.rejected, (state, action) => {
         state.statusSendMail = "failed";
+        state.error = action.payload;
+      });
+    builder
+      .addCase(userOrder.pending, (state) => {
+        state.statusUserOrder = "loading";
+      })
+      .addCase(userOrder.fulfilled, (state, action) => {
+        state.statusUserOrder = "success";
+        state.data = action.payload;
+      })
+      .addCase(userOrder.rejected, (state, action) => {
+        state.statusUserOrder = "failed";
         state.error = action.payload;
       });
   },
