@@ -147,12 +147,6 @@ const ratingPosts = asyncHandler(async (req, res) => {
   // Nếu không tìm thấy bài viết
   if (!ratingPosts) throw new Error("Post not found");
 
-  // Lọc các rating hợp lệ (loại bỏ những rating có `customer` đã bị xóa)
-  ratingPosts.rating = ratingPosts.rating.filter(async (el) => {
-    const customerExists = await Customer.findById(el.customer);
-    return customerExists !== null;
-  });
-
   const alreadyRating = ratingPosts.rating.find(
     (el) => el.customer.toString() === _id.toString()
   );
