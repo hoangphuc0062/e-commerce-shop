@@ -6,15 +6,31 @@ import { useContext, useEffect, useState } from "react";
 import { logout, resetState } from "../../../redux/slices/auth";
 import { handleToast } from "../../../../../website/src/ultils/toast";
 import { UserContext } from "../../../context/AuthContext";
+import { getWebConfig } from "../../../redux/slices/webConfig";
 
 const Header = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
+  const [dataWebConFig, setDataWbeConFig] = useState([]);
+
+  const statusWebConFig = useSelector((state) => state.webConfig.status);
+  const webConfig = useSelector((state) => state.webConfig.data);
+
+  useEffect(() => {
+    dispatch(getWebConfig());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (statusWebConFig === "succeeded") {
+      setDataWbeConFig(webConfig);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusWebConFig, dataWebConFig]);
 
   const status = useSelector((state) => state.auth?.statusGetMe || "idle");
   const user = useSelector((state) => state.auth?.data?.rs || null);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (status === "success") {
@@ -24,7 +40,7 @@ const Header = () => {
     }
   }, [status, user]);
 
-    const { setLoginAuth } = useContext(UserContext);
+  const { setLoginAuth } = useContext(UserContext);
   const handleLogout = () => {
     dispatch(logout()).then((result) => {
       if (result.type === "auth/logout/fulfilled") {
@@ -33,7 +49,7 @@ const Header = () => {
         navigate("/");
         dispatch(resetState({ key: "statusLogout", value: "idle" }));
         dispatch(resetState({ key: "statusGetMe", value: "idle" }));
-        setData(null)
+        setData(null);
       }
     });
   };
@@ -64,10 +80,15 @@ const Header = () => {
       <div className="container mx-auto">
         <div className="flex flex-row items-center justify-between">
           {/* Logo Section */}
-          <Link to="/">
-            <div className="text-white text-[24px] leading-[32px] font-bold">
-              Logo Here
-            </div>
+          <Link
+            to="/"
+            className="flex items-center w-1/3 space-x-3 rtl:space-x-reverse"
+          >
+            <span className="self-center whitespace-nowrap dark:text-white">
+              {dataWebConFig && (
+                <img src={dataWebConFig[0]?.logo} alt="" width={100} />
+              )}
+            </span>
           </Link>
 
           {/* Search Section */}

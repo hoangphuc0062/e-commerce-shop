@@ -5,7 +5,7 @@ import loadingReducer from "./slices/loading";
 import customerReducer from "./slices/customer";
 import postReducer from "./slices/post";
 import authReducer from "./slices/auth";
-
+import webConfigReducer from "./slices/webConfig";
 import categoryReducer from "./slices/category";
 import tagsReducer from "./slices/tags";
 
@@ -16,6 +16,7 @@ const rootReducer = combineReducers({
   post: postReducer,
   category: categoryReducer,
   tags: tagsReducer,
+  webConfig: webConfigReducer,
 });
 
 // Cấu hình store
