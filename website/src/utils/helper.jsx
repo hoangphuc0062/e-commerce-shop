@@ -68,41 +68,22 @@ export const transformAttributes = (attributes) => {
     return { title, details: detailArray };
   });
 };
-export const handleGroupVariants = (data) => {
-  const groupedData = {};
 
-  data.forEach((item) => {
-    const { name = "Unknown", thumbnail = "" } = item;
+export const objectToQueryString = (filters) => {
+  const queryParams = []; // Mảng dùng để lưu trữ các phần của query string
 
-    // Xác định các trường biến thể tự động (trừ `name` và `thumbnail`)
-    const variants = Object.keys(item)
-      .filter(
-        (key) =>
-          key !== "name" &&
-          key !== "thumbnail" &&
-          key !== "inComing" &&
-          key !== "view" &&
-          key !== "topSelling" &&
-          key !== "minInventory" &&
-          key !== "maxInventory" &&
-          key !== "stopSelling" &&
-          key !== "inventory"
-      )
-      .reduce((acc, key) => {
-        acc[key] = item[key];
-        return acc;
-      }, {});
-
-    if (!groupedData[name]) {
-      groupedData[name] = {
-        name,
-        thumbnail,
-        variants: [],
-      };
+  for (const [key, value] of Object.entries(filters)) {
+    if (Array.isArray(value)) {
+      // Nếu giá trị là một mảng, nối các phần tử bằng dấu phẩy, loại bỏ khoảng trắng trong từng phần tử
+      queryParams.push(
+        `${key}=${value.map((val) => val.replace(/\s+/g, "-")).join(",")}`
+      );
+    } else if (typeof value === "object") {
+      // Nếu giá trị là một object (như 'price'), xử lý nó thành chuỗi "minPrice-maxPrice"
+      const priceRange = `${value.minPrice}-${value.maxPrice}`;
+      queryParams.push(`${key}=${priceRange}`);
     }
+  }
 
-    groupedData[name].variants.push(variants);
-  });
-
-  return Object.values(groupedData);
+  return queryParams.join("&"); // Kết nối các phần tử của query string bằng dấu "&"
 };

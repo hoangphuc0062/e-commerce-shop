@@ -1,5 +1,10 @@
 import { useEffect, useState, useCallback, act, useRef } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { Icon } from "@iconify/react";
 
 import Skeleton from "@mui/material/Skeleton";
@@ -20,6 +25,7 @@ import { getSettingFilter } from "../../../redux/slices/settingFilter";
 
 import {
   formatCurrency,
+  objectToQueryString,
   splitValues,
   updateSelectedFiltersWithKeys,
 } from "../../../utils/helper";
@@ -29,12 +35,14 @@ const Product = () => {
   const { category, brand } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [firstLoading, setFirstLoading] = useState(true);
   const [hasMoreProducts, setHasMoreProducts] = useState(true);
   const [productPerPage] = useState(15);
+
   const [sortedProducts, setSortedProducts] = useState([]);
   const [activeButton, setActiveButton] = useState("");
   const [brands, setBrands] = useState([]);
@@ -57,6 +65,7 @@ const Product = () => {
 
   const statusProduct = useSelector((state) => state.product.status);
   const productsData = useSelector((state) => state.product.data.products);
+  const countProduct = useSelector((state) => state.product.data.counts);
   const statusBanner = useSelector((state) => state.banner.status);
   const Banner = useSelector((state) => state.banner.data);
 
@@ -82,7 +91,7 @@ const Product = () => {
       });
       dispatch(getSettingFilter({ search: category })).then((data) => {
         if (data.type === "settingFilter/getSettingFilter/fulfilled") {
-          setFilters(data.payload.settingFilters[0].filterButton);
+          setFilters(data?.payload?.settingFilters[0]?.filterButton);
           // console.log(data.payload.settingFilters[0].filterButton);
         }
       });
@@ -159,7 +168,7 @@ const Product = () => {
     try {
       const response = await dispatch(
         getProducts({
-          limit: productPerPage + 15,
+          limit: products.length + 15,
           fields:
             "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
           slug: brand ? `${category},${brand}` : category,
@@ -171,16 +180,17 @@ const Product = () => {
       if (Array.isArray(newProducts) && newProducts.length > 0) {
         setProducts((prev) => [...prev, ...newProducts]);
         setSortedProducts((prev) => [...prev, ...newProducts]);
-        setHasMoreProducts(newProducts.length >= productPerPage);
-      } else {
-        setHasMoreProducts(false);
+        setHasMoreProducts(newProducts.length === 15); // Check if there are more products to load // Check if there are more products to load
       }
+      //  else {
+      //   setHasMoreProducts(false);
+      // }
     } catch (error) {
       setHasMoreProducts(false);
     } finally {
       setIsLoading(false);
     }
-  }, [brand, category, dispatch, isLoading, productPerPage]);
+  }, [brand, category, dispatch, isLoading, products.length, countProduct]);
 
   const handleSort = useCallback(
     (criteria) => {
@@ -367,13 +377,14 @@ const Product = () => {
     // Ẩn modal sau khi áp dụng
     handleToggleHidden(index, setHidden);
     handleToggleActive(index, setActive);
-    console.log("Kết quả bộ lọc:", selectedFilters);
   };
 
   const resetSelectedFilters = () => {
     setSelectedFilters({}); // Xóa tất cả các bộ lọc đã chọn
     setActive({}); // Xóa trạng thái active
     setActiveChild({}); // Xóa trạng thái activeChild
+    setQueryFilter();
+    setSearchParams(""); // Clear search query
   };
 
   const removeLabel = (key) => {
@@ -383,14 +394,17 @@ const Product = () => {
       return updatedFilters;
     });
     setActiveChild({});
+    setQueryFilter();
   };
 
   useEffect(() => {
     setQueryFilter(updateSelectedFiltersWithKeys(filters, selectedFilters));
-    console.log("Updated selected filters:", queryFilter);
+    if (queryFilter) {
+      const query = objectToQueryString(queryFilter);
+      setSearchParams(query);
+      console.log("Query filter:", query);
+    }
   }, [filters, selectedFilters]);
-
-  const getKeyByLabel = (label) => {};
 
   return (
     <div className="container sm:p-4 lg:p-8 w-full flex flex-col gap-4">
