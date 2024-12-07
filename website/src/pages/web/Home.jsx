@@ -308,12 +308,12 @@ const HomePage = () => {
       <section className="bg-white h-full ">
         {products.length > 0 && <GridProduct data={products} cat={slug} />}
       </section>
-      {/* <section className="bg-white h-full ">
+      <section className="bg-white h-full ">
         {products1.length > 0 && <GridProduct data={products1} cat={slug1} />}
       </section>
       <section className="bg-white h-full ">
         {products2.length > 0 && <GridProduct data={products2} cat={slug2} />}
-      </section> */}
+      </section>
       <section className="">
         <Accessories datas={datas} title="Phụ kiện" />
       </section>
