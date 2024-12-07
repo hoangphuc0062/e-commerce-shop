@@ -112,6 +112,9 @@ export default function Order() {
       activeTab === "all"
         ? orderData
         : orderData.filter((item) => item.status === activeTab);
+    if (filteredData.length === 0) {
+      return <p className="text-center py-4">Đơn hàng trống</p>;
+    }
     return (
       <table className="min-w-full divide-y divide-gray-200 text-center">
         <thead className="bg-gray-50">
