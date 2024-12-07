@@ -12,7 +12,7 @@ const request = axios.create({
 });
 
 request.interceptors.request.use((config) => {
-  config.headers.Authorization = `Bearer ${Cookies.get("access_token")}`;
+  config.headers.Authorization = `Bearer ${Cookies.get("accessToken")}`;
   return config;
 });
 
