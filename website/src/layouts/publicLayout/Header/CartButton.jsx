@@ -49,19 +49,25 @@ function CartButton({ data }) {
     setSelectAll((prev) => !prev);
   };
 
-  const updateQuantity = (index, amount) => {
-    const newQuantity = cartData[index].quantity + amount;
-    const newCartData = cartData.map((item, i) => {
-      if (i === index) return { ...item, quantity: newQuantity };
-      return item;
+  const updateQuantity = (index, change) => {
+    setCartData((prevItems) => {
+      return prevItems.map((item, i) => {
+        if (i === index) {
+          const newQuantity = item.quantity + change;
+          return {
+            ...item,
+            quantity: newQuantity > 0 ? newQuantity : 1,
+          };
+        }
+        return item;
+      });
     });
-    setCartData(newCartData);
   };
 
   const handleDelete = useCallback(() => {
     const productIds = checkedItems.map((index) => cartData[index].productId);
     const attributeIds = checkedItems.map(
-      (index) => cartData[index]?.attributeValue?.id?.[0] || null
+      (index) => cartData[index]?.attributeValue?.values[index]?.id || null
     );
     const itemsToDelete = productIds.map((productId, index) => ({
       productId,
@@ -92,9 +98,10 @@ function CartButton({ data }) {
       const price = item.attributeValue?.price || item.price;
       return {
         productId: item.productId,
-        attributeId: item.attributeValue?.id || "null",
+        attributeId: item.attributeValue?.values[index]?.id || "null",
         quantity: item.quantity,
         price: price,
+        key: item.attributeValue?.key,
       };
     });
 
@@ -182,7 +189,7 @@ function CartButton({ data }) {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center border border-gray-300 rounded w-28 justify-between">
+                    <div className="flex items-center border border-gray-300 rounded w-40 justify-between">
                       <button
                         onClick={() => updateQuantity(index, -1)}
                         className="text-lg px-3 focus:outline-none hover:bg-gray-200"

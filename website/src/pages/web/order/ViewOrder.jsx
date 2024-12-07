@@ -45,6 +45,9 @@ export const ViewOrder = () => {
       setSubTotal(total); // Cập nhật subTotal
     }
   }, [trackingData]);
+  const defaultAddress = trackingData?.orderBy?.address.find(
+    (addr) => addr.isDefault
+  );
 
   return (
     <div
@@ -161,7 +164,12 @@ export const ViewOrder = () => {
                   <p>Họ tên: {trackingData?.orderBy?.name}</p>
                   <p>Điện thoại: {trackingData?.orderBy.phone}</p>
                   <p>Email: {trackingData?.orderBy.email}</p>
-                  <p>Địa chỉ: {trackingData?.orderBy.address}</p>
+                  <p>
+                    Địa chỉ:
+                    {defaultAddress
+                      ? `${defaultAddress?.street}, ${defaultAddress?.wards}, ${defaultAddress?.districts}, ${defaultAddress?.provinces}`
+                      : "No default address found"}
+                  </p>
                 </div>
               )}
             </div>

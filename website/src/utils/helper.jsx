@@ -68,3 +68,22 @@ export const transformAttributes = (attributes) => {
     return { title, details: detailArray };
   });
 };
+
+export const objectToQueryString = (filters) => {
+  const queryParams = []; // Mảng dùng để lưu trữ các phần của query string
+
+  for (const [key, value] of Object.entries(filters)) {
+    if (Array.isArray(value)) {
+      // Nếu giá trị là một mảng, nối các phần tử bằng dấu phẩy, loại bỏ khoảng trắng trong từng phần tử
+      queryParams.push(
+        `${key}=${value.map((val) => val.replace(/\s+/g, "-")).join(",")}`
+      );
+    } else if (typeof value === "object") {
+      // Nếu giá trị là một object (như 'price'), xử lý nó thành chuỗi "minPrice-maxPrice"
+      const priceRange = `${value.minPrice}-${value.maxPrice}`;
+      queryParams.push(`${key}=${priceRange}`);
+    }
+  }
+
+  return queryParams.join("&"); // Kết nối các phần tử của query string bằng dấu "&"
+};

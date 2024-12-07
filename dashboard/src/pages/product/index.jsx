@@ -44,7 +44,6 @@ export default function ProductPage() {
   };
 
   const handleEye = (index) => {
-    console.log("Eye", index);
     setProduct(index);
     setOpenDialog(true);
   };

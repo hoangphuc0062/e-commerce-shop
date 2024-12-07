@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { UserMenu } from "./UserMenu";
 import CartButton from "./CartButton";
 import Drawer from "@mui/material/Drawer";
-import { getCart, resetState } from "../../../redux/slices/auth";
+import { resetState } from "../../../redux/slices/auth";
 import { getWebConfig } from "../../../redux/slices/webConfig";
 
 const bottonContacts = [
@@ -130,7 +130,7 @@ export const Header = () => {
                     />
                   </div>
                   <div>
-                    <h1>TP.Hồ Chí Minh</h1>
+                    <h1>Buôn Ma Thuột</h1>
                   </div>
                 </div>
               </button>

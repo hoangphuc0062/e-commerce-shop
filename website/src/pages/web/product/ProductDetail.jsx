@@ -24,23 +24,29 @@ import Drawer from "@mui/material/Drawer";
 import { useContext } from "react";
 import { UserContext } from "../../../context/AuthContext";
 
-import { transformAttributes } from "../../../utils/helper";
+import BreadcrumbsCustom from "../../../components/Breadcrumbs/Breadcrumbs";
+import { formatCurrency, transformAttributes } from "../../../utils/helper";
 
 const ProductDetail = () => {
   const { category, brand, product } = useParams();
   const { loginAuth } = useContext(UserContext);
   const dispatch = useDispatch();
+
   const [data, setData] = useState([]);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [open, setOpen] = React.useState(false);
   const [viewMoreDescription, setViewMoreDescription] = useState(true);
   const [productLP, setProductLP] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(null);
+  const [activeValueIndex, setActiveValueIndex] = useState(null);
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [values, setValues] = useState();
+
   const status = useSelector((state) => state.product.statusDetail);
   const DataProduct = useSelector((state) => state.product.dataDetail);
   const products = useSelector((state) => state.product.data.products);
   const statusLP = useSelector((state) => state.product.status);
-  const [activeIndex, setActiveIndex] = useState(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -87,11 +93,40 @@ const ProductDetail = () => {
 
   const handleAttributeClick = (index, attr) => {
     setActiveIndex(index);
+    // console.log(attr);
     setData((prevData) => ({
       ...prevData,
       price: attr.price,
     }));
+    setValues(attr.values);
   };
+
+  const handleValueClick = (index, value) => {
+    setActiveValueIndex(index);
+    setData((prevData) => ({
+      ...prevData,
+      price: value.price,
+    }));
+  };
+  useEffect(() => {
+    if (DataProduct?.variants?.length > 0) {
+      const lastVariantIndex = DataProduct.variants.length - 1;
+      setActiveIndex(lastVariantIndex);
+      handleAttributeClick(
+        lastVariantIndex,
+        DataProduct.variants[lastVariantIndex]
+      );
+    }
+
+    if (DataProduct?.variants?.[0]?.values?.length > 0) {
+      const lastValueIndex = DataProduct.variants[0].values.length - 1;
+      setActiveValueIndex(lastValueIndex);
+      handleValueClick(
+        lastValueIndex,
+        DataProduct.variants[0].values[lastValueIndex]
+      );
+    }
+  }, [DataProduct]);
 
   const handleAddToCart = useCallback(() => {
     if (loginAuth === false) {
@@ -100,24 +135,23 @@ const ProductDetail = () => {
     }
     const attribute = data?.variants?.[activeIndex];
     const priceAttribute = attribute?.price ? attribute.price : data.price;
-
     const cartData = {
       productId: data._id,
-      attributeId: attribute?.id || null,
+      attributeId: attribute.values[activeValueIndex]?.id || null,
+      key: attribute?.key || null,
       quantity: 1,
       price: priceAttribute,
     };
-
     dispatch(addCart(cartData))
       .unwrap()
       .then(() => {
-        handleToast("success", "Thêm sản phẩm vào giỏ hàng thành công");
+        handleToast("success", "Thêm sản phẩm vào giỏ hàng");
         dispatch(getCart());
       })
       .catch(() => {
         handleToast("error", "Không thể thêm sản phẩm vào giỏ hàng");
       });
-  }, [dispatch, data, activeIndex, loginAuth]);
+  }, [dispatch, data, activeIndex, loginAuth, activeValueIndex]);
 
   const dataImg = [
     data?.thumbnail,
@@ -128,9 +162,11 @@ const ProductDetail = () => {
 
   return (
     <div className="container p-2 sm:p-4 lg:p-8 w-full flex flex-col gap-4">
-      <div>breadcrumb here</div>
+      <div>
+        <BreadcrumbsCustom />
+      </div>
       <section className="block__product flex flex-col gap-3">
-        <div className="block__header flex items-center text-[24px]  gap-2">
+        <div className="block__header flex flex-col md:flex-row md:items-center text-[24px]  gap-2">
           <span className=" font-bold">{data?.name}</span>
           <span className="flex text-yellow-500">
             <Icon icon="ic:outline-star" />
@@ -181,7 +217,7 @@ const ProductDetail = () => {
           </button>
         </div>
         <div className="flex flex-col md:flex md:flex-row  gap-4">
-          <div className="block__header--left flex flex-col gap-3 w-full md:w-1/2 min-h-[400px] ">
+          <div className="block__header--left flex flex-col gap-3  md:w-1/2 min-h-[400px] ">
             <div className="rounded-lg border-2 p-2">
               <Swiper
                 style={{
@@ -210,8 +246,6 @@ const ProductDetail = () => {
                 loop={true}
                 spaceBetween={10}
                 slidesPerView={4}
-                freeMode={true}
-                watchSlidesProgress={true}
                 modules={[FreeMode, Navigation, Thumbs]}
                 style={{ height: "64px" }}
                 className="swiper__thumb"
@@ -233,97 +267,100 @@ const ProductDetail = () => {
                   <p>Thông tin sản phẩm</p>
                 </div>
                 <div>
-                  {data?.shortDescription
-                    ? extractTextFromHtml(data.shortDescription)
-                    : "Không có thông tin sản phẩm"}
+                  {data?.shortDescription ? (
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: data?.shortDescription,
+                      }}
+                    />
+                  ) : (
+                    "Không có thông tin sản phẩm"
+                  )}
                 </div>
               </div>
               <div className="w-1/2 text-sm">Chọn vị trí của hàng</div>
             </div>
           </div>
           <div className="block__header--right flex flex-col p-4 w-full md:w-1/2 rounded-lg gap-3 ">
-            {/* bien the here */}
-            {/* <div className="grid grid-cols-3 gap-2">
-              {data?.variants?.map((attr, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAttributeClick(index, attr)}
-                  className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative ${
-                    activeIndex === index
-                      ? "border-blue-500"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {activeIndex === index && (
-                    <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
-                      <Icon
-                        icon="akar-icons:check"
-                        width="0.8rem"
-                        height="0.8rem"
-                        className="inline"
-                      />
-                    </span>
-                  )}
-                  <div className="h-[50px]">
-                    <img
-                      className="w-full h-full object-contain"
-                      src={attr.images || "default-image-url.jpg"}
-                      alt={`Variant ${attr.SKU}`}
-                    />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold">{attr.screenSize}</span>
-                    <span className="text-gray-700">{attr.RAM}</span>
-                    <span className="text-gray-700">{attr.storage}</span>
-                  </div>
-                </button>
-              ))}
-            </div> */}
-            {data?.variants?.length > 1 && (
-              <div className="grid grid-cols-3 gap-2">
-                {data?.variants?.map((variant, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleAttributeClick(index, variant)}
-                    className={`w-full border-2 flex items-center gap-2 rounded-lg p-2 text-sm relative ${
-                      activeIndex === index
-                        ? "border-blue-500"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    {activeIndex === index && (
-                      <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
-                        <Icon
-                          icon="akar-icons:check"
-                          width="0.8rem"
-                          height="0.8rem"
-                          className="inline"
-                        />
-                      </span>
-                    )}
-                    <div className="h-[50px]">
-                      <img
-                        className="w-full h-full object-contain"
-                        src={variant.thumbnail || "default-image-url.jpg"}
-                        alt={`Variant ${variant.name}`}
-                      />
-                    </div>
-                    <div>{variant.name}</div>
-                  </button>
-                ))}
+            <div>
+              {DataProduct?.variants?.length > 1 && (
+                <div className="grid grid-cols-3 gap-2">
+                  {DataProduct?.variants?.map((variant, index) => (
+                    <>
+                      <div className="" key={index}>
+                        <button
+                          onClick={() => handleAttributeClick(index, variant)}
+                          className={`w-full border-2 flex items-center gap-2 rounded-xl p-2 text-sm relative ${
+                            activeIndex === index
+                              ? "border-main"
+                              : "border-gray-300"
+                          }`}
+                        >
+                          {activeIndex === index && (
+                            <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
+                              <Icon
+                                icon="akar-icons:check"
+                                width="0.8rem"
+                                height="0.8rem"
+                                className="inline"
+                              />
+                            </span>
+                          )}
+                          <div className="flex flex-col justify-center items-center w-full">
+                            <span className="font-bold">{variant?.key}</span>
+                            <span>{formatCurrency(variant?.price)}</span>
+                          </div>
+                        </button>
+                      </div>
+                    </>
+                  ))}
+                </div>
+              )}
+            </div>
+            {values && values.length > 0 && (
+              <div>
+                <span className="text-[20px] font-semibold">Chọn màu sắc</span>
+                <div className="grid grid-cols-3 gap-2">
+                  {values?.map((value, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleValueClick(index, value)}
+                      className={`flex w-full border-2 rounded-xl p-2 relative ${
+                        activeValueIndex === index
+                          ? "border-main"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      <img src={value?.thumbnail} alt="" />
+                      <div>
+                        <div className="text-left text-[14px]">
+                          {value?.name}
+                        </div>
+                        <div className="text-[14px] truncate">
+                          {formatCurrency(value?.price)}
+                        </div>
+                      </div>
+                      {activeValueIndex === index && (
+                        <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
+                          <Icon
+                            icon="akar-icons:check"
+                            width="0.8rem"
+                            height="0.8rem"
+                            className="inline"
+                          />
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                <div></div>
               </div>
             )}
-            <div>
-              <span className="text-[24px] font-bold mr-2">
-                {data.onStock === 0
-                  ? "Hết hàng"
-                  : `Hàng còn (${data.onStock}) ${data.unit || ""}`}
-              </span>
-            </div>
+
             <div>
               <span className="text-[24px] font-bold mr-2">Giá:</span>
               <span className="text-[24px] font-bold">
-                {data.price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} đ
+                {formatCurrency(data?.price)}
               </span>
             </div>
 
@@ -335,6 +372,7 @@ const ProductDetail = () => {
                 </span>
                 <span>Khuyến mãi:</span>
               </div>
+
               <ul className="p-2">
                 <li className="flex gap-2">
                   <Icon icon="mdi:check" width="1rem" height="1rem" />
@@ -380,24 +418,24 @@ const ProductDetail = () => {
       </section>
 
       <section className="flex flex-col md:flex-row gap-4 p-2">
-        <div className="flex flex-col items-center justify-between w-full md:w-4/6 p-2 rounded-lg shadow-lg ">
+        <div className="flex flex-col items-center justify-between w-full md:w-4/6 p-2 rounded-lg shadow-custom ">
+          <h2 className="text-[24px] font-bold">Thông tin về sản phẩm</h2>
           <div
             className={`${
               viewMoreDescription ? `h-[400px]` : `min-h-fit`
-            } overflow-hidden`}
+            } overflow-hidden p-2 `}
           >
-            <div
-              dangerouslySetInnerHTML={{ __html: data?.description }}
-              className="prose prose-sm max-w-none"
-            />
+            <div dangerouslySetInnerHTML={{ __html: data?.description }} />
+
+            {/* <div>{extractTextFromHtml(data?.description)}</div> */}
           </div>
           <button
             onClick={handleViewMoreDescription}
-            className="w-[20%] p-2 text-center shadow-lg rounded-lg border-gray-300 border-2 hover:border-2 hover:border-main hover:text-main hover:bg-blue-100 focus:outline-main focus:bg-blue-100 "
+            className="min-w-[200px] p-2 text-center shadow-lg rounded-lg border-gray-300 border-2 hover:border-2 hover:border-main hover:text-main hover:bg-blue-100 focus:outline-main focus:bg-blue-100 "
           >
             {viewMoreDescription ? (
-              <div className="flex items-center justify-center">
-                <span>Xem thêm</span>
+              <div className="flex items-center justify-center ">
+                <span className="w-full">Xem thêm</span>
                 <span>
                   <Icon icon="ei:chevron-down" width="2rem" height="2rem" />
                 </span>
@@ -412,35 +450,35 @@ const ProductDetail = () => {
             )}
           </button>
         </div>
-        <div className="w-full md:w-2/6 min-h-[250px] p-2 rounded-lg shadow-custom">
+        <div className="w-full md:w-2/6 max-h-fit p-2 rounded-lg shadow-custom">
           <div className="flex flex-col gap-3">
             <div>
-              <h1>Thông số ký thuật</h1>
+              <h1 className="text-[24px] font-bold">Thông số kỹ thuật</h1>
               {transformAttributes(data?.attributes || []).length > 0 ? (
-                transformAttributes(data?.attributes || [])
-                  .slice(0, 2)
-                  .map((spec, specIndex) => (
-                    <div key={specIndex}>
-                      <div className="font-semibold">{spec.title}</div>
-                      {spec.details.map((detail, detailIndex) => (
-                        <div
-                          key={detailIndex}
-                          className="flex justify-between p-1"
-                        >
-                          <span className="w-1/2 line-clamp-2">
-                            {detail.key}
-                          </span>
-                          <span className="w-1/2 line-clamp-2">
-                            {detail.value}
-                          </span>
-                        </div>
+                <table className="min-w-full table-auto border-collapse border border-gray-300">
+                  <tbody>
+                    {transformAttributes(data?.attributes || [])
+                      .slice(0, 2)
+                      .map((spec, specIndex) => (
+                        <React.Fragment key={specIndex}>
+                          {spec.details.map((detail, detailIndex) => (
+                            <tr
+                              key={detailIndex}
+                              className="border-t border-gray-300"
+                            >
+                              <td className="px-4 py-2">{detail.key}</td>
+                              <td className="px-4 py-2">{detail.value}</td>
+                            </tr>
+                          ))}
+                        </React.Fragment>
                       ))}
-                    </div>
-                  ))
+                  </tbody>
+                </table>
               ) : (
                 <div>Không có thông số kỹ thuật có sẵn</div>
               )}
             </div>
+
             <button
               onClick={handleClickOpen}
               className="w-full p-2 text-center shadow-lg rounded-lg border-gray-300 border-2 hover:border-2 hover:border-main hover:text-main hover:bg-blue-100 focus:outline-main focus:bg-blue-100"
@@ -464,26 +502,25 @@ const ProductDetail = () => {
               <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                   {transformAttributes(data?.attributes || []).length > 0 ? (
-                    transformAttributes(data?.attributes || []).map(
-                      (spec, specIndex) => (
-                        <div key={specIndex}>
-                          <div className="font-semibold">{spec.title}</div>
-                          {spec.details.map((detail, detailIndex) => (
-                            <div
-                              key={detailIndex}
-                              className="flex justify-between p-1"
-                            >
-                              <span className="w-1/2 line-clamp-2">
-                                {detail.key}
-                              </span>
-                              <span className="w-1/2 line-clamp-2">
-                                {detail.value}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )
-                    )
+                    <table className="min-w-full table-auto border-collapse border border-gray-300">
+                      <tbody>
+                        {transformAttributes(data?.attributes || []).map(
+                          (spec, specIndex) => (
+                            <React.Fragment key={specIndex}>
+                              {spec.details.map((detail, detailIndex) => (
+                                <tr
+                                  key={detailIndex}
+                                  className="border-t border-gray-300"
+                                >
+                                  <td className="px-4 py-2">{detail.key}</td>
+                                  <td className="px-4 py-2">{detail.value}</td>
+                                </tr>
+                              ))}
+                            </React.Fragment>
+                          )
+                        )}
+                      </tbody>
+                    </table>
                   ) : (
                     <div>Không có thông số kỹ thuật có sẵn</div>
                   )}

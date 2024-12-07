@@ -37,8 +37,11 @@ function EditPost() {
 
   useEffect(() => {
     if (statusCategory === "success") {
+      const filteredCategories = category.filter(
+        (item) => item.type === "post"
+      );
       setCategoryOptions(
-        category.map((item) => ({
+        filteredCategories.map((item) => ({
           label: item.name,
           value: item._id,
         }))
