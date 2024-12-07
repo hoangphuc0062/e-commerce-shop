@@ -187,14 +187,14 @@ const HomePage = () => {
                       },
                     ]
                   : []),
-                // {
-                //   title: "Mức giá",
-                //   queries: [
-                //     { url: "/scanner/price/2m", name: "Trên 2 triệu" },
-                //     { url: "/scanner/price/5m", name: "Trên 5 triệu" },
-                //     { url: "/scanner/price/7m", name: "Trên 7 triệu" },
-                //   ],
-                // },
+                {
+                  title: "Mức giá",
+                  queries: [
+                    { url: "/scanner/price/2m", name: "Trên 2 triệu" },
+                    { url: "/scanner/price/5m", name: "Trên 5 triệu" },
+                    { url: "/scanner/price/7m", name: "Trên 7 triệu" },
+                  ],
+                },
               ],
             };
           })

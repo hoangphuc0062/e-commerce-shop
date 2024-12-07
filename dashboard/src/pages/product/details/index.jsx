@@ -182,7 +182,9 @@ export default function ProductDetailsDialog({
               {tabValue === 0 && (
                 <div>
                   <Typography variant="body1">
-                    {product?.description}
+                    <div
+                      dangerouslySetInnerHTML={{ __html: product?.description }}
+                    />
                   </Typography>
 
                   <Typography variant="body2">{product?.materials}</Typography>
