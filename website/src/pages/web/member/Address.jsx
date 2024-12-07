@@ -180,7 +180,7 @@ export default function Address() {
       street,
     };
 
-    if (!editingAddress) {
+    if (editingAddress) {
       // Update address logic
       dispatch(updateAddress({ id: editingAddress._id, data: address })).then(
         (result) => {

@@ -224,51 +224,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   });
 });
 
-// const registerCustomer = asyncHandler(async (req, res) => {
-//   const { email, password, name } = req.body;
-
-//   // Check if the phone number already exists
-//   const existingCustomer = await Customer.findOne({ email });
-//   if (existingCustomer) {
-//     res.status(400);
-//     throw new Error("Email already exists");
-//   }
-
-//   const html = `Xin vui lòng click vào link dưới đây để hoàn tất quá trình đăng ký của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ.
-//     <a href=${process.env.URL_SERVER}/api/users/finalregister/${token}>Click here</a>`;
-//   const subject = "Welcome to VOI TAY NGUYEN";
-
-//   // Create new customer
-//   const newCustomer = new Customer({
-//     phone,
-//     password,
-//     name,
-//   });
-//   await newCustomer.save();
-
-//   // Generate tokens
-//   const { _id, role } = newCustomer;
-//   const accessToken = generateAccessToken(_id, role);
-//   const refreshToken = generateRefreshToken(_id);
-
-//   // Save refresh token to the customer object
-//   newCustomer.refreshToken = refreshToken;
-//   await newCustomer.save();
-
-//   // Set refresh token as a cookie
-//   res.cookie("refreshToken", refreshToken, {
-//     httpOnly: true,
-//     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-//   });
-
-//   // Return response to the client
-//   res.status(201).json({
-//     mes: "Register success",
-//     accessToken,
-//     customer: newCustomer,
-//   });
-// });
-
 const registerCustomer = asyncHandler(async (req, res) => {
   const { email, password, name } = req.body;
   if (!email || !password || !name) {
@@ -406,7 +361,7 @@ const updateCustomerBYAdmin = asyncHandler(async (req, res) => {
 });
 
 const addCart = asyncHandler(async (req, res) => {
-  const { productId, attributeId, quantity } = req.body;
+  const { productId, attributeId, quantity, key } = req.body;
   const customer = await Customer.findById(req.user._id);
 
   if (!customer) {
@@ -417,35 +372,13 @@ const addCart = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Product not found" });
   }
 
-  if (attributeId) {
-    const variant = product.variants.find(
-      (variant) => variant.attributeId.toString() === attributeId.toString()
-    );
-    if (!variant) {
-      return res.status(404).json({ message: "Variant not found" });
-    }
-    if (variant.onStock < quantity) {
-      return res
-        .status(400)
-        .json({ message: "Insufficient stock for variant" });
-    }
-  } else {
-    // Check stock for the main product
-    if (product.onStock < quantity) {
-      return res
-        .status(400)
-        .json({ message: "Insufficient stock for product" });
-    }
-  }
   const updatedCart = await customer.addToCart(
     productId,
     attributeId,
-    quantity
+    quantity,
+    key
   );
-  res.status(200).json({
-    message: "Product with variant added to cart",
-    cart: updatedCart,
-  });
+  return res.status(200).json(updatedCart);
 });
 
 // get cart
@@ -463,9 +396,13 @@ const getCart = asyncHandler(async (req, res) => {
 
   const cart = customer.cart.map((item) => {
     const product = item.pid;
-    const variant = product.variants?.find(
-      (v) => v.get("id") === item.attributeId
-    );
+    const variant = product.variants?.find((v) => {
+      if (v instanceof Map) {
+        return v.get("key") === item.key;
+      } else {
+        return v.key === item.key;
+      }
+    });
 
     return {
       productId: product._id,
@@ -482,88 +419,36 @@ const getCart = asyncHandler(async (req, res) => {
 });
 
 const updateCart = asyncHandler(async (req, res) => {
-  const items = req.body; // Expecting an array of items directly
+  const items = req.body; // Expecting an array of items
   const userId = req.user._id;
 
-  // Find the customer's cart
+  if (!Array.isArray(items) || items.length === 0) {
+    return res
+      .status(400)
+      .json({ message: "Invalid input, expected a non-empty array of items" });
+  }
+
   const customer = await Customer.findById(userId);
 
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
 
-  for (const { productId, attributeId, quantity } of items) {
-    if (attributeId === "null") {
-      attributeId = null;
-    }
+  try {
+    // Update the customer's cart
+    await customer.updateCart(items);
 
-    // Fetch the product details
-    const product = await Product.findById(productId);
-    if (!product) {
-      return res
-        .status(404)
-        .json({ message: `Product with ID ${productId} not found` });
-    }
-
-    // Check the stock availability
-    let availableStock = product.onStock;
-    if (attributeId) {
-      const attribute = product.variants.find(
-        (attr) => attr.id === attributeId
-      );
-      if (!attribute) {
-        return res.status(404).json({
-          message: `Insufficient stock for product`,
-        });
-      }
-      availableStock = attribute.onStock;
-    }
-
-    if (quantity > availableStock) {
-      return res
-        .status(400)
-        .json({ message: `Insufficient stock for product` });
-    }
-
-    const cartItemIndex = customer.cart.findIndex((item) => {
-      const itemAttributeId = item.attributeId
-        ? item.attributeId.toString()
-        : null;
-      const inputAttributeId = attributeId ? attributeId.toString() : null;
-      return (
-        item.pid.toString() === productId.toString() &&
-        itemAttributeId === inputAttributeId
-      );
+    res.status(200).json({
+      message: "Cart updated successfully",
+      cart: customer.cart,
     });
-
-    if (cartItemIndex > -1) {
-      // If the item exists, update its quantity
-      if (quantity > 0) {
-        customer.cart[cartItemIndex].quantity = quantity;
-      } else {
-        // If quantity is 0, remove the item from the cart
-        customer.cart.splice(cartItemIndex, 1);
-      }
-    } else {
-      if (quantity > 0) {
-        customer.cart.push({
-          pid: productId,
-          attributeId: attributeId, // This can be null for single products
-          quantity: quantity,
-        });
-      } else {
-        return res.status(400).json({ message: "Invalid quantity" });
-      }
-    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to update cart", error: error.message });
   }
-
-  await customer.save();
-
-  res.status(200).json({
-    message: "Cart updated successfully",
-    cart: customer.cart,
-  });
 });
+
 // xoá cart
 const deleteCartItem = asyncHandler(async (req, res) => {
   const { productId, attributeId } = req.body;
@@ -580,7 +465,7 @@ const deleteCartItem = asyncHandler(async (req, res) => {
   const cartItemIndex = customer.cart.findIndex(
     (item) =>
       item.pid.toString() === productId.toString() &&
-      item.attributeId.toString() === attributeId.toString()
+      item.attributeId === attributeId
   );
 
   if (cartItemIndex > -1) {

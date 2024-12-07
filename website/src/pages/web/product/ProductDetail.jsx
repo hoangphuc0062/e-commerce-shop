@@ -103,7 +103,10 @@ const ProductDetail = () => {
 
   const handleValueClick = (index, value) => {
     setActiveValueIndex(index);
-    // Thêm logic khác nếu cần, ví dụ: lưu value đã chọn, gửi request API, v.v.
+    setData((prevData) => ({
+      ...prevData,
+      price: value.price,
+    }));
   };
   useEffect(() => {
     if (DataProduct?.variants?.length > 0) {
@@ -132,14 +135,13 @@ const ProductDetail = () => {
     }
     const attribute = data?.variants?.[activeIndex];
     const priceAttribute = attribute?.price ? attribute.price : data.price;
-
     const cartData = {
       productId: data._id,
-      attributeId: attribute?.id || null,
+      attributeId: attribute.values[activeValueIndex]?.id || null,
+      key: attribute?.key || null,
       quantity: 1,
       price: priceAttribute,
     };
-
     dispatch(addCart(cartData))
       .unwrap()
       .then(() => {
@@ -149,7 +151,7 @@ const ProductDetail = () => {
       .catch(() => {
         handleToast("error", "Không thể thêm sản phẩm vào giỏ hàng");
       });
-  }, [dispatch, data, activeIndex, loginAuth]);
+  }, [dispatch, data, activeIndex, loginAuth, activeValueIndex]);
 
   const dataImg = [
     data?.thumbnail,
