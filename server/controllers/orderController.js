@@ -401,20 +401,20 @@ const sendSuccessEmail = async (req, res) => {
       status: "Success",
       statusPayment: "Paid",
     });
-    for (let i = 0; i < products.length; i++) {
-      const product = products[i];
-      if (product.attributeId && product.attributeId !== null) {
-        await Product.updateOne(
-          { _id: product.pid, "variants.attributeId": product.attributeId },
-          { $inc: { "variants.$.onStock": -product.quantity } }
-        );
-      } else {
-        await Product.updateOne(
-          { _id: product.pid },
-          { $inc: { onStock: -product.quantity } }
-        );
-      }
-    }
+    // for (let i = 0; i < products.length; i++) {
+    //   const product = products[i];
+    //   if (product.attributeId && product.attributeId !== null) {
+    //     await Product.updateOne(
+    //       { _id: product.pid, "variants.attributeId": product.attributeId },
+    //       { $inc: { "variants.$.onStock": -product.quantity } }
+    //     );
+    //   } else {
+    //     await Product.updateOne(
+    //       { _id: product.pid },
+    //       { $inc: { onStock: -product.quantity } }
+    //     );
+    //   }
+    // }
     await Customer.findByIdAndUpdate(
       orderBy._id,
       {
@@ -503,9 +503,13 @@ const generateEmailTemplate = ({
                 <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                     <dt style="color: #888888;">Địa chỉ</dt>
                     <dd style="color: #333333; font-weight: bold;">${
-                      Array.isArray(orderBy.address)
-                        ? orderBy.address.join(", ")
-                        : orderBy.address
+                      orderBy.address.find((addr) => addr.isDefault).street +
+                      ", " +
+                      orderBy.address.find((addr) => addr.isDefault).wards +
+                      ", " +
+                      orderBy.address.find((addr) => addr.isDefault).districts +
+                      ", " +
+                      orderBy.address.find((addr) => addr.isDefault).provinces
                     }</dd>
                 </dl>
                 <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
