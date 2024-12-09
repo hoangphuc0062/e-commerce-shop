@@ -102,10 +102,12 @@ function AddBannerCollection() {
           refUrl: "",
           position: 0,
           shotDescription: "",
+          startDateBanner: "",
+          endDateBanner: "",
         },
       ],
-      startDate: "",
-      endDate: "",
+      // startDate: "",
+      // endDate: "",
     },
     validationSchema: BannerSchema,
     validateOnChange: true,
@@ -254,8 +256,8 @@ function AddBannerCollection() {
                       rows="4"
                       className={
                         formik.touched.banner &&
-                        formik.touched.banner[index]?.shotDescription &&
-                        Boolean(formik.errors.banner?.[index]?.shotDescription)
+                          formik.touched.banner[index]?.shotDescription &&
+                          Boolean(formik.errors.banner?.[index]?.shotDescription)
                           ? "error"
                           : ""
                       }
@@ -273,6 +275,34 @@ function AddBannerCollection() {
                           {formik.errors.banner?.[index]?.shotDescription}
                         </div>
                       )}
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        label="Ngày Bắt Đầu"
+                        name="startDateBanner"
+                        type="date"
+                        value={formik.values.startDateBanner}
+                        onChange={formik.handleChange}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        fullWidth
+                        {...getErrorProps("startDateBanner")}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        label="Ngày kết thúc"
+                        name="endDateBanner"
+                        type="date"
+                        value={formik.values.endDateBanner}
+                        onChange={formik.handleChange}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        fullWidth
+                        {...getErrorProps("endDateBanner")}
+                      />
+                    </Grid>
                     <Button
                       variant="outlined"
                       color="error"
@@ -387,7 +417,7 @@ function AddBannerCollection() {
                     )}
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                {/* <Grid item xs={12} md={6}>
                   <TextField
                     label="Ngày Bắt Đầu"
                     name="startDate"
@@ -414,7 +444,7 @@ function AddBannerCollection() {
                     fullWidth
                     {...getErrorProps("endDate")}
                   />
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12}>
                   <FormControl fullWidth>
                     <InputLabel>Trạng thái</InputLabel>
