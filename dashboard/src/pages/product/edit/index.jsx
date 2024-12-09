@@ -543,7 +543,7 @@ export default function ProductEdit() {
               <Grid item xs={12}>
                 <Typography variant="h6">Mô tả sản phẩm</Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <Textarea
                   label="Mô tả ngắn"
                   name="shortDescription"
@@ -555,7 +555,7 @@ export default function ProductEdit() {
                   errorMessage={errors.shortDescription}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <Textarea
                   label="Mô tả chi tiết"
                   name="description"
