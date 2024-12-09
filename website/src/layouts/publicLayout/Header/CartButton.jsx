@@ -7,6 +7,7 @@ import EmptyCart from "../../../components/EmptyCart";
 import { useDispatch } from "react-redux";
 import { deleteCart, getCart, updateCart } from "../../../redux/slices/auth";
 import { handleToast } from "../../../ultils/toast";
+import { replaceGBInName } from "../../../utils/helper";
 
 const emptyCartImage =
   "https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/cart%2Fno-cart-1.png?alt=media&token=dc3dc5e6-ecd8-4b2d-8bc9-e5f6fd887b92";
@@ -67,8 +68,9 @@ function CartButton({ data }) {
   const handleDelete = useCallback(() => {
     const productIds = checkedItems.map((index) => cartData[index].productId);
     const attributeIds = checkedItems.map(
-      (index) => cartData[index]?.attributeValue?.values[index]?.id || null
+      (index) => cartData[index]?.attributeValue?.id || null
     );
+    console.log(productIds, attributeIds);
     const itemsToDelete = productIds.map((productId, index) => ({
       productId,
       attributeId: attributeIds[index] || null,
@@ -173,19 +175,25 @@ function CartButton({ data }) {
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
                       <img
-                        src={item.thumbnail}
+                        src={item.attributeValue.thumbnail || item.thumbnail}
                         alt={item.name}
                         className="w-20 h-20 object-cover"
                       />
                       <div className="ml-2">
-                        <p className="font-bold text-base text-gray-800">
-                          {item.name}
-                        </p>
+                        <div className="font-bold text-base text-gray-800">
+                          {item.key && item?.attributeValue?.name
+                            ? replaceGBInName(
+                                item.name,
+                                item.key,
+                                item?.attributeValue?.name
+                              )
+                            : item.name}
+                          <div></div>
+                        </div>
                         <p className="text-indigo-600 font-semibold text-sm mt-1">
-                          {item.price.toLocaleString()} VND
-                        </p>
-                        <p className="text-gray-400 text-xs line-through mt-1">
-                          {item?.attribute?.price.toLocaleString()} VND
+                          {item.attributeValue.price.toLocaleString() ||
+                            item.price.toLocaleString()}
+                          VND
                         </p>
                       </div>
                     </div>
