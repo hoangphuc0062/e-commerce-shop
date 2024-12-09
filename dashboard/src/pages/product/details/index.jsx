@@ -178,22 +178,58 @@ export default function ProductDetailsDialog({
               <Tab label="ĐÁNH GIÁ" />
             </Tabs>
 
-            <Box sx={{ p: 3 }}>
+            <Box
+              sx={{
+                p: 3,
+                backgroundColor: "#f9f9f9",
+                borderRadius: "8px",
+                width: "auto", // Chiều rộng cố định cho Box
+                margin: "0 auto", // Canh giữa Box
+                "& img": {
+                  width: "100%", // Hình ảnh sẽ chiếm 100% chiều rộng của Box
+                  height: "auto", // Giữ nguyên tỷ lệ của hình ảnh
+                  borderRadius: "8px", // Tùy chọn: góc bo tròn để phù hợp với Box
+                },
+              }}
+            >
               {tabValue === 0 && (
                 <div>
-                  <Typography variant="body1">
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      fontSize: "16px",
+                      lineHeight: "1.5",
+                      color: "#333",
+                      marginBottom: "8px",
+                    }}
+                  >
                     <div
-                      dangerouslySetInnerHTML={{ __html: product?.description }}
+                      dangerouslySetInnerHTML={{
+                        __html: product?.description,
+                      }}
                     />
                   </Typography>
 
-                  <Typography variant="body2">{product?.materials}</Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: "14px",
+                      color: "#555",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    {product?.materials}
+                  </Typography>
                 </div>
               )}
               {tabValue === 1 && (
-                <Typography variant="body1">No reviews yet.</Typography>
+                <Typography variant="body1" sx={{ color: "#999" }}>
+                  No reviews yet.
+                </Typography>
               )}
             </Box>
+
+
           </Grid>
         </Grid>
       </DialogContent>
