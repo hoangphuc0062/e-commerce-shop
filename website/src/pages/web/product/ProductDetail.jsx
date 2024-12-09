@@ -103,7 +103,10 @@ const ProductDetail = () => {
 
   const handleValueClick = (index, value) => {
     setActiveValueIndex(index);
-    // Thêm logic khác nếu cần, ví dụ: lưu value đã chọn, gửi request API, v.v.
+    setData((prevData) => ({
+      ...prevData,
+      price: value.price,
+    }));
   };
   useEffect(() => {
     if (DataProduct?.variants?.length > 0) {
@@ -132,14 +135,13 @@ const ProductDetail = () => {
     }
     const attribute = data?.variants?.[activeIndex];
     const priceAttribute = attribute?.price ? attribute.price : data.price;
-
     const cartData = {
       productId: data._id,
-      attributeId: attribute?.id || null,
+      attributeId: attribute.values[activeValueIndex]?.id || null,
+      key: attribute?.key || null,
       quantity: 1,
       price: priceAttribute,
     };
-
     dispatch(addCart(cartData))
       .unwrap()
       .then(() => {
@@ -149,7 +151,7 @@ const ProductDetail = () => {
       .catch(() => {
         handleToast("error", "Không thể thêm sản phẩm vào giỏ hàng");
       });
-  }, [dispatch, data, activeIndex, loginAuth]);
+  }, [dispatch, data, activeIndex, loginAuth, activeValueIndex]);
 
   const dataImg = [
     data?.thumbnail,
@@ -244,8 +246,6 @@ const ProductDetail = () => {
                 loop={true}
                 spaceBetween={10}
                 slidesPerView={4}
-                freeMode={true}
-                watchSlidesProgress={true}
                 modules={[FreeMode, Navigation, Thumbs]}
                 style={{ height: "64px" }}
                 className="swiper__thumb"
@@ -267,9 +267,15 @@ const ProductDetail = () => {
                   <p>Thông tin sản phẩm</p>
                 </div>
                 <div>
-                  {data?.shortDescription
-                    ? extractTextFromHtml(data.shortDescription)
-                    : "Không có thông tin sản phẩm"}
+                  {data?.shortDescription ? (
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: data?.shortDescription,
+                      }}
+                    />
+                  ) : (
+                    "Không có thông tin sản phẩm"
+                  )}
                 </div>
               </div>
               <div className="w-1/2 text-sm">Chọn vị trí của hàng</div>
@@ -419,10 +425,9 @@ const ProductDetail = () => {
               viewMoreDescription ? `h-[400px]` : `min-h-fit`
             } overflow-hidden p-2 `}
           >
-            <div
-              dangerouslySetInnerHTML={{ __html: data?.description }}
-              className="prose prose-sm max-w-none"
-            />
+            <div dangerouslySetInnerHTML={{ __html: data?.description }} />
+
+            {/* <div>{extractTextFromHtml(data?.description)}</div> */}
           </div>
           <button
             onClick={handleViewMoreDescription}
@@ -450,30 +455,30 @@ const ProductDetail = () => {
             <div>
               <h1 className="text-[24px] font-bold">Thông số kỹ thuật</h1>
               {transformAttributes(data?.attributes || []).length > 0 ? (
-                transformAttributes(data?.attributes || [])
-                  .slice(0, 2)
-                  .map((spec, specIndex) => (
-                    <div key={specIndex}>
-                      <div className="font-semibold">{spec.title}</div>
-                      {spec.details.map((detail, detailIndex) => (
-                        <div
-                          key={detailIndex}
-                          className="flex justify-between p-1"
-                        >
-                          <span className="w-1/2 line-clamp-2">
-                            {detail.key}
-                          </span>
-                          <span className="w-1/2 line-clamp-2">
-                            {detail.value}
-                          </span>
-                        </div>
+                <table className="min-w-full table-auto border-collapse border border-gray-300">
+                  <tbody>
+                    {transformAttributes(data?.attributes || [])
+                      .slice(0, 2)
+                      .map((spec, specIndex) => (
+                        <React.Fragment key={specIndex}>
+                          {spec.details.map((detail, detailIndex) => (
+                            <tr
+                              key={detailIndex}
+                              className="border-t border-gray-300"
+                            >
+                              <td className="px-4 py-2">{detail.key}</td>
+                              <td className="px-4 py-2">{detail.value}</td>
+                            </tr>
+                          ))}
+                        </React.Fragment>
                       ))}
-                    </div>
-                  ))
+                  </tbody>
+                </table>
               ) : (
                 <div>Không có thông số kỹ thuật có sẵn</div>
               )}
             </div>
+
             <button
               onClick={handleClickOpen}
               className="w-full p-2 text-center shadow-lg rounded-lg border-gray-300 border-2 hover:border-2 hover:border-main hover:text-main hover:bg-blue-100 focus:outline-main focus:bg-blue-100"
@@ -497,26 +502,25 @@ const ProductDetail = () => {
               <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                   {transformAttributes(data?.attributes || []).length > 0 ? (
-                    transformAttributes(data?.attributes || []).map(
-                      (spec, specIndex) => (
-                        <div key={specIndex}>
-                          <div className="font-semibold">{spec.title}</div>
-                          {spec.details.map((detail, detailIndex) => (
-                            <div
-                              key={detailIndex}
-                              className="flex justify-between p-1"
-                            >
-                              <span className="w-1/2 line-clamp-2">
-                                {detail.key}
-                              </span>
-                              <span className="w-1/2 line-clamp-2">
-                                {detail.value}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )
-                    )
+                    <table className="min-w-full table-auto border-collapse border border-gray-300">
+                      <tbody>
+                        {transformAttributes(data?.attributes || []).map(
+                          (spec, specIndex) => (
+                            <React.Fragment key={specIndex}>
+                              {spec.details.map((detail, detailIndex) => (
+                                <tr
+                                  key={detailIndex}
+                                  className="border-t border-gray-300"
+                                >
+                                  <td className="px-4 py-2">{detail.key}</td>
+                                  <td className="px-4 py-2">{detail.value}</td>
+                                </tr>
+                              ))}
+                            </React.Fragment>
+                          )
+                        )}
+                      </tbody>
+                    </table>
                   ) : (
                     <div>Không có thông số kỹ thuật có sẵn</div>
                   )}

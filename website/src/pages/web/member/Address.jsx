@@ -180,7 +180,7 @@ export default function Address() {
       street,
     };
 
-    if (!editingAddress) {
+    if (editingAddress) {
       // Update address logic
       dispatch(updateAddress({ id: editingAddress._id, data: address })).then(
         (result) => {
@@ -231,19 +231,21 @@ export default function Address() {
 
   return (
     <div className="p-4 sm:p-6 md:p-8">
-      <h1 className="text-2xl text-center font-semibold md:text-[26px]">
-        Địa chỉ của tôi
-      </h1>
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md mt-4"
-        onClick={() => {
-          setEditingAddress(null); // Tạo mới
-          setIsDialogOpen(true);
-        }}
-      >
-        <Icon icon="ic:baseline-plus" className="mr-2" />
-        Thêm địa chỉ
-      </button>
+      <div className="flex justify-between items-center mt-4">
+        <h1 className="text-2xl font-semibold md:text-[26px]">
+          Địa chỉ của tôi
+        </h1>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md flex items-center sm:justify-center"
+          onClick={() => {
+            setEditingAddress(null); // Tạo mới
+            setIsDialogOpen(true);
+          }}
+        >
+          <Icon icon="ic:baseline-plus" className="mr-2" />
+          <span className="hidden sm:inline">Thêm địa chỉ</span>
+        </button>
+      </div>
       <div className="mt-4">
         {isLoading ? (
           <p>Đang tải địa chỉ...</p>
