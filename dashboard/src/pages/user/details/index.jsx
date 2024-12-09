@@ -29,6 +29,25 @@ const CartDialog = ({ open, handleClose, items }) => {
       </DialogTitle>
       <DialogContent dividers>
         <div className="container-fluid">
+          {/* User Information */}
+          {items && (
+            <div className="row py-2 border-bottom">
+              <div className="col-6">
+                <h5 className="font-weight-bold">Thông tin người dùng</h5>
+              </div>
+            </div>
+          )}
+          {items ? (
+            <div className="row py-2">
+              <div className="col-6">
+                <p><strong>Tên:</strong> {items?.name}</p>
+                <p><strong>Email:</strong> {items?.email}</p>
+                <p><strong>Địa chỉ:</strong> {items?.address || "Chưa có địa chỉ"}</p>
+              </div>
+            </div>
+          ) : (
+            <p>Thông tin người dùng không có sẵn.</p>
+          )}
           {/* Header of the cart table */}
           <div className="row font-weight-bold text-muted py-2 border-bottom">
             <div className="col-6">Sản phẩm</div>
