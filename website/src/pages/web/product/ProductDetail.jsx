@@ -245,7 +245,7 @@ const ProductDetail = () => {
                 onSwiper={setThumbsSwiper}
                 loop={true}
                 spaceBetween={10}
-                slidesPerView={4}
+                slidesPerView="auto"
                 modules={[FreeMode, Navigation, Thumbs]}
                 style={{ height: "64px" }}
                 className="swiper__thumb"
@@ -278,7 +278,7 @@ const ProductDetail = () => {
                   )}
                 </div>
               </div>
-              <div className="w-1/2 text-sm">Chọn vị trí của hàng</div>
+              {/* <div className="w-1/2 text-sm">Chọn vị trí của hàng</div> */}
             </div>
           </div>
           <div className="block__header--right flex flex-col p-4 w-full md:w-1/2 rounded-lg gap-3 ">
@@ -418,16 +418,18 @@ const ProductDetail = () => {
       </section>
 
       <section className="flex flex-col md:flex-row gap-4 p-2">
-        <div className="flex flex-col items-center justify-between w-full md:w-4/6 p-2 rounded-lg shadow-custom ">
+        <div
+          className={`flex flex-col justify-center items-center w-full md:w-4/6  p-2 rounded-lg shadow-custom ${
+            viewMoreDescription ? `h-[900px]` : "h-fit"
+          } `}
+        >
           <h2 className="text-[24px] font-bold">Thông tin về sản phẩm</h2>
           <div
             className={`${
-              viewMoreDescription ? `h-[400px]` : `min-h-fit`
+              viewMoreDescription ? ` h-[800px]` : `min-h-fit`
             } overflow-hidden p-2 `}
           >
             <div dangerouslySetInnerHTML={{ __html: data?.description }} />
-
-            {/* <div>{extractTextFromHtml(data?.description)}</div> */}
           </div>
           <button
             onClick={handleViewMoreDescription}
@@ -450,9 +452,9 @@ const ProductDetail = () => {
             )}
           </button>
         </div>
-        <div className="w-full md:w-2/6 max-h-fit p-2 rounded-lg shadow-custom">
+        <div className="w-full md:w-2/6 h-fit p-2 overflow-hidden rounded-lg shadow-custom">
           <div className="flex flex-col gap-3">
-            <div>
+            <div className="">
               <h1 className="text-[24px] font-bold">Thông số kỹ thuật</h1>
               {transformAttributes(data?.attributes || []).length > 0 ? (
                 <table className="min-w-full table-auto border-collapse border border-gray-300">
@@ -466,7 +468,9 @@ const ProductDetail = () => {
                               key={detailIndex}
                               className="border-t border-gray-300"
                             >
-                              <td className="px-4 py-2">{detail.key}</td>
+                              <td className="px-4 py-2 font-bold">
+                                {detail.key}
+                              </td>
                               <td className="px-4 py-2">{detail.value}</td>
                             </tr>
                           ))}

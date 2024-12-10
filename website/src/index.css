@@ -7,6 +7,16 @@
   margin: 0;
   padding: 0;
 }
+th,
+td {
+  border: 1px solid #ccc; /* Đường viền cho từng ô */
+  padding: 8px; /* Khoảng cách nội dung bên trong ô */
+  text-align: left; /* Căn trái nội dung */
+}
+
+th {
+  background-color: #f4f4f4; /* Màu nền cho tiêu đề bảng */
+}
 
 .swiper__thumb .swiper-slide-thumb-active {
   opacity: 1;
@@ -24,6 +34,9 @@
 .active {
   outline: 2px solid #1e40af;
   color: #1e40af;
+}
+.btn-show-hide {
+  display: none;
 }
 
 @media (max-width: 768px) {

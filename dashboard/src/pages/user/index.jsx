@@ -68,7 +68,6 @@ export default function UserPage() {
   }, [deleteStatus, dispatch]);
 
   // Map customer data for the table
-
   useEffect(() => {
     if (Array.isArray(dataCustomer)) {
       const initialData = dataCustomer.map((item) => {
@@ -80,7 +79,7 @@ export default function UserPage() {
             ? `${defaultAddress.street}, ${defaultAddress.wards}, ${defaultAddress.districts}, ${defaultAddress.provinces}`
             : "Chưa cập nhật",
           email: item?.email,
-          sdt: item?.sdt,
+          sdt: item?.phone || "Chưa cập nhập",
           sex: item?.sex,
           membership: item?.membership,
           totalAmount: item?.totalAmount,
@@ -192,7 +191,7 @@ export default function UserPage() {
         open={open}
         handleClose={() => setOpen(false)}
         items={data}
-        onRemove={() => {}}
+        onRemove={() => { }}
       />
       <EditStatusDialog
         open={dialogOpen}
