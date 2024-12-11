@@ -98,7 +98,7 @@ const EditStaff = () => {
   });
 
   const handleUploadComplete = (url) => {
-    formik.setFieldValue("avatar", url);
+    formik.setFieldValue("avatar", url[0]);
   };
 
   const handleDelete = () => {

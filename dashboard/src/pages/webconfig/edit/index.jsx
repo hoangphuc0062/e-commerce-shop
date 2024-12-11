@@ -89,7 +89,9 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
                 value={formik.values.facebook}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                error={formik.touched.facebook && Boolean(formik.errors.facebook)}
+                error={
+                  formik.touched.facebook && Boolean(formik.errors.facebook)
+                }
                 helperText={formik.touched.facebook && formik.errors.facebook}
                 style={{ marginBottom: "16px" }}
               />
@@ -118,13 +120,14 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
             <div style={{ flex: 1, marginRight: "16px" }}>
               <ImageUploader
                 onUploadComplete={(url) => {
-                  formik.setFieldValue("logoMobie", url);
-                  console.log("Updated logoMobie:", url);
+                  formik.setFieldValue("logoMobie", url[0]);
                 }}
                 imageUrl={formik.values.logoMobie}
                 fooder="Ảnh đại diện Mobie"
                 idupload="webconfig-logo-mobie"
-                dataImage={formik.values.logoMobie ? [formik.values.logoMobie] : []}
+                dataImage={
+                  formik.values.logoMobie ? [formik.values.logoMobie] : []
+                }
                 sx={{ width: "100%", height: "auto" }}
               />
             </div>
@@ -133,8 +136,7 @@ const EditWebConfigDialog = ({ open, onClose, initialValues, onSave }) => {
             <div style={{ flex: 1 }}>
               <ImageUploader
                 onUploadComplete={(url) => {
-                  formik.setFieldValue("logo", url);
-                  console.log("Updated logo:", url);
+                  formik.setFieldValue("logo", url[0]);
                 }}
                 imageUrl={formik.values.logo}
                 fooder="Ảnh đại diện Logo"
