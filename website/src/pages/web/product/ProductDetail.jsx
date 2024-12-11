@@ -137,7 +137,9 @@ const ProductDetail = () => {
     const priceAttribute = attribute?.price ? attribute.price : data.price;
     const cartData = {
       productId: data._id,
-      attributeId: attribute.values[activeValueIndex]?.id || null,
+      attributeId: activeValueIndex
+        ? attribute?.values[activeValueIndex]?.id
+        : null,
       key: attribute?.key || null,
       quantity: 1,
       price: priceAttribute,
