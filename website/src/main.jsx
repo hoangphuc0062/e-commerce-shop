@@ -6,15 +6,18 @@ import "./index.css";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import { UserProvider } from "./context/AuthContext.jsx";
+import { HelmetProvider } from "react-helmet-async";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Provider store={store}>
-      <UserProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </UserProvider>
-    </Provider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <UserProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </UserProvider>
+      </Provider>
+    </HelmetProvider>
   </StrictMode>
 );

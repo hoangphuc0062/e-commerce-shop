@@ -13,11 +13,11 @@ const ProductCard = ({ data }) => {
   const name = data.name;
   const rating = 5;
   return (
-    <div className="hover:shadow-xl">
-      <div className="relative shadow-md overflow-hidden">
+    <div className="hover:shadow-xl ">
+      <div className="relative shadow-md ">
         {/* Discount Label */}
         {data.discount > 0 && (
-          <div className="absolute top-0 left-0 w-24">
+          <div className="absolute top-0 left-0 w-24 z-50">
             <img
               src="https://firebasestorage.googleapis.com/v0/b/voi-tay-nguyen-datn.appspot.com/o/Nhan_cwuwhd.png?alt=media&token=1c12f273-922f-47db-88d2-09c5b5e0a6fa"
               alt="Discount Label"
@@ -35,7 +35,7 @@ const ProductCard = ({ data }) => {
             <img
               src={data.thumbnail}
               alt={name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain card__product "
             />
           </div>
           <div className="p-2 text-start">
