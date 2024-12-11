@@ -115,7 +115,7 @@ function EditPost() {
   });
 
   const handleUploadComplete = (url) => {
-    formik.setFieldValue("thumbnail", url);
+    formik.setFieldValue("thumbnail", url[0]);
   };
 
   const handleDelete = () => {

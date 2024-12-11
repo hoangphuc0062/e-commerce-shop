@@ -460,7 +460,9 @@ const CreateProduct = () => {
                     idupload="productThumbnail"
                     avatarSize={100}
                     name="thumbnail"
-                    onUploadComplete={(url) => setFieldValue("thumbnail", url)}
+                    onUploadComplete={(url) =>
+                      setFieldValue("thumbnail", url[0])
+                    }
                     onDelete={(url) => {
                       setFieldValue("thumbnail", "");
                     }}
@@ -485,10 +487,8 @@ const CreateProduct = () => {
                   <ImageUploader
                     idupload="productImages"
                     name="images"
-                    onUploadComplete={(url) => {
-                      const newImages = url.map((item) => item);
-                      setFieldValue("images", newImages);
-                      console.log(newImages);
+                    onUploadComplete={(urls) => {
+                      setFieldValue("images", urls);
                     }}
                     onDelete={(url) => {
                       const newImages = values.images.filter(
