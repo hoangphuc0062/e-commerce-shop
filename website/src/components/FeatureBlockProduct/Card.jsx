@@ -31,7 +31,7 @@ const ProductCard = ({ data }) => {
         <Link
           to={`/${data?.category?.slug}/${data?.brand?.slug}/${data?.slug}`}
         >
-          <div className="h-[300px]">
+          <div className="h-[300px] overflow-hidden">
             <img
               src={data.thumbnail}
               alt={name}
