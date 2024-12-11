@@ -563,6 +563,7 @@ export default function ProductEdit() {
                   onChange={handleChange}
                   error={touched.description && Boolean(errors.description)}
                   errorMessage={errors.description}
+                  height={1000}
                 />
               </Grid>
             </Grid>

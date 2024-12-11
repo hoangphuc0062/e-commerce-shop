@@ -21,7 +21,7 @@ const BreadcrumbsCustom = () => {
 
   return (
     <nav aria-label="breadcrumb">
-      <ul className="flex items-center space-x-4 font-bold breadcrumb">
+      <ul className="flex items-center flex-wrap space-x-4 font-bold  breadcrumb">
         {/* Trang chủ */}
 
         <Link to="/" className=" dark:hover:text-gray-200">

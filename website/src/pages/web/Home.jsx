@@ -12,6 +12,7 @@ import GridProduct from "../../components/FeatureBlockProduct/GridProduct";
 
 import { getBanners } from "../../redux/slices/barnner";
 import { getProducts, resetState } from "../../redux/slices/product";
+import { Helmet } from "react-helmet-async";
 
 const datas = [
   {
@@ -292,6 +293,10 @@ const HomePage = () => {
 
   return (
     <div className="flex flex-col gap-3">
+      <Helmet>
+        <title>Điện máy Voi Tây Nguyên</title>
+        <meta name="description" content="Trang chủ voi Tây Nguyên" />
+      </Helmet>
       <section className="flex gap-3">
         <div className="hidden w-1/6 lg:block shadow-lg">
           {dataCategory.length > 0 && <MenuTree dataCategory={dataCategory} />}
