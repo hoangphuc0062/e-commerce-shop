@@ -3,7 +3,6 @@ const asyncHandler = require("express-async-handler");
 const Product = require("../models/productModel");
 const Category = require("../models/categoryModel");
 const Brand = require("../models/brandModel");
-const Series = require("../models/seriesModel");
 
 // Filter - sort - pagination
 const getAllProduct = asyncHandler(async (req, res) => {
@@ -30,9 +29,6 @@ const getAllProduct = asyncHandler(async (req, res) => {
 
     if (queries?.brand) {
       formattedQueries.brand = queries.brand;
-    }
-    if (queries?.series) {
-      formattedQueries.series = queries.series;
     }
 
     if (queries?.warehouses) {
@@ -71,6 +67,40 @@ const getAllProduct = asyncHandler(async (req, res) => {
       delete formattedQueries.slug;
     }
 
+    if (queries.multiFilter) {
+      const filterString = decodeURIComponent(queries.multiFilter);
+      const filterConditions = filterString.split("&");
+
+      filterConditions.forEach((condition) => {
+        const [key, value] = condition.split("=");
+
+        if (!key || !value) {
+          return res.status(400).json({ mes: "Invalid filter" });
+        }
+
+        if (key === "price") {
+          const [minPrice, maxPrice] = value.split("-").map(Number);
+          if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+            formattedQueries.price = { $gte: minPrice, $lte: maxPrice };
+          } else {
+            return res.status(400).json({ mes: "Invalid price filter" });
+          }
+        } else {
+          const values = value.split(",");
+
+          if (values.length > 0) {
+            if (!formattedQueries.$or) formattedQueries.$or = [];
+            formattedQueries.$or.push(
+              ...values.map((val) => ({
+                [`attributes.${key}`]: { $regex: val, $options: "i" },
+              }))
+            );
+          }
+        }
+      });
+      delete formattedQueries.multiFilter;
+    }
+
     let queryCommand = Product.find(formattedQueries);
 
     if (req.query.sort) {
@@ -103,6 +133,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
     queryCommand.skip(skip).limit(limit);
 
     const response = await queryCommand.exec();
+
     const counts = await Product.find(formattedQueries).countDocuments();
 
     return res.status(200).json({
