@@ -17,9 +17,8 @@ export const SearchInput = () => {
   useEffect(() => {
     dispatch(
       getProductsBySearch({
-        limit: 100,
-        fields:
-          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        limit: 500,
+        fields: "name,thumbnail,category,brand,slug",
       })
     );
   }, [dispatch]);

@@ -5,7 +5,6 @@ import { handleToast } from "../../../ultils/toast";
 export default function Finalregister() {
   const { token } = useParams();
   const navigator = useNavigate();
-  console.log(token);
   useEffect(() => {
     if (token === "success") {
       handleToast("success", "Xác nhận tài khoản thành công");

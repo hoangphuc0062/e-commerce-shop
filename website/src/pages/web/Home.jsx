@@ -11,7 +11,7 @@ import { getAll } from "../../redux/slices/category";
 import GridProduct from "../../components/FeatureBlockProduct/GridProduct";
 
 import { getBanners } from "../../redux/slices/barnner";
-import { getProducts, resetState } from "../../redux/slices/product";
+import { getProducts } from "../../redux/slices/product";
 import { Helmet } from "react-helmet-async";
 
 const datas = [
@@ -249,8 +249,7 @@ const HomePage = () => {
       getProducts({
         page: 1,
         limit: 20,
-        fields:
-          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        fields: "name,price,thumbnail,category,brand,discount,slug",
         sort: "-createdAt",
         slug,
       })
@@ -264,8 +263,7 @@ const HomePage = () => {
       getProducts({
         page: 1,
         limit: 20,
-        fields:
-          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        fields: "name,price,thumbnail,category,brand,discount,slug",
         sort: "-createdAt",
         slug: slug1,
       })
@@ -279,8 +277,7 @@ const HomePage = () => {
       getProducts({
         page: 1,
         limit: 20,
-        fields:
-          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        fields: "name,price,thumbnail,category,brand,discount,slug",
         sort: "-createdAt",
         slug: slug2,
       })

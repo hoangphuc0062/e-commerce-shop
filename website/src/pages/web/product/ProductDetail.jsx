@@ -65,8 +65,7 @@ const ProductDetail = () => {
       const slug = brand ? `${category},${brand}` : category;
       dispatch(
         getProducts({
-          fields:
-            "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+          fields: "name,price,thumbnail,category,brand,discount,slug",
           slug,
         })
       );
