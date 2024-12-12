@@ -47,7 +47,7 @@ export default function BrandForm({
 
         // Handle image upload and set the image URL
         const handleImageUpload = (url) => {
-          setFieldValue("image", url);
+          setFieldValue("image", url[0]);
         };
 
         const handleImageDelete = () => {

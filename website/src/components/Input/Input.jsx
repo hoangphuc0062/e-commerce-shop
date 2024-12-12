@@ -57,7 +57,12 @@ export const Input = forwardRef(
     };
 
     // Determine the input type
-    const inputType = type === "birthday" ? "date" : type === "password" && showPassword ? "text" : type;
+    const inputType =
+      type === "birthday"
+        ? "date"
+        : type === "password" && showPassword
+        ? "text"
+        : type;
 
     return (
       <div className="flex flex-col w-full gap-2">
@@ -111,7 +116,6 @@ export const Input = forwardRef(
   }
 );
 
-
 export const CustomInputField = ({
   label,
   name,
@@ -135,9 +139,9 @@ export const CustomInputField = ({
         <input
           id={id}
           type={
-            id === "password" && showPassword
+            (id === "password" || id === "confirmPassword") && showPassword
               ? "text"
-              : id === "password"
+              : id === "password" || id === "confirmPassword"
               ? "password"
               : "text"
           }
@@ -149,6 +153,19 @@ export const CustomInputField = ({
           className="w-full p-5 font-medium border rounded-md placeholder:opacity-60"
         />
         {id === "password" && (
+          <button
+            type="button"
+            className="absolute right-2 mr-2"
+            onClick={togglePasswordVisibility}
+          >
+            {showPassword ? (
+              <Icon icon={"mdi:eye"} width={30} />
+            ) : (
+              <Icon icon={"mdi:eye-off"} width={30} />
+            )}
+          </button>
+        )}
+        {id === "confirmPassword" && (
           <button
             type="button"
             className="absolute right-2 mr-2"
