@@ -60,6 +60,6 @@ th {
   transition: transform 0.5s;
 }
 
-.card__product:hover {
+.card__product:hover .product__thumbnail {
   animation: zoom 0.5s ease-in-out forwards;
 }

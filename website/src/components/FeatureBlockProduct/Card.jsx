@@ -13,7 +13,7 @@ const ProductCard = ({ data }) => {
   const name = data.name;
   const rating = 5;
   return (
-    <div className="hover:shadow-xl ">
+    <div className="hover:shadow-xl card__product ">
       <div className="relative shadow-md ">
         {/* Discount Label */}
         {data.discount > 0 && (
@@ -31,11 +31,11 @@ const ProductCard = ({ data }) => {
         <Link
           to={`/${data?.category?.slug}/${data?.brand?.slug}/${data?.slug}`}
         >
-          <div className="h-[300px] overflow-hidden">
+          <div className="h-[300px] overflow-hidden ">
             <img
               src={data.thumbnail}
               alt={name}
-              className="w-full h-full object-contain card__product "
+              className="w-full h-full object-contain product__thumbnail "
             />
           </div>
           <div className="p-2 text-start">

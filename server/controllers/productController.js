@@ -57,12 +57,6 @@ const getAllProduct = asyncHandler(async (req, res) => {
           key: "brand",
           errorMessage: `Brand ${matchBrand} is not found`,
         },
-        {
-          match: matchSeries,
-          model: Series,
-          key: "series",
-          errorMessage: `Series ${matchSeries} is not found`,
-        },
       ];
 
       for (const entity of entities) {
@@ -90,7 +84,6 @@ const getAllProduct = asyncHandler(async (req, res) => {
       const populateFields = {
         category: "name slug",
         brand: "name slug",
-        series: "name slug",
         warehouse: "name",
         tagsProduct: "name",
       };
