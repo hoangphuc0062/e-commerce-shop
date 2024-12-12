@@ -229,6 +229,19 @@ const getProductBySlug = asyncHandler(async (req, res) => {
   if (!product) throw new Error("Product is not found in database");
   return res.status(200).json(product);
 });
+
+// Search product by name
+// const searchProduct = asyncHandler(async (req, res) => {
+//   const { name } = req.query;
+//   if (!name) {
+//     return res.status(400).json({
+//       mes: "Missing inputs",
+//     });
+//   }
+//   const product = await Product.find({ name: { $regex: name, $options: "i" } });
+//   if (!product) throw new Error("Product is not found in database");
+//   return res.status(200).json(product);
+// });
 module.exports = {
   getAllProduct,
   addProduct,

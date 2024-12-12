@@ -8,8 +8,8 @@ const OrderSchema = new mongoose.Schema({
         type: String,
         default: null,
       },
+      key: { type: String, default: null },
       quantity: { type: Number, default: 1 },
-      price: { type: Number },
     },
   ],
   orderBy: {
