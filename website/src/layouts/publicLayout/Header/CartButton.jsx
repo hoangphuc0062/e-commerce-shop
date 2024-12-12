@@ -175,24 +175,24 @@ function CartButton({ data }) {
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
                       <img
-                        src={item.attributeValue.thumbnail || item.thumbnail}
-                        alt={item.name}
+                        src={item?.attributeValue?.thumbnail || item?.thumbnail}
+                        alt={item?.name}
                         className="w-20 h-20 object-cover"
                       />
                       <div className="ml-2">
                         <div className="font-bold text-base text-gray-800">
-                          {item.key && item?.attributeValue?.name
+                          {item?.key && item?.attributeValue?.name
                             ? replaceGBInName(
-                                item.name,
-                                item.key,
+                                item?.name,
+                                item?.key,
                                 item?.attributeValue?.name
                               )
-                            : item.name}
+                            : item?.name}
                           <div></div>
                         </div>
                         <p className="text-indigo-600 font-semibold text-sm mt-1">
-                          {item.attributeValue.price.toLocaleString() ||
-                            item.price.toLocaleString()}
+                          {item?.attributeValue?.price.toLocaleString() ||
+                            item?.price.toLocaleString()}
                           VND
                         </p>
                       </div>
