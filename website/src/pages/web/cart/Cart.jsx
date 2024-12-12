@@ -343,6 +343,7 @@ export default function Cart() {
             productId: product.productId,
             attributeId: product.attributeValue?.id || null,
             quantity: product.quantity,
+            key: product.key,
           };
         }
         return null;
@@ -372,14 +373,16 @@ export default function Cart() {
             productId: product.productId,
             attributeId: product.attributeValue?.id || null,
             quantity: product.quantity,
+            key: product.key,
           };
         }
         return null;
       })
       .filter((item) => item !== null);
 
+    console.log(updatedProducts);
+
     dispatch(updateCart(updatedProducts)).then((result) => {
-      console.log(result);
       if (result.type === "auth/updateCart/fulfilled") {
         handleToast("success", "Cập nhật giỏ hàng thành công");
         dispatch(getCart());

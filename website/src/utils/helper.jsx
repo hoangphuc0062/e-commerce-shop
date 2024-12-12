@@ -1,5 +1,3 @@
-import { vnPay } from "../redux/slices/order";
-
 export const formatDay = (isoDateString) => {
   const date = new Date(isoDateString);
   const day = String(date.getDate()).padStart(2, "0");
@@ -86,4 +84,35 @@ export const objectToQueryString = (filters) => {
   }
 
   return queryParams.join("&"); // Kết nối các phần tử của query string bằng dấu "&"
+};
+
+export const replaceGBInName = (name, key, color) => {
+  // Tách các giá trị GB trong key
+  const keyParts = key.split(" ");
+
+  // Đếm số cụm GB trong name
+  const gbMatches = name.match(/\d+GB/g) || [];
+
+  // Tạo bản sao của name để cập nhật
+  let updatedName = name;
+
+  // Thay thế lần lượt các cụm GB trong name bằng các phần trong key
+  gbMatches.forEach((match, index) => {
+    if (keyParts[index]) {
+      updatedName = updatedName.replace(match, keyParts[index]);
+    }
+  });
+
+  // Nối thêm các phần còn lại từ key nếu dư
+  const remainingKeyParts = keyParts.slice(gbMatches.length).join(" ");
+  if (remainingKeyParts) {
+    updatedName = `${updatedName} ${remainingKeyParts}`;
+  }
+
+  // Nối thêm color nếu chưa có
+  if (!updatedName.includes(color)) {
+    updatedName = `${updatedName} | ${color}`;
+  }
+
+  return updatedName;
 };

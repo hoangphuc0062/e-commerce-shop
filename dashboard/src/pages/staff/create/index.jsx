@@ -67,8 +67,7 @@ function AddStaff() {
   }, [status, error, dispatch]);
 
   const handleUploadComplete = (url) => {
-    console.log("Image uploaded:", url);
-    formik.setFieldValue("avatar", url);
+    formik.setFieldValue("avatar", url[0]);
   };
 
   const handleDelete = () => {

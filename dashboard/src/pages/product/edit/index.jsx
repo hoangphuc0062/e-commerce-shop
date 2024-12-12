@@ -482,10 +482,11 @@ export default function ProductEdit() {
                     idupload="productThumbnail"
                     avatarSize={100}
                     name="thumbnail"
-                    onUploadComplete={(url) => setFieldValue("thumbnail", url)}
+                    onUploadComplete={(url) => {
+                      setFieldValue("thumbnail", url[0]);
+                    }}
                     onDelete={(url) => {
                       setFieldValue("thumbnail", "");
-                      console.log(url);
                     }}
                     fooder={"products"}
                     error={touched.thumbnail && Boolean(errors.thumbnail)}
@@ -508,16 +509,16 @@ export default function ProductEdit() {
                   <ImageUploader
                     idupload="productImages"
                     name="images"
-                    onUploadComplete={(url) => {
-                      const newImages = url.map((item) => item);
-                      setFieldValue("images", newImages);
-                      console.log(newImages);
+                    onUploadComplete={(urls) => {
+                      setFieldValue("images", urls);
                     }}
                     onDelete={(url) => {
-                      const newImages = values.images.filter(
-                        (item) => item !== url
+                      console.log("url", url);
+                      const allImages = values.images.filter(
+                        (image) => image !== url
                       );
-                      setFieldValue("images", newImages);
+
+                      setFieldValue("images", allImages);
                     }}
                     fooder={"products"}
                     error={touched.images && Boolean(errors.images)}
@@ -543,7 +544,7 @@ export default function ProductEdit() {
               <Grid item xs={12}>
                 <Typography variant="h6">Mô tả sản phẩm</Typography>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <Textarea
                   label="Mô tả ngắn"
                   name="shortDescription"
@@ -555,7 +556,7 @@ export default function ProductEdit() {
                   errorMessage={errors.shortDescription}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <Textarea
                   label="Mô tả chi tiết"
                   name="description"
@@ -563,6 +564,7 @@ export default function ProductEdit() {
                   onChange={handleChange}
                   error={touched.description && Boolean(errors.description)}
                   errorMessage={errors.description}
+                  height={1000}
                 />
               </Grid>
             </Grid>

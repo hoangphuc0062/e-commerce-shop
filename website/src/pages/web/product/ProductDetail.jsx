@@ -137,7 +137,9 @@ const ProductDetail = () => {
     const priceAttribute = attribute?.price ? attribute.price : data.price;
     const cartData = {
       productId: data._id,
-      attributeId: attribute.values[activeValueIndex]?.id || null,
+      attributeId: activeValueIndex
+        ? attribute?.values[activeValueIndex]?.id
+        : null,
       key: attribute?.key || null,
       quantity: 1,
       price: priceAttribute,
@@ -245,7 +247,7 @@ const ProductDetail = () => {
                 onSwiper={setThumbsSwiper}
                 loop={true}
                 spaceBetween={10}
-                slidesPerView={4}
+                slidesPerView="auto"
                 modules={[FreeMode, Navigation, Thumbs]}
                 style={{ height: "64px" }}
                 className="swiper__thumb"
@@ -262,7 +264,7 @@ const ProductDetail = () => {
               </Swiper>
             </div>
             <div className="flex gap-2 p-2 rounded-lg border ">
-              <div className="w-1/2 text-sm">
+              <div className="w-full text-sm">
                 <div className="box-title font-semibold">
                   <p>Thông tin sản phẩm</p>
                 </div>
@@ -278,49 +280,46 @@ const ProductDetail = () => {
                   )}
                 </div>
               </div>
-              <div className="w-1/2 text-sm">Chọn vị trí của hàng</div>
+              {/* <div className="w-1/2 text-sm">Chọn vị trí của hàng</div> */}
             </div>
           </div>
           <div className="block__header--right flex flex-col p-4 w-full md:w-1/2 rounded-lg gap-3 ">
-            <div>
-              {DataProduct?.variants?.length > 1 && (
-                <div className="grid grid-cols-3 gap-2">
-                  {DataProduct?.variants?.map((variant, index) => (
-                    <>
-                      <div className="" key={index}>
-                        <button
-                          onClick={() => handleAttributeClick(index, variant)}
-                          className={`w-full border-2 flex items-center gap-2 rounded-xl p-2 text-sm relative ${
-                            activeIndex === index
-                              ? "border-main"
-                              : "border-gray-300"
-                          }`}
-                        >
-                          {activeIndex === index && (
-                            <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
-                              <Icon
-                                icon="akar-icons:check"
-                                width="0.8rem"
-                                height="0.8rem"
-                                className="inline"
-                              />
-                            </span>
-                          )}
-                          <div className="flex flex-col justify-center items-center w-full">
-                            <span className="font-bold">{variant?.key}</span>
-                            <span>{formatCurrency(variant?.price)}</span>
-                          </div>
-                        </button>
+            {DataProduct?.variants?.length > 1 && (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 flex-wrap">
+                {DataProduct?.variants?.map((variant, index) => (
+                  <div className="" key={index}>
+                    <button
+                      onClick={() => handleAttributeClick(index, variant)}
+                      className={`w-full border-2 flex items-center gap-2 rounded-xl p-2 text-sm relative ${
+                        activeIndex === index
+                          ? "border-main"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {activeIndex === index && (
+                        <span className="absolute top-0 right-0 bg-main rounded-bl-lg rounded-tr-lg text-white p-1 text-xs">
+                          <Icon
+                            icon="akar-icons:check"
+                            width="0.8rem"
+                            height="0.8rem"
+                            className="inline"
+                          />
+                        </span>
+                      )}
+                      <div className="flex flex-col justify-center items-center w-full">
+                        <span className="font-bold">{variant?.key}</span>
+                        <span>{formatCurrency(variant?.price)}</span>
                       </div>
-                    </>
-                  ))}
-                </div>
-              )}
-            </div>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {values && values.length > 0 && (
               <div>
                 <span className="text-[20px] font-semibold">Chọn màu sắc</span>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {values?.map((value, index) => (
                     <button
                       key={index}
@@ -418,16 +417,18 @@ const ProductDetail = () => {
       </section>
 
       <section className="flex flex-col md:flex-row gap-4 p-2">
-        <div className="flex flex-col items-center justify-between w-full md:w-4/6 p-2 rounded-lg shadow-custom ">
+        <div
+          className={`flex flex-col justify-center items-center w-full md:w-4/6  p-2 rounded-lg shadow-custom ${
+            viewMoreDescription ? `h-[900px]` : "h-fit"
+          } `}
+        >
           <h2 className="text-[24px] font-bold">Thông tin về sản phẩm</h2>
           <div
             className={`${
-              viewMoreDescription ? `h-[400px]` : `min-h-fit`
-            } overflow-hidden p-2 `}
+              viewMoreDescription ? ` h-[800px]` : `min-h-fit`
+            } overflow-hidden p-2 w-full `}
           >
             <div dangerouslySetInnerHTML={{ __html: data?.description }} />
-
-            {/* <div>{extractTextFromHtml(data?.description)}</div> */}
           </div>
           <button
             onClick={handleViewMoreDescription}
@@ -450,38 +451,45 @@ const ProductDetail = () => {
             )}
           </button>
         </div>
-        <div className="w-full md:w-2/6 max-h-fit p-2 rounded-lg shadow-custom">
-          <div className="flex flex-col gap-3">
-            <div>
-              <h1 className="text-[24px] font-bold">Thông số kỹ thuật</h1>
-              {transformAttributes(data?.attributes || []).length > 0 ? (
-                <table className="min-w-full table-auto border-collapse border border-gray-300">
-                  <tbody>
-                    {transformAttributes(data?.attributes || [])
-                      .slice(0, 2)
-                      .map((spec, specIndex) => (
-                        <React.Fragment key={specIndex}>
-                          {spec.details.map((detail, detailIndex) => (
-                            <tr
-                              key={detailIndex}
-                              className="border-t border-gray-300"
-                            >
-                              <td className="px-4 py-2">{detail.key}</td>
-                              <td className="px-4 py-2">{detail.value}</td>
-                            </tr>
-                          ))}
-                        </React.Fragment>
-                      ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div>Không có thông số kỹ thuật có sẵn</div>
-              )}
-            </div>
+        <div className="w-full md:w-2/6 h-fit p-2 overflow-hidden rounded-lg shadow-custom">
+          <div className="flex flex-col gap-1 w-full">
+            <h1 className="text-[24px] font-bold">Thông số kỹ thuật</h1>
+            {transformAttributes(data?.attributes || []).length > 0 ? (
+              <ul className="list-none space-y-6">
+                {transformAttributes(data?.attributes || [])
+                  .slice(0, 2)
+                  .map((spec, specIndex) => (
+                    <li key={specIndex}>
+                      {/* Tiêu đề danh mục */}
+
+                      {/* Danh sách chi tiết */}
+                      <ul className="mt-2 space-y-2 border border-gray-100 rounded-lg">
+                        {spec.details.map((detail, detailIndex) => (
+                          <li
+                            key={detailIndex}
+                            className={`flex items-start gap-2 p-2 ${
+                              detailIndex % 2 === 0 ? "bg-gray-100" : "bg-white"
+                            }`}
+                          >
+                            <span className="w-1/3 text-gray-800">
+                              {detail.key}
+                            </span>
+                            <span className="w-2/3 text-gray-800">
+                              {detail.value}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  ))}
+              </ul>
+            ) : (
+              <div>Không có thông số kỹ thuật có sẵn</div>
+            )}
 
             <button
               onClick={handleClickOpen}
-              className="w-full p-2 text-center shadow-lg rounded-lg border-gray-300 border-2 hover:border-2 hover:border-main hover:text-main hover:bg-blue-100 focus:outline-main focus:bg-blue-100"
+              className="w-full p-2 text-center shadow-lg rounded-lg border-gray-300 border-2 hover:border-main hover:text-main hover:bg-blue-100 focus:outline-main focus:bg-blue-100"
             >
               Xem chi tiết
             </button>
@@ -502,25 +510,38 @@ const ProductDetail = () => {
               <DialogContent>
                 <DialogContentText id="alert-dialog-description">
                   {transformAttributes(data?.attributes || []).length > 0 ? (
-                    <table className="min-w-full table-auto border-collapse border border-gray-300">
-                      <tbody>
-                        {transformAttributes(data?.attributes || []).map(
-                          (spec, specIndex) => (
-                            <React.Fragment key={specIndex}>
+                    <ul className="list-none space-y-6">
+                      {transformAttributes(data?.attributes || []).map(
+                        (spec, specIndex) => (
+                          <li key={specIndex}>
+                            {/* Tiêu đề danh mục */}
+                            <h2 className="font-bold text-[18px] rounded-md">
+                              {spec.title}
+                            </h2>
+                            {/* Danh sách chi tiết */}
+                            <ul className="mt-2 space-y-2 border border-gray-100 rounded-lg">
                               {spec.details.map((detail, detailIndex) => (
-                                <tr
+                                <li
                                   key={detailIndex}
-                                  className="border-t border-gray-300"
+                                  className={`flex items-start gap-2 p-2 ${
+                                    detailIndex % 2 === 0
+                                      ? "bg-gray-100"
+                                      : "bg-white"
+                                  }`}
                                 >
-                                  <td className="px-4 py-2">{detail.key}</td>
-                                  <td className="px-4 py-2">{detail.value}</td>
-                                </tr>
+                                  <span className="w-1/3 text-gray-800">
+                                    {detail.key}
+                                  </span>
+                                  <span className="w-2/3 text-gray-800">
+                                    {detail.value}
+                                  </span>
+                                </li>
                               ))}
-                            </React.Fragment>
-                          )
-                        )}
-                      </tbody>
-                    </table>
+                            </ul>
+                          </li>
+                        )
+                      )}
+                    </ul>
                   ) : (
                     <div>Không có thông số kỹ thuật có sẵn</div>
                   )}

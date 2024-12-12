@@ -20,9 +20,9 @@ const ImageUploader = ({
   error,
   helperText,
   allowedFormats = ["PNG", "JPG"],
-  fooder, // Dynamic folder path for upload
+  fooder,
   idupload,
-  //  tùy chỉnh hình ảnh full width và heigt 
+
   isFullWidth = false,
   isFullHeight = false,
   dataImage = [],
@@ -37,73 +37,74 @@ const ImageUploader = ({
   }, [dataImage]);
   // Handle file upload
   const handleFileUpload = useCallback(
-    (e) => {
+    async (e) => {
       const files = Array.from(e.target.files);
       if (files.length === 0) return;
 
       setUploadError(null);
 
-      files.forEach((file) => {
-        // Check file type
-        if (!["image/png", "image/jpeg"].includes(file.type)) {
-          setUploadError("Vui lòng tải lên hình ảnh PNG hoặc JPG hợp lệ.");
-          return;
-        }
+      // Lọc các file không hợp lệ
+      const invalidFiles = files.filter(
+        (file) =>
+          !["image/png", "image/jpeg"].includes(file.type) ||
+          file.size > 5 * 1024 * 1024
+      );
 
-        // Check file size
-        if (file.size > 5 * 1024 * 1024) {
-          setUploadError("Kích thước hình ảnh không được vượt quá 5MB.");
-          return;
-        }
-
-        const storageRef = ref(imageDb, `${fooder}/${uuidv4()}`);
-        const uploadTask = uploadBytesResumable(storageRef, file);
-
-        uploadTask.on(
-          "state_changed",
-          null,
-          (error) => {
-            console.error("Upload failed:", error);
-            setUploadError("Vui lòng tải lên hình ảnh PNG hoặc JPG hợp lệ.");
-          },
-          () => {
-            getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-              setDownloadURLs((prevURLs) => [...prevURLs, url]);
-              setImageRefs((prevRefs) => [...prevRefs, storageRef]);
-              if (onUploadComplete) onUploadComplete(url);
-            });
-          }
+      if (invalidFiles.length > 0) {
+        setUploadError(
+          "Một số tệp không hợp lệ. Vui lòng chỉ tải lên hình ảnh PNG hoặc JPG với kích thước không quá 5MB."
         );
-      });
+        return;
+      }
+
+      try {
+        const urls = await Promise.all(
+          files.map((file) => {
+            const storageRef = ref(imageDb, `${fooder}/${uuidv4()}`);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            return new Promise((resolve, reject) => {
+              uploadTask.on(
+                "state_changed",
+                null,
+                (error) => {
+                  console.error("Upload failed:", error);
+                  reject(error);
+                },
+                async () => {
+                  try {
+                    const url = await getDownloadURL(uploadTask.snapshot.ref);
+                    setDownloadURLs((prevURLs) => [...prevURLs, url]);
+                    setImageRefs((prevRefs) => [...prevRefs, storageRef]);
+                    resolve(url);
+                  } catch (err) {
+                    reject(err);
+                  }
+                }
+              );
+            });
+          })
+        );
+
+        // Gọi onUploadComplete với tất cả URL
+        if (onUploadComplete) onUploadComplete(urls);
+
+        console.log("All files uploaded successfully:", urls);
+      } catch (err) {
+        console.error("Error uploading files:", err);
+        setUploadError("Có lỗi xảy ra trong quá trình tải lên.");
+      }
     },
     [onUploadComplete, fooder]
   );
 
   const handleDelete = useCallback(
     (index) => {
-      const imageRef = imageRefs[index];
-
-      if (imageRef) {
-        deleteObject(imageRefs[index])
-          .then(() => {
-            console.log("File deleted successfully");
-            setDownloadURLs((prevURLs) =>
-              prevURLs.filter((_, i) => i !== index)
-            ); // Remove URL
-            setImageRefs((prevRefs) => prevRefs.filter((_, i) => i !== index));
-            if (onDelete) onDelete();
-          })
-          .catch((error) => {
-            console.error("Error deleting file:", error);
-            setUploadError("Error deleting the file, please try again later.");
-          });
-      } else {
-        setDownloadURLs((prevURLs) => prevURLs.filter((_, i) => i !== index));
-        setImageRefs((prevRefs) => prevRefs.filter((_, i) => i !== index));
-        if (onDelete) onDelete();
-      }
+      const imageRef = downloadURLs[index];
+      if (onDelete) onDelete(imageRef);
+      setDownloadURLs((prevURLs) => prevURLs.filter((_, i) => i !== index));
     },
-    [imageRefs, onDelete]
+    [onDelete, downloadURLs]
   );
 
   return (
@@ -173,14 +174,14 @@ const ImageUploader = ({
               key={index}
               sx={{
                 position: "relative",
-                width: isFullWidth ? "100%" : avatarSize + 30, // xét điều kiện ở cha nếu thì 
+                width: isFullWidth ? "100%" : avatarSize + 30, // xét điều kiện ở cha nếu thì
                 height: isFullHeight ? "100%" : avatarSize + 30,
               }}
             >
               <Avatar
                 src={url}
                 sx={{
-                  width: isFullWidth ? "100%" : avatarSize + 30,// xét điêuf kiệu nếu  thì
+                  width: isFullWidth ? "100%" : avatarSize + 30, // xét điêuf kiệu nếu  thì
                   height: isFullHeight ? "100%" : avatarSize + 30,
                   objectFit: "contain",
                 }}
@@ -211,9 +212,8 @@ const ImageUploader = ({
             </Box>
           ))}
         </Box>
-      )
-      }
-    </Box >
+      )}
+    </Box>
   );
 };
 

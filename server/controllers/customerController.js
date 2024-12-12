@@ -396,6 +396,9 @@ const getCart = asyncHandler(async (req, res) => {
 
   const cart = customer.cart.map((item) => {
     const product = item.pid;
+
+    console.log("Product:", product.variants);
+
     const variant = product.variants?.find((v) => {
       if (v instanceof Map) {
         return v.get("key") === item.key;
@@ -403,15 +406,25 @@ const getCart = asyncHandler(async (req, res) => {
         return v.key === item.key;
       }
     });
+    let variantValue;
+    if (variant instanceof Map) {
+      const values = variant.get("values");
+      if (values) {
+        variantValue = values.find((v) => v.id === item.attributeId);
+      }
+    } else {
+      variantValue = variant?.values?.find((v) => v.id === item.attributeId);
+    }
 
     return {
       productId: product._id,
       name: product.name,
-      thumbnail: product.thumbnail,
-      price: variant?.get("price") || product.price,
+      thumbnail: variantValue?.thumbnail || product.thumbnail,
+      price: variantValue?.price || variant?.price || product.price,
       slug: product.slug,
-      attributeValue: variant,
+      attributeValue: variantValue,
       quantity: item.quantity,
+      key: item.key,
     };
   });
 
