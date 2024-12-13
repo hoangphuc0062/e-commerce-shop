@@ -182,11 +182,11 @@ const HomePage = () => {
               children: [
                 ...(brandQueries.length > 0
                   ? [
-                      {
-                        title: "Hãng sản xuất",
-                        queries: brandQueries,
-                      },
-                    ]
+                    {
+                      title: "Hãng sản xuất",
+                      queries: brandQueries,
+                    },
+                  ]
                   : []),
                 {
                   title: "Mức giá",
