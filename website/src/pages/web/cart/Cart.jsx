@@ -31,6 +31,7 @@ import {
 } from "../../../redux/slices/order";
 import { useLocation } from "react-router-dom";
 import Success from "../../../components/status/Success";
+import BreadcrumbsCustom from "./../../../components/Breadcrumbs/Breadcrumbs";
 
 const emptyCartImage =
   "https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/cart%2Fno-cart-1.png?alt=media&token=dc3dc5e6-ecd8-4b2d-8bc9-e5f6fd887b92";
@@ -68,7 +69,14 @@ export default function Cart() {
       name: dataMe?.name ? dataMe?.name : "",
       phone: dataMe?.phone ? dataMe?.phone : "",
       sex: dataMe?.sex ? dataMe?.sex : "Nam",
-      address: {
+      address: dataMe?.address
+        .filter((item) => item.isDefault === true)
+        .map((item) => ({
+          province: item.provinces,
+          district: item.districts,
+          ward: item.wards,
+          street: item.street,
+        }))[0] || {
         province: "",
         district: "",
         ward: "",
@@ -343,6 +351,7 @@ export default function Cart() {
             productId: product.productId,
             attributeId: product.attributeValue?.id || null,
             quantity: product.quantity,
+            key: product.key,
           };
         }
         return null;
@@ -372,14 +381,16 @@ export default function Cart() {
             productId: product.productId,
             attributeId: product.attributeValue?.id || null,
             quantity: product.quantity,
+            key: product.key,
           };
         }
         return null;
       })
       .filter((item) => item !== null);
 
+    console.log(updatedProducts);
+
     dispatch(updateCart(updatedProducts)).then((result) => {
-      console.log(result);
       if (result.type === "auth/updateCart/fulfilled") {
         handleToast("success", "Cập nhật giỏ hàng thành công");
         dispatch(getCart());
@@ -479,6 +490,9 @@ export default function Cart() {
 
   return (
     <div className="max-w-5xl mx-auto p-4 bg-white rounded-md shadow-md h-auto">
+      <div>
+        <BreadcrumbsCustom />
+      </div>
       <ProgressSteps
         steps={steps}
         currentStep={currentStep}

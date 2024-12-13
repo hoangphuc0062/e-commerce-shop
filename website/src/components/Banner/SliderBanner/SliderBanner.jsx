@@ -100,17 +100,17 @@ export default function SliderBanner({ data }) {
           swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
         }}
         modules={[FreeMode, Navigation, Thumbs]}
-        className="contentSwiper md:h-[80%]"
+        className="contentSwiper lg:h-[80%]"
       >
         {data &&
-          data[0].banner &&
-          data[0].banner.map((img, index) => (
+          data[0]?.banner &&
+          data[0]?.banner?.map((img, index) => (
             <SwiperSlide key={index} style={{ width: "100%" }}>
               <Link to={img.link}>
                 <img
                   src={img.src}
                   alt={img.title}
-                  className="w-full h-full object-fill"
+                  className="w-full h-full object-contain"
                 />
               </Link>
             </SwiperSlide>

@@ -66,18 +66,23 @@ const CreateProduct = () => {
     variants: [
       {
         key: "",
-        value: "",
-        SKU: "",
         price: "",
-        priceInMarket: "",
-        historicalPrice: "",
-        discount: "",
-        inventory: "",
-        minInventory: "",
-        maxInventory: "",
-        onStock: "",
-        inComing: "",
-        thumbnail: "",
+        values: [
+          {
+            id: "",
+            name: "",
+            price: "",
+            thumbnail: "",
+            unit: "",
+            inventory: "",
+            onStock: "",
+            inComing: "",
+            minInventory: "",
+            maxInventory: "",
+            stopSelling: false,
+            view: "",
+          },
+        ],
       },
     ],
   };
@@ -460,7 +465,9 @@ const CreateProduct = () => {
                     idupload="productThumbnail"
                     avatarSize={100}
                     name="thumbnail"
-                    onUploadComplete={(url) => setFieldValue("thumbnail", url)}
+                    onUploadComplete={(url) =>
+                      setFieldValue("thumbnail", url[0])
+                    }
                     onDelete={(url) => {
                       setFieldValue("thumbnail", "");
                     }}
@@ -485,10 +492,8 @@ const CreateProduct = () => {
                   <ImageUploader
                     idupload="productImages"
                     name="images"
-                    onUploadComplete={(url) => {
-                      const newImages = url.map((item) => item);
-                      setFieldValue("images", newImages);
-                      console.log(newImages);
+                    onUploadComplete={(urls) => {
+                      setFieldValue("images", urls);
                     }}
                     onDelete={(url) => {
                       const newImages = values.images.filter(

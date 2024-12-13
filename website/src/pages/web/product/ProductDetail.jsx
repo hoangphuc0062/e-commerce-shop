@@ -65,8 +65,7 @@ const ProductDetail = () => {
       const slug = brand ? `${category},${brand}` : category;
       dispatch(
         getProducts({
-          fields:
-            "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+          fields: "name,price,thumbnail,category,brand,discount,slug",
           slug,
         })
       );
@@ -137,7 +136,9 @@ const ProductDetail = () => {
     const priceAttribute = attribute?.price ? attribute.price : data.price;
     const cartData = {
       productId: data._id,
-      attributeId: attribute.values[activeValueIndex]?.id || null,
+      attributeId: activeValueIndex
+        ? attribute?.values[activeValueIndex]?.id
+        : null,
       key: attribute?.key || null,
       quantity: 1,
       price: priceAttribute,
@@ -453,7 +454,7 @@ const ProductDetail = () => {
           <div className="flex flex-col gap-1 w-full">
             <h1 className="text-[24px] font-bold">Thông số kỹ thuật</h1>
             {transformAttributes(data?.attributes || []).length > 0 ? (
-              <ul className="list-none space-y-6">
+              <ul className="list-none ">
                 {transformAttributes(data?.attributes || [])
                   .slice(0, 2)
                   .map((spec, specIndex) => (
@@ -461,7 +462,7 @@ const ProductDetail = () => {
                       {/* Tiêu đề danh mục */}
 
                       {/* Danh sách chi tiết */}
-                      <ul className="mt-2 space-y-2 border border-gray-100 rounded-lg">
+                      <ul className="space-y-2 border border-gray-100 ">
                         {spec.details.map((detail, detailIndex) => (
                           <li
                             key={detailIndex}
@@ -469,7 +470,7 @@ const ProductDetail = () => {
                               detailIndex % 2 === 0 ? "bg-gray-100" : "bg-white"
                             }`}
                           >
-                            <span className="w-1/3 text-gray-800">
+                            <span className="w-1/3 text-gray-800 font-bold">
                               {detail.key}
                             </span>
                             <span className="w-2/3 text-gray-800">

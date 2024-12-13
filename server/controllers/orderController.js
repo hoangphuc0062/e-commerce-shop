@@ -74,15 +74,11 @@ const createOrder = asyncHandler(async (req, res) => {
   }
 
   const products = userCart.cart.map((el) => {
-    const product = el.pid;
-    const variant = product.variants?.find(
-      (v) => v.get("id") === el.attributeId
-    );
     return {
       pid: el.pid,
       attributeId: el.attributeId,
       quantity: el.quantity,
-      price: variant ? variant.price : product.price,
+      key: el.key,
     };
   });
 
@@ -159,11 +155,6 @@ const createOrder = asyncHandler(async (req, res) => {
   });
 
   order = await order.save();
-
-  // Cập nhật lịch sử mua hàng
-  await Customer.findByIdAndUpdate(userId, {
-    $push: { purchaseHistory: { pid: order._id, date: Date.now() } },
-  });
 
   return res.status(201).json(order);
 });
@@ -401,27 +392,17 @@ const sendSuccessEmail = async (req, res) => {
       status: "Success",
       statusPayment: "Paid",
     });
-    // for (let i = 0; i < products.length; i++) {
-    //   const product = products[i];
-    //   if (product.attributeId && product.attributeId !== null) {
-    //     await Product.updateOne(
-    //       { _id: product.pid, "variants.attributeId": product.attributeId },
-    //       { $inc: { "variants.$.onStock": -product.quantity } }
-    //     );
-    //   } else {
-    //     await Product.updateOne(
-    //       { _id: product.pid },
-    //       { $inc: { onStock: -product.quantity } }
-    //     );
-    //   }
-    // }
     await Customer.findByIdAndUpdate(
       orderBy._id,
       {
         $set: { cart: [] },
+        $push: { purchaseHistory: { pid: orderId, date: Date.now() } },
       },
       { new: true }
     );
+
+    // trừ số lượng sản phẩm trong kho
+
     const email = orderBy.email;
     const html = generateEmailTemplate({
       SKU,

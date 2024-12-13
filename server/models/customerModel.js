@@ -41,7 +41,6 @@ var customerSchema = new mongoose.Schema(
         },
         key: { type: String, default: null },
         quantity: { type: Number, default: 1 },
-        price: { type: Number },
       },
     ],
     address: {

@@ -74,8 +74,7 @@ const Product = () => {
     dispatch(
       getProducts({
         limit: productPerPage,
-        fields:
-          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        fields: "name,price,thumbnail,view,category,brand,discount,slug,attributes",
         slug,
       })
     );
@@ -169,8 +168,7 @@ const Product = () => {
       const response = await dispatch(
         getProducts({
           limit: products.length + 15,
-          fields:
-            "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+          fields: "name,price,thumbnail,view,category,brand,discount,slug",
           slug: brand ? `${category},${brand}` : category,
         })
       );
@@ -182,9 +180,9 @@ const Product = () => {
         setSortedProducts((prev) => [...prev, ...newProducts]);
         setHasMoreProducts(newProducts.length === 15); // Check if there are more products to load // Check if there are more products to load
       }
-      //  else {
-      //   setHasMoreProducts(false);
-      // }
+      if (products.length === countProduct) {
+        setHasMoreProducts(false);
+      }
     } catch (error) {
       setHasMoreProducts(false);
     } finally {
@@ -398,12 +396,10 @@ const Product = () => {
   };
 
   useEffect(() => {
-    setQueryFilter(updateSelectedFiltersWithKeys(filters, selectedFilters));
-    if (queryFilter) {
-      const query = objectToQueryString(queryFilter);
-      setSearchParams(query);
-      console.log("Query filter:", query);
-    }
+    const query = objectToQueryString(selectedFilters);
+    setQueryFilter(query);
+    setSearchParams(decodeURIComponent(query));
+    console.log("Query Filter:", query);
   }, [filters, selectedFilters]);
 
   return (
@@ -429,7 +425,12 @@ const Product = () => {
               className="round-lg outline outline-gray-100 w-full h-[40px]"
               to={`/${category}/${_.slug}`}
               onClick={() =>
-                dispatch(getProducts({ slug: `${category},${_.slug}` }))
+                dispatch(
+                  getProducts({
+                    fields: "name,price,thumbnail,category,brand,discount,slug",
+                    slug: `${category},${_.slug}`,
+                  })
+                )
               }
             >
               <img
