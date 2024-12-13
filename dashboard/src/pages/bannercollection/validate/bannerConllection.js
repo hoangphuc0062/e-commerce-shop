@@ -54,9 +54,9 @@ export const BannerSchema = Yup.object().shape({
           .required("Ngày kết thúc không được để trống")
           .min(Yup.ref("startDate"), "Ngày kết thúc phải sau ngày bắt đầu")
           .typeError("Ngày kết thúc không hợp lệ")
-          .test("is-future-date", "Ngày kết thúc phải là ngày trong tương lai", (value) => {
-            return value && new Date(value) > new Date();
-          }),
+        // .test("is-future-date", "Ngày kết thúc phải là ngày trong tương lai", (value) => {
+        //   return value && new Date(value) > new Date();
+        // }),
       })
     )
     .min(1, "Phải có ít nhất một banner")
