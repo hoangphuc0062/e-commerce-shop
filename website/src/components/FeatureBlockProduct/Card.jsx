@@ -46,7 +46,7 @@ const ProductCard = ({ data }) => {
               </span>
               {data.discount > 0 && (
                 <span className="line-through text-gray-500">
-                  {formatCurrency(data.price)}
+                  {formatCurrency(data?.price)}
                 </span>
               )}
             </div>
