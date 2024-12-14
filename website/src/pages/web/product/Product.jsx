@@ -80,7 +80,7 @@ const Product = () => {
       })
     );
   }, [brand, category, dispatch, productPerPage]);
-  useEffect(() => {}, [category]);
+  useEffect(() => { }, [category]);
   useEffect(() => {
     loadInitialProducts();
     if (category) {
@@ -124,19 +124,30 @@ const Product = () => {
   }, [statusProduct, productsData, dispatch, navigate, productPerPage]);
   useEffect(() => {
     if (statusBanner === "success" && Array.isArray(Banner)) {
+      const now = new Date(); // lấy thời gian hiện tại
+
+      // lọc theo các khoảng thời gian theo điều kiện (startDate <= now <= endDate)
       const filteredData = Banner.filter((item) => item.title === category).map(
         (item) => ({
-          banner: item.banner?.map((child) => ({
+          banner: item.banner?.filter((child) => {
+            const startDate = new Date(child.startDate);
+            const endDate = new Date(child.endDate);
+            return startDate <= now && endDate >= now; // Hiển thị banner theo khoảng thời gian này
+          }).map((child) => ({
             id: item._id,
             title: child.name,
             description: child.shotDescription,
             src: child.urlImage,
             link: child.refUrl,
+            startDate: child.startDate,
+            endDate: child.endDate,
           })),
         })
       );
-      setDataBanner(filteredData);
 
+      setDataBanner(filteredData); // Xét những banner hợp lệ
+
+      //  Nếu có các banner hợp lệ, sẽ thiết lập setFirstHalfBanner và setSecondHalfBanner với các giá trị tương ứng.
       if (filteredData.length > 0 && Array.isArray(filteredData[0].banner)) {
         const banners = filteredData[0].banner;
         setFirstHalfBanner([{ banner: banners }]);
@@ -147,6 +158,7 @@ const Product = () => {
       }
     }
   }, [statusBanner, Banner, category]);
+
 
   const loading = () => (
     <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
@@ -496,9 +508,8 @@ const Product = () => {
                                     setActiveChild
                                   )
                                 }
-                                className={`relative bg-gray-200 w-max p-3 rounded-lg ${
-                                  activeChild[index]?.[inx] ? "active" : ""
-                                }
+                                className={`relative bg-gray-200 w-max p-3 rounded-lg ${activeChild[index]?.[inx] ? "active" : ""
+                                  }
                                 `}
                               >
                                 {value}
@@ -572,13 +583,13 @@ const Product = () => {
                                     ...(selectedFilters || {}),
                                     Giá: isDefaultRange
                                       ? {
-                                          minPrice: minPrice,
-                                          maxPrice: maxPrice,
-                                        } // Dùng giá trị mặc định
+                                        minPrice: minPrice,
+                                        maxPrice: maxPrice,
+                                      } // Dùng giá trị mặc định
                                       : {
-                                          minPrice: userMinPrice,
-                                          maxPrice: userMaxPrice,
-                                        }, // Dùng giá trị tùy chỉnh
+                                        minPrice: userMinPrice,
+                                        maxPrice: userMaxPrice,
+                                      }, // Dùng giá trị tùy chỉnh
                                   };
 
                                   setSelectedFilters(updatedFilters);
@@ -666,8 +677,8 @@ const Product = () => {
                       {Array.isArray(value)
                         ? value.join(", ")
                         : `${formatCurrency(value.minPrice)} - ${formatCurrency(
-                            value.maxPrice
-                          )}`}
+                          value.maxPrice
+                        )}`}
                     </span>
                   </span>
                 </button>
@@ -689,22 +700,20 @@ const Product = () => {
           <div className="flex gap-2">
             <button
               onClick={() => handleSort("price-high-low")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${
-                activeButton === "price-high-low"
-                  ? "bg-blue-200 outline outline-main text-main"
-                  : ""
-              }`}
+              className={`flex items-center bg-gray-200 p-2 rounded-lg ${activeButton === "price-high-low"
+                ? "bg-blue-200 outline outline-main text-main"
+                : ""
+                }`}
             >
               <Icon icon="proicons:filter" width="1rem" height="1rem" />
               Giá Cao - Thấp
             </button>
             <button
               onClick={() => handleSort("price-low-high")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${
-                activeButton === "price-low-high"
-                  ? "bg-blue-200 outline outline-main text-main"
-                  : ""
-              }`}
+              className={`flex items-center bg-gray-200 p-2 rounded-lg ${activeButton === "price-low-high"
+                ? "bg-blue-200 outline outline-main text-main"
+                : ""
+                }`}
             >
               <Icon
                 icon="proicons:filter"
@@ -716,11 +725,10 @@ const Product = () => {
             </button>
             <button
               onClick={() => handleSort("discount")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${
-                activeButton === "discount"
-                  ? "bg-blue-200 outline outline-main text-main"
-                  : ""
-              }`}
+              className={`flex items-center bg-gray-200 p-2 rounded-lg ${activeButton === "discount"
+                ? "bg-blue-200 outline outline-main text-main"
+                : ""
+                }`}
             >
               <Icon
                 icon="material-symbols-light:percent"
@@ -731,11 +739,10 @@ const Product = () => {
             </button>
             <button
               onClick={() => handleSort("views")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${
-                activeButton === "views"
-                  ? "bg-blue-200 outline outline-main text-main"
-                  : ""
-              }`}
+              className={`flex items-center bg-gray-200 p-2 rounded-lg ${activeButton === "views"
+                ? "bg-blue-200 outline outline-main text-main"
+                : ""
+                }`}
             >
               <Icon icon="iconoir:eye" width="1rem" height="1rem" />
               Xem nhiều
