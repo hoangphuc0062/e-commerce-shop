@@ -11,7 +11,7 @@ import { getAll } from "../../redux/slices/category";
 import GridProduct from "../../components/FeatureBlockProduct/GridProduct";
 
 import { getBanners } from "../../redux/slices/barnner";
-import { getProducts, resetState } from "../../redux/slices/product";
+import { getProducts } from "../../redux/slices/product";
 import { Helmet } from "react-helmet-async";
 
 const datas = [
@@ -182,11 +182,11 @@ const HomePage = () => {
               children: [
                 ...(brandQueries.length > 0
                   ? [
-                      {
-                        title: "Hãng sản xuất",
-                        queries: brandQueries,
-                      },
-                    ]
+                    {
+                      title: "Hãng sản xuất",
+                      queries: brandQueries,
+                    },
+                  ]
                   : []),
                 {
                   title: "Mức giá",
@@ -208,34 +208,54 @@ const HomePage = () => {
 
   useEffect(() => {
     if (statusBanner === "success" && Array.isArray(Banner)) {
-      setDataBanner(
-        Banner.filter((item) => item.title === "Home-banner").map((item) => ({
-          banner: item.banner.map((child) => ({
-            id: item._id,
-            title: child.name,
-            description: child.shotDescription,
-            src: child.urlImage,
-            link: child.refUrl,
-            position: child.position,
-          })),
-        }))
-      );
+      const now = new Date(); // Get the current time
+
+      const filteredBanners = Banner.filter((item) => item.title === "Home-banner")
+        .map((item) => ({
+          banner: item.banner
+            .filter((child) => {
+              const startDate = new Date(child.startDate);
+              const endDate = new Date(child.endDate);
+              return startDate <= now && endDate >= now; // Filter if current time is within the range
+            })
+            .map((child) => ({
+              id: item._id,
+              title: child.name,
+              description: child.shotDescription,
+              src: child.urlImage,
+              link: child.refUrl,
+              position: child.position,
+              startDate: child.startDate,
+              endDate: child.endDate,
+            })),
+        }));
+
+      setDataBanner(filteredBanners); // Update the state with the filtered banners
     }
   }, [statusBanner, Banner]);
 
+
   useEffect(() => {
     if (statusBanner === "success" && Array.isArray(Banner)) {
+      const now = new Date(); // Lấy thời gian hiện tại
       setVerticalBanner(
-        Banner.filter((item) => item.title === "Vertical-banner").map(
-          (item) => ({
-            banner: item.banner.map((child) => ({
+        Banner.filter((item) => item.title === "Vertical-banner").map((item) => ({
+          banner: item.banner
+            .filter((child) => {
+              const startDate = new Date(child.startDate);
+              const endDate = new Date(child.endDate);
+              return startDate <= now && endDate >= now;
+              // Kiểm tra nếu banner nằm trong khoảng thời gian
+            })
+            .map((child) => ({
               id: item._id,
               image: child.urlImage,
               ref: child.refUrl,
               position: child.position,
+              startDate: child.startDate,
+              endDate: child.endDate,
             })),
-          })
-        )
+        }))
       );
     }
   }, [statusBanner, Banner]);
@@ -249,8 +269,7 @@ const HomePage = () => {
       getProducts({
         page: 1,
         limit: 20,
-        fields:
-          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        fields: "name,price,thumbnail,category,brand,discount,slug",
         sort: "-createdAt",
         slug,
       })
@@ -264,8 +283,7 @@ const HomePage = () => {
       getProducts({
         page: 1,
         limit: 20,
-        fields:
-          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        fields: "name,price,thumbnail,category,brand,discount,slug",
         sort: "-createdAt",
         slug: slug1,
       })
@@ -279,8 +297,7 @@ const HomePage = () => {
       getProducts({
         page: 1,
         limit: 20,
-        fields:
-          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+        fields: "name,price,thumbnail,category,brand,discount,slug",
         sort: "-createdAt",
         slug: slug2,
       })

@@ -74,15 +74,11 @@ const createOrder = asyncHandler(async (req, res) => {
   }
 
   const products = userCart.cart.map((el) => {
-    const product = el.pid;
-    const variant = product.variants?.find(
-      (v) => v.get("id") === el.attributeId
-    );
     return {
       pid: el.pid,
       attributeId: el.attributeId,
       quantity: el.quantity,
-      price: variant ? variant.price : product.price,
+      key: el.key,
     };
   });
 
@@ -404,6 +400,9 @@ const sendSuccessEmail = async (req, res) => {
       },
       { new: true }
     );
+
+    // trừ số lượng sản phẩm trong kho
+
     const email = orderBy.email;
     const html = generateEmailTemplate({
       SKU,

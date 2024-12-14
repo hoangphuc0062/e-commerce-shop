@@ -2,7 +2,7 @@ import { useState } from "react";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 
-import { changePassword } from "../../../redux/slices/auth";
+import { updatePassword } from "../../../redux/slices/auth";
 import { handleToast } from "../../../ultils/toast";
 
 export default function Password() {
@@ -67,18 +67,20 @@ export default function Password() {
     const payload = { currentPassword, newPassword }; // Dữ liệu gửi lên server
   
     try {
-      // Gửi yêu cầu đổi mật khẩu lên server qua Redux
-      await dispatch(changePassword(payload)).unwrap();
+      // Gửi yêu cầu đổi mật khẩu qua Redux
+      await dispatch(updatePassword(payload)).unwrap();
   
       // Xử lý khi đổi mật khẩu thành công
       handleToast("success", "Đổi mật khẩu thành công");
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (error) {
       // Xử lý khi đổi mật khẩu thất bại
-      console.error("Error updating password:", error);
-      handleToast("error", error.message || "Đổi mật khẩu thất bại");
+      console.error("Error updating password:", error); // In lỗi ra console để kiểm tra
+      const errorMessage = error.message || error.response?.data || "Đổi mật khẩu thất bại";
+      handleToast("error", errorMessage); // Hiển thị thông báo lỗi chi tiết
     }
   };
+  console.log(passwordData);
   
 
   return (
@@ -173,7 +175,6 @@ export default function Password() {
             </p>
           )}
         </div>
-
         <div className="flex gap-2">
           <button
             onClick={handleSubmit}
@@ -185,7 +186,7 @@ export default function Password() {
             type="button"
             className="bg-gray-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md w-1/4"
             onClick={() =>
-              setPasswordData({ newPassword: "", confirmPassword: "" })
+              setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })
             }
           >
             Hủy

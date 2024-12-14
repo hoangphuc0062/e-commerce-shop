@@ -171,22 +171,7 @@ export default function ProductEdit() {
           return { key: detail.key, value: detail.value };
         }),
       })) || [],
-    variants:
-      dataProduct.variants?.map((item) => ({
-        key: item.key,
-        value: item.value,
-        SKU: item.SKU,
-        price: item.price,
-        priceInMarket: item.priceInMarket,
-        historicalPrice: item.historicalPrice,
-        discount: item.discount,
-        inventory: item.inventory,
-        minInventory: item.minInventory,
-        maxInventory: item.maxInventory,
-        onStock: item.onStock,
-        inComing: item.inComing,
-        thumbnail: item.thumbnail,
-      })) || [],
+    variants: dataProduct.variants || [],
   };
   const validationSchema = Yup.object({
     // name: Yup.string().required("Tên sản phẩm không được để trống"),
