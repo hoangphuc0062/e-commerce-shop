@@ -110,7 +110,7 @@ export default function SliderBanner({ data }) {
                 <img
                   src={img.src}
                   alt={img.title}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-fit lg:object-contain aspect-video"
                 />
               </Link>
             </SwiperSlide>
