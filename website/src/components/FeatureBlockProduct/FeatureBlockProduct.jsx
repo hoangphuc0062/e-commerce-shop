@@ -74,7 +74,7 @@ export const FeatureBlockProduct = ({ products }) => {
                         </span>
                         {product.discountPercent > 0 && (
                           <span className="line-through text-gray-500">
-                            {product.price.toLocaleString()}đ
+                            {product?.price?.toLocaleString()}đ
                           </span>
                         )}
                       </div>
