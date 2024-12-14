@@ -247,8 +247,85 @@ const registerCustomer = asyncHandler(async (req, res) => {
       }
     );
 
-    const html = `Xin vui lòng click vào link dưới đây để hoàn tất quá trình đăng ký của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ.
-      <a href=${process.env.URL_SERVER}/api/customers/finalregister/${token}>Xác nhận tài khoản</a>`;
+    const html = `<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Confirmation</title>
+    <style>
+        .body-mail {
+            font-family: Arial, sans-serif;
+            background-color: #f3f6fc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        .confirmation-container {
+            background-color: #ffffff;
+            text-align: center;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .confirmation-container img {
+            width: 80px;
+            margin-bottom: 16px;
+        }
+
+        .confirmation-container h1 {
+            font-size: 24px;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .confirmation-container p {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .confirmation-container a {
+            display: inline-block;
+            background-color: #2563eb;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+            transition: background-color 0.3s ease;
+        }
+
+        .confirmation-container a:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+     <div class="body-mail">
+        <div class="confirmation-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/10678/10678045.png" alt="Success Icon">
+            <h1>Xác thực tài khoản email</h1>
+            <p>Xin vui lòng click vào link dưới đây để hoàn tất quá trình đăng ký của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ</p>
+             <a href=${process.env.URL_SERVER}/api/customers/finalregister/${token}>Xác nhận tài khoản</a>
+        </div>
+    </div>
+</body>
+
+</html>
+     `;
     const subject = `Hoàn tất đăng ký Voi Tây Nguyên Account`;
 
     const rs = await sendMail(email, html, subject);
