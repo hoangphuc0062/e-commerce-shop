@@ -418,7 +418,7 @@ const Product = () => {
   }, [filters, selectedFilters]);
 
   return (
-    <div className="container sm:p-4 lg:p-8 w-full flex flex-col gap-4">
+    <div className="container w-full flex flex-col gap-4">
       <div>
         <BreadcrumbsCustom />
       </div>
@@ -449,7 +449,7 @@ const Product = () => {
               }
             >
               <img
-                className="aspect-video w-full h-full"
+                className="aspect-video object-contain w-full h-full"
                 src={_.image}
                 alt={_.slug}
               />
@@ -695,25 +695,31 @@ const Product = () => {
         )}
       </section>
       <section>
-        <div>
+        <div className="w-full ">
           <h1 className="text-[20px] font-semibold">Sắp xếp theo</h1>
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-auto p-1">
             <button
               onClick={() => handleSort("price-high-low")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${activeButton === "price-high-low"
-                ? "bg-blue-200 outline outline-main text-main"
-                : ""
-                }`}
+
+              className={`flex flex-row gap-2 items-center bg-gray-200 p-2 min-w-[160px] h-fit rounded-lg ${
+                activeButton === "price-high-low"
+                  ? "bg-blue-200 outline outline-main text-main"
+                  : ""
+              }`}
+
             >
               <Icon icon="proicons:filter" width="1rem" height="1rem" />
-              Giá Cao - Thấp
+              <span>Giá Cao - Thấp</span>
             </button>
             <button
               onClick={() => handleSort("price-low-high")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${activeButton === "price-low-high"
-                ? "bg-blue-200 outline outline-main text-main"
-                : ""
-                }`}
+
+              className={`flex items-center  min-w-[160px] h-fit bg-gray-200 p-2 rounded-lg ${
+                activeButton === "price-low-high"
+                  ? "bg-blue-200 outline outline-main text-main"
+                  : ""
+              }`}
+
             >
               <Icon
                 icon="proicons:filter"
@@ -725,10 +731,13 @@ const Product = () => {
             </button>
             <button
               onClick={() => handleSort("discount")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${activeButton === "discount"
-                ? "bg-blue-200 outline outline-main text-main"
-                : ""
-                }`}
+
+              className={`flex items-center  min-w-[160px] h-fit bg-gray-200 p-2 rounded-lg ${
+                activeButton === "discount"
+                  ? "bg-blue-200 outline outline-main text-main"
+                  : ""
+              }`}
+
             >
               <Icon
                 icon="material-symbols-light:percent"
@@ -739,10 +748,12 @@ const Product = () => {
             </button>
             <button
               onClick={() => handleSort("views")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${activeButton === "views"
-                ? "bg-blue-200 outline outline-main text-main"
-                : ""
-                }`}
+
+              className={`flex items-center justify-center  min-w-[160px] h-fit bg-gray-200 p-2 rounded-lg ${
+                activeButton === "views"
+                  ? "bg-blue-200 outline outline-main text-main"
+                  : ""
+              }`}
             >
               <Icon icon="iconoir:eye" width="1rem" height="1rem" />
               Xem nhiều

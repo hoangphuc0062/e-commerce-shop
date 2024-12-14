@@ -33,6 +33,7 @@ export const UserMenu = ({ data }) => {
         navigate("/login");
         dispatch(resetState({ key: "statusLogout", value: "idle" }));
         dispatch(resetState({ key: "statusGetMe", value: "idle" }));
+        dispatch(resetState({ key: "data", value: [] }));
       }
     });
   };
@@ -52,7 +53,7 @@ export const UserMenu = ({ data }) => {
         >
           <Icon icon="carbon:user-avatar" width="1.5rem" height="1.5rem" />
           <p className="text-[10px] md:text-[12px] line-clamp-2 ">
-            {getDisplayName(data.name) || "Người dùng"}
+            {(data && getDisplayName(data.name)) || "Người dùng"}
           </p>
         </button>
       ) : (
