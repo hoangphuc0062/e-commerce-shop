@@ -74,7 +74,8 @@ const Product = () => {
     dispatch(
       getProducts({
         limit: productPerPage,
-        fields: "name,price,thumbnail,view,category,brand,discount,slug,attributes",
+        fields:
+          "name,price,thumbnail,view,category,brand,discount,slug,attributes",
         slug,
       })
     );
@@ -396,10 +397,12 @@ const Product = () => {
   };
 
   useEffect(() => {
-    const query = objectToQueryString(selectedFilters);
-    setQueryFilter(query);
-    setSearchParams(decodeURIComponent(query));
-    console.log("Query Filter:", query);
+    setQueryFilter(updateSelectedFiltersWithKeys(filters, selectedFilters));
+    if (queryFilter) {
+      let query = objectToQueryString(queryFilter);
+      setSearchParams(query);
+      console.log("Query filter:", query);
+    }
   }, [filters, selectedFilters]);
 
   return (
