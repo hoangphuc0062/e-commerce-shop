@@ -66,9 +66,10 @@ const getAllProduct = asyncHandler(async (req, res) => {
       }
       delete formattedQueries.slug;
     }
-
+    if (queries.multiFilter === "") delete formattedQueries.multiFilter;
     if (queries.multiFilter) {
       const filterString = decodeURIComponent(queries.multiFilter);
+
       const filterConditions = filterString.split("&");
 
       filterConditions.forEach((condition) => {
@@ -84,6 +85,20 @@ const getAllProduct = asyncHandler(async (req, res) => {
             formattedQueries.price = { $gte: minPrice, $lte: maxPrice };
           } else {
             return res.status(400).json({ mes: "Invalid price filter" });
+          }
+        } else {
+          const values = value.split(",");
+
+          if (values && values.length > 0) {
+            // Khởi tạo $or nếu chưa tồn tại
+            formattedQueries.$or = formattedQueries.$or || [];
+
+            // Thêm các điều kiện vào $or
+            const conditions = values.map((val) => ({
+              [`filterable.${key}`]: { $regex: val, $options: "i" }, // Điều kiện regex (case-insensitive)
+            }));
+
+            formattedQueries.$or.push(...conditions);
           }
         }
       });
@@ -251,7 +266,7 @@ const updateManyProduct = asyncHandler(async (req, res) => {
   const refreshRates = "120Hz";
   const storages = "256GB, 512GB, 1TB";
   const rams = "8GB";
-  const chips = "Apple A-series";
+  const chips = "Apple-A-series";
 
   const filterable = {
     refreshRate: refreshRates,
