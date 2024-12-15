@@ -3,7 +3,6 @@ const asyncHandler = require("express-async-handler");
 const Product = require("../models/productModel");
 const Category = require("../models/categoryModel");
 const Brand = require("../models/brandModel");
-const Series = require("../models/seriesModel");
 
 // Filter - sort - pagination
 const getAllProduct = asyncHandler(async (req, res) => {
@@ -31,9 +30,6 @@ const getAllProduct = asyncHandler(async (req, res) => {
     if (queries?.brand) {
       formattedQueries.brand = queries.brand;
     }
-    if (queries?.series) {
-      formattedQueries.series = queries.series;
-    }
 
     if (queries?.warehouses) {
       formattedQueries.warehouse = queries.warehouses;
@@ -57,12 +53,6 @@ const getAllProduct = asyncHandler(async (req, res) => {
           key: "brand",
           errorMessage: `Brand ${matchBrand} is not found`,
         },
-        {
-          match: matchSeries,
-          model: Series,
-          key: "series",
-          errorMessage: `Series ${matchSeries} is not found`,
-        },
       ];
 
       for (const entity of entities) {
@@ -75,6 +65,29 @@ const getAllProduct = asyncHandler(async (req, res) => {
         }
       }
       delete formattedQueries.slug;
+    }
+
+    if (queries.multiFilter) {
+      const filterString = decodeURIComponent(queries.multiFilter);
+      const filterConditions = filterString.split("&");
+
+      filterConditions.forEach((condition) => {
+        const [key, value] = condition.split("=");
+
+        if (!key || !value) {
+          return res.status(400).json({ mes: "Invalid filter" });
+        }
+
+        if (key === "price") {
+          const [minPrice, maxPrice] = value.split("-").map(Number);
+          if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+            formattedQueries.price = { $gte: minPrice, $lte: maxPrice };
+          } else {
+            return res.status(400).json({ mes: "Invalid price filter" });
+          }
+        }
+      });
+      delete formattedQueries.multiFilter;
     }
 
     let queryCommand = Product.find(formattedQueries);
@@ -90,7 +103,6 @@ const getAllProduct = asyncHandler(async (req, res) => {
       const populateFields = {
         category: "name slug",
         brand: "name slug",
-        series: "name slug",
         warehouse: "name",
         tagsProduct: "name",
       };
@@ -110,6 +122,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
     queryCommand.skip(skip).limit(limit);
 
     const response = await queryCommand.exec();
+
     const counts = await Product.find(formattedQueries).countDocuments();
 
     return res.status(200).json({
@@ -163,14 +176,15 @@ const addManyProduct = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
+  const data = req.body;
 
-  if (!pid || Object.keys(req.body).length === 0) {
+  if (!pid || Object.keys(data).length === 0) {
     return res.status(400).json({
       mes: "Missing inputs",
     });
   }
 
-  const product = await Product.findByIdAndUpdate(pid, req.body.data, {
+  const product = await Product.findByIdAndUpdate(pid, data, {
     new: true,
   });
 
@@ -205,6 +219,68 @@ const getProductBySlug = asyncHandler(async (req, res) => {
   if (!product) throw new Error("Product is not found in database");
   return res.status(200).json(product);
 });
+
+// Search product by name
+// const searchProduct = asyncHandler(async (req, res) => {
+//   const { name } = req.query;
+//   if (!name) {
+//     return res.status(400).json({
+//       mes: "Missing inputs",
+//     });
+//   }
+//   const product = await Product.find({ name: { $regex: name, $options: "i" } });
+//   if (!product) throw new Error("Product is not found in database");
+//   return res.status(200).json(product);
+// });
+
+const updateManyProduct = asyncHandler(async (req, res) => {
+  const { brandIds } = req.body; // Nhận mảng brandIds từ body
+
+  if (!Array.isArray(brandIds) || brandIds.length === 0) {
+    return res
+      .status(400)
+      .json({ message: "brandIds phải là một mảng hợp lệ." });
+  }
+
+  // Validate ObjectId
+  // const validBrandIds = brandIds.filter((id) =>
+  //   mongoose.Types.ObjectId.isValid(id)
+  // );
+
+  // Dữ liệu muốn cập nhật
+  const refreshRates = "120Hz";
+  const storages = "256GB, 512GB, 1TB";
+  const rams = "8GB";
+  const chips = "Apple A-series";
+
+  const filterable = {
+    refreshRate: refreshRates,
+    storage: storages,
+    ram: rams,
+    chip: chips,
+  };
+
+  // Cập nhật sản phẩm với tất cả brandId trong danh sách
+  const result = await Product.updateMany(
+    { brand: { $in: brandIds } }, // Lọc theo danh sách brandIds
+    { $set: { filterable } }, // Dữ liệu cần cập nhật
+    { new: true }
+  );
+
+  // Kiểm tra kết quả
+  if (result.matchedCount === 0) {
+    return res.status(404).json({
+      message: "Không tìm thấy sản phẩm nào với các brandId được cung cấp.",
+    });
+  }
+
+  res.status(200).json({
+    message: "Cập nhật sản phẩm thành công!",
+    matchedCount: result.matchedCount, // Số lượng sản phẩm được tìm thấy
+    modifiedCount: result.modifiedCount, // Số lượng sản phẩm thực sự được cập nhật
+  });
+});
+
 module.exports = {
   getAllProduct,
   addProduct,
@@ -212,4 +288,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getProductBySlug,
+
+  updateManyProduct,
 };

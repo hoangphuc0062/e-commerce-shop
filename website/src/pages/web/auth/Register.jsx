@@ -13,6 +13,7 @@ const Register = () => {
 
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [captchaValue, setCaptchaValue] = useState(null);
   const togglePasswordVisibility = () => {
@@ -23,6 +24,7 @@ const Register = () => {
       name: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Vui lòng nhập họ và tên."),
@@ -33,6 +35,9 @@ const Register = () => {
       password: Yup.string()
         .required("Vui lòng nhập mật khẩu.")
         .min(6, "Mật khẩu phải có ít nhất 6 ký tự."),
+      confirmPassword: Yup.string()
+        .required("Vui lòng nhập lại mật khẩu.")
+        .oneOf([Yup.ref("password"), null], "Mật khẩu không khớp."),
     }),
     onSubmit: async (values) => {
       if (!captchaValue) {
@@ -120,6 +125,27 @@ const Register = () => {
                   type={"password"}
                   showPassword={showPassword}
                   togglePasswordVisibility={togglePasswordVisibility}
+                />
+              </div>
+              <div>
+                <CustomInputField
+                  label={"Nhập lại mật khẩu"}
+                  name={"confirmPassword"}
+                  id={"confirmPassword"}
+                  inputValue={formik.values.confirmPassword}
+                  onChange={formik.handleChange}
+                  errorMessage={
+                    formik.touched.confirmPassword &&
+                    formik.errors.confirmPassword
+                      ? formik.errors.confirmPassword
+                      : null
+                  }
+                  onBlur={formik.handleBlur}
+                  type={"password"}
+                  showPassword={showConfirmPassword}
+                  togglePasswordVisibility={() => {
+                    setShowConfirmPassword(!showConfirmPassword);
+                  }}
                 />
               </div>
             </div>

@@ -114,7 +114,7 @@ const ProductSchema = new mongoose.Schema(
         of: String,
       },
     ],
-    filter: {
+    filterable: {
       type: Map,
       of: String,
     },

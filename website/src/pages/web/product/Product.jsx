@@ -75,12 +75,12 @@ const Product = () => {
       getProducts({
         limit: productPerPage,
         fields:
-          "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+          "name,price,thumbnail,view,category,brand,discount,slug,attributes",
         slug,
       })
     );
   }, [brand, category, dispatch, productPerPage]);
-  useEffect(() => {}, [category]);
+  useEffect(() => { }, [category]);
   useEffect(() => {
     loadInitialProducts();
     if (category) {
@@ -124,19 +124,30 @@ const Product = () => {
   }, [statusProduct, productsData, dispatch, navigate, productPerPage]);
   useEffect(() => {
     if (statusBanner === "success" && Array.isArray(Banner)) {
+      const now = new Date(); // lấy thời gian hiện tại
+
+      // lọc theo các khoảng thời gian theo điều kiện (startDate <= now <= endDate)
       const filteredData = Banner.filter((item) => item.title === category).map(
         (item) => ({
-          banner: item.banner?.map((child) => ({
+          banner: item.banner?.filter((child) => {
+            const startDate = new Date(child.startDate);
+            const endDate = new Date(child.endDate);
+            return startDate <= now && endDate >= now; // Hiển thị banner theo khoảng thời gian này
+          }).map((child) => ({
             id: item._id,
             title: child.name,
             description: child.shotDescription,
             src: child.urlImage,
             link: child.refUrl,
+            startDate: child.startDate,
+            endDate: child.endDate,
           })),
         })
       );
-      setDataBanner(filteredData);
 
+      setDataBanner(filteredData); // Xét những banner hợp lệ
+
+      //  Nếu có các banner hợp lệ, sẽ thiết lập setFirstHalfBanner và setSecondHalfBanner với các giá trị tương ứng.
       if (filteredData.length > 0 && Array.isArray(filteredData[0].banner)) {
         const banners = filteredData[0].banner;
         setFirstHalfBanner([{ banner: banners }]);
@@ -147,6 +158,7 @@ const Product = () => {
       }
     }
   }, [statusBanner, Banner, category]);
+
 
   const loading = () => (
     <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
@@ -169,8 +181,7 @@ const Product = () => {
       const response = await dispatch(
         getProducts({
           limit: products.length + 15,
-          fields:
-            "name,price,thumbnail,description,rating,review,category,brand,discount,slug",
+          fields: "name,price,thumbnail,view,category,brand,discount,slug",
           slug: brand ? `${category},${brand}` : category,
         })
       );
@@ -182,9 +193,9 @@ const Product = () => {
         setSortedProducts((prev) => [...prev, ...newProducts]);
         setHasMoreProducts(newProducts.length === 15); // Check if there are more products to load // Check if there are more products to load
       }
-      //  else {
-      //   setHasMoreProducts(false);
-      // }
+      if (products.length === countProduct) {
+        setHasMoreProducts(false);
+      }
     } catch (error) {
       setHasMoreProducts(false);
     } finally {
@@ -400,14 +411,14 @@ const Product = () => {
   useEffect(() => {
     setQueryFilter(updateSelectedFiltersWithKeys(filters, selectedFilters));
     if (queryFilter) {
-      const query = objectToQueryString(queryFilter);
+      let query = objectToQueryString(queryFilter);
       setSearchParams(query);
       console.log("Query filter:", query);
     }
   }, [filters, selectedFilters]);
 
   return (
-    <div className="container sm:p-4 lg:p-8 w-full flex flex-col gap-4">
+    <div className="container w-full flex flex-col gap-4">
       <div>
         <BreadcrumbsCustom />
       </div>
@@ -429,11 +440,16 @@ const Product = () => {
               className="round-lg outline outline-gray-100 w-full h-[40px]"
               to={`/${category}/${_.slug}`}
               onClick={() =>
-                dispatch(getProducts({ slug: `${category},${_.slug}` }))
+                dispatch(
+                  getProducts({
+                    fields: "name,price,thumbnail,category,brand,discount,slug",
+                    slug: `${category},${_.slug}`,
+                  })
+                )
               }
             >
               <img
-                className="aspect-video w-full h-full"
+                className="aspect-video object-contain w-full h-full"
                 src={_.image}
                 alt={_.slug}
               />
@@ -492,9 +508,8 @@ const Product = () => {
                                     setActiveChild
                                   )
                                 }
-                                className={`relative bg-gray-200 w-max p-3 rounded-lg ${
-                                  activeChild[index]?.[inx] ? "active" : ""
-                                }
+                                className={`relative bg-gray-200 w-max p-3 rounded-lg ${activeChild[index]?.[inx] ? "active" : ""
+                                  }
                                 `}
                               >
                                 {value}
@@ -568,13 +583,13 @@ const Product = () => {
                                     ...(selectedFilters || {}),
                                     Giá: isDefaultRange
                                       ? {
-                                          minPrice: minPrice,
-                                          maxPrice: maxPrice,
-                                        } // Dùng giá trị mặc định
+                                        minPrice: minPrice,
+                                        maxPrice: maxPrice,
+                                      } // Dùng giá trị mặc định
                                       : {
-                                          minPrice: userMinPrice,
-                                          maxPrice: userMaxPrice,
-                                        }, // Dùng giá trị tùy chỉnh
+                                        minPrice: userMinPrice,
+                                        maxPrice: userMaxPrice,
+                                      }, // Dùng giá trị tùy chỉnh
                                   };
 
                                   setSelectedFilters(updatedFilters);
@@ -662,8 +677,8 @@ const Product = () => {
                       {Array.isArray(value)
                         ? value.join(", ")
                         : `${formatCurrency(value.minPrice)} - ${formatCurrency(
-                            value.maxPrice
-                          )}`}
+                          value.maxPrice
+                        )}`}
                     </span>
                   </span>
                 </button>
@@ -680,27 +695,31 @@ const Product = () => {
         )}
       </section>
       <section>
-        <div>
+        <div className="w-full ">
           <h1 className="text-[20px] font-semibold">Sắp xếp theo</h1>
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-auto p-1">
             <button
               onClick={() => handleSort("price-high-low")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${
+
+              className={`flex flex-row gap-2 items-center bg-gray-200 p-2 min-w-[160px] h-fit rounded-lg ${
                 activeButton === "price-high-low"
                   ? "bg-blue-200 outline outline-main text-main"
                   : ""
               }`}
+
             >
               <Icon icon="proicons:filter" width="1rem" height="1rem" />
-              Giá Cao - Thấp
+              <span>Giá Cao - Thấp</span>
             </button>
             <button
               onClick={() => handleSort("price-low-high")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${
+
+              className={`flex items-center  min-w-[160px] h-fit bg-gray-200 p-2 rounded-lg ${
                 activeButton === "price-low-high"
                   ? "bg-blue-200 outline outline-main text-main"
                   : ""
               }`}
+
             >
               <Icon
                 icon="proicons:filter"
@@ -712,11 +731,13 @@ const Product = () => {
             </button>
             <button
               onClick={() => handleSort("discount")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${
+
+              className={`flex items-center  min-w-[160px] h-fit bg-gray-200 p-2 rounded-lg ${
                 activeButton === "discount"
                   ? "bg-blue-200 outline outline-main text-main"
                   : ""
               }`}
+
             >
               <Icon
                 icon="material-symbols-light:percent"
@@ -727,7 +748,8 @@ const Product = () => {
             </button>
             <button
               onClick={() => handleSort("views")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${
+
+              className={`flex items-center justify-center  min-w-[160px] h-fit bg-gray-200 p-2 rounded-lg ${
                 activeButton === "views"
                   ? "bg-blue-200 outline outline-main text-main"
                   : ""

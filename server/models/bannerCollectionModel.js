@@ -43,10 +43,10 @@ const bannerCollectionSchema = new mongoose.Schema(
           type: String,
           default: "",
         },
-        startDateBanner: {
+        startDate: {
           type: Date,
         },
-        endDatebanner: {
+        endDate: {
           type: Date,
         },
       },
@@ -54,12 +54,6 @@ const bannerCollectionSchema = new mongoose.Schema(
     status: {
       type: Boolean,
       default: true,
-    },
-    startDate: {
-      type: Date,
-    },
-    endDate: {
-      type: Date,
     },
   },
   {

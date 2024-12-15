@@ -418,8 +418,6 @@ const getCart = asyncHandler(async (req, res) => {
   const cart = customer.cart.map((item) => {
     const product = item.pid;
 
-    console.log("Product:", product.variants);
-
     const variant = product.variants?.find((v) => {
       if (v instanceof Map) {
         return v.get("key") === item.key;
