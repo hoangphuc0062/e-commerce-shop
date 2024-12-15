@@ -449,57 +449,57 @@ const generateEmailTemplate = ({
         <div style="padding: 16px;">
             <h2 style="font-size: 24px; color: #333333; margin-bottom: 8px;">Cảm ơn bạn đã đặt hàng!</h2>
             <img src="https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/status%2Fsuccess.gif?alt=media&token=4b3eb1f3-abea-43a2-96a6-0e0c71b6d4b5" alt="Xác nhận đơn hàng thành công">
-            <div style="color: #555555; margin-bottom: 16px;">
-                <div style="style="text-align: center;">
-                <p style="font-size:" >Mã đơn hàng:</p>
-                <p style="border:none; color: #007bff; font-weight: 700; background: #ffffff; font-size: 16px;text-align: center;">
-                    ${SKU}
-                </p>
-               </div>
+            <p>${SKU}</p>
+            <p style="color: #555555; margin-bottom: 16px;">
                 Đơn hàng của bạn sẽ được xử lý ít phút. Chúng tôi sẽ thông báo cho bạn qua email khi đơn hàng của bạn đã được chuyển đi.
-                </div>
             </p>
-            <div
-                style="background-color: #f8f9fa; border: 1px solid #e1e1e1; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <dt style="color: #888888;">Ngày</dt>
-                    <dd style="color: #333333; font-weight: bold;">${new Date(
-                      date
-                    ).toLocaleDateString("vi-VN")}</dd>
-                </dl>
-                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <dt style="color: #888888;">Phương thức thanh toán</dt>
-                    <dd style="color: #333333; font-weight: bold;">${
-                      paymentMethod === "cash"
-                        ? "Thanh toán khi nhận hàng"
-                        : "Thanh toán online"
-                    }</dd>
-                </dl>
-                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <dt style="color: #888888;">Tên</dt>
-                    <dd style="color: #333333; font-weight: bold;">${
-                      orderBy.name
-                    }</dd>
-                </dl>
-                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <dt style="color: #888888;">Địa chỉ</dt>
-                    <dd style="color: #333333; font-weight: bold;">${
-                      orderBy.address.find((addr) => addr.isDefault).street +
-                      ", " +
-                      orderBy.address.find((addr) => addr.isDefault).wards +
-                      ", " +
-                      orderBy.address.find((addr) => addr.isDefault).districts +
-                      ", " +
-                      orderBy.address.find((addr) => addr.isDefault).provinces
-                    }</dd>
-                </dl>
-                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <dt style="color: #888888;">Điện thoại</dt>
-                    <dd style="color: #333333; font-weight: bold;">${
-                      orderBy.phone
-                    }</dd>
-                </dl>
-            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px; background-color: #f8f9fa; border: 1px solid #e1e1e1; border-radius: 8px; padding: 16px;">
+                <tbody>
+                    <tr>
+                        <th style="text-align: left; color: #888888; padding: 8px;">Ngày</th>
+                        <td style="text-align: right; color: #333333; font-weight: bold; padding: 8px;">${new Date(
+                          date
+                        ).toLocaleDateString("vi-VN")}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left; color: #888888; padding: 8px;">Phương thức thanh toán</th>
+                        <td style="text-align: right; color: #333333; font-weight: bold; padding: 8px;">${
+                          paymentMethod === "cash"
+                            ? "Thanh toán khi nhận hàng"
+                            : "Thanh toán online"
+                        }</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left; color: #888888; padding: 8px;">Tên</th>
+                        <td style="text-align: right; color: #333333; font-weight: bold; padding: 8px;">${
+                          orderBy.name
+                        }</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left; color: #888888; padding: 8px;">Địa chỉ</th>
+                        <td style="text-align: right; color: #333333; font-weight: bold; padding: 8px;">${
+                          orderBy.address.find((addr) => addr.isDefault)
+                            .street +
+                          ", " +
+                          orderBy.address.find((addr) => addr.isDefault).wards +
+                          ", " +
+                          orderBy.address.find((addr) => addr.isDefault)
+                            .districts +
+                          ", " +
+                          orderBy.address.find((addr) => addr.isDefault)
+                            .provinces
+                        }</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left; color: #888888; padding: 8px;">Điện thoại</th>
+                        <td style="text-align: right; color: #333333; font-weight: bold; padding: 8px;">${
+                          orderBy.phone
+                        }</td>
+                    </tr>
+                </tbody>
+            </table>
+
             <div style="text-align: center; margin-top: 16px;">
                 <a href="${baseUrl}/look-up-order"
                     style="background-color: #007bff; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; display: inline-block; margin-right: 8px;">Theo
@@ -513,6 +513,7 @@ const generateEmailTemplate = ({
 </body>
 
 </html>
+
   `;
 };
 
@@ -566,7 +567,7 @@ const getOrderBySKU = async (req, res) => {
   const order = await Order.findOne({ SKU: sku })
     .populate(
       "products.pid",
-      "-SKU -slug -historicalPrice -priceInMarket -category -brand -inStock -onStock -inComing -minInventory -maxInventory"
+      "-SKU -slug -historicalPrice -priceInMarket -category -brand -inStock -onStock -inComing -minInventory -maxInventory -attributes -description -shortDescription -filterable"
     )
     .populate("orderBy", "name email phone address");
 

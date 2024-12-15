@@ -193,7 +193,7 @@ function CartButton({ data }) {
                         <p className="text-indigo-600 font-semibold text-sm mt-1">
                           {item?.attributeValue?.price.toLocaleString() ||
                             item?.price.toLocaleString()}
-                          VND
+                          đ
                         </p>
                       </div>
                     </div>
