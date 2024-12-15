@@ -385,11 +385,12 @@ const addCart = asyncHandler(async (req, res) => {
 const getCart = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
-  const customer = await Customer.findById(userId).populate({
-    path: "cart.pid",
-    select: "name thumbnail price slug variants",
-  });
-
+  const customer = await Customer.findById(userId)
+    .populate({
+      path: "cart.pid",
+      select: "name thumbnail price slug variants",
+    })
+    .populate();
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
