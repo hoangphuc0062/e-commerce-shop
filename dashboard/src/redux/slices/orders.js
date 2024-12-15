@@ -1,0 +1,74 @@
+import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
+import OrderService from "../../services/order.service";
+
+const handleAsyncThunk = async (asyncFunction, args, { rejectWithValue }) => {
+    try {
+        const response = await asyncFunction(...args);
+        return response;
+    } catch (err) {
+        return rejectWithValue(err.response.data);
+    }
+};
+
+export const resetState = createAsyncThunk(
+    "state/resetState",
+    async (payload, thunkAPI) => {
+        return payload;
+    }
+);
+
+// get orrders
+export const getAll = createAsyncThunk("orders/getAllOrder", (_, thunkAPI) =>
+    handleAsyncThunk(OrderService.getAll, [null], thunkAPI)
+);
+// update orders
+export const update = createAsyncThunk(
+    "orders/updateStatus",
+    ({ orderId, data }, thunkAPI) =>
+        handleAsyncThunk(OrderService.update, [orderId, data], thunkAPI)
+);
+const orders = createSlice({
+    name: "orders",
+    initialState: {
+        data: [],
+        status: "idle",
+        error: null,
+        statusUpdate: "idle"
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(resetState.fulfilled, (state, action) => {
+                if (action.payload) {
+                    const { key, value } = action.payload;
+                    if (key && value !== undefined) {
+                        state[key] = value;
+                    }
+                }
+            })
+            .addCase(getAll.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(getAll.fulfilled, (state, action) => {
+                state.status = "success";
+                state.data = action.payload;
+            })
+            .addCase(getAll.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
+            })
+            .addCase(update.pending, (state) => {
+                state.updateStatus = "loading";
+            })
+            .addCase(update.fulfilled, (state, action) => {
+                state.updateStatus = "success";
+                state.post = action.payload;
+            })
+            .addCase(update.rejected, (state, action) => {
+                state.updateStatus = "failed";
+                state.error = action.payload;
+            })
+    },
+});
+
+export default orders.reducer;
+export const { resetOrdersState } = orders.actions;

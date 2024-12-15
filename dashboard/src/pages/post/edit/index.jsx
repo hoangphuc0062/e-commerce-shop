@@ -37,8 +37,11 @@ function EditPost() {
 
   useEffect(() => {
     if (statusCategory === "success") {
+      const filteredCategories = category.filter(
+        (item) => item.type === "post"
+      );
       setCategoryOptions(
-        category.map((item) => ({
+        filteredCategories.map((item) => ({
           label: item.name,
           value: item._id,
         }))
@@ -112,7 +115,7 @@ function EditPost() {
   });
 
   const handleUploadComplete = (url) => {
-    formik.setFieldValue("thumbnail", url);
+    formik.setFieldValue("thumbnail", url[0]);
   };
 
   const handleDelete = () => {
@@ -162,6 +165,9 @@ function EditPost() {
                     {...getErrorProps("thumbnail")}
                     onBlur={formik.handleBlur}
                     fooder="post" // You can make it dynamic if needed
+                    dataImage={
+                      formik.values.thumbnail ? [formik.values.thumbnail] : []
+                    }
                   />
                 </Box>
               </Box>

@@ -98,7 +98,7 @@ const EditStaff = () => {
   });
 
   const handleUploadComplete = (url) => {
-    formik.setFieldValue("avatar", url);
+    formik.setFieldValue("avatar", url[0]);
   };
 
   const handleDelete = () => {
@@ -126,6 +126,8 @@ const EditStaff = () => {
                   {...getErrorProps("avatar")}
                   onBlur={formik.handleBlur}
                   fooder="staff"
+                  idupload="uploadFile"
+                  dataImage={formik.values.avatar ? [formik.values.avatar] : []}
                 />
               </Box>
             </Paper>

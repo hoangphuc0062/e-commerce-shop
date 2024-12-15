@@ -11,6 +11,7 @@ import { StatusChip, StatusOrderChip, StatustPostChip } from "../StatusColor";
 import propTypes from "prop-types";
 import { extractTextFromHtml } from "../../utils/extractTextFromHtml";
 import Iconify from "../../pages/category/Iconify";
+import { formatCurrency } from "../../../../website/src/utils/helper";
 
 const TableRowComponent = ({
   row,
@@ -95,13 +96,13 @@ const TableRowComponent = ({
               sx={{ width: 50, height: 50 }}
             />
           ) : column.field === "price" ? (
-            <span>{row[column.field]?.toLocaleString()} VNĐ</span>
+            <span>{formatCurrency(row[column.field])}</span>
           ) : column.field === "icon" ? (
             <Iconify icon={row[column.field]} width={30} />
           ) : column.field === "historicalPrice" ? (
-            <span>{row[column.field].toLocaleString()} VNĐ</span>
+            <span>{formatCurrency(row[column.field])}</span>
           ) : column.field === "priceInMarket" ? (
-            <span>{row[column.field].toLocaleString()} VNĐ</span>
+            <span>{formatCurrency(row[column.field])}</span>
           ) : column.field === "address" ? (
             row[column.field].length > 50 ? (
               row[column.field].slice(0, 50) + "..."

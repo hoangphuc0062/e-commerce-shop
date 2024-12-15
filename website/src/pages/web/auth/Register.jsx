@@ -9,11 +9,11 @@ import { register, resetState } from "../../../redux/slices/auth";
 import { UserContext } from "../../../context/AuthContext";
 import { useDispatch } from "react-redux";
 const Register = () => {
-  const { setUser, setLoginAuth } = useContext(UserContext);
-  const navigate = useNavigate();
+  const { setLoginAuth } = useContext(UserContext);
 
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [captchaValue, setCaptchaValue] = useState(null);
   const togglePasswordVisibility = () => {
@@ -22,17 +22,22 @@ const Register = () => {
   const formik = useFormik({
     initialValues: {
       name: "",
-      phone: "",
+      email: "",
       password: "",
+      confirmPassword: "",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Vui lòng nhập họ và tên."),
-      phone: Yup.string()
+      email: Yup.string()
         .required("Vui lòng nhập số điện thoại hoặc email.")
-        .matches(/^[0-9]*$/, "Số điện thoại không hợp lệ. Vui lòng nhập lại."),
+        .email("Email không hợp lệ."),
+
       password: Yup.string()
         .required("Vui lòng nhập mật khẩu.")
         .min(6, "Mật khẩu phải có ít nhất 6 ký tự."),
+      confirmPassword: Yup.string()
+        .required("Vui lòng nhập lại mật khẩu.")
+        .oneOf([Yup.ref("password"), null], "Mật khẩu không khớp."),
     }),
     onSubmit: async (values) => {
       if (!captchaValue) {
@@ -41,10 +46,11 @@ const Register = () => {
       }
       dispatch(register(values)).then((res) => {
         if (res.type === "auth/register/fulfilled") {
-          handleToast("success", "Đăng ký tài khoản thành công.");
-          navigate("/");
+          handleToast(
+            "success",
+            "Vui lòng kiểm tra email để xác nhận tài khoản."
+          );
           setLoginAuth(true);
-          setUser(res.payload.customer);
           dispatch(resetState({ key: "statusRegister", value: "idle" }));
         }
       });
@@ -90,14 +96,14 @@ const Register = () => {
               </div>
               <div>
                 <CustomInputField
-                  label={"Số điện thoại"}
-                  name={"phone"}
-                  id={"phone"}
-                  inputValue={formik.values.phone}
+                  label={"Email"}
+                  name={"email"}
+                  id={"email"}
+                  inputValue={formik.values.email}
                   onChange={formik.handleChange}
                   errorMessage={
-                    formik.touched.phone && formik.errors.phone
-                      ? formik.errors.phone
+                    formik.touched.email && formik.errors.email
+                      ? formik.errors.email
                       : null
                   }
                   onBlur={formik.handleBlur}
@@ -119,6 +125,27 @@ const Register = () => {
                   type={"password"}
                   showPassword={showPassword}
                   togglePasswordVisibility={togglePasswordVisibility}
+                />
+              </div>
+              <div>
+                <CustomInputField
+                  label={"Nhập lại mật khẩu"}
+                  name={"confirmPassword"}
+                  id={"confirmPassword"}
+                  inputValue={formik.values.confirmPassword}
+                  onChange={formik.handleChange}
+                  errorMessage={
+                    formik.touched.confirmPassword &&
+                    formik.errors.confirmPassword
+                      ? formik.errors.confirmPassword
+                      : null
+                  }
+                  onBlur={formik.handleBlur}
+                  type={"password"}
+                  showPassword={showConfirmPassword}
+                  togglePasswordVisibility={() => {
+                    setShowConfirmPassword(!showConfirmPassword);
+                  }}
                 />
               </div>
             </div>

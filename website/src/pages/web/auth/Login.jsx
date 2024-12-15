@@ -11,7 +11,7 @@ import { login, resetState } from "../../../redux/slices/auth";
 import { UserContext } from "../../../context/AuthContext";
 
 export default function Login() {
-  const { setUser, setLoginAuth } = useContext(UserContext);
+  const { setUser, setLoginAuth, loginAuth } = useContext(UserContext);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -20,13 +20,13 @@ export default function Login() {
 
   const formik = useFormik({
     initialValues: {
-      phone: "",
+      email: "",
       password: "",
     },
     validationSchema: Yup.object({
-      phone: Yup.string()
+      email: Yup.string()
         .required("Vui lòng nhập số điện thoại hoặc email.")
-        .matches(/^[0-9]*$/, "Số điện thoại không hợp lệ. Vui lòng nhập lại."),
+        .email("Email không hợp lệ."),
       password: Yup.string()
         .required("Vui lòng nhập mật khẩu.")
         .min(6, "Mật khẩu phải có ít nhất 6 ký tự."),
@@ -44,20 +44,35 @@ export default function Login() {
   };
   const status = useSelector((state) => state.auth.status);
   const error = useSelector((state) => state.auth.error);
-  const data = useSelector((state) => state.auth.data.rs);
+  const data = useSelector((state) => state.auth.data?.customer);
   useEffect(() => {
     if (status === "success") {
-      handleToast("success", "Đăng nhập thành công.");
-      setLoginAuth(true);
-      setUser(data);
-      navigate("/");
-      dispatch(resetState({ key: "status", value: "idle" }));
+      if (data?.isBlocked === true) {
+        handleToast(
+          "error",
+          "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ với quản trị viên."
+        );
+        setLoginAuth(false);
+        dispatch(resetState({ key: "status", value: "idle" }));
+        return;
+      } else {
+        setUser(data);
+        setLoginAuth(true);
+
+        dispatch(resetState({ key: "status", value: "idle" }));
+        handleToast("success", "Đăng nhập thành công.");
+      }
     }
     if (status === "failed") {
       handleToast("error", error.mes);
     }
   }, [status, error, data, setUser, setLoginAuth, dispatch, navigate]);
 
+  useEffect(() => {
+    if (loginAuth === true) {
+      navigate("/");
+    }
+  }, [loginAuth, navigate]);
   return (
     <section className="mx-2 my-4">
       <div className="container flex justify-center">
@@ -75,12 +90,12 @@ export default function Login() {
             <div className="grid gap-6 mb-6">
               <div>
                 <CustomInputField
-                  id={"phone"}
+                  id={"email"}
                   label={"Số điện thoại hoặc email"}
-                  name={"phone"}
-                  inputValue={formik.values.phone}
+                  name={"email"}
+                  inputValue={formik.values.email}
                   onChange={formik.handleChange}
-                  errorMessage={formik.errors.phone}
+                  errorMessage={formik.errors.email}
                   onBlur={formik.handleBlur}
                   placeholder={"Số điện thoại hoặc email"}
                 />

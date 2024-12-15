@@ -2,12 +2,30 @@ const router = require("express").Router();
 
 const ctrl = require("../controllers/orderController");
 
-const { verifyAccessToken, isAdmin } = require("../middlewares/vertifyToken");
+const {
+  verifyAccessToken,
+  isAdmin,
+  isStaff,
+} = require("../middlewares/vertifyToken");
 
 router.post("/", verifyAccessToken, ctrl.createOrder);
+router.get("/", verifyAccessToken, isStaff, ctrl.getAllOrder);
+router.put("/:_id", verifyAccessToken, isStaff, ctrl.updateOrder);
+router.delete("/:_id", verifyAccessToken, isStaff, ctrl.deleteOrder);
+router.post(
+  "/create-in-store-order",
+  verifyAccessToken,
+  isStaff,
+  ctrl.createInStoreOrder
+);
 
-router.get("/", verifyAccessToken, isAdmin, ctrl.getAllOrder);
-router.put("/status/:oid", verifyAccessToken, isAdmin, ctrl.updateStatus);
+router.get("/code/:sku", ctrl.getOrderBySKU);
+
+router.get("/user", verifyAccessToken, ctrl.getOrderByUser);
 // router.use([verifyAccessToken, isAdmin]);
+
+router.post("/create-payment-url", ctrl.create_payment_url);
+router.get("/vnpay-return", ctrl.vnpay_return);
+router.post("/send-mail", verifyAccessToken, ctrl.sendSuccessEmail);
 
 module.exports = router;

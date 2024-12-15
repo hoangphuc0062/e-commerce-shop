@@ -1,6 +1,10 @@
 import { Chip } from "@mui/material";
 import PropTypes from "prop-types";
-import { statusColors, statustPost, statusOrder } from "../../utils/statusConfig";
+import {
+  statusColors,
+  statustPost,
+  statusOrder,
+} from "../../utils/statusConfig";
 export const StatusChip = ({ status }) => {
   const { label, color } = statusColors[status?.toLowerCase()] || {
     label: "N/A",
@@ -34,9 +38,7 @@ export const StatusOrderChip = ({ status }) => {
       label={label}
       color={color}
       sx={{
-        textTransform: "capitalize",
-        fontWeight: "bold",
-        width: "10rem",
+        width: "100%",
         height: "2rem",
       }}
     />

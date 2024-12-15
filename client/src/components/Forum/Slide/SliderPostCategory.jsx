@@ -43,9 +43,10 @@ const SliderPostCategory = () => {
             rating: item.rating,
             slug: item.slug,
             date: item.createdAt,
+            totalRating: item.totalRating,
             thumbnail: item.thumbnail,
           }))
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .sort((a, b) => b.totalRating - a.totalRating)
       );
     }
   }, [status, postData]);
@@ -69,7 +70,7 @@ const SliderPostCategory = () => {
                 />
                 <div className="p-3">
                   <Link
-                    to={`/forum/${post.slug}`}
+                    to={`/${post.slug}`}
                     className="text-base font-semibold mb-1 lg:line-clamp-2 line-clamp-1 cursor-pointer hover:text-main"
                   >
                     {post.postTitle}

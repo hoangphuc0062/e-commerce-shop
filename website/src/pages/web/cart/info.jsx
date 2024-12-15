@@ -1,5 +1,6 @@
+/* eslint-disable react/prop-types */
 import { CustomInputField } from "../../../components/Input/Input";
-
+import { Autocomplete, TextField } from "@mui/material";
 export default function Info({
   selectedProvince,
   selectedDistrict,
@@ -12,7 +13,24 @@ export default function Info({
   subTotal,
 }) {
   const { values, errors, handleChange, setFieldValue, handleBlur } = formik;
-
+  const handleProvinceChange = (e, value) => {
+    if (value) {
+      setProvinceID(value.id);
+      setFieldValue("address.province", value.name);
+    }
+  };
+  const handleDistrictChange = (event, newValue) => {
+    if (newValue) {
+      setDistrictID(newValue.id);
+      setFieldValue("address.district", newValue.name);
+    }
+  };
+  const handleWardChange = (event, newValue) => {
+    if (newValue) {
+      setWardID(newValue.id);
+      setFieldValue("address.ward", newValue.name);
+    }
+  };
   return (
     <div>
       <div className="mb-4">
@@ -22,21 +40,31 @@ export default function Info({
             <input
               type="radio"
               name="sex"
-              value="Anh"
-              checked={values.sex === "Anh"}
-              onChange={() => setFieldValue("sex", "Anh")}
+              value="Nam"
+              checked={values.sex === "Nam"}
+              onChange={() => setFieldValue("sex", "Nam")}
             />
             <span className="ml-1">Anh</span>
+          </label>
+          <label className="mr-4">
+            <input
+              type="radio"
+              name="sex"
+              value="Nữ"
+              checked={values.sex === "Nữ"}
+              onChange={() => setFieldValue("sex", "Nữ")}
+            />
+            <span className="ml-1">Chị</span>
           </label>
           <label>
             <input
               type="radio"
               name="sex"
-              value="Chị"
-              checked={values.sex === "Chị"}
-              onChange={() => setFieldValue("sex", "Chị")}
+              value="Khác"
+              checked={values.sex === "Khác"}
+              onChange={() => setFieldValue("sex", "Khác")}
             />
-            <span className="ml-1">Chị</span>
+            <span className="ml-1">Khác</span>
           </label>
         </div>
 
@@ -82,63 +110,105 @@ export default function Info({
       {/* Address Fields */}
       <div className="grid grid-cols-2 gap-4 mb-4">
         {/* Province */}
-        <div>
-          <label className="font-semibold">Tỉnh/Thành phố</label>
-          <select
-            name="address.province"
-            className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
-            onChange={(e) => setProvinceID(e.target.value)}
-          >
-            <option>Chọn Tỉnh, Thành phố</option>
-            {selectedProvince?.map((province) => (
-              <option key={province.id} value={province.id}>
-                {province.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
+        {selectedProvince.length > 0 && (
+          <div>
+            <label className="font-semibold">Tỉnh/Thành phố</label>
+            <Autocomplete
+              options={selectedProvince}
+              getOptionLabel={(option) => option.name}
+              defaultValue={
+                selectedProvince.find(
+                  (prov) =>
+                    prov.name === values.address.province.replace("Tỉnh ", "")
+                ) || null
+              }
+              value={selectedProvince.find((prov) => {
+                if (
+                  prov.name === values.address.province.replace("Tỉnh ", "")
+                ) {
+                  return setProvinceID(prov.id);
+                } else {
+                  return null;
+                }
+              })}
+              onChange={handleProvinceChange}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder="Chọn Tỉnh, Thành phố"
+                  className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
+                />
+              )}
+            />
+          </div>
+        )}
         {/* District */}
-        <div>
-          <label className="font-semibold">Quận/Huyện</label>
-          <select
-            name="address.district"
-            className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
-            onChange={(e) => setDistrictID(e.target.value)}
-          >
-            <option>Chọn Quận, Huyện</option>
-            {selectedDistrict?.map((district) => (
-              <option key={district.id} value={district.id}>
-                {district.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        {selectedDistrict.length > 0 && (
+          <div>
+            <label className="font-semibold">Quận/Huyện</label>
+
+            <Autocomplete
+              options={selectedDistrict}
+              getOptionLabel={(option) => option.name}
+              defaultValue={selectedDistrict.find(
+                (dist) => dist.name === values.address.district.replace("", "")
+              )}
+              value={selectedDistrict.find((dist) => {
+                if (dist.name === values.address.district) {
+                  return setDistrictID(dist.id);
+                } else {
+                  return null;
+                }
+              })}
+              onChange={handleDistrictChange}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder="Chọn Quận, Huyện"
+                  className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
+                />
+              )}
+            />
+          </div>
+        )}
         {/* Ward */}
-        <div>
-          <label className="font-semibold">Phường/Xã</label>
-          <select
-            className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
-            name="address.ward"
-            onChange={(e) => setWardID(e.target.value)}
-          >
-            <option>Chọn Phường, Xã</option>
-            {selectedWard?.map((ward) => (
-              <option key={ward.id} value={ward.id}>
-                {ward.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        {selectedWard.length > 0 && (
+          <div>
+            <label className="font-semibold">Phường/Xã</label>
+            <Autocomplete
+              options={selectedWard}
+              getOptionLabel={(option) => option.name}
+              onChange={handleWardChange}
+              defaultValue={selectedWard.find(
+                (ward) => ward.name === values.address.ward.replace("", "")
+              )}
+              value={selectedWard.find((ward) => {
+                if (ward.name === values.address.ward) {
+                  return setWardID(ward.id);
+                } else {
+                  return null;
+                }
+              })}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder="Chọn Phường, Xã"
+                  className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
+                />
+              )}
+            />
+          </div>
+        )}
 
         {/* Street */}
         <div>
           <label className="font-semibold">Số nhà, Tên đường</label>
           <input
+            value={values.address.street || ""}
             type="text"
             name="address.street"
             placeholder="Số nhà, tên đường"
-            className="mt-1.5 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
+            className="mt-1.2 w-full p-5 font-medium border rounded-md placeholder:opacity-60 sm:text-sm"
             onChange={handleChange}
           />
         </div>

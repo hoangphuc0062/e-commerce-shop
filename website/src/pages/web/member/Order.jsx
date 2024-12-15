@@ -1,123 +1,102 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import Person from "../../../components/Person";
 import { motion, AnimatePresence } from "framer-motion";
+import { useDispatch, useSelector } from "react-redux";
+import { userOrder } from "../../../redux/slices/order";
 
 export default function Order() {
   const [activeTab, setActiveTab] = useState("all");
   const [expandedOrder, setExpandedOrder] = useState(null);
+  const dispatch = useDispatch();
+  const [customerData, setCustomerData] = useState([]);
+  const [orderData, setOrderData] = useState([]);
+  const status = useSelector((state) => state.auth.statusGetMe);
+  const data = useSelector((state) => state.auth.data.rs);
+  const satusOrder = useSelector((state) => state.order.statusUserOrder);
+  const dataOrder = useSelector((state) => state.order.data);
+  useEffect(() => {
+    dispatch(userOrder());
+  }, [dispatch]);
+  useEffect(() => {
+    if (status === "success") {
+      setCustomerData(data);
+    }
+  }, [status, data]);
+
+  useEffect(() => {
+    if (satusOrder === "success") {
+      setOrderData(
+        dataOrder.map((item) => ({
+          id: item.SKU,
+          date: new Date(item?.date).toLocaleDateString("vi-VN"),
+          total: `${item.total.toLocaleString()} VND`,
+          status: item?.status,
+          products: item?.products?.map((product) => ({
+            name: product?.pid?.name,
+            image: product?.pid?.thumbnail,
+            quantity: product?.quantity,
+            price: `${product?.pid?.price.toLocaleString()} VND`,
+            fex: `${item?.shippingFee.toLocaleString()} VND`,
+            total: `${item?.total.toLocaleString()} VND`,
+          })),
+        }))
+      );
+    }
+  }, [satusOrder, dataOrder]);
 
   const tabs = [
     { id: "all", name: "Tất cả" },
-    { id: "Pending", name: "Đang chờ xử lý" },
-    { id: "Shipped", name: "Đã giao hàng" },
-    { id: "Delivered", name: "Đã nhận hàng" },
-    { id: "Cancelled", name: "Đã hủy" },
+    { id: "Đang chờ xử lý", name: "Đang chờ xử lý" },
+    { id: "Đã giao hàng", name: "Đã giao hàng" },
+    { id: "Đã nhận hàng", name: "Đã nhận hàng" },
+    { id: "Đã hủy", name: "Đã hủy" },
   ];
 
-  const data = [
-    {
-      id: 1,
-      date: "2023-01-01",
-      total: "100,000 VND",
-      status: "Pending",
-      details: "Chi tiết 1",
-      products: [
-        {
-          image: "image1.jpg",
-          quantity: 1,
-          price: "50,000 VND",
-          total: "50,000 VND",
-        },
-        {
-          image: "image2.jpg",
-          quantity: 1,
-          price: "50,000 VND",
-          total: "50,000 VND",
-        },
-      ],
-    },
-    {
-      id: 2,
-      date: "2023-01-02",
-      total: "200,000 VND",
-      status: "Pending",
-      details: "Chi tiết 2",
-      products: [
-        {
-          image: "image3.jpg",
-          quantity: 2,
-          price: "100,000 VND",
-          total: "200,000 VND",
-        },
-      ],
-    },
-    {
-      id: 3,
-      date: "2023-01-03",
-      total: "300,000 VND",
-      status: "Shipped",
-      details: "Chi tiết 3",
-      products: [
-        {
-          image: "image4.jpg",
-          quantity: 3,
-          price: "100,000 VND",
-          total: "300,000 VND",
-        },
-      ],
-    },
-    {
-      id: 4,
-      date: "2023-01-04",
-      total: "400,000 VND",
-      status: "Delivered",
-      details: "Chi tiết 4",
-      products: [
-        {
-          image: "image5.jpg",
-          quantity: 4,
-          price: "100,000 VND",
-          total: "400,000 VND",
-        },
-      ],
-    },
-    {
-      id: 5,
-      date: "2023-01-05",
-      total: "500,000 VND",
-      status: "Cancelled",
-      details: "Chi tiết 5",
-      products: [
-        {
-          image: "image6.jpg",
-          quantity: 5,
-          price: "100,000 VND",
-          total: "500,000 VND",
-        },
-      ],
-    },
-  ];
   const getStatusClass = (status) => {
     switch (status) {
       case "Pending":
         return `bg-blue-600`;
-      case "Shipped":
-        return `bg-yellow-600`;
+      case "Processing":
+        return `bg-orange-600`;
+      case "Shipping":
+        return `bg-purple-600`;
       case "Delivered":
         return `bg-gray-600`;
       case "Cancelled":
         return `bg-red-600`;
+      case "Success":
+        return `bg-green-600`;
       default:
         return "";
+    }
+  };
+  const getStatusText = (status) => {
+    switch (status) {
+      case "Pending":
+        return "Đang chờ xử lý";
+      case "Processing":
+        return "Đang xử lý";
+      case "Shipping":
+        return "Đang vận chuyển";
+      case "Delivered":
+        return "Đã giao hàng";
+      case "Cancelled":
+        return "Đã hủy";
+      case "Success":
+        return "Thành công";
+      default:
+        return status;
     }
   };
   const renderContent = () => {
     const filteredData =
       activeTab === "all"
-        ? data
-        : data.filter((item) => item.status === activeTab);
-
+        ? orderData
+        : orderData.filter((item) => item.status === activeTab);
+    if (filteredData.length === 0) {
+      return <p className="text-center py-4">Đơn hàng trống</p>;
+    }
     return (
       <table className="min-w-full divide-y divide-gray-200 text-center">
         <thead className="bg-gray-50">
@@ -169,11 +148,11 @@ export default function Order() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <span
-                    className={` block p-2 rounded-lg text-white  w-full ${getStatusClass(
+                    className={`block p-2 rounded-lg text-white w-full ${getStatusClass(
                       item.status
                     )}`}
                   >
-                    {item.status}
+                    {getStatusText(item.status)}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex justify-center ">
@@ -228,6 +207,9 @@ export default function Order() {
                                 Giá: {product.price}
                               </p>
                               <p className="text-sm text-gray-500">
+                                Phí vận chuyển: {product.fex}
+                              </p>
+                              <p className="text-sm text-gray-500">
                                 Thành tiền: {product.total}
                               </p>
                             </div>
@@ -247,7 +229,7 @@ export default function Order() {
 
   return (
     <div>
-      <Person name="Phúc" phone="0773440062" role="Vip" />
+      <Person name={customerData.name} phone={customerData.phone} role="Vip" />
       <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
         <ul className="flex overflow-x-auto">
           {tabs.map((tab) => (

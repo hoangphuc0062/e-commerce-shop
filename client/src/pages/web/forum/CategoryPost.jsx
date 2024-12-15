@@ -1,6 +1,7 @@
 import { Link, useParams, useNavigate } from "react-router-dom";
 import {
   HeadingSection,
+  OptionPost,
   Sidebar,
   SlidePostCategory,
 } from "../../../components/Forum";
@@ -9,15 +10,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { getPosts } from "../../../redux/slices/post";
 import Skeleton from "@mui/material/Skeleton";
+import { Helmet } from "react-helmet-async";
 
 const CategoryPost = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { categorySlug } = useParams();
   const postData = useSelector((state) => state.post.data);
+  const categories = useSelector((state) => state.category.data.categories);
   const [visibleItemCount, setVisibleItemCount] = useState(6);
   const [loading, setLoading] = useState(true);
   const observerRef = useRef();
+  const [sortOption, setSortOption] = useState("newest");
+
+  const handleSortChange = (option) => {
+    setSortOption(option);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -38,24 +46,43 @@ const CategoryPost = () => {
             author: item.author?.name || "Unknown",
             category: item.category,
             rating: item.rating,
+            totalRating: item.totalRating,
             slug: item.slug,
             date: item.createdAt,
             thumbnail: item.thumbnail,
           }))
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
       : [];
   }, [postData, categorySlug]);
 
-  const visibleData = formattedData.slice(0, visibleItemCount);
+  const sortedData = useMemo(() => {
+    const data = [...formattedData];
+    switch (sortOption) {
+      case "newest":
+        return data.sort((a, b) => new Date(b.date) - new Date(a.date));
+      case "oldest":
+        return data.sort((a, b) => new Date(a.date) - new Date(b.date));
+      case "highestRating":
+        return data.sort((a, b) => b.totalRating - a.totalRating);
+      default:
+        return data;
+    }
+  }, [formattedData, sortOption]);
+
+  const visibleData = sortedData.slice(0, visibleItemCount);
   const handleLoadMore = () => {
     setVisibleItemCount((prevCount) => prevCount + 6);
   };
 
   useEffect(() => {
-    if (formattedData.length === 0) {
-      navigate("/404");
+    if (categories && Array.isArray(categories)) {
+      const categoryExists = categories.some(
+        (category) => category.slug === categorySlug
+      );
+      if (!categoryExists) {
+        navigate("/404", { replace: true });
+      }
     }
-  }, [formattedData, navigate]);
+  }, [categories, categorySlug, navigate]);
 
   const lastPostRef = useCallback(
     (node) => {
@@ -77,6 +104,14 @@ const CategoryPost = () => {
 
   return (
     <div className="container w-full mb-8">
+      <Helmet>
+        <title>
+          Danh mục |{" "}
+          {categorySlug
+            .replace(/-/g, " ")
+            .replace(/\b\w/g, (char) => char.toUpperCase())}
+        </title>
+      </Helmet>
       <div className="flex flex-col md:flex-row w-full pt-16">
         <div className="md:w-1/4 lg:w-1/5">
           <Sidebar />
@@ -84,7 +119,10 @@ const CategoryPost = () => {
         <div className="md:w-3/4 lg:w-4/5 w-full flex flex-col">
           <SlidePostCategory />
           <section className="w-full">
-            <HeadingSection title="Tin Mới Nhất" />
+            <div className="flex justify-between items-center">
+              <HeadingSection title="Tin mới nhất" />
+              <OptionPost onSortChange={handleSortChange} />
+            </div>
             <div className="space-y-4">
               {loading ? (
                 Array.from({ length: 6 }).map((_, index) => (
@@ -97,7 +135,11 @@ const CategoryPost = () => {
                     </div>
                   </div>
                 ))
-              ) : visibleData.length > 0 ? (
+              ) : !visibleData || visibleData.length === 0 ? (
+                <p className="text-center text-gray-600">
+                  Không có bài viết nào trong danh mục này.
+                </p>
+              ) : (
                 visibleData.map((post, index) => (
                   <div
                     key={post.id}
@@ -111,7 +153,7 @@ const CategoryPost = () => {
                     />
                     <div className="p-4 w-2/3">
                       <h3 className="text-lg font-semibold mb-2 line-clamp-2 hover:text-main cursor-pointer">
-                        <Link to={`/forum/${post.slug}`}>{post.postTitle}</Link>
+                        <Link to={`/${post.slug}`}>{post.postTitle}</Link>
                       </h3>
                       <h3 className="text-sm text-gray-600 line-clamp-1 py-1">
                         <div
@@ -126,10 +168,6 @@ const CategoryPost = () => {
                     </div>
                   </div>
                 ))
-              ) : (
-                <p className="text-center text-gray-600">
-                  Không có bài viết nào trong danh mục này.
-                </p>
               )}
             </div>
 

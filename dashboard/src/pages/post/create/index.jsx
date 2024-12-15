@@ -32,7 +32,9 @@ function AddPost() {
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [tagsOptions, setTagsOptions] = useState([]);
 
-  const category = useSelector((state) => state.category.data?.categories || []);
+  const category = useSelector(
+    (state) => state.category.data?.categories || []
+  );
   const statusCategory = useSelector((state) => state.category.status);
   const tags = useSelector((state) => state.tag.data?.tags || []);
 
@@ -43,8 +45,11 @@ function AddPost() {
 
   useEffect(() => {
     if (statusCategory === "success" && category) {
+      const filteredCategories = category.filter(
+        (item) => item.type === "post"
+      );
       setCategoryOptions(
-        category.map((item) => ({
+        filteredCategories.map((item) => ({
           label: item.name,
           value: item._id,
         }))
@@ -97,7 +102,7 @@ function AddPost() {
   });
 
   const handleUploadComplete = (url) => {
-    formik.setFieldValue("thumbnail", url);
+    formik.setFieldValue("thumbnail", url[0]);
   };
 
   const handleDelete = () => {
@@ -212,16 +217,23 @@ function AddPost() {
                     multiple
                     options={tagsOptions}
                     getOptionLabel={(option) => option.label}
-                    value={tagsOptions.filter(tag => formik.values.tags.includes(tag.value))}
+                    value={tagsOptions.filter((tag) =>
+                      formik.values.tags.includes(tag.value)
+                    )}
                     onChange={(event, newValue) => {
-                      formik.setFieldValue("tags", newValue.map((item) => item.value));
+                      formik.setFieldValue(
+                        "tags",
+                        newValue.map((item) => item.value)
+                      );
                     }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
                         label="Tags"
                         placeholder="Chọn thẻ"
-                        error={formik.touched.tags && Boolean(formik.errors.tags)}
+                        error={
+                          formik.touched.tags && Boolean(formik.errors.tags)
+                        }
                         helperText={formik.touched.tags && formik.errors.tags}
                       />
                     )}
@@ -255,7 +267,6 @@ function AddPost() {
                     }
                   />
                 </Grid>
-
                 {/* Short Description */}
                 <Grid item xs={12}>
                   <Textarea
@@ -263,7 +274,10 @@ function AddPost() {
                     name="shortDescription"
                     value={formik.values.shortDescription || ""}
                     onChange={formik.handleChange}
-                    error={formik.touched.shortDescription && Boolean(formik.errors.shortDescription)}
+                    error={
+                      formik.touched.shortDescription &&
+                      Boolean(formik.errors.shortDescription)
+                    }
                     errorMessage={formik.errors.shortDescription}
                     height={300}
                   />
@@ -276,7 +290,9 @@ function AddPost() {
                     name="content"
                     value={formik.values.content || ""}
                     onChange={formik.handleChange}
-                    error={formik.touched.content && Boolean(formik.errors.content)}
+                    error={
+                      formik.touched.content && Boolean(formik.errors.content)
+                    }
                     errorMessage={formik.errors.content}
                     height={500}
                   />
@@ -285,7 +301,12 @@ function AddPost() {
 
               {/* Submit and Cancel Buttons */}
               <Box mt={3} textAlign="right">
-                <Button variant="contained" type="submit" color="success" aria-label="Add Post">
+                <Button
+                  variant="contained"
+                  type="submit"
+                  color="success"
+                  aria-label="Add Post"
+                >
                   Thêm bài viết
                 </Button>
                 <Button

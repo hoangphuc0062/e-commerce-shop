@@ -79,14 +79,17 @@ export default function BannerCollection() {
             refUrl: banner.refUrl,
             position: banner.position,
             shotDescription: banner.shotDescription,
+            startDate: formatDay(banner.startDate),
+            endDate: formatDay(banner.endDate),
           })),
+          startDate: item.banner?.[0]?.startDate ? formatDay(item.banner[0].startDate) : null,
+          endDate: item.banner?.[0]?.endDate ? formatDay(item.banner[0].endDate) : null,
           status: item.status === true ? "active" : "inactive",
-          startDate: formatDay(item.startDate),
-          endDate: formatDay(item.endDate),
         }))
       );
     }
   }, [status, data]);
+
   return (
     <>
       <ReusableTable

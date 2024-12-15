@@ -1,0 +1,48 @@
+.dialog-content {
+  padding: 24px;
+}
+
+.image-container {
+  text-align: center;
+  margin-bottom: 16px;
+}
+.image-container img {
+  width: 40%;
+  height: 30%;
+  border-radius: 2%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  margin-bottom: 8px;
+  border: 2px solid #e0e0e0;
+}
+.image-container .dialog-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 8px 0;
+  color: #333;
+  margin-bottom: 20px;
+}
+.image-container .dialog-text {
+  font-size: 1rem;
+  color: #333;
+  margin: 6px 0;
+  text-align: left;
+}
+.image-container .dialog-text strong {
+  font-weight: bold;
+  color: #000;
+}
+.image-container .dialog-link {
+  font-size: 1rem;
+  color: #1976d2;
+  text-decoration: none;
+  font-weight: bold;
+}
+.image-container .dialog-link:hover {
+  text-decoration: underline;
+}
+
+.dialog-button {
+  color: #1976d2;
+  font-weight: bold;
+}/*# sourceMappingURL=index.css.map */

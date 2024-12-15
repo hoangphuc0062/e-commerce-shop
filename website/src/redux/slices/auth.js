@@ -31,10 +31,24 @@ export const register = createAsyncThunk("auth/register", (data, thunkAPI) =>
   handleAsyncThunk(AuthService.register, [data], thunkAPI)
 );
 
+// finalregister
+export const finalregister = createAsyncThunk(
+  "auth/finalregister",
+  (token, thunkAPI) =>
+    handleAsyncThunk(AuthService.finalregister, [token], thunkAPI)
+);
+
 // logout
 
 export const logout = createAsyncThunk("auth/logout", (_, thunkAPI) =>
   handleAsyncThunk(AuthService.logout, [null], thunkAPI)
+);
+
+// change pasword
+export const changePassword = createAsyncThunk(
+  "auth/changePassword",
+  (data, thunkAPI) =>
+    handleAsyncThunk(AuthService.changePassword, [data], thunkAPI)
 );
 
 // getMe
@@ -65,6 +79,49 @@ export const updateCart = createAsyncThunk(
   (data, thunkAPI) =>
     handleAsyncThunk(CartServices.updateCart, [data], thunkAPI)
 );
+
+// cap nhap thong tin khach hang
+export const updateCustomer = createAsyncThunk(
+  "customer/update",
+  ({ id, data }, thunkAPI) =>
+    handleAsyncThunk(AuthService.updateCustomer, [id, data], thunkAPI)
+);
+
+// updateAddress
+export const updateAddress = createAsyncThunk(
+  "auth/updateAddress",
+  ({ id, data }, thunkAPI) => {
+    return handleAsyncThunk(AuthService.updateAddress, [id, data], thunkAPI);
+  }
+);
+
+// deleteAddress
+export const deleteAddress = createAsyncThunk(
+  "auth/deleteAddress",
+  (id, thunkAPI) => {
+    return handleAsyncThunk(AuthService.deleteAddress, [id], thunkAPI);
+  }
+);
+
+export const addAddress = createAsyncThunk(
+  "auth/addAddress",
+  (data, thunkAPI) => {
+    return handleAsyncThunk(AuthService.addAddress, [data], thunkAPI);
+  }
+);
+
+export const getAddresses = createAsyncThunk(
+  "auth/getAddresses",
+  (_, thunkAPI) => handleAsyncThunk(AuthService.getAddresses, [null], thunkAPI)
+);
+
+export const forgotPassword = createAsyncThunk(
+  "auth/forgot-password",
+  (data, thunkAPI) => {
+    return handleAsyncThunk(AuthService.forgetPassword, [data], thunkAPI);
+  }
+);
+
 const auth = createSlice({
   name: "auth",
 
@@ -72,6 +129,7 @@ const auth = createSlice({
     isLogin: false,
     data: [],
     dataCart: [],
+    dataAddress: [],
     status: "idle",
     error: null,
     statusRegister: "idle",
@@ -81,6 +139,14 @@ const auth = createSlice({
     statusDeleteCart: "idle",
     statusAddCart: "idle",
     statusUpdateCart: "idle",
+    statusFinalRegister: "idle",
+    statusUpdateCustomer: "idle",
+    statusChangePassword: "idle",
+    statusUpdateAddress: "idle",
+    statusDeleteAddress: "idle",
+    statusAddAddress: "idle",
+    statusGetAddress: "idle",
+    statusForgotPassword: "idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -125,6 +191,18 @@ const auth = createSlice({
       .addCase(logout.rejected, (state) => {
         state.statusLogout = "failed";
       });
+    builder
+      .addCase(changePassword.pending, (state) => {
+        state.statusChangePassword = "loading";
+      })
+      .addCase(changePassword.fulfilled, (state, action) => {
+        state.statusChangePassword = "success";
+        state.data = action.payload;
+      })
+      .addCase(changePassword.rejected, (state) => {
+        state.statusChangePassword = "failed";
+      });
+
     builder
       .addCase(getMe.pending, (state) => {
         state.statusGetMe = "loading";
@@ -178,6 +256,78 @@ const auth = createSlice({
       })
       .addCase(updateCart.rejected, (state) => {
         state.statusUpdateCart = "failed";
+      });
+    builder
+      .addCase(finalregister.pending, (state) => {
+        state.statusFinalRegister = "loading";
+      })
+      .addCase(finalregister.fulfilled, (state) => {
+        state.statusFinalRegister = "success";
+      })
+      .addCase(finalregister.rejected, (state) => {
+        state.statusFinalRegister = "failed";
+      });
+    builder
+      .addCase(updateCustomer.pending, (state) => {
+        state.statusUpdateCustomer = "loading";
+      })
+      .addCase(updateCustomer.fulfilled, (state) => {
+        state.statusUpdateCustomer = "success";
+      })
+      .addCase(updateCustomer.rejected, (state) => {
+        state.statusUpdateCustomer = "failed";
+      });
+    builder
+      .addCase(updateAddress.pending, (state) => {
+        state.statusUpdateAddress = "loading";
+      })
+      .addCase(updateAddress.fulfilled, (state) => {
+        state.statusUpdateAddress = "success";
+      })
+      .addCase(updateAddress.rejected, (state) => {
+        state.statusUpdateAddress = "failed";
+      });
+    builder
+      .addCase(deleteAddress.pending, (state) => {
+        state.statusDeleteAddress = "loading";
+      })
+      .addCase(deleteAddress.fulfilled, (state) => {
+        state.statusDeleteAddress = "success";
+      })
+      .addCase(deleteAddress.rejected, (state) => {
+        state.statusDeleteAddress = "failed";
+      });
+    builder
+      .addCase(addAddress.pending, (state) => {
+        state.statusAddAddress = "loading";
+      })
+      .addCase(addAddress.fulfilled, (state) => {
+        state.statusAddAddress = "success";
+      })
+      .addCase(addAddress.rejected, (state) => {
+        state.statusAddAddress = "failed";
+      });
+    builder
+      .addCase(getAddresses.pending, (state) => {
+        state.statusGetAddress = "loading";
+      })
+      .addCase(getAddresses.fulfilled, (state, action) => {
+        state.statusGetAddress = "success";
+        state.dataAddress = action.payload;
+      })
+      .addCase(getAddresses.rejected, (state) => {
+        state.statusGetAddress = "failed";
+      });
+    builder
+      .addCase(forgotPassword.pending, (state) => {
+        state.statusForgotPassword = "loading";
+      })
+      .addCase(forgotPassword.fulfilled, (state, action) => {
+        state.statusForgotPassword = "success";
+        state.dataAddress = action.payload;
+      })
+      .addCase(forgotPassword.rejected, (state) => {
+        state.statusForgotPassword = "failed";
       });
   },
 });

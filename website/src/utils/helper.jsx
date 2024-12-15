@@ -18,3 +18,103 @@ export const formatCurrency = (number) => {
     currency: "VND",
   }).format(number);
 };
+
+export const getDisplayName = (name) => {
+  if (!name) {
+    return "";
+  }
+  const nameParts = name.split(" ");
+  return nameParts.slice(-2).join(" ");
+};
+
+export const splitValues = (valuesString) => {
+  return valuesString.split(", ").map((value) => value.trim());
+};
+
+export const updateSelectedFiltersWithKeys = (filters, selectedFilters) => {
+  const updatedFilters = {};
+
+  Object.entries(selectedFilters).forEach(([label, value]) => {
+    const filterMatch = filters.find((filter) => filter.label === label);
+
+    if (filterMatch) {
+      // Nếu tìm thấy filter có label khớp, lấy key từ filter và thêm vào kết quả
+      updatedFilters[filterMatch.key] = value;
+    }
+  });
+
+  return updatedFilters;
+};
+
+export const translate = (key) => {
+  const translations = {
+    cash: "Tiền mặt",
+    Processing: "Đang xử lý",
+    Success: "Thành công",
+    vnpay: "VNPay",
+  };
+
+  return translations[key] || key;
+};
+
+export const transformAttributes = (attributes) => {
+  return Object.entries(attributes).map(([title, details]) => {
+    const detailArray = details.split(", ").map((item) => {
+      const [key, ...valueParts] = item.split(": ");
+      return { key: key.trim(), value: valueParts.join(": ").trim() };
+    });
+    return { title, details: detailArray };
+  });
+};
+
+export const objectToQueryString = (filters) => {
+  const queryParams = []; // Mảng dùng để lưu trữ các phần của query string
+
+  for (const [key, value] of Object.entries(filters)) {
+    if (Array.isArray(value)) {
+      // Nếu giá trị là một mảng, nối các phần tử bằng dấu phẩy, loại bỏ khoảng trắng trong từng phần tử
+      queryParams.push(
+        `${key}=${value.map((val) => val.replace(/\s+/g, "-")).join(",")}`
+      );
+    } else if (typeof value === "object") {
+      // Nếu giá trị là một object (như 'price'), xử lý nó thành chuỗi "minPrice-maxPrice"
+      const priceRange = `${value.minPrice}-${value.maxPrice}`;
+      queryParams.push(`${key}=${priceRange}`);
+    }
+  }
+
+  return queryParams.join("&"); // Kết nối các phần tử của query string bằng dấu "&"
+};
+
+export const replaceGBInName = (name, key, color) => {
+  // Tách các giá trị GB trong key
+  const keyParts = key.split(" ");
+
+  // Đếm số cụm GB trong name
+  const gbMatches = name.match(/\d+GB/g) || [];
+
+  // Tạo bản sao của name để cập nhật
+  let updatedName = name;
+
+  // Thay thế lần lượt các cụm GB trong name bằng các phần trong key
+  gbMatches.forEach((match, index) => {
+    if (keyParts[index]) {
+      updatedName = updatedName.replace(match, keyParts[index]);
+    }
+  });
+
+  // Nối thêm các phần còn lại từ key nếu dư
+  const remainingKeyParts = keyParts.slice(gbMatches.length).join(" ");
+  if (remainingKeyParts) {
+    updatedName = `${updatedName} ${remainingKeyParts}`;
+  }
+
+  // Nối thêm color nếu chưa có
+  if (!updatedName.includes(color)) {
+    updatedName = `${updatedName} | ${color}`;
+  }
+
+  return updatedName;
+};
+
+

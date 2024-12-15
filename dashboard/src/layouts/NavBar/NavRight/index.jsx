@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Dropdown, ListGroup } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { handleToast } from "../../../utils/toast";
@@ -10,7 +10,7 @@ const NavRight = () => {
   const { setUser, setLoginAuth } = React.useContext(UserContext);
 
   const status = useSelector((state) => state.staff.getMeStatus);
-  const data = useSelector((state) => state.staff.data);
+  const data = useSelector((state) => state.staff.dataMe);
   const [profileData, setProfileData] = useState({});
 
   useEffect(() => {
@@ -25,9 +25,7 @@ const NavRight = () => {
     Cookies.remove("accessToken");
     Cookies.remove("refreshToken");
     Cookies.remove("role");
-
     handleToast("success", "Logout successfully");
-    return <Navigate to="/" />;
   };
 
   return (
@@ -51,8 +49,8 @@ const NavRight = () => {
                 />
                 <span>{profileData?.name || "Guest"}</span>
                 <Link
-                  to="#"
                   className="dud-logout"
+                  to={"/"}
                   title="Logout"
                   onClick={logoutme}
                 >
@@ -81,7 +79,7 @@ const NavRight = () => {
                   </Link>
                 </ListGroup.Item>
                 <ListGroup.Item as="li">
-                  <Link className="dropdown-item" onClick={logoutme}>
+                  <Link className="dropdown-item" to={"/"} onClick={logoutme}>
                     <i className="feather icon-log-out" /> Logout
                   </Link>
                 </ListGroup.Item>

@@ -43,17 +43,17 @@ const bannerCollectionSchema = new mongoose.Schema(
           type: String,
           default: "",
         },
+        startDate: {
+          type: Date,
+        },
+        endDate: {
+          type: Date,
+        },
       },
     ],
     status: {
       type: Boolean,
       default: true,
-    },
-    startDate: {
-      type: Date,
-    },
-    endDate: {
-      type: Date,
     },
   },
   {

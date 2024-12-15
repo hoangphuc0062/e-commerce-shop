@@ -7,6 +7,7 @@ import EmptyCart from "../../../components/EmptyCart";
 import { useDispatch } from "react-redux";
 import { deleteCart, getCart, updateCart } from "../../../redux/slices/auth";
 import { handleToast } from "../../../ultils/toast";
+import { replaceGBInName } from "../../../utils/helper";
 
 const emptyCartImage =
   "https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/cart%2Fno-cart-1.png?alt=media&token=dc3dc5e6-ecd8-4b2d-8bc9-e5f6fd887b92";
@@ -33,34 +34,43 @@ function CartButton({ data }) {
   };
 
   const handleCheckboxChange = (index) => {
-    setCheckedItems((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
-    );
+    if (checkedItems.includes(index)) {
+      setCheckedItems(checkedItems.filter((i) => i !== index));
+    } else {
+      setCheckedItems([...checkedItems, index]);
+    }
   };
 
   const handleSelectAll = () => {
     if (selectAll) {
-      setCheckedItems(cartData.map((_, index) => index));
-    } else {
       setCheckedItems([]);
+    } else {
+      setCheckedItems(cartData.map((_, index) => index));
     }
-    setSelectAll(!selectAll);
+    setSelectAll((prev) => !prev);
   };
 
-  const updateQuantity = (index, amount) => {
-    const newQuantity = cartData[index].quantity + amount;
-    const newCartData = cartData.map((item, i) => {
-      if (i === index) return { ...item, quantity: newQuantity };
-      return item;
+  const updateQuantity = (index, change) => {
+    setCartData((prevItems) => {
+      return prevItems.map((item, i) => {
+        if (i === index) {
+          const newQuantity = item.quantity + change;
+          return {
+            ...item,
+            quantity: newQuantity > 0 ? newQuantity : 1,
+          };
+        }
+        return item;
+      });
     });
-    setCartData(newCartData);
   };
 
   const handleDelete = useCallback(() => {
     const productIds = checkedItems.map((index) => cartData[index].productId);
     const attributeIds = checkedItems.map(
-      (index) => cartData[index]?.attributeValue?.id?.[0] || null
+      (index) => cartData[index]?.attributeValue?.id || null
     );
+    console.log(productIds, attributeIds);
     const itemsToDelete = productIds.map((productId, index) => ({
       productId,
       attributeId: attributeIds[index] || null,
@@ -87,19 +97,31 @@ function CartButton({ data }) {
   const handleUpdateCart = () => {
     const updatedItems = checkedItems.map((index) => {
       const item = cartData[index];
+      const price = item.attributeValue?.price || item.price;
       return {
         productId: item.productId,
-        attributeId: item.attributeValue?.id || "null",
+        attributeId: item.attributeValue?.values[index]?.id || "null",
         quantity: item.quantity,
+        price: price,
+        key: item.attributeValue?.key,
       };
     });
 
     dispatch(updateCart(updatedItems)).then((result) => {
+      console.log(result);
       if (result.type === "auth/updateCart/fulfilled") {
         handleToast("success", "Cập nhật giỏ hàng thành công");
         dispatch(getCart());
         setCheckedItems([]);
         setSelectAll(false);
+      } else if (result.type === "auth/updateCart/rejected") {
+        const mes = result.payload.mes;
+        if (mes === "Assignment to constant variable.") {
+          handleToast(
+            "error",
+            "Số lượng sản phẩm trong giỏ hàng vượt quá số lượng tồn kho"
+          );
+        }
       }
     });
   };
@@ -135,11 +157,17 @@ function CartButton({ data }) {
             <List>
               <div>
                 <Checkbox checked={selectAll} onChange={handleSelectAll} />
-                <span className="ml-2">Chọn tất cả</span>
+                <span className="ml-2 cursor-pointer" onClick={handleSelectAll}>
+                  Chọn tất cả
+                </span>
               </div>
 
               {cartData?.map((item, index) => (
-                <ListItem key={index} disablePadding>
+                <ListItem
+                  key={index}
+                  onClick={() => handleCheckboxChange}
+                  disablePadding
+                >
                   <Checkbox
                     checked={checkedItems.includes(index)}
                     onChange={() => handleCheckboxChange(index)}
@@ -147,23 +175,29 @@ function CartButton({ data }) {
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center">
                       <img
-                        src={item.thumbnail}
-                        alt={item.name}
+                        src={item?.attributeValue?.thumbnail || item?.thumbnail}
+                        alt={item?.name}
                         className="w-20 h-20 object-cover"
                       />
                       <div className="ml-2">
-                        <p className="font-bold text-base text-gray-800">
-                          {item.name}
-                        </p>
+                        <div className="font-bold text-base text-gray-800">
+                          {item?.key && item?.attributeValue?.name
+                            ? replaceGBInName(
+                                item?.name,
+                                item?.key,
+                                item?.attributeValue?.name
+                              )
+                            : item?.name}
+                          <div></div>
+                        </div>
                         <p className="text-indigo-600 font-semibold text-sm mt-1">
-                          {item.price.toLocaleString()} VND
-                        </p>
-                        <p className="text-gray-400 text-xs line-through mt-1">
-                          {item?.attribute?.price.toLocaleString()} VND
+                          {item?.attributeValue?.price.toLocaleString() ||
+                            item?.price.toLocaleString()}
+                          đ
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center border border-gray-300 rounded w-28 justify-between">
+                    <div className="flex items-center border border-gray-300 rounded w-40 justify-between">
                       <button
                         onClick={() => updateQuantity(index, -1)}
                         className="text-lg px-3 focus:outline-none hover:bg-gray-200"
@@ -256,7 +290,7 @@ function CartButton({ data }) {
         onClick={toggleDrawer("right", true)}
       >
         <div className="flex items-center justify-center relative">
-          <Icon icon="carbon:shopping-bag" width="2rem" height="2rem" />
+          <Icon icon="uil:cart" width="2rem" height="2rem" />
           <span className="absolute top-0 right-0 bg-red-600 text-white rounded-full px-1 text-[10px]">
             {cartData?.length || 0}
           </span>

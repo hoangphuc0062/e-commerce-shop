@@ -3,48 +3,64 @@ const mongoose = require("mongoose");
 const OrderSchema = new mongoose.Schema({
   products: [
     {
-      product: {
-        type: mongoose.Types.ObjectId,
-        ref: "Product",
-      },
-      count: {
-        type: Number,
-      },
-      color: {
+      pid: { type: mongoose.Types.ObjectId, ref: "Product" },
+      attributeId: {
         type: String,
+        default: null,
       },
-      size: {
-        type: Number,
-      },
+      key: { type: String, default: null },
+      quantity: { type: Number, default: 1 },
     },
   ],
   orderBy: {
     type: mongoose.Types.ObjectId,
-    ref: "User",
+    ref: "Customer",
   },
   coupon: {
     type: mongoose.Types.ObjectId,
     ref: "Coupon",
+    default: null,
   },
   status: {
     type: String,
     default: "Processing",
-    enum: ["Not processed", "Processing", "Shipped", "Delivered", "Cancelled"],
+    enum: [
+      "Pending",
+      "Processing",
+      "Shipping",
+      "Delivered",
+      "Cancelled",
+      "Success",
+    ],
   },
   total: {
     type: Number,
   },
-  payment: {
+  paymentMethod: {
     type: String,
     enum: ["cash", "momo", "zalopay", "vnpay"],
     default: "cash",
   },
+  statusPayment: {
+    type: String,
+    enum: ["Not paid", "Paid"],
+    default: "Not paid",
+  },
+  shippingFee: {
+    type: Number,
+  },
   note: {
     type: String,
+  },
+  discount: {
+    type: Number,
   },
   date: {
     type: Date,
     default: Date.now,
+  },
+  SKU: {
+    type: String,
   },
 });
 

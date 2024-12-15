@@ -134,10 +134,10 @@ function EditBannerCollection() {
           refUrl: "",
           position: 0,
           shotDescription: "",
+          startDate: "",
+          endDate: "",
         },
       ],
-      startDate: "",
-      endDate: "",
     },
     validationSchema: BannerSchema,
     validateOnChange: true,
@@ -170,7 +170,7 @@ function EditBannerCollection() {
   const addNewBanner = () => {
     formik.setFieldValue("banner", [
       ...formik.values.banner,
-      { name: "", urlImage: "", refUrl: "", position: "", shotDescription: "" },
+      { name: "", urlImage: "", refUrl: "", position: "", shotDescription: "", startDate: "", endDate: "", },
     ]);
   };
 
@@ -194,16 +194,17 @@ function EditBannerCollection() {
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
                       <ImageUploader
-                        onUploadComplete={(url) =>
-                          handleUploadComplete(url, index)
-                        }
+                        onUploadComplete={(url) => handleUploadComplete(url, index)}
                         onDelete={() => handleDelete(index)}
                         avatarSize={100}
                         idupload={`banner[${index}].urlImage`}
                         value={bannerItem.urlImage}
-                        {...getErrorProps(`banner[${index}].urlImage`)} // This includes error handling
+                        {...getErrorProps(`banner[${index}].urlImage`)} // Error handling
                         onBlur={formik.handleBlur}
                         fooder="banner"
+                        dataImage={bannerItem.urlImage ? [bannerItem.urlImage] : []}
+                        isFullWidth
+                        isFullHeight
                       />
                       {formik.touched.banner?.[index]?.urlImage &&
                         formik.errors.banner?.[index]?.urlImage && (
@@ -221,13 +222,11 @@ function EditBannerCollection() {
                       fullWidth
                       sx={{ mt: 1, ml: 2 }}
                       error={
-                        formik.touched.banner &&
-                        formik.touched.banner[index]?.name &&
+                        formik.touched.banner?.[index]?.name &&
                         Boolean(formik.errors.banner?.[index]?.name)
                       }
                       helperText={
-                        formik.touched.banner &&
-                        formik.touched.banner[index]?.name &&
+                        formik.touched.banner?.[index]?.name &&
                         formik.errors.banner?.[index]?.name
                       }
                     />
@@ -240,17 +239,14 @@ function EditBannerCollection() {
                       fullWidth
                       sx={{ mt: 1, ml: 2 }}
                       error={
-                        formik.touched.banner &&
-                        formik.touched.banner[index]?.refUrl &&
+                        formik.touched.banner?.[index]?.refUrl &&
                         Boolean(formik.errors.banner?.[index]?.refUrl)
                       }
                       helperText={
-                        formik.touched.banner &&
-                        formik.touched.banner[index]?.refUrl &&
+                        formik.touched.banner?.[index]?.refUrl &&
                         formik.errors.banner?.[index]?.refUrl
                       }
                     />
-
                     <TextField
                       label="Position"
                       name={`banner[${index}].position`}
@@ -260,16 +256,64 @@ function EditBannerCollection() {
                       fullWidth
                       sx={{ mt: 1, ml: 2 }}
                       error={
-                        formik.touched.banner &&
-                        formik.touched.banner[index]?.position &&
+                        formik.touched.banner?.[index]?.position &&
                         Boolean(formik.errors.banner?.[index]?.position)
                       }
                       helperText={
-                        formik.touched.banner &&
-                        formik.touched.banner[index]?.position &&
+                        formik.touched.banner?.[index]?.position &&
                         formik.errors.banner?.[index]?.position
                       }
                     />
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        label="Ngày Bắt Đầu"
+                        name={`banner[${index}].startDate`}
+                        type="date"
+                        value={
+                          bannerItem.startDate
+                            ? new Date(bannerItem.startDate).toISOString().split("T")[0]
+                            : new Date().toISOString().split("T")[0]
+                        }
+                        onChange={formik.handleChange}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        fullWidth
+                        error={
+                          formik.touched.banner?.[index]?.startDate &&
+                          Boolean(formik.errors.banner?.[index]?.startDate)
+                        }
+                        helperText={
+                          formik.touched.banner?.[index]?.startDate &&
+                          formik.errors.banner?.[index]?.startDate
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        label="Ngày Kết Thúc"
+                        name={`banner[${index}].endDate`}
+                        type="date"
+                        value={
+                          bannerItem.endDate
+                            ? new Date(bannerItem.endDate).toISOString().split("T")[0]
+                            : new Date().toISOString().split("T")[0]
+                        }
+                        onChange={formik.handleChange}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        fullWidth
+                        error={
+                          formik.touched.banner?.[index]?.endDate &&
+                          Boolean(formik.errors.banner?.[index]?.endDate)
+                        }
+                        helperText={
+                          formik.touched.banner?.[index]?.endDate &&
+                          formik.errors.banner?.[index]?.endDate
+                        }
+                      />
+                    </Grid>
                     <textarea
                       name={`banner[${index}].shotDescription`}
                       value={bannerItem.shotDescription}
@@ -282,15 +326,13 @@ function EditBannerCollection() {
                       }}
                       rows="4"
                       className={
-                        formik.touched.banner &&
-                        formik.touched.banner[index]?.shotDescription &&
-                        Boolean(formik.errors.banner?.[index]?.shotDescription)
+                        formik.touched.banner?.[index]?.shotDescription &&
+                          Boolean(formik.errors.banner?.[index]?.shotDescription)
                           ? "error"
                           : ""
                       }
                     />
-                    {formik.touched.banner &&
-                      formik.touched.banner[index]?.shotDescription &&
+                    {formik.touched.banner?.[index]?.shotDescription &&
                       formik.errors.banner?.[index]?.shotDescription && (
                         <div
                           style={{
@@ -314,6 +356,7 @@ function EditBannerCollection() {
                 </Card>
               ))}
             </Box>
+
 
             <Button
               variant="contained"
@@ -415,46 +458,6 @@ function EditBannerCollection() {
                       </FormHelperText>
                     )}
                   </FormControl>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    label="Ngày Bắt Đầu"
-                    name="startDate"
-                    type="date"
-                    value={
-                      formik.values.startDate
-                        ? new Date(formik.values.startDate)
-                            .toISOString()
-                            .split("T")[0]
-                        : new Date().toISOString().split("T")[0]
-                    }
-                    onChange={formik.handleChange}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    fullWidth
-                    {...getErrorProps("startDate")}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <TextField
-                    label="Ngày Kết Thúc"
-                    name="endDate"
-                    type="date"
-                    value={
-                      formik.values.endDate
-                        ? new Date(formik.values.endDate)
-                            .toISOString()
-                            .split("T")[0]
-                        : new Date().toISOString().split("T")[0]
-                    }
-                    onChange={formik.handleChange}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    fullWidth
-                    {...getErrorProps("endDate")}
-                  />
                 </Grid>
                 <Grid item xs={12}>
                   <FormControl fullWidth>

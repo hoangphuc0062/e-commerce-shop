@@ -5,18 +5,18 @@ import { ThemeProvider } from "./theme/ThemeProvider.jsx";
 import { HelmetProvider } from "react-helmet-async";
 import { Provider } from "react-redux";
 import store from "./redux/store.js";
-import { AuthProvider } from "./context/AuthContext.jsx";
+import { UserProvider } from "./context/AuthContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <AuthProvider>
-      <Provider store={store}>
+    <Provider store={store}>
+      <UserProvider>
         <ThemeProvider>
           <HelmetProvider>
             <App />
           </HelmetProvider>
         </ThemeProvider>
-      </Provider>
-    </AuthProvider>
+      </UserProvider>
+    </Provider>
   </BrowserRouter>
 );

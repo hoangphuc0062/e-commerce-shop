@@ -60,11 +60,18 @@ const postSchema = new mongoose.Schema(
           min: 1,
           max: 5, // Giới hạn giá trị của star từ 1 đến 5
         },
+        comment: {
+          type: String,
+        },
       },
     ],
+    totalRating: {
+      type: Number,
+      default: 0,
+    },
     status: {
       type: String,
-      enum: ["draft", "published", "archived"],
+      enum: ["draft", "publish", "archived"],
       default: "draft",
     },
     thumbnail: {

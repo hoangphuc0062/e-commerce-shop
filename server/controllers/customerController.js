@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Customer = require("../models/customerModel");
+const Product = require("../models/productModel");
 
 const crypto = require("crypto");
 const {
@@ -7,6 +8,8 @@ const {
   generateRefreshToken,
 } = require("../middlewares/jwt");
 const sendSMS = require("../ultils/sendPhone");
+const sendMail = require("../ultils/sendMail");
+const makeToken = require("uniquid");
 
 const checkOTP = asyncHandler(async (req, res) => {
   const { phone, code } = req.body;
@@ -41,40 +44,6 @@ const deleteCustomer = asyncHandler(async (req, res) => {
   });
 });
 
-const forgotPassword = asyncHandler(async (req, res) => {
-  const { phone } = req.body;
-
-  const customer = await Customer.findOne({ phone });
-  if (!customer) {
-    res.status(400);
-    throw new Error("Phone number not found");
-  }
-
-  const resetToken = customer.createPasswordChangeToken();
-
-  await customer.save(); // Save the customer with the token
-
-  // Generate an OTP
-  const otp = Math.floor(Math.random() * (999999 - 100000) + 100000).toString();
-
-  // Update the code field with the generated OTP
-  await customer.updateCode(otp);
-
-  // Message content with OTP
-  const messages = `Mã OTP: ${otp}. Vui lòng không chia sẻ mã này với ai. Mã sẽ hết hạn trong 15 phút`;
-
-  try {
-    // Send the OTP via SMS
-    await sendSMS(phone, messages);
-    console.log(`OTP sent to ${phone}: ${otp}`);
-  } catch (error) {
-    console.error("Error sending OTP:", error);
-    return res.status(500).json({ message: "Error sending OTP" });
-  }
-
-  // Send the response with resetToken and customer
-  res.status(200).json({ resetToken, customer });
-});
 
 const getCustomer = asyncHandler(async (req, res) => {
   const sortBy = req.query.sort;
@@ -118,15 +87,15 @@ const getCustomerByCookie = asyncHandler(async (req, res) => {
 });
 
 const loginCustomer = asyncHandler(async (req, res) => {
-  const { phone, password } = req.body;
+  const { email, password } = req.body;
 
   // Check if the phone number exists
-  const customer = await Customer.findOne({ phone }).select(
-    "-code -isBlocked -resetPasswordToken -resetPasswordExpires -passwordResetExprires -passwordResetToken -refreshToken"
+  const customer = await Customer.findOne({ email }).select(
+    "-code  -resetPasswordToken -resetPasswordExpires -passwordResetExprires -passwordResetToken -refreshToken"
   );
   if (!customer) {
     res.status(400);
-    throw new Error("Phone number not found");
+    throw new Error("email not found");
   }
 
   // Check if the password is correct
@@ -222,57 +191,186 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const registerCustomer = asyncHandler(async (req, res) => {
-  const { phone, password, name } = req.body;
-
-  // Check if the phone number already exists
-  const existingCustomer = await Customer.findOne({ phone });
-  if (existingCustomer) {
-    res.status(400);
-    throw new Error("Phone number already exists");
+  const { email, password, name } = req.body;
+  if (!email || !password || !name) {
+    return res.status(400).json({
+      success: false,
+      mes: "Missing inputs",
+    });
   }
 
-  // Generate OTP
-  const otp = Math.floor(Math.random() * (999999 - 100000) + 100000).toString();
+  const user = await Customer.findOne({ email: email });
+  if (user) throw new Error("User has already existed");
+  else {
+    const token = makeToken();
+    // rest of your code...
+    res.cookie(
+      "dataregister",
+      { ...req.body, token },
+      {
+        httpOnly: true,
+        maxAge: 15 * 60 * 1000,
+      }
+    );
 
-  // Create new customer
-  const newCustomer = new Customer({
-    phone,
-    password,
-    name,
-    code: otp,
-  });
-  await newCustomer.save();
+    const html = `<!DOCTYPE html>
+<html lang="en">
 
-  // Send OTP via SMS
-  try {
-    const message = `OTP của bạn là ${otp}. Vui lòng không chia sẻ nó với bất kỳ ai khác.`;
-    await sendSMS(phone, message);
-    console.log(`OTP sent to ${phone}: ${otp}`);
-  } catch (error) {
-    console.error("Error sending OTP:", error);
-    return res.status(500).json({ message: "Error sending OTP" });
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Confirmation</title>
+    <style>
+        .body-mail {
+            font-family: Arial, sans-serif;
+            background-color: #f3f6fc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        .confirmation-container {
+            background-color: #ffffff;
+            text-align: center;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .confirmation-container img {
+            width: 80px;
+            margin-bottom: 16px;
+        }
+
+        .confirmation-container h1 {
+            font-size: 24px;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .confirmation-container p {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .confirmation-container a {
+            display: inline-block;
+            background-color: #2563eb;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+            transition: background-color 0.3s ease;
+        }
+
+        .confirmation-container a:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+     <div class="body-mail">
+        <div class="confirmation-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/10678/10678045.png" alt="Success Icon">
+            <h1>Xác thực tài khoản email</h1>
+            <p>Xin vui lòng click vào link dưới đây để hoàn tất quá trình đăng ký của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ</p>
+             <a href=${process.env.URL_SERVER}/api/customers/finalregister/${token}>Xác nhận tài khoản</a>
+        </div>
+    </div>
+</body>
+
+</html>
+     `;
+    const subject = `Hoàn tất đăng ký Voi Tây Nguyên Account`;
+
+    const rs = await sendMail(email, html, subject);
+
+    return res
+      .status(200)
+      .json({ mes: "Please check your email to active account" });
   }
+});
 
-  // Generate tokens
-  const { _id, role } = newCustomer;
-  const accessToken = generateAccessToken(_id, role);
-  const refreshToken = generateRefreshToken(_id);
+const finalRegister = asyncHandler(async (req, res) => {
+  const cookie = req.cookies;
+  const { token } = req.params;
 
-  // Save refresh token to the customer object
-  newCustomer.refreshToken = refreshToken;
-  await newCustomer.save();
-
-  // Set refresh token as a cookie
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  if (!cookie || !cookie.dataregister || cookie.dataregister.token !== token) {
+    res.clearCookie("dataregister");
+    return res.redirect(`${process.env.WEB_URL}/finalregister/failed`);
+  }
+  const newUser = await Customer.create({
+    email: cookie.dataregister.email,
+    password: cookie.dataregister.password,
+    name: cookie.dataregister.name,
+    isBlocked: false,
   });
+  res.clearCookie("dataregister");
+  if (newUser) {
+    return res.redirect(`${process.env.WEB_URL}/finalregister/success`);
+  } else {
+    return res.redirect(`${process.env.WEB_URL}/finalregister/failed`);
+  }
+});
+// const forgotPassword = asyncHandler(async (req, res) => {
+//   const { phone } = req.body;
 
-  // Return response to the client
-  res.status(201).json({
-    mes: "Register success",
-    accessToken,
-    customer: newCustomer,
+//   const customer = await Customer.findOne({ phone });
+//   if (!customer) {
+//     res.status(400);
+//     throw new Error("Phone number not found");
+//   }
+
+//   const resetToken = customer.createPasswordChangeToken();
+
+//   await customer.save(); // Save the customer with the token
+
+//   // Generate an OTP
+//   const otp = Math.floor(Math.random() * (999999 - 100000) + 100000).toString();
+
+//   // Update the code field with the generated OTP
+//   await customer.updateCode(otp);
+
+//   // Message content with OTP
+//   const messages = `Mã OTP: ${otp}. Vui lòng không chia sẻ mã này với ai. Mã sẽ hết hạn trong 15 phút`;
+
+//   try {
+//     // Send the OTP via SMS
+//     await sendSMS(phone, messages);
+//     console.log(`OTP sent to ${phone}: ${otp}`);
+//   } catch (error) {
+//     console.error("Error sending OTP:", error);
+//     return res.status(500).json({ message: "Error sending OTP" });
+//   }
+
+//   // Send the response with resetToken and customer
+//   res.status(200).json({ resetToken, customer });
+// });
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) throw new Error("Missing email");
+  const customer = await Customer.findOne({ email });
+  if (!customer) throw new Error("User not found");
+  const resetToken = customer.createPasswordChangeToken();
+  await customer.save();
+
+  const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ. 
+  <a href=${process.env.WEB_URL}/reset-password/${resetToken}>Click here</a>`;
+  const subject = `Quên mật khẩu`;
+  const rs = await sendMail(email, html, subject);
+  return res.status(200).json({
+    rs,
   });
 });
 
@@ -312,8 +410,30 @@ const resetPassword = asyncHandler(async (req, res) => {
   });
 });
 
+const changePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  const userId = req.user._id;
+
+  if (!currentPassword && !newPassword)
+    return res.status(400).json({ mes: "Missing Input" });
+
+  const customer = await Customer.findById(userId).select("password");
+  // Check if the current password is correct
+  if (!(await customer.isCorrectPassword(currentPassword))) {
+    return res.status(400).json({ mes: "Current password is incorrect" });
+  }
+
+  // Update the password
+  customer.password = newPassword;
+  await customer.save();
+
+  return res.status(200).json({ mes: "Password updated successfully" });
+});
+
 const updateCustomer = asyncHandler(async (req, res) => {
   const { _id } = req.params;
+  console.log(_id);
   if (!_id || Object.keys(req.body).length === 0) {
     return res.status(400).json({
       message: "Missing required fields",
@@ -321,7 +441,7 @@ const updateCustomer = asyncHandler(async (req, res) => {
   }
   const customer = await Customer.findByIdAndUpdate(_id, req.body, {
     new: true,
-  }).select("-role -refreshToken");
+  });
   return res.status(200).json(customer);
 });
 
@@ -339,22 +459,24 @@ const updateCustomerBYAdmin = asyncHandler(async (req, res) => {
 });
 
 const addCart = asyncHandler(async (req, res) => {
-  const { productId, attributeId, quantity } = req.body;
+  const { productId, attributeId, quantity, key } = req.body;
   const customer = await Customer.findById(req.user._id);
 
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
+  const product = await Product.findById(productId);
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
 
   const updatedCart = await customer.addToCart(
     productId,
     attributeId,
-    quantity
+    quantity,
+    key
   );
-  res.status(200).json({
-    message: "Product with variant added to cart",
-    cart: updatedCart,
-  });
+  return res.status(200).json(updatedCart);
 });
 
 // get cart
@@ -372,78 +494,68 @@ const getCart = asyncHandler(async (req, res) => {
 
   const cart = customer.cart.map((item) => {
     const product = item.pid;
-    const variant = product.variants?.find(
-      (v) => v.get("id") === item.attributeId
-    );
+
+    const variant = product.variants?.find((v) => {
+      if (v instanceof Map) {
+        return v.get("key") === item.key;
+      } else {
+        return v.key === item.key;
+      }
+    });
+    let variantValue;
+    if (variant instanceof Map) {
+      const values = variant.get("values");
+      if (values) {
+        variantValue = values.find((v) => v.id === item.attributeId);
+      }
+    } else {
+      variantValue = variant?.values?.find((v) => v.id === item.attributeId);
+    }
 
     return {
       productId: product._id,
       name: product.name,
-      thumbnail: product.thumbnail,
-      price: variant?.get("price") || product.price,
+      thumbnail: variantValue?.thumbnail || product.thumbnail,
+      price: variantValue?.price || variant?.price || product.price,
       slug: product.slug,
-      attributeValue: variant,
+      attributeValue: variantValue,
       quantity: item.quantity,
+      key: item.key,
     };
   });
 
   res.status(200).json(cart);
 });
 
-// update cart
 const updateCart = asyncHandler(async (req, res) => {
-  const items = req.body; // Expecting an array of items directly
+  const items = req.body; // Expecting an array of items
   const userId = req.user._id;
 
-  // Find the customer's cart
+  if (!Array.isArray(items) || items.length === 0) {
+    return res
+      .status(400)
+      .json({ message: "Invalid input, expected a non-empty array of items" });
+  }
+
   const customer = await Customer.findById(userId);
 
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
-  items.forEach(({ productId, attributeId, quantity }) => {
-    if (attributeId === "null") {
-      attributeId = null;
-    }
 
-    const cartItemIndex = customer.cart.findIndex((item) => {
-      const itemAttributeId = item.attributeId
-        ? item.attributeId.toString()
-        : null;
-      const inputAttributeId = attributeId ? attributeId.toString() : null;
-      return (
-        item.pid.toString() === productId.toString() &&
-        itemAttributeId === inputAttributeId
-      );
+  try {
+    // Update the customer's cart
+    await customer.updateCart(items);
+
+    res.status(200).json({
+      message: "Cart updated successfully",
+      cart: customer.cart,
     });
-
-    if (cartItemIndex > -1) {
-      // If the item exists, update its quantity
-      if (quantity > 0) {
-        customer.cart[cartItemIndex].quantity = quantity;
-      } else {
-        // If quantity is 0, remove the item from the cart
-        customer.cart.splice(cartItemIndex, 1);
-      }
-    } else {
-      if (quantity > 0) {
-        customer.cart.push({
-          pid: productId,
-          attributeId: attributeId, // This can be null for single products
-          quantity: quantity,
-        });
-      } else {
-        return res.status(400).json({ message: "Invalid quantity" });
-      }
-    }
-  });
-
-  await customer.save();
-
-  res.status(200).json({
-    message: "Cart updated successfully",
-    cart: customer.cart,
-  });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to update cart", error: error.message });
+  }
 });
 
 // xoá cart
@@ -462,7 +574,7 @@ const deleteCartItem = asyncHandler(async (req, res) => {
   const cartItemIndex = customer.cart.findIndex(
     (item) =>
       item.pid.toString() === productId.toString() &&
-      item.attributeId.toString() === attributeId.toString()
+      item.attributeId === attributeId
   );
 
   if (cartItemIndex > -1) {
@@ -490,7 +602,6 @@ const deleteManyCart = asyncHandler(async (req, res) => {
       .status(400)
       .json({ message: "Invalid input, expected an array of items" });
   }
-  console.log(items);
   const customer = await Customer.findById(userId);
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
@@ -512,8 +623,119 @@ const deleteManyCart = asyncHandler(async (req, res) => {
   });
 });
 
+const createAddress = asyncHandler(async (req, res) => {
+  const { street, wards, districts, provinces, isDefault } = req.body;
+  const userId = req.user._id;
+
+  try {
+    if (isDefault) {
+      // Gỡ trạng thái mặc định của địa chỉ hiện tại (nếu có)
+      await Customer.updateOne(
+        { _id: userId, "address.isDefault": true },
+        { $set: { "address.$.isDefault": false } }
+      );
+    }
+
+    // Thêm địa chỉ mới
+    const newAddress = { street, wards, districts, provinces, isDefault };
+    await Customer.updateOne(
+      { _id: userId },
+      { $push: { address: newAddress } }
+    );
+
+    res.status(201).json({ message: "Thêm địa chỉ thành công" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: `Lỗi khi thêm địa chỉ mới: ${error.message}` });
+  }
+});
+
+const updateAddress = asyncHandler(async (req, res) => {
+  const { addressId } = req.params;
+  const { street, wards, districts, provinces, isDefault } = req.body;
+  const userId = req.user._id;
+
+  try {
+    if (isDefault) {
+      // Gỡ trạng thái mặc định của địa chỉ hiện tại (nếu có)
+      await Customer.updateOne(
+        { _id: userId, "address.isDefault": true },
+        { $set: { "address.$.isDefault": false } }
+      );
+    }
+
+    // Cập nhật địa chỉ cụ thể
+    const updatedCustomer = await Customer.updateOne(
+      { _id: userId, "address._id": addressId },
+      {
+        $set: {
+          "address.$.street": street,
+          "address.$.wards": wards,
+          "address.$.districts": districts,
+          "address.$.provinces": provinces,
+          "address.$.isDefault": isDefault,
+        },
+      }
+    );
+
+    if (updatedCustomer.matchedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy địa chỉ cần cập nhật" });
+    }
+
+    res.status(200).json({ message: "Cập nhật địa chỉ thành công" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: `Lỗi khi cập nhật địa chỉ: ${error.message}` });
+  }
+});
+
+const deleteAddress = asyncHandler(async (req, res) => {
+  const { addressId } = req.params;
+  const userId = req.user._id;
+
+  try {
+    const updatedCustomer = await Customer.updateOne(
+      { _id: userId },
+      { $pull: { address: { _id: addressId } } }
+    );
+
+    if (updatedCustomer.modifiedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy địa chỉ cần xóa" });
+    }
+
+    res.status(200).json({ message: "Xóa địa chỉ thành công" });
+  } catch (error) {
+    res.status(500).json({ error: `Lỗi khi xóa địa chỉ: ${error.message}` });
+  }
+});
+
+const getAddresses = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const customer = await Customer.findById(userId).select("address");
+
+    if (!customer) {
+      return res.status(404).json({ message: "Không tìm thấy khách hàng" });
+    }
+
+    res.status(200).json(customer.address);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: `Lỗi khi lấy danh sách địa chỉ: ${error.message}` });
+  }
+});
+
 module.exports = {
   checkOTP,
+  changePassword,
   deleteCustomer,
   forgotPassword,
   getCustomer,
@@ -522,6 +744,7 @@ module.exports = {
   logout,
   refreshAccessToken,
   registerCustomer,
+  finalRegister,
   resetPassword,
   updateCustomer,
   updateCustomerBYAdmin,
@@ -531,4 +754,9 @@ module.exports = {
   updateCart,
   deleteCartItem,
   deleteManyCart,
+
+  createAddress,
+  updateAddress,
+  deleteAddress,
+  getAddresses,
 };

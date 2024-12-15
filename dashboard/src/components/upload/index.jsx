@@ -4,7 +4,7 @@ import {
   uploadBytesResumable,
   deleteObject,
 } from "firebase/storage";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Box, IconButton, Typography, Avatar } from "@mui/material";
 import UploadIcon from "@mui/icons-material/PhotoCamera";
@@ -20,76 +20,91 @@ const ImageUploader = ({
   error,
   helperText,
   allowedFormats = ["PNG", "JPG"],
-  fooder, // Dynamic folder path for upload
+  fooder,
   idupload,
+
+  isFullWidth = false,
+  isFullHeight = false,
+  dataImage = [],
 }) => {
   const [downloadURLs, setDownloadURLs] = useState([]);
   const [imageRefs, setImageRefs] = useState([]);
   const [uploadError, setUploadError] = useState(null);
-
+  useEffect(() => {
+    if (dataImage.length > 0) {
+      setDownloadURLs(dataImage);
+    }
+  }, [dataImage]);
   // Handle file upload
   const handleFileUpload = useCallback(
-    (e) => {
+    async (e) => {
       const files = Array.from(e.target.files);
       if (files.length === 0) return;
 
       setUploadError(null);
 
-      files.forEach((file) => {
-        // Check file type
-        if (!["image/png", "image/jpeg"].includes(file.type)) {
-          setUploadError("Vui lòng tải lên hình ảnh PNG hoặc JPG hợp lệ.");
-          return;
-        }
+      // Lọc các file không hợp lệ
+      const invalidFiles = files.filter(
+        (file) =>
+          !["image/png", "image/jpeg"].includes(file.type) ||
+          file.size > 5 * 1024 * 1024
+      );
 
-        // Check file size
-        if (file.size > 5 * 1024 * 1024) {
-          setUploadError("Kích thước hình ảnh không được vượt quá 5MB.");
-          return;
-        }
-
-        const storageRef = ref(imageDb, `${fooder}/${uuidv4()}`); // Correct template literal for dynamic path
-        const uploadTask = uploadBytesResumable(storageRef, file);
-
-        uploadTask.on(
-          "state_changed",
-          null, // No progress tracking
-          (error) => {
-            console.error("Upload failed:", error);
-            setUploadError("Vui lòng tải lên hình ảnh PNG hoặc JPG hợp lệ.");
-          },
-          () => {
-            // On successful upload, get the download URL
-            getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-              setDownloadURLs((prevURLs) => [...prevURLs, url]); // Add new URL
-              setImageRefs((prevRefs) => [...prevRefs, storageRef]); // Add new reference
-              if (onUploadComplete) onUploadComplete(url);
-            });
-          }
+      if (invalidFiles.length > 0) {
+        setUploadError(
+          "Một số tệp không hợp lệ. Vui lòng chỉ tải lên hình ảnh PNG hoặc JPG với kích thước không quá 5MB."
         );
-      });
+        return;
+      }
+
+      try {
+        const urls = await Promise.all(
+          files.map((file) => {
+            const storageRef = ref(imageDb, `${fooder}/${uuidv4()}`);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            return new Promise((resolve, reject) => {
+              uploadTask.on(
+                "state_changed",
+                null,
+                (error) => {
+                  console.error("Upload failed:", error);
+                  reject(error);
+                },
+                async () => {
+                  try {
+                    const url = await getDownloadURL(uploadTask.snapshot.ref);
+                    setDownloadURLs((prevURLs) => [...prevURLs, url]);
+                    setImageRefs((prevRefs) => [...prevRefs, storageRef]);
+                    resolve(url);
+                  } catch (err) {
+                    reject(err);
+                  }
+                }
+              );
+            });
+          })
+        );
+
+        // Gọi onUploadComplete với tất cả URL
+        if (onUploadComplete) onUploadComplete(urls);
+
+        console.log("All files uploaded successfully:", urls);
+      } catch (err) {
+        console.error("Error uploading files:", err);
+        setUploadError("Có lỗi xảy ra trong quá trình tải lên.");
+      }
     },
-    [onUploadComplete, fooder] // Ensure fooder is in the dependency array
+    [onUploadComplete, fooder]
   );
 
-  // Handle delete action for individual images
   const handleDelete = useCallback(
     (index) => {
-      if (!imageRefs[index]) return;
-
-      deleteObject(imageRefs[index])
-        .then(() => {
-          console.log("File deleted successfully");
-          setDownloadURLs((prevURLs) => prevURLs.filter((_, i) => i !== index)); // Remove URL
-          setImageRefs((prevRefs) => prevRefs.filter((_, i) => i !== index)); // Remove reference
-          if (onDelete) onDelete();
-        })
-        .catch((error) => {
-          console.error("Error deleting file:", error);
-          setUploadError("Error deleting the file, please try again later.");
-        });
+      const imageRef = downloadURLs[index];
+      if (onDelete) onDelete(imageRef);
+      setDownloadURLs((prevURLs) => prevURLs.filter((_, i) => i !== index));
     },
-    [imageRefs, onDelete]
+    [onDelete, downloadURLs]
   );
 
   return (
@@ -105,7 +120,7 @@ const ImageUploader = ({
       <label htmlFor={idupload || "uploadFile"}>
         <Box
           sx={{
-            width: avatarSize + 30,
+            width: isFullWidth ? "100%" : " width: avatarSize + 30",
             height: avatarSize + 30,
             borderRadius: "50%",
             backgroundColor: "#f0f0f0",
@@ -154,21 +169,23 @@ const ImageUploader = ({
             mt: 4,
           }}
         >
-          {downloadURLs.map((url, index) => (
+          {downloadURLs?.map((url, index) => (
             <Box
               key={index}
               sx={{
                 position: "relative",
-                width: avatarSize,
-                height: avatarSize,
+                width: isFullWidth ? "100%" : avatarSize + 30, // xét điều kiện ở cha nếu thì
+                height: isFullHeight ? "100%" : avatarSize + 30,
               }}
             >
               <Avatar
                 src={url}
                 sx={{
-                  width: avatarSize,
-                  height: avatarSize,
+                  width: isFullWidth ? "100%" : avatarSize + 30, // xét điêuf kiệu nếu  thì
+                  height: isFullHeight ? "100%" : avatarSize + 30,
+                  objectFit: "contain",
                 }}
+                variant="rounded"
               />
               {CustomButton ? (
                 <CustomButton onClick={() => handleDelete(index)} />
@@ -210,6 +227,7 @@ ImageUploader.propTypes = {
   allowedFormats: propTypes.arrayOf(propTypes.string),
   fooder: propTypes.string.isRequired, // Required prop for dynamic folder path
   idupload: propTypes.string,
+  dataImage: propTypes.arrayOf(propTypes.string),
 };
 
 export default ImageUploader;

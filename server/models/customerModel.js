@@ -12,12 +12,12 @@ var customerSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      sparse: true,
+      required: true,
+      unique: true,
     },
     phone: {
       type: String,
-      required: true,
-      unique: true,
+      default: null,
     },
     password: {
       type: String,
@@ -39,13 +39,23 @@ var customerSchema = new mongoose.Schema(
           type: String,
           default: null,
         },
+        key: { type: String, default: null },
         quantity: { type: Number, default: 1 },
       },
     ],
     address: {
-      type: Array,
+      type: [
+        {
+          street: String,
+          wards: String,
+          districts: String,
+          provinces: String,
+          isDefault: { type: Boolean, default: false },
+        },
+      ],
       default: [],
     },
+
     wishlist: [{ type: mongoose.Types.ObjectId, ref: "Product" }],
 
     sex: {
@@ -68,22 +78,11 @@ var customerSchema = new mongoose.Schema(
     },
     purchaseHistory: [
       {
-        pid: {
-          type: mongoose.Types.ObjectId,
-          ref: "Product",
-        },
-        quantity: Number,
+        pid: { type: mongoose.Types.ObjectId, ref: "Order" },
         date: Date,
       },
     ],
-    paymentHistory: [
-      {
-        date: Date,
-        total: Number,
-        paymentMethod: String,
-        status: String,
-      },
-    ],
+
     isBlocked: {
       type: Boolean,
       default: true,
@@ -106,7 +105,7 @@ var customerSchema = new mongoose.Schema(
     avatar: {
       type: String,
       default:
-        "https://asset.cloudinary.com/dgthe0zuj/426512c1702396bd962a4de573a60b15",
+        "https://cdn2.cellphones.com.vn/300x300,webp,q100/media/wysiwyg/Shipper_CPS3_1.png",
     },
     birthday: {
       type: Date,
@@ -153,23 +152,65 @@ customerSchema.methods = {
 
   // Add product to cart method
 
-  addToCart: async function (productId, attributeId, quantity = 1) {
+  addToCart: async function (productId, attributeId, quantity = 1, key) {
     const cartItemIndex = this.cart.findIndex(
       (item) =>
-        item.pid.toString() === productId.toString() &&
-        item.attributeId.toString() === attributeId.toString()
+        item.pid?.toString() === productId?.toString() &&
+        (item.attributeId
+          ? item.attributeId?.toString() === attributeId?.toString()
+          : !attributeId) &&
+        (item.key ? item.key?.toString() === key?.toString() : !key)
     );
 
     if (cartItemIndex > -1) {
-      // Product with the same variant exists, update quantity
+      // Update quantity
       this.cart[cartItemIndex].quantity += quantity;
     } else {
-      // New product with variant, add to cart
-      this.cart.push({ pid: productId, attributeId, quantity });
+      // Add new product
+      this.cart.push({
+        pid: productId,
+        attributeId: attributeId || null,
+        quantity,
+        key: key || null,
+      });
     }
 
     await this.save();
     return this.cart;
+  },
+  updateCart: async function (items) {
+    for (const item of items) {
+      const { productId, attributeId, quantity, key } = item;
+
+      // const cartItemIndex = this.cart.findIndex(
+      //   (cartItem) =>
+      //     cartItem.pid?.toString() === productId?.toString() &&
+      //     (cartItem.attributeId.toString() === attributeId.toString() ||
+      //       !attributeId) &&
+      //     (cartItem.key.toString() === key.toString() || !key)
+      // );
+      const cartItemIndex = this.cart.findIndex(
+        (cartItem) =>
+          cartItem.pid?.toString() === productId?.toString() &&
+          (cartItem.attributeId
+            ? cartItem.attributeId?.toString() === attributeId?.toString()
+            : !attributeId) &&
+          (cartItem.key ? cartItem.key?.toString() === key?.toString() : !key)
+      );
+      if (cartItemIndex > -1) {
+        this.cart[cartItemIndex].quantity = quantity;
+      }
+    }
+
+    await this.save();
+    return this.cart;
+  },
+
+  UpdateCustomer: async function (updateCustomer) {
+    this.address = updateCustomer.address;
+    this.name = updateCustomer.name;
+    this.phone = updateCustomer.phone;
+    return this.save();
   },
 };
 

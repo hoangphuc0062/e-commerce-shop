@@ -56,6 +56,14 @@ export const Input = forwardRef(
       }
     };
 
+    // Determine the input type
+    const inputType =
+      type === "birthday"
+        ? "date"
+        : type === "password" && showPassword
+        ? "text"
+        : type;
+
     return (
       <div className="flex flex-col w-full gap-2">
         <div className="flex justify-between">
@@ -67,7 +75,7 @@ export const Input = forwardRef(
           <input
             id={id}
             value={inputValue}
-            type={type === "password" && showPassword ? "text" : type}
+            type={inputType} // Use inputType
             className={`w-full p-5 font-medium border rounded-md placeholder:opacity-60 ${
               errorMessage
                 ? "border-red-500 focus:border-red-500"
@@ -75,7 +83,7 @@ export const Input = forwardRef(
             } ${isEditing ? "focus:outline-blue-700 outline-blue-700" : ""}`}
             placeholder={placeholder}
             onChange={handleChange}
-            ref={inputRef} // Sử dụng inputRef để auto-focus
+            ref={inputRef}
             readOnly={!isEditing && readOnly}
             {...rest}
           />
@@ -84,7 +92,7 @@ export const Input = forwardRef(
             <button
               className="absolute right-2"
               onClick={handleEdit}
-              title="Chỉnh sửa" // Tooltip text for edit button
+              title="Chỉnh sửa"
             >
               {iconName && <Icon icon={iconName} width="24px" height="24px" />}
             </button>
@@ -131,9 +139,9 @@ export const CustomInputField = ({
         <input
           id={id}
           type={
-            id === "password" && showPassword
+            (id === "password" || id === "confirmPassword") && showPassword
               ? "text"
-              : id === "password"
+              : id === "password" || id === "confirmPassword"
               ? "password"
               : "text"
           }
@@ -145,6 +153,19 @@ export const CustomInputField = ({
           className="w-full p-5 font-medium border rounded-md placeholder:opacity-60"
         />
         {id === "password" && (
+          <button
+            type="button"
+            className="absolute right-2 mr-2"
+            onClick={togglePasswordVisibility}
+          >
+            {showPassword ? (
+              <Icon icon={"mdi:eye"} width={30} />
+            ) : (
+              <Icon icon={"mdi:eye-off"} width={30} />
+            )}
+          </button>
+        )}
+        {id === "confirmPassword" && (
           <button
             type="button"
             className="absolute right-2 mr-2"

@@ -1,53 +1,66 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
-
-import { Input } from "../../components/Input/Input";
-import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useContext, useState } from "react";
 import { handleToast } from "../../ultils/toast";
-import { registerCustomer } from "../../redux/slices/customer";
-import messageConverter from "../../ultils/converMes";
-import { useState } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { CustomInputField } from "../../components/Input/Input";
+import { register, resetState } from "../../redux/slices/auth";
+import { UserContext } from "../../context/AuthContext";
+import { useDispatch } from "react-redux";
+import { Helmet } from "react-helmet-async";
+const Register = () => {
+  const { setLoginAuth } = useContext(UserContext);
 
-export const Register = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+
   const [captchaValue, setCaptchaValue] = useState(null);
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm();
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required("Vui lòng nhập họ và tên."),
+      email: Yup.string()
+        .required("Vui lòng nhập số điện thoại hoặc email.")
+        .email("Email không hợp lệ."),
+
+      password: Yup.string()
+        .required("Vui lòng nhập mật khẩu.")
+        .min(6, "Mật khẩu phải có ít nhất 6 ký tự."),
+    }),
+    onSubmit: async (values) => {
+      if (!captchaValue) {
+        handleToast("error", "Vui lòng xác nhận bạn không phải là robot.");
+        return;
+      }
+      dispatch(register(values)).then((res) => {
+        if (res.type === "auth/register/fulfilled") {
+          handleToast(
+            "success",
+            "Vui lòng kiểm tra email để xác nhận tài khoản."
+          );
+          setLoginAuth(true);
+          dispatch(resetState({ key: "statusRegister", value: "idle" }));
+        }
+      });
+    },
+  });
 
   const onChange = (value) => {
     setCaptchaValue(value);
   };
-
-  const onSubmit = async (rawData) => {
-    if (!captchaValue) {
-      handleToast("error", "Vui lòng xác nhận bạn không phải là robot.");
-      return;
-    }
-
-    const { name, phone, password } = rawData;
-    const data = { name, phone, password };
-
-    dispatch(registerCustomer(data)).then((res) => {
-      if (res.type === "customer/register/fulfilled") {
-        handleToast("success", "Đăng ký thành công");
-        setTimeout(() => {
-          navigate("/login");
-        }, 3000);
-      } else {
-        const message = messageConverter(res.payload.mes);
-        handleToast("error", message);
-      }
-    });
-  };
-
   return (
-    <section className="mx-2 my-4">
+    <section className="mx-2 my-4 pt-16">
+      <Helmet>
+        <title>Đăng ký</title>
+      </Helmet>
       <div className="container flex justify-center">
         <div className="flex-1">
           <div>
@@ -63,59 +76,59 @@ export const Register = () => {
               </Link>
             </span>
           </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="py-5">
+          <form className="py-5" onSubmit={formik.handleSubmit}>
             <div className="grid gap-6 mb-6 md:grid-cols-1 lg:grid-cols-2">
-              <Input
-                label="Họ và tên"
-                id="name"
-                readOnly={false}
-                placeholder="Nhập họ và tên"
-                {...register("name", {
-                  required: "Bạn cần nhập họ và tên để đăng ký",
-                  minLength: { value: 2, message: "Họ và tên quá ngắn" },
-                })}
-                errorMessage={errors.name?.message}
-              />
-              <Input
-                label="Số điện thoại"
-                id="phone"
-                type="text"
-                readOnly={false}
-                placeholder="Nhập số điện thoại"
-                {...register("phone", {
-                  required: "Bạn cần điên thoại để đăng ký",
-                  minLength: { value: 10, message: "Số điện thoại quá ngắn" },
-                })}
-                errorMessage={errors.phone?.message}
-              />
-
-              <Input
-                label="Mật khẩu"
-                type="password"
-                readOnly={false}
-                id="confirmPassword"
-                placeholder="Nhập lại mật khẩu"
-                iconName={"mdi-light:eye"}
-                {...register("password", {
-                  required: "Bạn cần nhập mật khẩu để đăng ký",
-                  minLength: { value: 6, message: "Mật khẩu quá ngắn" },
-                })}
-                errorMessage={errors.password?.message}
-              />
-              <Input
-                label="Xác nhận mật khẩu"
-                type="password"
-                id="confirmPassword"
-                readOnly={false}
-                placeholder="Nhập lại mật khẩu"
-                iconName={"mdi-light:eye"}
-                {...register("confirmPassword", {
-                  required: "Bạn cần xác nhận lại mật khẩu",
-                  validate: (value) =>
-                    value === watch("password") || "Mật khẩu không khớp",
-                })}
-                errorMessage={errors.confirmPassword?.message}
-              />
+              <div>
+                <CustomInputField
+                  label={"Họ và tên"}
+                  id={"name"}
+                  name={"name"}
+                  inputValue={formik.values.name}
+                  onChange={formik.handleChange}
+                  errorMessage={
+                    formik.touched.name && formik.errors.name
+                      ? formik.errors.name
+                      : null
+                  }
+                  onBlur={formik.handleBlur}
+                  placeholder="Nhập họ và tên"
+                />
+              </div>
+              <div>
+                <CustomInputField
+                  label={"Email"}
+                  name={"email"}
+                  id={"email"}
+                  inputValue={formik.values.email}
+                  onChange={formik.handleChange}
+                  errorMessage={
+                    formik.touched.email && formik.errors.email
+                      ? formik.errors.email
+                      : null
+                  }
+                  onBlur={formik.handleBlur}
+                  placeholder="Nhập Email"
+                />
+              </div>
+              <div>
+                <CustomInputField
+                  label={"Mật khẩu"}
+                  name={"password"}
+                  id={"password"}
+                  inputValue={formik.values.password}
+                  onChange={formik.handleChange}
+                  errorMessage={
+                    formik.touched.password && formik.errors.password
+                      ? formik.errors.password
+                      : null
+                  }
+                  onBlur={formik.handleBlur}
+                  type={"password"}
+                  showPassword={showPassword}
+                  togglePasswordVisibility={togglePasswordVisibility}
+                  placeholder="Nhập mật khẩu"
+                />
+              </div>
             </div>
             <ReCAPTCHA
               sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
@@ -139,3 +152,5 @@ export const Register = () => {
     </section>
   );
 };
+
+export default Register;

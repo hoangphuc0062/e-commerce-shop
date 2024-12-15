@@ -1,93 +1,164 @@
-import { useState } from "react";
-import ReusableTable from "../../components/table";
-import EditStatusOrder from "./edit";
+import { useEffect, useState } from "react";
+
+import { useDispatch, useSelector } from "react-redux";
+import { getAll, resetState, update } from "../../redux/slices/orders";
+import { fDateVN, formatCurrency } from "../../utils/format-time";
+import { Box, Button, IconButton, Tooltip } from "@mui/material";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { Delete } from "@mui/icons-material";
+import { statusOrder } from "../../utils/statusConfig";
+import { StatusOrderChip } from "../../components/StatusColor";
+import { handleToast } from "./../../../../client/src/ultils/toast";
+import { Link } from "react-router-dom";
 
 export default function OrderPage() {
-  const [open, setOpen] = useState(false);
-  const [currentStatus, setCurrentStatus] = useState("");
-  const columns = [
-    { label: "Mã đơn hàng", field: "orderCode" },
-    { label: "Tên khách hàng", field: "name" },
-    { label: "Ngày đặt hàng", field: "orderDate" },
-    { label: "Tổng tiền", field: "total" },
-    { label: "phương thức", field: "paymentMethod" },
-    { label: "Trạng thái", field: "orderStatus" },
-  ];
-  const initialData = [
-    {
-      id: 1,
-      orderCode: "DH001",
-      orderDate: "2021-08-01",
-      total: "100000",
-      orderStatus: "delivered",
-      name: "Nguyễn Văn A",
-      paymentMethod: "VNPAY",
-      address: "Hà Nội",
-    },
-    {
-      id: 2,
-      orderCode: "DH002",
-      orderDate: "2021-08-02",
-      total: "200000",
-      orderStatus: "shipped",
-      name: "Nguyễn Văn B",
-      paymentMethod: "COD",
-    },
-    {
-      id: 3,
-      orderCode: "DH003",
-      orderDate: "2021-08-03",
-      total: "300000",
-      orderStatus: "pending",
-      name: "Nguyễn Văn C",
-      paymentMethod: "MOMO",
-    },
-  ];
-  const statusOptions = [
-    { value: "delivered", label: "Đã giao hàng" },
-    { value: "shipped", label: "Đang giao hàng" },
-    { value: "pending", label: "Chờ xác nhận" },
-    { value: "cancelled", label: "Đã hủy" },
-    { value: "returned", label: "Đã trả hàng" },
-    { value: "completed", label: "Hoàn thành" },
-    { value: "failed", label: "Thất bại" },
-    { value: "refunded", label: "Đã hoàn tiền" },
-    { value: "processing", label: "Đang xử lý" },
-    { value: "on-hold", label: "Tạm giữ" },
-    { value: "paid", label: "Đã thanh toán" },
-    { value: "unpaid", label: "Chưa thanh toán" },
-    { value: "waiting", label: "Chờ đợi" },
-  ];
+  const dispatch = useDispatch();
+  const [data, setData] = useState([]);
 
-  const handleEdit = (data) => {
-    setOpen(true);
-    setCurrentStatus(data.orderStatus);
-    console.log(data);
-  };
+  const initialData = useSelector((state) => state.orders.data);
+  const status = useSelector((state) => state.orders.status);
+
+  useEffect(() => {
+    dispatch(getAll());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (status === "success" && initialData) {
+      setData(
+        initialData.map((item) => ({
+          sku: item.SKU,
+          _id: item._id,
+          staffName: item.staffName || "Chưa xác định",
+          name: item?.orderBy?.name || "Khách vãng lai",
+          date: fDateVN(item.date),
+          total: formatCurrency(item.total),
+          paymentMethod: item.paymentMethod,
+          status: item.status,
+        }))
+      );
+      dispatch(resetState({ key: "getAllStatus", value: "idle" }));
+    }
+  }, [status, initialData, dispatch]);
+
   const handleDelete = (data) => {
     console.log(data);
   };
 
-  const handleSubmit = (status) => {
-    console.log(status);
+  const columns = [
+    // { field: "_id", headerName: "Mã đơn hàng", width: 200, hide: true },
+    { field: "sku", headerName: "Mã đơn hàng", width: 200 },
+    { field: "staffName", headerName: "Nhân viên xử lý", width: 200 },
+    { field: "name", headerName: "Tên khách hàng", width: 200 },
+    { field: "date", headerName: "Ngày đặt hàng", width: 200 },
+    { field: "total", headerName: "Tổng tiền", width: 200 },
+    {
+      field: "paymentMethod",
+      headerName: "Phương thức",
+      width: 200,
+      renderCell: (params) => {
+        return params.row.paymentMethod === "cash"
+          ? "Thanh toán khi nhận hàng"
+          : "Thanh toán online";
+      },
+    },
+    {
+      field: "status",
+      headerName: "Trạng thái",
+      width: 200,
+      renderCell: (params) => {
+        const statusKey = params?.row?.status?.toLowerCase();
+        return <StatusOrderChip status={statusKey} />;
+      },
+      editable: true,
+      type: "singleSelect",
+      valueOptions: Object.keys(statusOrder).map((key) => ({
+        value: key,
+        label: statusOrder[key].label,
+      })),
+    },
+    {
+      field: "action",
+      headerName: "Hành động",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <>
+            <Tooltip title="Delete">
+              <IconButton
+                sx={{ color: "red", padding: "4px" }}
+                onClick={() => handleDelete(params.row)}
+              >
+                <Delete />
+              </IconButton>
+            </Tooltip>
+          </>
+        );
+      },
+    },
+  ];
+  const handleProcessRowUpdate = (newRow) => {
+    const { _id, status } = newRow;
+    dispatch(update({ orderId: _id, data: { status } })).then((res) => {
+      console.log(res);
+      if (res.type === "orders/updateStatus/fulfilled") {
+        dispatch(getAll());
+        handleToast("success", "Cập nhật trạng thái đơn hàng thành công");
+      }
+    });
+    return newRow;
   };
 
   return (
     <>
-      <ReusableTable
-        columns={columns}
-        data={initialData}
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
-        StatusOrder={statusOptions}
-      />
-      <EditStatusOrder
-        open={open}
-        handleClose={() => setOpen(false)}
-        currentStatus={currentStatus}
-        onSubmit={handleSubmit}
-        statusOptions={statusOptions}
-      />
+      <Box
+        sx={{
+          height: 700,
+          width: "100%",
+          background: "#fff",
+          borderRadius: 1,
+          boxShadow: 3,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            padding: "10px",
+            marginBottom: "10px",
+          }}
+        >
+          <Link to="/dashboard/orderByStaff/create">
+            <Button variant="contained">Thêm đơn hàng</Button>
+          </Link>
+        </Box>
+        <DataGrid
+          rows={data}
+          columns={columns}
+          loading={status === "loading"}
+          getRowId={(row) => row._id}
+          localeText={{
+            noRowsLabel: "Không có dữ liệu",
+            MuiTablePagination: {
+              labelRowsPerPage: "Số dòng mỗi trang",
+            },
+          }}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 10,
+              },
+            },
+          }}
+          components={{
+            Toolbar: GridToolbar,
+          }}
+          processRowUpdate={handleProcessRowUpdate}
+          experimentalFeatures={{ newEditingApi: true }}
+          pageSizeOptions={[5, 10, 20, 50, 100]}
+          checkboxSelection
+          disableRowSelectionOnClick
+        />
+      </Box>
     </>
   );
 }
