@@ -44,40 +44,6 @@ const deleteCustomer = asyncHandler(async (req, res) => {
   });
 });
 
-const forgotPassword = asyncHandler(async (req, res) => {
-  const { phone } = req.body;
-
-  const customer = await Customer.findOne({ phone });
-  if (!customer) {
-    res.status(400);
-    throw new Error("Phone number not found");
-  }
-
-  const resetToken = customer.createPasswordChangeToken();
-
-  await customer.save(); // Save the customer with the token
-
-  // Generate an OTP
-  const otp = Math.floor(Math.random() * (999999 - 100000) + 100000).toString();
-
-  // Update the code field with the generated OTP
-  await customer.updateCode(otp);
-
-  // Message content with OTP
-  const messages = `Mã OTP: ${otp}. Vui lòng không chia sẻ mã này với ai. Mã sẽ hết hạn trong 15 phút`;
-
-  try {
-    // Send the OTP via SMS
-    await sendSMS(phone, messages);
-    console.log(`OTP sent to ${phone}: ${otp}`);
-  } catch (error) {
-    console.error("Error sending OTP:", error);
-    return res.status(500).json({ message: "Error sending OTP" });
-  }
-
-  // Send the response with resetToken and customer
-  res.status(200).json({ resetToken, customer });
-});
 
 const getCustomer = asyncHandler(async (req, res) => {
   const sortBy = req.query.sort;
@@ -357,6 +323,56 @@ const finalRegister = asyncHandler(async (req, res) => {
     return res.redirect(`${process.env.WEB_URL}/finalregister/failed`);
   }
 });
+// const forgotPassword = asyncHandler(async (req, res) => {
+//   const { phone } = req.body;
+
+//   const customer = await Customer.findOne({ phone });
+//   if (!customer) {
+//     res.status(400);
+//     throw new Error("Phone number not found");
+//   }
+
+//   const resetToken = customer.createPasswordChangeToken();
+
+//   await customer.save(); // Save the customer with the token
+
+//   // Generate an OTP
+//   const otp = Math.floor(Math.random() * (999999 - 100000) + 100000).toString();
+
+//   // Update the code field with the generated OTP
+//   await customer.updateCode(otp);
+
+//   // Message content with OTP
+//   const messages = `Mã OTP: ${otp}. Vui lòng không chia sẻ mã này với ai. Mã sẽ hết hạn trong 15 phút`;
+
+//   try {
+//     // Send the OTP via SMS
+//     await sendSMS(phone, messages);
+//     console.log(`OTP sent to ${phone}: ${otp}`);
+//   } catch (error) {
+//     console.error("Error sending OTP:", error);
+//     return res.status(500).json({ message: "Error sending OTP" });
+//   }
+
+//   // Send the response with resetToken and customer
+//   res.status(200).json({ resetToken, customer });
+// });
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) throw new Error("Missing email");
+  const customer = await Customer.findOne({ email });
+  if (!customer) throw new Error("User not found");
+  const resetToken = customer.createPasswordChangeToken();
+  await customer.save();
+
+  const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ. 
+  <a href=${process.env.WEB_URL}/reset-password/${resetToken}>Click here</a>`;
+  const subject = `Quên mật khẩu`;
+  const rs = await sendMail(email, html, subject);
+  return res.status(200).json({
+    rs,
+  });
+});
 
 const resetPassword = asyncHandler(async (req, res) => {
   const { password, token } = req.body;
@@ -397,7 +413,12 @@ const resetPassword = asyncHandler(async (req, res) => {
 const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
-  const customer = await Customer.findById(req.user._id).select("password");
+  const userId = req.user._id;
+
+  if (!currentPassword && !newPassword)
+    return res.status(400).json({ mes: "Missing Input" });
+
+  const customer = await Customer.findById(userId).select("password");
   // Check if the current password is correct
   if (!(await customer.isCorrectPassword(currentPassword))) {
     return res.status(400).json({ mes: "Current password is incorrect" });
