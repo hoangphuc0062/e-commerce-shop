@@ -1,9 +1,9 @@
 import { useState } from "react";
-import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 
 import { handleToast } from "../../../ultils/toast";
 import { changePassword } from "../../../redux/slices/auth";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Password() {
   const [passwordData, setPasswordData] = useState({
@@ -33,6 +33,14 @@ export default function Password() {
       tempErrors.newPassword = "Mật khẩu mới không được để trống";
     } else if (passwordData.newPassword.length < 8) {
       tempErrors.newPassword = "Mật khẩu mới phải có ít nhất 8 ký tự";
+    }
+
+    // Kiểm tra xác nhận mật khẩu
+    if (!passwordData.confirmPassword?.trim()) {
+      tempErrors.confirmPassword = "Vui lòng nhập lại mật khẩu mới";
+    } else if (passwordData.confirmPassword !== passwordData.newPassword) {
+      tempErrors.confirmPassword =
+        "Xác nhận mật khẩu không khớp với mật khẩu mới";
     }
 
     // Cập nhật lỗi
@@ -110,7 +118,7 @@ export default function Password() {
               className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
               onClick={() => toggleShowPassword("currentPassword")}
             >
-              {showPassword.currentPassword ? "🙈" : "👁️"}
+              {showPassword.currentPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
           {errors.currentPassword && (
@@ -139,7 +147,7 @@ export default function Password() {
               className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
               onClick={() => toggleShowPassword("newPassword")}
             >
-              {showPassword.newPassword ? "🙈" : "👁️"}
+              {showPassword.newPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
           {errors.newPassword && (
@@ -147,7 +155,7 @@ export default function Password() {
           )}
         </div>
 
-        {/* Xác nhận mật khẩu
+        {/* Xác nhận mật khẩu */}
         <div className="mb-4">
           <label className="block text-sm font-semibold text-[24px]">
             Xác nhận mật khẩu
@@ -166,7 +174,7 @@ export default function Password() {
               className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
               onClick={() => toggleShowPassword("confirmPassword")}
             >
-              {showPassword.confirmPassword ? "🙈" : "👁️"}
+              {showPassword.confirmPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
           {errors.confirmPassword && (
@@ -174,7 +182,7 @@ export default function Password() {
               {errors.confirmPassword}
             </p>
           )}
-        </div> */}
+        </div>
         <div className="flex gap-2">
           <button
             onClick={handleSubmit}
