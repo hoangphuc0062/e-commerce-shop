@@ -1,9 +1,9 @@
 import { useState } from "react";
-import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 
-import { updatePassword } from "../../../redux/slices/auth";
 import { handleToast } from "../../../ultils/toast";
+import { changePassword } from "../../../redux/slices/auth";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function Password() {
   const [passwordData, setPasswordData] = useState({
@@ -19,24 +19,34 @@ export default function Password() {
   });
 
   const dispatch = useDispatch();
-  const token = Cookies.get("accessToken");
 
   const validate = () => {
     let tempErrors = {};
-    if (!passwordData.currentPassword) {
+
+    // Kiểm tra mật khẩu hiện tại
+    if (!passwordData.currentPassword?.trim()) {
       tempErrors.currentPassword = "Mật khẩu hiện tại không được để trống";
     }
-    if (!passwordData.newPassword) {
+
+    // Kiểm tra mật khẩu mới
+    if (!passwordData.newPassword?.trim()) {
       tempErrors.newPassword = "Mật khẩu mới không được để trống";
     } else if (passwordData.newPassword.length < 8) {
       tempErrors.newPassword = "Mật khẩu mới phải có ít nhất 8 ký tự";
     }
-    if (!passwordData.confirmPassword) {
-      tempErrors.confirmPassword = "Xác nhận mật khẩu không được để trống";
+
+    // Kiểm tra xác nhận mật khẩu
+    if (!passwordData.confirmPassword?.trim()) {
+      tempErrors.confirmPassword = "Vui lòng nhập lại mật khẩu mới";
     } else if (passwordData.confirmPassword !== passwordData.newPassword) {
-      tempErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
+      tempErrors.confirmPassword =
+        "Xác nhận mật khẩu không khớp với mật khẩu mới";
     }
+
+    // Cập nhật lỗi
     setErrors(tempErrors);
+
+    // Trả về true nếu không có lỗi, false nếu có lỗi
     return Object.keys(tempErrors).length === 0;
   };
 
@@ -56,32 +66,34 @@ export default function Password() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Kiểm tra dữ liệu nhập
     if (!validate()) {
       handleToast("error", "Vui lòng kiểm tra lại thông tin");
       return;
     }
-  
+
     const { currentPassword, newPassword } = passwordData;
     const payload = { currentPassword, newPassword }; // Dữ liệu gửi lên server
-  
+
     try {
       // Gửi yêu cầu đổi mật khẩu qua Redux
-      await dispatch(updatePassword(payload)).unwrap();
-  
+      await dispatch(changePassword(payload));
+
       // Xử lý khi đổi mật khẩu thành công
       handleToast("success", "Đổi mật khẩu thành công");
-      setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+      });
     } catch (error) {
       // Xử lý khi đổi mật khẩu thất bại
       console.error("Error updating password:", error); // In lỗi ra console để kiểm tra
-      const errorMessage = error.message || error.response?.data || "Đổi mật khẩu thất bại";
+      const errorMessage =
+        error?.message || error?.response?.data || "Đổi mật khẩu thất bại";
       handleToast("error", errorMessage); // Hiển thị thông báo lỗi chi tiết
     }
   };
-  console.log(passwordData);
-  
 
   return (
     <div className="space-y-4 mx-auto">
@@ -97,9 +109,7 @@ export default function Password() {
               type={showPassword.currentPassword ? "text" : "password"}
               placeholder="Mật khẩu hiện tại"
               value={passwordData.currentPassword}
-              onChange={(e) =>
-                handleChange("currentPassword", e.target.value)
-              }
+              onChange={(e) => handleChange("currentPassword", e.target.value)}
               className={`w-full px-6 py-4 border ${
                 errors.currentPassword ? "border-red-500" : "border-gray-300"
               } rounded-md focus:ring-blue-500 focus:border-blue-500 pr-10`}
@@ -108,7 +118,7 @@ export default function Password() {
               className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
               onClick={() => toggleShowPassword("currentPassword")}
             >
-              {showPassword.currentPassword ? "🙈" : "👁️"}
+              {showPassword.currentPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
           {errors.currentPassword && (
@@ -137,7 +147,7 @@ export default function Password() {
               className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
               onClick={() => toggleShowPassword("newPassword")}
             >
-              {showPassword.newPassword ? "🙈" : "👁️"}
+              {showPassword.newPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
           {errors.newPassword && (
@@ -155,9 +165,7 @@ export default function Password() {
               type={showPassword.confirmPassword ? "text" : "password"}
               placeholder="Nhập lại mật khẩu mới"
               value={passwordData.confirmPassword}
-              onChange={(e) =>
-                handleChange("confirmPassword", e.target.value)
-              }
+              onChange={(e) => handleChange("confirmPassword", e.target.value)}
               className={`w-full px-6 py-4 border ${
                 errors.confirmPassword ? "border-red-500" : "border-gray-300"
               } rounded-md focus:ring-blue-500 focus:border-blue-500 pr-10`}
@@ -166,7 +174,7 @@ export default function Password() {
               className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
               onClick={() => toggleShowPassword("confirmPassword")}
             >
-              {showPassword.confirmPassword ? "🙈" : "👁️"}
+              {showPassword.confirmPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
           {errors.confirmPassword && (
@@ -186,7 +194,11 @@ export default function Password() {
             type="button"
             className="bg-gray-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md w-1/4"
             onClick={() =>
-              setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })
+              setPasswordData({
+                currentPassword: "",
+                newPassword: "",
+                confirmPassword: "",
+              })
             }
           >
             Hủy

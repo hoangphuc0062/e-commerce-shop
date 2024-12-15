@@ -12,7 +12,7 @@ const AuthServices = {
 
   // Thêm phương thức đổi mật khẩu
   changePassword: (data) =>
-    sendRequest("post", "/customers/update-password", data),
+    sendRequest("post", "/customers/change-password", data),
 
   // Address
   addAddress: (data) => sendRequest("post", "/customers/add-address", data),
@@ -21,6 +21,10 @@ const AuthServices = {
   deleteAddress: (id) =>
     sendRequest("delete", `/customers/delete-address/${id}`),
   getAddresses: () => sendRequest("get", "/customers/get-address"),
+
+  //  Forget Password
+  forgetPassword: (data) =>
+    sendRequest("post", "/customers/forgot-password", data),
 };
 
 export default AuthServices;
