@@ -90,7 +90,7 @@ export const Header = () => {
   return (
     <>
       {/* desktop header */}
-      <header className="hidden lg:block bg-main sticky top-0 z-50">
+      <header className="hidden lg:block bg-main fixed w-full top-0 z-50">
         <div className="container text-semi p-3 w-full">
           <nav className="flex gap-4 items-center w-full">
             <div className="flex w-1/2 xl:w-7/12 2xl:w-2/3 justify-center items-center gap-2">
