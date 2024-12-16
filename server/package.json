@@ -7,8 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js",
     "start": "node dist/server.js",
-    "build": "babel . --out-dir dist --copy-files --ignore node_modules,dist",
-    "clean": "rimraf dist"
+    "clean": "rimraf build && mkdir build",
+    "build-babel": "babel . --out-dir dist --copy-files --ignore node_modules,dist",
+    "build": "npm run clean && npm run build-babel"
   },
   "keywords": [],
   "author": "",
