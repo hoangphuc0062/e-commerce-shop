@@ -199,11 +199,11 @@ export const ViewOrder = () => {
                   </div>
                   <div className="flex justify-between">
                     <p>Phương thức thanh toán:</p>
-                    <p>{translate(trackingData?.paymentMethod)}</p>
+                    <p>{translate(trackingData?.order?.paymentMethod)}</p>
                   </div>
                   <div className="flex justify-between">
                     <p>Trạng thái đơn hàng:</p>
-                    <p>{translate(trackingData?.status)}</p>
+                    <p>{translate(trackingData?.order?.status)}</p>
                   </div>
                   <div className="flex justify-between">
                     <p>Giảm giá:</p>
