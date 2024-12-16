@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 // react-bootstrap
 import { Row, Col, Card } from "react-bootstrap";
@@ -6,7 +6,7 @@ import { Row, Col, Card } from "react-bootstrap";
 // third party
 import Chart from "react-apexcharts";
 // import PerfectScrollbar from "react-perfect-scrollbar";
-
+import { useSelector, useDispatch } from "react-redux";
 // project import
 // import OrderCard from "../../components/Widgets/Statistic/OrderCard";
 // import SocialCard from "../../components/Widgets/Statistic/SocialCard";
@@ -20,51 +20,59 @@ import SocialCard from "@/components/Widgets/SocialCard";
 import barChartData from "./chart/barChartData";
 import comboChartData from "./chart/comboChartData";
 import candlestickChartData from "./chart/candlestickChartData";
-
+import { analyst } from "../../../redux/slices/orders";
+import { formatCurrency } from "../../../utils/formatCurrency";
 // ==============================|| DASHBOARD ANALYTICS ||============================== //
 
 const DashAnalytics = () => {
+  const dispatch = useDispatch();
+
+  const { analyst: analyticsData } = useSelector((state) => state.orders);
+
+  const [currentMonthRevenue, setCurrentMonthRevenue] = useState(0);
+
+  useEffect(() => {
+    dispatch(analyst());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const currentMonth = new Date().getMonth() + 1; // Lấy tháng hiện tại (0-based, nên cần +1)
+    const revenue =
+      analyticsData?.monthlyRevenue?.find((item) => item.month === currentMonth)
+        ?.revenue || 0;
+    setCurrentMonthRevenue(revenue);
+  }, [analyticsData]);
+
   return (
     <React.Fragment>
       <Row>
         {/* order cards */}
-        <Col md={6} xl={3}>
-          <OrderCard
-            params={{
-              title: "Đơn hàng đã nhận",
-              class: "bg-c-blue",
-              icon: "feather icon-shopping-cart",
-              primaryText: "486",
-              secondaryText: "Đơn hàng đã hoàn thành",
-              extraText: "351",
-            }}
-          />
-        </Col>
-        <Col md={6} xl={3}>
+
+        <Col md={6} xl={6}>
           <OrderCard
             params={{
               title: "Tổng doanh thu",
               class: "bg-c-green",
               icon: "feather icon-tag",
-              primaryText: "1641",
+              primaryText: formatCurrency(analyticsData?.totalRevenue),
               secondaryText: "Tháng này",
-              extraText: "213",
+              extraText: formatCurrency(currentMonthRevenue),
             }}
           />
         </Col>
-        <Col md={6} xl={3}>
+        <Col md={6} xl={6}>
           <OrderCard
             params={{
               title: "Doanh thu",
               class: "bg-c-yellow",
               icon: "feather icon-repeat",
-              primaryText: "$42,562",
+              primaryText: formatCurrency(currentMonthRevenue),
               secondaryText: "Tháng này",
-              extraText: "$5,032",
+              extraText: formatCurrency(currentMonthRevenue),
             }}
           />
         </Col>
-        <Col md={6} xl={3}>
+        <Col md={6} xl={4}>
           <OrderCard
             params={{
               title: "Tổng lợi nhuận",
@@ -76,7 +84,7 @@ const DashAnalytics = () => {
             }}
           />
         </Col>
-
+        {/* 
         <Col md={12} xl={6}>
           <Card>
             <Card.Header>
@@ -244,7 +252,7 @@ const DashAnalytics = () => {
               <Chart {...barChartData} />
             </Card.Body>
           </Card>
-        </Col>
+        </Col> */}
       </Row>
       <Col md={12} xl={12}>
         <Card>

@@ -28,4 +28,7 @@ router.post("/create-payment-url", ctrl.create_payment_url);
 router.get("/vnpay-return", ctrl.vnpay_return);
 router.post("/send-mail", verifyAccessToken, ctrl.sendSuccessEmail);
 
+router.use([verifyAccessToken, isAdmin]);
+router.get("/get-analytics", verifyAccessToken, ctrl.analystOrder);
+
 module.exports = router;

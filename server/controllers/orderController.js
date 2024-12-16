@@ -42,6 +42,7 @@ const getAllOrder = asyncHandler(async (req, res) => {
   const orders = await Order.find()
     .populate("orderBy", "name email")
     .sort({ date: -1 });
+
   return res.status(200).json(orders);
 });
 
@@ -595,6 +596,170 @@ const getOrderBySKU = async (req, res) => {
   return res.status(200).json(data);
 };
 
+const getDailyRevenue = (orders) => {
+  const dailyRevenue = orders.reduce((acc, order) => {
+    const orderDate = new Date(order.date);
+    const day = orderDate.getDate();
+    const month = orderDate.getMonth() + 1; // Months are zero-based
+    const year = orderDate.getFullYear();
+    const dateKey = `${year}-${month}-${day}`;
+
+    if (!acc[dateKey]) {
+      acc[dateKey] = 0;
+    }
+    acc[dateKey] += order.total;
+
+    return acc;
+  }, {});
+
+  // Convert the dailyRevenue object to an array
+  const dailyRevenueArray = Object.keys(dailyRevenue).map((date) => ({
+    date,
+    revenue: dailyRevenue[date],
+  }));
+
+  return dailyRevenueArray;
+};
+
+const getMonthlyRevenue = (orders) => {
+  const currentYear = new Date().getFullYear();
+  const monthlyRevenue = orders.reduce((acc, order) => {
+    const orderDate = new Date(order.date);
+    const orderMonth = orderDate.getMonth();
+    const orderYear = orderDate.getFullYear();
+
+    if (orderYear === currentYear) {
+      if (!acc[orderMonth]) {
+        acc[orderMonth] = 0;
+      }
+      acc[orderMonth] += order.total;
+    }
+    return acc;
+  }, {});
+
+  // Convert the monthlyRevenue object to an array with 12 elements (one for each month)
+  const monthlyRevenueArray = Array.from({ length: 12 }, (_, index) => ({
+    month: index + 1,
+    revenue: monthlyRevenue[index] || 0,
+  }));
+
+  return monthlyRevenueArray;
+};
+
+const getAnnualRevenue = (orders) => {
+  const annualRevenue = orders.reduce((acc, order) => {
+    const orderYear = new Date(order.date).getFullYear();
+
+    if (!acc[orderYear]) {
+      acc[orderYear] = 0;
+    }
+    acc[orderYear] += order.total;
+
+    return acc;
+  }, {});
+
+  // Convert the annualRevenue object to an array
+  const annualRevenueArray = Object.keys(annualRevenue).map((year) => ({
+    year: Number(year),
+    revenue: annualRevenue[year],
+  }));
+
+  return annualRevenueArray;
+};
+
+const analystOrder = asyncHandler(async (req, res) => {
+  const orders = await Order.find().populate("orderBy", "name email");
+  const totalOrder = orders.length;
+  const totalRevenue = orders.reduce((acc, order) => {
+    return acc + order.total;
+  }, 0);
+  const totalSuccessOrder = orders.filter(
+    (order) => order.status === "Success"
+  ).length;
+  const totalPendingOrder = orders.filter(
+    (order) => order.status === "Pending"
+  ).length;
+
+  const totalProcessingOrder = orders.filter(
+    (order) => order.status === "Processing"
+  ).length;
+
+  const totalShippingOrder = orders.filter(
+    (order) => order.status === "Shipping"
+  ).length;
+  const totalCancelOrder = orders.filter(
+    (order) => order.status === "Cancelled"
+  ).length;
+  const totalReturnOrder = orders.filter(
+    (order) => order.status === "Return"
+  ).length;
+
+  const monthlyRevenue = getMonthlyRevenue(orders);
+  const annualRevenue = getAnnualRevenue(orders);
+  const dailyRevenue = getDailyRevenue(orders);
+
+  const totalUserMonthly = orders.reduce((acc, order) => {
+    const date = new Date(order.date);
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    const now = new Date();
+    const nowMonth = now.getMonth();
+    const nowYear = now.getFullYear();
+    if (month === nowMonth && year === nowYear) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
+
+  const bestSellingProducts = orders.reduce((acc, order) => {
+    order.products.forEach((product) => {
+      if (!acc[product.pid]) {
+        acc[product.pid] = {
+          pid: product.pid,
+          hasSold: product.quantity,
+        };
+      } else {
+        acc[product.pid].hasSold += product.quantity;
+      }
+    });
+    return acc;
+  }, {});
+
+  const bestSellingProductsArray = Object.values(bestSellingProducts).sort(
+    (a, b) => b.hasSold - a.hasSold
+  );
+
+  // Populate with product details
+  const populatedBestSellingProducts = await Product.find({
+    _id: { $in: bestSellingProductsArray.map((item) => item.pid) },
+  })
+    .select("onStock inventory price name view")
+    .lean();
+
+  const finalBestSellingProducts = bestSellingProductsArray.map((item) => ({
+    ...item,
+    ...populatedBestSellingProducts.find(
+      (product) => product._id.toString() === item.pid.toString()
+    ),
+  }));
+
+  return res.status(200).json({
+    totalOrder,
+    totalRevenue,
+    totalSuccessOrder,
+    totalPendingOrder,
+    totalProcessingOrder,
+    totalShippingOrder,
+    totalCancelOrder,
+    totalReturnOrder,
+    totalUserMonthly,
+    dailyRevenue,
+    monthlyRevenue,
+    annualRevenue,
+    bestSelling: finalBestSellingProducts,
+  });
+});
+
 module.exports = {
   getAllOrder,
   createOrder,
@@ -606,4 +771,5 @@ module.exports = {
   getOrderByUser,
   createInStoreOrder,
   getOrderBySKU,
+  analystOrder,
 };
