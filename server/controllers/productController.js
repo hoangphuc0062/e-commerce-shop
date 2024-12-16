@@ -296,6 +296,29 @@ const updateManyProduct = asyncHandler(async (req, res) => {
   });
 });
 
+const compareProduct = asyncHandler(async (req, res) => {
+  const { slugs } = req.body;
+
+  if (slugs.length === 0) {
+    return res.status(400).json({ mes: "Missing inputs" });
+  }
+
+  const products = await Product.find({ slug: { $in: slugs } }).select(
+    "name thumbnail price attributes"
+  );
+
+  if (products.length === 0) {
+    return res.status(404).json({ mes: "Products not found" });
+  }
+
+  return res.status(200).json({
+    mes: products
+      ? "Compare product is successed"
+      : "Compare products is failed",
+    products,
+  });
+});
+
 module.exports = {
   getAllProduct,
   addProduct,
@@ -303,6 +326,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getProductBySlug,
-
+  compareProduct,
   updateManyProduct,
 };

@@ -427,7 +427,7 @@ const generateEmailTemplate = ({
         <div style="padding: 16px;">
             <h2 style="font-size: 24px; color: #333333; margin-bottom: 8px;">Cảm ơn bạn đã đặt hàng!</h2>
             <img src="https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/status%2Fsuccess.gif?alt=media&token=4b3eb1f3-abea-43a2-96a6-0e0c71b6d4b5" alt="Xác nhận đơn hàng thành công">
-            <p>${SKU}</p>
+            <p style="font-weight:bold;">${SKU}</p>
             <p style="color: #555555; margin-bottom: 16px;">
                 Đơn hàng của bạn sẽ được xử lý ít phút. Chúng tôi sẽ thông báo cho bạn qua email khi đơn hàng của bạn đã được chuyển đi.
             </p>

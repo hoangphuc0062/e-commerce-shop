@@ -118,9 +118,10 @@ const Product = () => {
         setSortedProducts(productsData);
         setHasMoreProducts(productsData.length >= productPerPage);
       }
-    } else if (statusProduct === "failed") {
-      navigate("/404");
     }
+    // else if (statusProduct === "failed") {
+    //   navigate("/404");
+    // }
     dispatch(resetState({ key: "error", value: "null" }));
   }, [statusProduct, productsData, dispatch, navigate, productPerPage]);
   useEffect(() => {
@@ -504,7 +505,7 @@ const Product = () => {
                   {active?.[index] && (
                     <div
                       ref={(el) => (dialogRefs.current[index] = el)}
-                      className={`absolute z-10 bg-white mt-1 p-2 rounded-lg shadow-custom
+                      className={`absolute z-30 bg-white mt-1 p-2 rounded-lg shadow-custom
                          ${hidden[index] === false ? "block" : "hidden"}
                          
                       `}
