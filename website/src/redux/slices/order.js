@@ -50,6 +50,13 @@ export const sendMail = createAsyncThunk("order/sendMail", (data, thunkAPI) =>
 export const userOrder = createAsyncThunk("order/userOrder", (_, thunkAPI) =>
   handleAsyncThunk(OrderService.getOrderByUser, [null], thunkAPI)
 );
+
+// update orders
+export const update = createAsyncThunk(
+  "orders/updateStatus",
+  ({ orderId, data }, thunkAPI) =>
+      handleAsyncThunk(OrderService.update, [orderId, data], thunkAPI)
+);
 const orderSlice = createSlice({
   name: "order",
   initialState: {
@@ -62,6 +69,7 @@ const orderSlice = createSlice({
     statusTracking: "idle",
     trackingData: [],
     statusUserOrder: "idle",
+    statusUpdate:"idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -142,6 +150,18 @@ const orderSlice = createSlice({
       })
       .addCase(userOrder.rejected, (state, action) => {
         state.statusUserOrder = "failed";
+        state.error = action.payload;
+      });
+      builder
+      .addCase(update.pending, (state) => {
+        state.statusUpdate = "loading";
+      })
+      .addCase(update.fulfilled, (state, action) => {
+        state.statusUpdate = "success";
+        state.data = action.payload;
+      })
+      .addCase(update.rejected, (state, action) => {
+        state.statusUpdate = "failed";
         state.error = action.payload;
       });
   },

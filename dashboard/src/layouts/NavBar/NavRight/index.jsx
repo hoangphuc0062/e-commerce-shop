@@ -60,27 +60,13 @@ const NavRight = () => {
               <ListGroup as="ul" variant="flush" className="pro-body">
                 <ListGroup.Item as="li">
                   <Link to="#" className="dropdown-item">
-                    <i className="feather icon-settings" /> Settings
+                    <i className="feather icon-settings" /> Thông tin cá nhân
                   </Link>
                 </ListGroup.Item>
-                <ListGroup.Item as="li">
-                  <Link to="#" className="dropdown-item">
-                    <i className="feather icon-user" /> Profile
-                  </Link>
-                </ListGroup.Item>
-                <ListGroup.Item as="li">
-                  <Link to="#" className="dropdown-item">
-                    <i className="feather icon-mail" /> My Messages
-                  </Link>
-                </ListGroup.Item>
-                <ListGroup.Item as="li">
-                  <Link to="#" className="dropdown-item">
-                    <i className="feather icon-lock" /> Lock Screen
-                  </Link>
-                </ListGroup.Item>
+
                 <ListGroup.Item as="li">
                   <Link className="dropdown-item" to={"/"} onClick={logoutme}>
-                    <i className="feather icon-log-out" /> Logout
+                    <i className="feather icon-log-out" /> Đăng xuất
                   </Link>
                 </ListGroup.Item>
               </ListGroup>

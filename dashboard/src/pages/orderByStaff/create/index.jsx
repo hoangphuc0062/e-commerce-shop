@@ -1,109 +1,215 @@
-import { useState } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getProductsByParams } from "./../../../redux/slices/product";
+import { debounce } from "lodash";
 import {
-  Autocomplete,
-  TextField,
   Box,
-  Button,
+  TextField,
+  List,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
+  CircularProgress,
   Typography,
-  Card,
-  CardContent,
+  Paper,
 } from "@mui/material";
-
-const products = [
-  {
-    id: 1,
-    name: "Sản phẩm A",
-    variants: ["Đỏ", "Xanh", "Vàng"],
-    price: "1,000,000 đ",
-    stock: 10,
-  },
-  {
-    id: 2,
-    name: "Sản phẩm B",
-    variants: ["S", "M", "L"],
-    price: "500,000 đ",
-    stock: 20,
-  },
-  {
-    id: 3,
-    name: "Sản phẩm C",
-    variants: ["500ml", "1L", "2L"],
-    price: "300,000 đ",
-    stock: 15,
-  },
-];
+import ProductSection from "./ProductSection";
+import Chechoau from "./chechoau";
 
 export default function CreateOrderByStaff() {
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const dispatch = useDispatch();
+  const [results, setResults] = useState([]);
+  const [value, setValue] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const resultsRef = useRef();
+  const [isChechoau, setIsChechoau] = useState(false);
 
-  const handleProductChange = (event, newValue) => {
-    setSelectedProduct(newValue);
+  const data = useSelector((state) => state.product.data.products);
+
+  // Fetch products on mount
+  useEffect(() => {
+    dispatch(
+      getProductsByParams({
+        limit: 500,
+        fields: "name,thumbnail,category,brand,slug",
+      })
+    );
+  }, [dispatch]);
+
+  // Debounced search handler
+  const handleSearchChange = useMemo(
+    () =>
+      debounce((query) => {
+        setLoading(true);
+        if (query.trim().length === 0) {
+          setResults([]);
+          setLoading(false);
+          return;
+        }
+
+        const re = new RegExp(query, "i");
+        const filteredResults = Array.isArray(data)
+          ? data.filter((item) => re.test(item.name))
+          : [];
+        setResults(filteredResults);
+        setLoading(false);
+      }, 300),
+    [data]
+  );
+
+  const onInputChange = (e) => {
+    const query = e.target.value;
+    setValue(query);
+    handleSearchChange(query);
+  };
+
+  // Close results dropdown when clicking outside
+  const handleClickOutside = (e) => {
+    if (resultsRef.current && !resultsRef.current.contains(e.target)) {
+      setResults([]);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleProductSelect = (product) => {
+    setSelectedProducts((prev) => [...prev, product]);
+    setValue("");
+    setResults([]);
+  };
+
+  const handleDeleteProduct = (productId) => {
+    setSelectedProducts((prev) =>
+      prev.filter((product) => product.productId !== productId)
+    );
+    setIsChechoau(true);
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "16px",
-        padding: "16px",
-        backgroundColor: "#fff",
-      }}
-    >
-      {/* Tìm kiếm sản phẩm */}
-      <Autocomplete
-        options={products}
-        getOptionLabel={(option) => option.name}
-        onChange={handleProductChange}
-        renderInput={(params) => (
-          <TextField {...params} label="Tìm kiếm sản phẩm" variant="outlined" />
-        )}
-        sx={{ width: "100%", marginBottom: "16px" }}
-      />
-
-      {/* Chi tiết sản phẩm được chọn */}
-      {selectedProduct && (
-        <Card sx={{ p: 2, borderRadius: "8px", boxShadow: 2 }}>
-          <CardContent>
-            <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
-              {selectedProduct.name}
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              Giá: <strong>{selectedProduct.price}</strong>
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              Số lượng còn: <strong>{selectedProduct.stock}</strong>
-            </Typography>
-            <Typography variant="subtitle1" fontWeight="medium" sx={{ mb: 1 }}>
-              Biến thể:
-            </Typography>
-            <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
-              {selectedProduct.variants.map((variant, index) => (
-                <Button
-                  key={index}
-                  variant="outlined"
-                  sx={{
-                    textTransform: "none",
-                    borderRadius: "16px",
-                  }}
+    <>
+      <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          backgroundColor: "white",
+          p: 2,
+        }}
+      >
+        {/* Search Input */}
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Bạn muốn mua gì?"
+          value={value}
+          onChange={onInputChange}
+          InputProps={{
+            startAdornment: (
+              <Box sx={{ mr: 1, display: "flex", alignItems: "center" }}>
+                <svg
+                  className="w-5 h-5 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
                 >
-                  {variant}
-                </Button>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-4.35-4.35M10.5 17a6.5 6.5 0 110-13 6.5 6.5 0 010 13z"
+                  />
+                </svg>
+              </Box>
+            ),
+          }}
+        />
+        {/* Results Dropdown */}
+        {loading && (
+          <Paper
+            sx={{
+              position: "absolute",
+              top: "100%",
+              mt: 1,
+              width: "100%",
+              textAlign: "center",
+              p: 2,
+            }}
+          >
+            <CircularProgress size={24} />
+          </Paper>
+        )}
+        {!loading && results.length > 0 && (
+          <Paper
+            ref={resultsRef}
+            sx={{
+              position: "absolute",
+              top: "100%",
+              mt: 1,
+              width: "100%",
+              maxHeight: 400,
+              overflowY: "auto",
+              zIndex: 10,
+            }}
+          >
+            <List>
+              {results.map((result, index) => (
+                <ListItem
+                  key={index}
+                  onClick={() => handleProductSelect(result)}
+                  sx={{ p: 1, cursor: "pointer" }}
+                >
+                  <ListItemAvatar>
+                    <Avatar src={result.thumbnail} alt={result.name} />
+                  </ListItemAvatar>
+                  <ListItemText primary={result.name} />
+                </ListItem>
               ))}
-            </Box>
-
-            {/* Nút thao tác */}
-            <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
-              <Button variant="contained" color="primary" fullWidth>
-                Mua ngay
-              </Button>
-              <Button variant="outlined" color="primary" fullWidth>
-                Thêm vào giỏ
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
+            </List>
+          </Paper>
+        )}
+        {!loading && results.length === 0 && value && (
+          <Paper
+            sx={{
+              position: "absolute",
+              top: "100%",
+              mt: 1,
+              width: "100%",
+              textAlign: "center",
+              p: 2,
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Không có sản phẩm này
+            </Typography>
+          </Paper>
+        )}
+        {/* Selected Products */}
+        <Box sx={{ mt: 2 }}>
+          {selectedProducts.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              Không có sản phẩm nào được chọn
+            </Typography>
+          ) : (
+            <ProductSection
+              products={selectedProducts}
+              onDelete={handleDeleteProduct}
+            />
+          )}
+        </Box>
+      </Box>
+      {/* Order Summary */}
+      {isChechoau && (
+        <Box sx={{ mt: 2, p: 2, backgroundColor: "white" }}>
+          <Chechoau />
+        </Box>
       )}
-    </Box>
+    </>
   );
 }
