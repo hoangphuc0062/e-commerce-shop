@@ -109,16 +109,19 @@ export default function Cart() {
               orderId: result.payload._id,
               amount: values.total,
             };
+            setStatusPayment("vnpay");
             dispatch(vnPay(data)).then((result) => {
               if (result.type === "order/vnPay/fulfilled") {
                 window.open(result.payload);
                 setCurrentStep((prev) => prev + 1);
               }
             });
+            dispatch(getCart());
           } else if (values.paymentMethod === "cash") {
             setCurrentStep((prev) => prev + 1);
-            setStatusPayment(true);
+            setStatusPayment("cash");
             dispatch(sendMail());
+            dispatch(getCart());
           }
         } else {
           handleToast("error", "Đặt hàng thất bại");
@@ -296,7 +299,6 @@ export default function Cart() {
       : acc;
   }, 0);
 
-  console.log(total);
   const subTotal = total + shippingFee;
 
   const handleRemoveProduct = (productId) => {
@@ -571,10 +573,18 @@ export default function Cart() {
       </form>
       {currentStep === 3 && (
         <>
-          {statusPayment ? <Success /> : <Error />}
-          <button className="w-full py-3 mt-5 bg-indigo-600 text-white font-semibold rounded text-center">
-            Tiếp tục mua hàng
-          </button>
+          {statusPayment === "cash" && <Success mes="Đặt hàng thành công" />}
+          {statusPayment === "cash" && (
+            <button className="w-full py-3 mt-5 bg-indigo-600 text-white font-semibold rounded text-center">
+              Tiếp tục mua hàng
+            </button>
+          )}
+
+          {statusPayment === "vnpay" && <Success mes="Thanh toán thành công" />}
+
+          {statusPayment !== "cash" && statusPayment !== "vnpay" && (
+            <Error error="Thanh toán thất bại" />
+          )}
         </>
       )}
     </div>

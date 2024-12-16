@@ -22,6 +22,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { Cart } from "../pages/web/cart";
 import Finalregister from "../pages/web/auth/finalregister";
 import { ViewOrder } from "../pages/web/order/ViewOrder";
+import AboutUs from "../pages/web/aboutUs";
 
 export default function RootRouter() {
   const routes = useRoutes([
@@ -58,7 +59,10 @@ export default function RootRouter() {
           path: "finalregister/:token",
           element: <Finalregister />,
         },
-
+        {
+          path: "/aboutUs",
+          element: <AboutUs />,
+        },
         {
           path: "/profile",
           element: <ProfileLayout />,
@@ -96,7 +100,7 @@ export default function RootRouter() {
               ),
             },
             {
-              path: "change-password",  
+              path: "change-password",
               element: (
                 <ProtectedRoute>
                   <Password />

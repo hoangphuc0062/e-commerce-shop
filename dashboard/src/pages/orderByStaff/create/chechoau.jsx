@@ -13,11 +13,26 @@ import {
   Autocomplete,
   Button,
 } from "@mui/material";
+import { formatCurrency } from "../../../utils/format-time";
+import { useDispatch } from "react-redux";
+import { createInStoreOrder, VnPay } from "../../../redux/slices/orders";
+import { handleToast } from "./../../../utils/toast";
+import { useNavigate } from "react-router-dom";
 
 const Chechoau = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
+  const dataCart = localStorage.getItem("cart");
+  let total = 0;
+  let cart;
+  if (dataCart) {
+    const parsedDataCart = JSON.parse(dataCart);
+    total = parsedDataCart.total;
+    cart = parsedDataCart;
+  }
 
   const fetchProvinces = async () => {
     try {
@@ -77,7 +92,7 @@ const Chechoau = () => {
 
   const formik = useFormik({
     initialValues: {
-      gender: "Anh",
+      gender: "Nam",
       fullName: "",
       phone: "",
       email: "",
@@ -87,8 +102,12 @@ const Chechoau = () => {
       address: "",
       notes: "",
       shippingFee: 0,
-      totalPrice: 25560997,
+      totalPrice: total,
       paymentMethod: "cash",
+      productId: cart?.productId || "",
+      attributeId: cart?.attributeId || null,
+      key: cart?.key || "",
+      quantity: cart?.quantity || 1,
     },
     validationSchema,
     onSubmit: (values) => {
@@ -104,8 +123,32 @@ const Chechoau = () => {
         notes: values.notes,
         totalPrice: values.totalPrice,
         paymentMethod: values.paymentMethod,
+        productId: values.productId,
+        attributeId: values.attributeId,
+        key: values.key,
+        quantity: values.quantity,
       };
-      console.log("Submitted values:", data);
+      localStorage.removeItem("cart");
+      console.log(data);
+      dispatch(createInStoreOrder(data)).then((result) => {
+        if (result.type === "orders/createInStoreOrder/fulfilled") {
+          console.log(result);
+          if (result.payload.paymentMethod === "cash") {
+            handleToast("success", "Đặt hàng thành công");
+            navigate("/app/orders");
+          } else if (result.payload.paymentMethod === "vnpay") {
+            const DataVnPay = {
+              orderId: result.payload._id,
+              amount: data.totalPrice,
+            };
+            dispatch(VnPay(DataVnPay)).then((result) => {
+              if (result.type === "orders/VnPay/fulfilled") {
+                window.location.href = result.payload;
+              }
+            });
+          }
+        }
+      });
     },
   });
 
@@ -126,8 +169,8 @@ const Chechoau = () => {
           value={formik.values.gender}
           onChange={(e) => formik.setFieldValue("gender", e.target.value)}
         >
-          <FormControlLabel value="Anh" control={<Radio />} label="Anh" />
-          <FormControlLabel value="Chị" control={<Radio />} label="Chị" />
+          <FormControlLabel value="Anh" control={<Radio />} label="Nam" />
+          <FormControlLabel value="Chị" control={<Radio />} label="Nữ" />
           <FormControlLabel value="Khác" control={<Radio />} label="Khác" />
         </RadioGroup>
         {formik.errors.gender && (
@@ -273,12 +316,10 @@ const Chechoau = () => {
 
       {/* Shipping Fee and Total */}
       <Typography sx={{ mb: 1 }}>
-        <strong>Tiền ship:</strong> {formik.values.shippingFee.toLocaleString()}{" "}
-        VND
+        <strong>Tiền ship:</strong> {formatCurrency(formik.values.shippingFee)}{" "}
       </Typography>
       <Typography sx={{ mb: 2 }}>
-        <strong>Tổng tiền:</strong> {formik.values.totalPrice.toLocaleString()}{" "}
-        VND
+        <strong>Tổng tiền:</strong> {formatCurrency(formik.values.totalPrice)}{" "}
       </Typography>
 
       {/* Submit Button */}

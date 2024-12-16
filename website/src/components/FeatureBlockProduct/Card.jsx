@@ -17,7 +17,7 @@ const ProductCard = ({ data }) => {
       <div className="relative shadow-md ">
         {/* Discount Label */}
         {data.discount > 0 && (
-          <div className="absolute top-0 left-0 w-24 z-5">
+          <div className="absolute top-0 left-0 w-24 z-1">
             <img
               src="https://firebasestorage.googleapis.com/v0/b/voi-tay-nguyen-datn.appspot.com/o/Nhan_cwuwhd.png?alt=media&token=1c12f273-922f-47db-88d2-09c5b5e0a6fa"
               alt="Discount Label"
@@ -31,11 +31,11 @@ const ProductCard = ({ data }) => {
         <Link
           to={`/${data?.category?.slug}/${data?.brand?.slug}/${data?.slug}`}
         >
-          <div className="h-[300px] overflow-hidden ">
+          <div className=" h-[300px] overflow-hidden z-3 ">
             <img
               src={data.thumbnail}
               alt={name}
-              className="w-full h-full object-contain product__thumbnail "
+              className=" w-full h-full object-contain product__thumbnail  "
             />
           </div>
           <div className="p-2 text-start">
