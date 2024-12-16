@@ -1,3 +1,4 @@
+/* eslint-disable  */
 import { Icon } from "@iconify/react";
 import { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";

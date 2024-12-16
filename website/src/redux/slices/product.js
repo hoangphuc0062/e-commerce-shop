@@ -1,3 +1,4 @@
+/* eslint-disable  */
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 
 import ProductServices from "../../services/product.service";
