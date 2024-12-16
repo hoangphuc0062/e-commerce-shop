@@ -41,6 +41,7 @@ const generateUniqueSKU = async () => {
 const getAllOrder = asyncHandler(async (req, res) => {
   const orders = await Order.find()
     .populate("orderBy", "name email")
+    .populate("staff", "name")
     .sort({ date: -1 });
 
   return res.status(200).json(orders);
@@ -197,29 +198,92 @@ const deleteOrder = asyncHandler(async (req, res) => {
 
 const createInStoreOrder = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-  const staff = Staff.findById(userId);
+
+  // Check if staff exists
+  const staff = await Staff.findById(userId);
   if (!staff) {
     return res.status(404).json({ message: "Staff not found" });
   }
+
+  // Extract request body
   const {
     productId,
     attributeId,
     quantity,
     key,
-    total,
+    totalPrice,
     paymentMethod,
     statusPayment,
+    address,
+    city,
+    district,
+    ward,
+    email,
+    fullName,
+    gender,
+    phone,
+    notes,
   } = req.body;
+
+  // Validate required fields
   if (!productId || !quantity) {
-    return res.status(400).json({ message: "Missing required fields" });
+    return res
+      .status(400)
+      .json({ message: "Missing required fields: productId and quantity" });
   }
+
+  // Find product
   const product = await Product.findById(productId);
   if (!product) {
     return res.status(404).json({ message: "Product not found" });
   }
+
+  // Check stock availability
   if (quantity > product.onStock) {
     return res.status(400).json({ message: "Out of stock" });
   }
+
+  // Handle customer creation or update
+  let customer = null;
+  if (email) {
+    customer = await Customer.findOne({ email });
+    const dataAddress = {
+      street: address,
+      wards: ward,
+      districts: district,
+      provinces: city,
+      isDefault: true,
+    };
+
+    if (!customer) {
+      // Create new customer
+      customer = new Customer({
+        email,
+        name: fullName,
+        phone,
+        address: [dataAddress],
+        sex: gender,
+        cart: [],
+        password: "123456",
+      });
+      await customer.save();
+    } else {
+      // Update customer address if not already exists
+      const addressExists = customer.address.some(
+        (addr) =>
+          addr.street === address &&
+          addr.wards === ward &&
+          addr.districts === district &&
+          addr.provinces === city
+      );
+      if (!addressExists) {
+        customer.address.push(dataAddress);
+      }
+      await customer.save();
+    }
+  }
+
+  // Create order
   const order = new Order({
     products: [
       {
@@ -230,15 +294,17 @@ const createInStoreOrder = asyncHandler(async (req, res) => {
       },
     ],
     staff: userId,
-    orderBy: null,
+    orderBy: customer ? customer._id : null,
     status: "Pending",
-    total,
+    total: totalPrice,
     paymentMethod,
     statusPayment,
     SKU: await generateUniqueSKU(),
+    note: notes,
   });
 
   await order.save();
+
   return res.status(201).json(order);
 });
 
@@ -315,6 +381,63 @@ const create_payment_url = async (req, res) => {
   res.set("Content-Type", "text/html");
   res.send(JSON.stringify(vnpUrl));
 };
+
+const create_payment_url_By_Order_Staff = asyncHandler(async (req, res) => {
+  // #swagger.tags = ['vnpay']
+  // #swagger.summary = 'add'
+  process.env.TZ = "Asia/Ho_Chi_Minh";
+
+  let date = new Date();
+  let createDate = moment(date).format("YYYYMMDDHHmmss");
+
+  let ipAddr =
+    req.headers["x-forwarded-for"] ||
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress ||
+    req.connection.socket.remoteAddress;
+
+  let tmnCode = process.env.VNP_TMNCODE;
+  let secretKey = process.env.VNP_HASHSECRET;
+  let vnpUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+  let returnUrl = process.env.VNP_RETURN_URL_ORDER_STAFF;
+
+  let orderId = req.body.orderId;
+  let amount = req.body.amount;
+
+  let bankCode = "";
+
+  let locale = "";
+  if (locale === null || locale === "") {
+    locale = "vn";
+  }
+  let currCode = "VND";
+  let vnp_Params = {};
+  vnp_Params["vnp_Version"] = "2.1.0";
+  vnp_Params["vnp_Command"] = "pay";
+  vnp_Params["vnp_TmnCode"] = tmnCode;
+  vnp_Params["vnp_Locale"] = locale;
+  vnp_Params["vnp_CurrCode"] = currCode;
+  vnp_Params["vnp_TxnRef"] = orderId;
+  vnp_Params["vnp_OrderInfo"] = "Thanh toan maGD:" + orderId;
+  vnp_Params["vnp_OrderType"] = "Update Pro";
+  vnp_Params["vnp_Amount"] = amount * 100;
+  vnp_Params["vnp_ReturnUrl"] = returnUrl;
+  vnp_Params["vnp_IpAddr"] = ipAddr;
+  vnp_Params["vnp_CreateDate"] = createDate;
+  if (bankCode !== null && bankCode !== "") {
+    vnp_Params["vnp_BankCode"] = bankCode;
+  }
+  vnp_Params = sortObject(vnp_Params);
+  let querystring = require("qs");
+  let signData = querystring.stringify(vnp_Params, { encode: false });
+  let crypto = require("crypto");
+  let hmac = crypto.createHmac("sha512", secretKey);
+  let signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+  vnp_Params["vnp_SecureHash"] = signed;
+  vnpUrl += "?" + querystring.stringify(vnp_Params, { encode: false });
+  res.set("Content-Type", "text/html");
+  res.send(JSON.stringify(vnpUrl));
+});
 
 const vnpay_return = async (req, res) => {
   // #swagger.tags = ['vnpay']
@@ -771,5 +894,7 @@ module.exports = {
   getOrderByUser,
   createInStoreOrder,
   getOrderBySKU,
+  create_payment_url_By_Order_Staff,
   analystOrder,
+
 };

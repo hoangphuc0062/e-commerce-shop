@@ -25,6 +25,10 @@ router.get("/user", verifyAccessToken, ctrl.getOrderByUser);
 // router.use([verifyAccessToken, isAdmin]);
 
 router.post("/create-payment-url", ctrl.create_payment_url);
+router.post(
+  "/create-payment-url-By-Order-Staff",
+  ctrl.create_payment_url_By_Order_Staff
+);
 router.get("/vnpay-return", ctrl.vnpay_return);
 router.post("/send-mail", verifyAccessToken, ctrl.sendSuccessEmail);
 
