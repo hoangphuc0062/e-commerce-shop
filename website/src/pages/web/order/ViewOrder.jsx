@@ -10,7 +10,6 @@ import {
 import ReCAPTCHA from "react-google-recaptcha";
 import { handleToast } from "../../../ultils/toast";
 import BreadcrumbsCustom from "../../../components/Breadcrumbs/Breadcrumbs";
-import { useMemo } from "react";
 
 export const ViewOrder = () => {
   const dispatch = useDispatch();

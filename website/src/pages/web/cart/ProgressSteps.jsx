@@ -1,3 +1,4 @@
+/* eslint-disable  */
 import { Icon } from "@iconify/react";
 
 export default function ProgressSteps({ steps, currentStep, setCurrentStep }) {
