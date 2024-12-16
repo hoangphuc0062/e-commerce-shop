@@ -571,7 +571,9 @@ export default function Cart() {
       {currentStep === 3 && (
         <>
           {statusPayment ? <Success /> : <Error />}
-          <button className="w-full py-3 mt-5 bg-indigo-600 text-white font-semibold rounded text-center">
+          <button 
+            onClick={() => window.location.href = '/'} 
+            className="w-full py-3 mt-5 bg-indigo-600 text-white font-semibold rounded text-center">          
             Tiếp tục mua hàng
           </button>
         </>
