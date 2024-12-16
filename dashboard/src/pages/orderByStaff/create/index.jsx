@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductsByParams } from "./../../../redux/slices/product";
 import { debounce } from "lodash";
@@ -24,9 +24,11 @@ export default function CreateOrderByStaff() {
   const [loading, setLoading] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const resultsRef = useRef();
+  const [isChechoau, setIsChechoau] = useState(false);
 
   const data = useSelector((state) => state.product.data.products);
 
+  // Fetch products on mount
   useEffect(() => {
     dispatch(
       getProductsByParams({
@@ -36,23 +38,26 @@ export default function CreateOrderByStaff() {
     );
   }, [dispatch]);
 
-  const handleSearchChange = useMemo(() => {
-    return debounce((query) => {
-      setLoading(true);
-      if (query.trim().length === 0) {
-        setResults([]);
-        setLoading(false);
-        return;
-      }
+  // Debounced search handler
+  const handleSearchChange = useMemo(
+    () =>
+      debounce((query) => {
+        setLoading(true);
+        if (query.trim().length === 0) {
+          setResults([]);
+          setLoading(false);
+          return;
+        }
 
-      const re = new RegExp(query, "i");
-      const filteredResults = Array.isArray(data)
-        ? data.filter((item) => re.test(item.name))
-        : [];
-      setResults(filteredResults);
-      setLoading(false);
-    }, 300);
-  }, [data]);
+        const re = new RegExp(query, "i");
+        const filteredResults = Array.isArray(data)
+          ? data.filter((item) => re.test(item.name))
+          : [];
+        setResults(filteredResults);
+        setLoading(false);
+      }, 300),
+    [data]
+  );
 
   const onInputChange = (e) => {
     const query = e.target.value;
@@ -60,6 +65,7 @@ export default function CreateOrderByStaff() {
     handleSearchChange(query);
   };
 
+  // Close results dropdown when clicking outside
   const handleClickOutside = (e) => {
     if (resultsRef.current && !resultsRef.current.contains(e.target)) {
       setResults([]);
@@ -77,6 +83,13 @@ export default function CreateOrderByStaff() {
     setSelectedProducts((prev) => [...prev, product]);
     setValue("");
     setResults([]);
+  };
+
+  const handleDeleteProduct = (productId) => {
+    setSelectedProducts((prev) =>
+      prev.filter((product) => product.productId !== productId)
+    );
+    setIsChechoau(true);
   };
 
   return (
@@ -184,15 +197,19 @@ export default function CreateOrderByStaff() {
               Không có sản phẩm nào được chọn
             </Typography>
           ) : (
-            <ProductSection products={selectedProducts} />
+            <ProductSection
+              products={selectedProducts}
+              onDelete={handleDeleteProduct}
+            />
           )}
         </Box>
-
-        {/* Order Summary */}
       </Box>
-      <Box sx={{ mt: 2 }}>
-        <Chechoau />
-      </Box>
+      {/* Order Summary */}
+      {isChechoau && (
+        <Box sx={{ mt: 2, p: 2, backgroundColor: "white" }}>
+          <Chechoau />
+        </Box>
+      )}
     </>
   );
 }
