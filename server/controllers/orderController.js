@@ -10,6 +10,7 @@ const Order = require("../models/orderModel");
 const Customer = require("../models/customerModel");
 const Coupon = require("../models/couponModel");
 const sendMail = require("../ultils/sendMail");
+const Staff = require("../models/staffModel");
 
 const generateSKU = (length) => {
   const characters =
@@ -123,8 +124,6 @@ const createOrder = asyncHandler(async (req, res) => {
     ...addr.toObject(),
     isDefault: false,
   }));
-
-  // Add the new address with isDefault set to true
   updatedAddresses.push(formattedAddress);
 
   await Customer.findByIdAndUpdate(
@@ -196,67 +195,46 @@ const deleteOrder = asyncHandler(async (req, res) => {
 // thanh toán tiền mặt
 
 const createInStoreOrder = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const staff = Staff.findById(userId);
+  if (!staff) {
+    return res.status(404).json({ message: "Staff not found" });
+  }
   const {
-    customerId,
+    productId,
+    attributeId,
+    quantity,
+    key,
     total,
-    shippingFee,
-    name,
-    email,
-    phone,
-    sex,
-    products,
-    coupon,
+    paymentMethod,
+    statusPayment,
   } = req.body;
-  let customer;
-
-  if (customerId) {
-    customer = await Customer.findById(customerId);
-    if (!customer) {
-      return res.status(404).json({ message: "Customer not found" });
-    }
-  } else {
-    // Create a new customer if customerId is not provided
-    if (!name || !email || !phone) {
-      return res
-        .status(400)
-        .json({ message: "Customer information is required" });
-    }
-
-    customer = new Customer({
-      name,
-      email,
-      phone,
-      sex,
-    });
-    await customer.save();
+  if (!productId || !quantity) {
+    return res.status(400).json({ message: "Missing required fields" });
   }
-
-  let orderTotal = total || 0;
-  if (coupon) {
-    const couponDoc = await Coupon.findOne({ code: coupon });
-    if (couponDoc) {
-      orderTotal -= (orderTotal * couponDoc.discount) / 100;
-    }
+  const product = await Product.findById(productId);
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
   }
-  orderTotal += shippingFee || 0;
-
-  if (!products || !Array.isArray(products) || products.length === 0) {
-    return res.status(400).json({ message: "Product information is required" });
+  if (quantity > product.onStock) {
+    return res.status(400).json({ message: "Out of stock" });
   }
-
-  const orderProducts = products.map((product) => ({
-    pid: product.productsId,
-    attributeId: product.attributeId,
-    quantity: product.quantity,
-    price: product.price,
-  }));
-
   const order = new Order({
-    products: orderProducts,
-    orderBy: customer._id,
-    total: orderTotal,
-    paymentMethod: "Cash",
-    shippingFee: shippingFee || 0,
+    products: [
+      {
+        pid: productId,
+        attributeId,
+        quantity,
+        key,
+      },
+    ],
+    staff: userId,
+    orderBy: null,
+    status: "Pending",
+    total,
+    paymentMethod,
+    statusPayment,
+    SKU: await generateUniqueSKU(),
   });
 
   await order.save();
@@ -449,7 +427,7 @@ const generateEmailTemplate = ({
         <div style="padding: 16px;">
             <h2 style="font-size: 24px; color: #333333; margin-bottom: 8px;">Cảm ơn bạn đã đặt hàng!</h2>
             <img src="https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/status%2Fsuccess.gif?alt=media&token=4b3eb1f3-abea-43a2-96a6-0e0c71b6d4b5" alt="Xác nhận đơn hàng thành công">
-            <p>${SKU}</p>
+            <p style="font-weight:bold;">${SKU}</p>
             <p style="color: #555555; margin-bottom: 16px;">
                 Đơn hàng của bạn sẽ được xử lý ít phút. Chúng tôi sẽ thông báo cho bạn qua email khi đơn hàng của bạn đã được chuyển đi.
             </p>
@@ -564,17 +542,57 @@ const getOrderBySKU = async (req, res) => {
   if (!sku) {
     return res.status(400).json({ message: "SKU is required" });
   }
+
   const order = await Order.findOne({ SKU: sku })
-    .populate(
-      "products.pid",
-      "-SKU -slug -historicalPrice -priceInMarket -category -brand -inStock -onStock -inComing -minInventory -maxInventory -attributes -description -shortDescription -filterable"
-    )
-    .populate("orderBy", "name email phone address");
+
+    .populate({
+      path: "products.pid",
+      select: "name thumbnail price slug variants",
+    })
+    .populate({
+      path: "orderBy",
+      select: "name email address phone",
+    });
 
   if (!order) {
     return res.status(404).json({ message: "Order not found" });
   }
-  return res.status(200).json(order);
+  const cart = order.products.map((item) => {
+    const product = item.pid;
+
+    const variant = product.variants?.find((v) => {
+      if (v instanceof Map) {
+        return v.get("key") === item.key;
+      } else {
+        return v.key === item.key;
+      }
+    });
+    let variantValue;
+    if (variant instanceof Map) {
+      const values = variant.get("values");
+      if (values) {
+        variantValue = values.find((v) => v.id === item.attributeId);
+      }
+    } else {
+      variantValue = variant?.values?.find((v) => v.id === item.attributeId);
+    }
+
+    return {
+      productId: product._id,
+      name: product.name,
+      thumbnail: variantValue?.thumbnail || product.thumbnail,
+      price: variantValue?.price || variant?.price || product.price,
+      slug: product.slug,
+      attributeValue: variantValue,
+      quantity: item.quantity,
+      key: item.key,
+    };
+  });
+  const data = {
+    order,
+    cart,
+  };
+  return res.status(200).json(data);
 };
 
 module.exports = {

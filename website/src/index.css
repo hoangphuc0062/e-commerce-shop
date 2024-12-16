@@ -56,10 +56,10 @@ th {
 }
 
 /* Apply the animation to the product card on hover */
-.card__product {
+/* .card__product {
   transition: transform 0.5s;
 }
 
 .card__product:hover .product__thumbnail {
   animation: zoom 0.5s ease-in-out forwards;
-}
+} */

@@ -6,6 +6,7 @@ const { verifyAccessToken, isStaff } = require("../middlewares/vertifyToken");
 
 router.get("/", ctrl.getAllProduct);
 router.get("/slug/:pid", ctrl.getProductBySlug);
+router.get("/compare", ctrl.compareProduct);
 
 router.use([verifyAccessToken, isStaff]);
 router.post("/create", ctrl.addProduct);
