@@ -728,9 +728,10 @@ const getDailyRevenue = (orders) => {
     const dateKey = `${year}-${month}-${day}`;
 
     if (!acc[dateKey]) {
-      acc[dateKey] = 0;
+      acc[dateKey] = { total: 0, count: 0 };
     }
-    acc[dateKey] += order.total;
+    acc[dateKey].total += order.total;
+    acc[dateKey].count += 1;
 
     return acc;
   }, {});
@@ -866,6 +867,8 @@ const analystOrder = asyncHandler(async (req, res) => {
     ),
   }));
 
+  const countUser = await Customer.countDocuments();
+
   return res.status(200).json({
     totalOrder,
     totalRevenue,
@@ -880,6 +883,7 @@ const analystOrder = asyncHandler(async (req, res) => {
     monthlyRevenue,
     annualRevenue,
     bestSelling: finalBestSellingProducts,
+    countUser,
   });
 });
 
@@ -896,5 +900,4 @@ module.exports = {
   getOrderBySKU,
   create_payment_url_By_Order_Staff,
   analystOrder,
-
 };
