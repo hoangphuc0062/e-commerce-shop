@@ -296,6 +296,7 @@ export default function Cart() {
       : acc;
   }, 0);
 
+  console.log(total);
   const subTotal = total + shippingFee;
 
   const handleRemoveProduct = (productId) => {

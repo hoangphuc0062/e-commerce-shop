@@ -16,6 +16,11 @@ const OrderSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "Customer",
   },
+  staff: {
+    type: mongoose.Types.ObjectId,
+    ref: "Staff",
+    default: null,
+  },
   coupon: {
     type: mongoose.Types.ObjectId,
     ref: "Coupon",
