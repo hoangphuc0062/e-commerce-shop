@@ -25,20 +25,12 @@ export const statusColors = {
 };
 
 export const statusOrder = {
-  pending: { label: "Chờ xử lý", color: "warning" },
-  rejected: { label: "Từ chối", color: "error" },
-  completed: { label: "Hoàn thành", color: "success" },
-  canceled: { label: "Hủy bỏ", color: "error" },
-  processing: { label: "Đang xử lý", color: "primary" },
-  shipped: { label: "Đã gửi", color: "info" },
-  delivered: { label: "Đã giao", color: "success" },
-  returned: { label: "Đã trả lại", color: "error" },
-  refunded: { label: "Hoàn tiền", color: "success" },
-  failed: { label: "Thất bại", color: "error" },
-  paid: { label: "Đã thanh toán", color: "success" },
-  unpaid: { label: "Chưa thanh toán", color: "error" },
-  partial: { label: "Thanh toán một phần", color: "warning" },
+  cancelled: { label: "Đã hủy", color: "error" },
   success: { label: "Thành công", color: "success" },
+  processing: { label: "Đang xử lý", color: "primary" },
+  delivered: { label: "Đã giao hàng", color: "success" },
+  shipping: { label: "Đang vận chuyển", color: "warning" },
+  pending: { label: "Đang chờ xử lý", color: "warning" },
 };
 
 export const statustPost = {
