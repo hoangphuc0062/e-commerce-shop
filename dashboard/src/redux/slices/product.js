@@ -26,6 +26,13 @@ export const getProduct = createAsyncThunk(
   (_, thunkAPI) => handleAsyncThunk(ProductService.getAll, [null], thunkAPI)
 );
 
+export const getProductsByParams = createAsyncThunk(
+  "products/getProducts",
+  async (params, thunkAPI) => {
+    return handleAsyncThunk(() => ProductService.getAll(params), [], thunkAPI);
+  }
+);
+
 export const getProducts = createAsyncThunk(
   "product/getProducts",
   ([page, limit], thunkAPI) =>
@@ -70,6 +77,7 @@ const productSlice = createSlice({
     statusGet: "idle",
     statusGetById: "idle",
     statusUpdate: "idle",
+    statusGetByParams: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -138,6 +146,16 @@ const productSlice = createSlice({
       })
       .addCase(updateProduct.rejected, (state) => {
         state.statusUpdate = "failed";
+      })
+      .addCase(getProductsByParams.pending, (state) => {
+        state.statusGetByParams = "loading";
+      })
+      .addCase(getProductsByParams.fulfilled, (state, action) => {
+        state.statusGetByParams = "success";
+        state.data = action.payload;
+      })
+      .addCase(getProductsByParams.rejected, (state) => {
+        state.statusGetByParams = "failed";
       });
   },
 });
