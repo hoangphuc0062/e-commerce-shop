@@ -6,6 +6,7 @@ const sections = [
   {
     title: "Dịch vụ",
     links: [
+      
       "Phát triển Web",
       "Định giá",
       "Ủng hộ",
@@ -20,10 +21,10 @@ const sections = [
   {
     title: "Công ty",
     links: [
-      "Về chúng tôi",
+    <Link to="/aboutus" className="text-center w-fit">Về chúng tôi</Link>,
       "Nghề nghiệp",
       "Blog",
-      "danh mục đầu tư",
+      "Danh mục đầu tư",
       "Sự kiện",
     ],
   },
