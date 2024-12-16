@@ -41,12 +41,17 @@ export const deleteOrder = createAsyncThunk(
   "orders/deleteOrder",
   (orderId, thunkAPI) =>
     handleAsyncThunk(OrderService.delete, [orderId], thunkAPI)
+
+export const analyst = createAsyncThunk("orders/analyst", (_, thunkAPI) =>
+  handleAsyncThunk(OrderService.analyst, [null], thunkAPI)
+
 );
 
 const orders = createSlice({
   name: "orders",
   initialState: {
     data: [],
+    analyst: {},
     status: "idle",
     error: null,
     statusUpdate: "idle",
@@ -117,6 +122,18 @@ const orders = createSlice({
       })
       .addCase(deleteOrder.rejected, (state, action) => {
         state.statusDelete = "failed";
+        state.error = action.payload;
+      });
+    builder
+      .addCase(analyst.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(analyst.fulfilled, (state, action) => {
+        state.status = "success";
+        state.analyst = action.payload;
+      })
+      .addCase(analyst.rejected, (state, action) => {
+        state.status = "failed";
         state.error = action.payload;
       });
   },

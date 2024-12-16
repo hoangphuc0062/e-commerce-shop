@@ -51,6 +51,21 @@ export const getProductBySlug = createAsyncThunk(
   }
 );
 
+export const compareProduct = createAsyncThunk(
+  "products/compareProduct",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const {
+        products: { slugs },
+      } = getState(); // Lấy danh sách slugs từ state
+      const response = await ProductServices.compareProduct({ slugs });
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
 const productSlice = createSlice({
   name: "products",
   initialState: {
@@ -62,6 +77,18 @@ const productSlice = createSlice({
     status: "idle",
     statusDetail: "idle",
     statusSearch: "idle",
+    compareProducts: [],
+    slugs: [],
+  },
+  reducers: {
+    addSlug(state, action) {
+      if (!state.slugs.includes(action.payload)) {
+        state.slugs.push(action.payload);
+      }
+    },
+    removeSlug(state, action) {
+      state.slugs = state.slugs.filter((slug) => slug !== action.payload);
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -117,8 +144,22 @@ const productSlice = createSlice({
         state.error = action.payload;
         state.statusSearch = "failed";
       });
+    builder
+      .addCase(compareProduct.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(compareProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+      })
+      .addCase(compareProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
 export default productSlice.reducer;
+
+export const { addSlug, removeSlug } = productSlice.actions;
 export const { setProducts } = productSlice.actions;
