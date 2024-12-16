@@ -41,10 +41,10 @@ export const deleteOrder = createAsyncThunk(
   "orders/deleteOrder",
   (orderId, thunkAPI) =>
     handleAsyncThunk(OrderService.delete, [orderId], thunkAPI)
+);
 
 export const analyst = createAsyncThunk("orders/analyst", (_, thunkAPI) =>
   handleAsyncThunk(OrderService.analyst, [null], thunkAPI)
-
 );
 
 const orders = createSlice({
