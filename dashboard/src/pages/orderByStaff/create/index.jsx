@@ -80,117 +80,119 @@ export default function CreateOrderByStaff() {
   };
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        width: "100%",
-        backgroundColor: "white",
-        p: 2,
-      }}
-    >
-      {/* Search Input */}
-      <TextField
-        fullWidth
-        variant="outlined"
-        placeholder="Bạn muốn mua gì?"
-        value={value}
-        onChange={onInputChange}
-        InputProps={{
-          startAdornment: (
-            <Box sx={{ mr: 1, display: "flex", alignItems: "center" }}>
-              <svg
-                className="w-5 h-5 text-gray-500"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-4.35-4.35M10.5 17a6.5 6.5 0 110-13 6.5 6.5 0 010 13z"
-                />
-              </svg>
-            </Box>
-          ),
+    <>
+      <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          backgroundColor: "white",
+          p: 2,
         }}
-      />
-      {/* Results Dropdown */}
-      {loading && (
-        <Paper
-          sx={{
-            position: "absolute",
-            top: "100%",
-            mt: 1,
-            width: "100%",
-            textAlign: "center",
-            p: 2,
+      >
+        {/* Search Input */}
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Bạn muốn mua gì?"
+          value={value}
+          onChange={onInputChange}
+          InputProps={{
+            startAdornment: (
+              <Box sx={{ mr: 1, display: "flex", alignItems: "center" }}>
+                <svg
+                  className="w-5 h-5 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-4.35-4.35M10.5 17a6.5 6.5 0 110-13 6.5 6.5 0 010 13z"
+                  />
+                </svg>
+              </Box>
+            ),
           }}
-        >
-          <CircularProgress size={24} />
-        </Paper>
-      )}
-      {!loading && results.length > 0 && (
-        <Paper
-          ref={resultsRef}
-          sx={{
-            position: "absolute",
-            top: "100%",
-            mt: 1,
-            width: "100%",
-            maxHeight: 400,
-            overflowY: "auto",
-            zIndex: 10,
-          }}
-        >
-          <List>
-            {results.map((result, index) => (
-              <ListItem
-                key={index}
-                onClick={() => handleProductSelect(result)}
-                sx={{ p: 1, cursor: "pointer" }}
-              >
-                <ListItemAvatar>
-                  <Avatar src={result.thumbnail} alt={result.name} />
-                </ListItemAvatar>
-                <ListItemText primary={result.name} />
-              </ListItem>
-            ))}
-          </List>
-        </Paper>
-      )}
-      {!loading && results.length === 0 && value && (
-        <Paper
-          sx={{
-            position: "absolute",
-            top: "100%",
-            mt: 1,
-            width: "100%",
-            textAlign: "center",
-            p: 2,
-          }}
-        >
-          <Typography variant="body2" color="text.secondary">
-            Không có sản phẩm này
-          </Typography>
-        </Paper>
-      )}
-      {/* Selected Products */}
-      <Box sx={{ mt: 2 }}>
-        {selectedProducts.length === 0 ? (
-          <Typography variant="body2" color="text.secondary">
-            Không có sản phẩm nào được chọn
-          </Typography>
-        ) : (
-          <ProductSection products={selectedProducts} />
+        />
+        {/* Results Dropdown */}
+        {loading && (
+          <Paper
+            sx={{
+              position: "absolute",
+              top: "100%",
+              mt: 1,
+              width: "100%",
+              textAlign: "center",
+              p: 2,
+            }}
+          >
+            <CircularProgress size={24} />
+          </Paper>
         )}
-      </Box>
+        {!loading && results.length > 0 && (
+          <Paper
+            ref={resultsRef}
+            sx={{
+              position: "absolute",
+              top: "100%",
+              mt: 1,
+              width: "100%",
+              maxHeight: 400,
+              overflowY: "auto",
+              zIndex: 10,
+            }}
+          >
+            <List>
+              {results.map((result, index) => (
+                <ListItem
+                  key={index}
+                  onClick={() => handleProductSelect(result)}
+                  sx={{ p: 1, cursor: "pointer" }}
+                >
+                  <ListItemAvatar>
+                    <Avatar src={result.thumbnail} alt={result.name} />
+                  </ListItemAvatar>
+                  <ListItemText primary={result.name} />
+                </ListItem>
+              ))}
+            </List>
+          </Paper>
+        )}
+        {!loading && results.length === 0 && value && (
+          <Paper
+            sx={{
+              position: "absolute",
+              top: "100%",
+              mt: 1,
+              width: "100%",
+              textAlign: "center",
+              p: 2,
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Không có sản phẩm này
+            </Typography>
+          </Paper>
+        )}
+        {/* Selected Products */}
+        <Box sx={{ mt: 2 }}>
+          {selectedProducts.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">
+              Không có sản phẩm nào được chọn
+            </Typography>
+          ) : (
+            <ProductSection products={selectedProducts} />
+          )}
+        </Box>
 
-      {/* Order Summary */}
+        {/* Order Summary */}
+      </Box>
       <Box sx={{ mt: 2 }}>
         <Chechoau />
       </Box>
-    </Box>
+    </>
   );
 }

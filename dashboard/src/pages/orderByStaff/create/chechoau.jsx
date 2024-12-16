@@ -18,6 +18,8 @@ const Chechoau = () => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
+  const dataCart = localStorage.getItem("cart");
+  console.log(dataCart);
 
   const fetchProvinces = async () => {
     try {
