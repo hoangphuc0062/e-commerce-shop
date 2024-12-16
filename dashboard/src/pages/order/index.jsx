@@ -1,7 +1,12 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { getAll, resetState, update } from "../../redux/slices/orders";
+import {
+  deleteOrder,
+  getAll,
+  resetState,
+  update,
+} from "../../redux/slices/orders";
 import { fDateVN, formatCurrency } from "../../utils/format-time";
 import { Box, Button, IconButton, Tooltip } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
@@ -10,6 +15,7 @@ import { statusOrder } from "../../utils/statusConfig";
 import { StatusOrderChip } from "../../components/StatusColor";
 import { handleToast } from "./../../../../client/src/ultils/toast";
 import { Link } from "react-router-dom";
+import { DeleteConfirmationModal } from "../../utils/toast";
 
 export default function OrderPage() {
   const dispatch = useDispatch();
@@ -23,12 +29,12 @@ export default function OrderPage() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (status === "success" && initialData) {
+    if (status === "success" && Array.isArray(initialData)) {
       setData(
         initialData.map((item) => ({
           sku: item.SKU,
           _id: item._id,
-          staffName: item.staffName || "Chưa xác định",
+          staffName: item?.staff?.name || "online",
           name: item?.orderBy?.name || "Khách vãng lai",
           date: fDateVN(item.date),
           total: formatCurrency(item.total),
@@ -40,10 +46,28 @@ export default function OrderPage() {
     }
   }, [status, initialData, dispatch]);
 
-  const handleDelete = (data) => {
-    console.log(data);
-  };
-
+  const handleDelete = useCallback(
+    (index) => {
+      DeleteConfirmationModal({
+        title: "Xác nhận xóa thương hiệu",
+        content: "Bạn có chắc chắn muốn xóa thương hiệu này không?",
+        okText: "Xóa",
+        cancelText: "Hủy",
+        icon: "warning",
+        confirmButtonText: "Xóa",
+        onConfirm: () =>
+          dispatch(deleteOrder(index._id)).then((res) => {
+            if (res.type === "orders/deleteOrder/fulfilled") {
+              handleToast("success", "Xóa đơn hàng thành công");
+              dispatch(getAll());
+            } else {
+              handleToast("error", "Xóa đơn hàng thất bại");
+            }
+          }),
+      });
+    },
+    [dispatch]
+  );
   const columns = [
     // { field: "_id", headerName: "Mã đơn hàng", width: 200, hide: true },
     { field: "sku", headerName: "Mã đơn hàng", width: 200 },

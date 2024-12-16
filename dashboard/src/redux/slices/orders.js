@@ -33,6 +33,16 @@ export const createInStoreOrder = createAsyncThunk(
   (data, thunkAPI) => handleAsyncThunk(OrderService.create, [data], thunkAPI)
 );
 
+export const VnPay = createAsyncThunk("orders/VnPay", (data, thunkAPI) =>
+  handleAsyncThunk(OrderService.VnPay, [data], thunkAPI)
+);
+
+export const deleteOrder = createAsyncThunk(
+  "orders/deleteOrder",
+  (orderId, thunkAPI) =>
+    handleAsyncThunk(OrderService.delete, [orderId], thunkAPI)
+);
+
 const orders = createSlice({
   name: "orders",
   initialState: {
@@ -41,6 +51,8 @@ const orders = createSlice({
     error: null,
     statusUpdate: "idle",
     statusCreate: "idle",
+    statusVnPay: "idle",
+    statusDelete: "idle",
   },
   extraReducers: (builder) => {
     builder
@@ -83,6 +95,28 @@ const orders = createSlice({
       })
       .addCase(createInStoreOrder.rejected, (state, action) => {
         state.statusCreate = "failed";
+        state.error = action.payload;
+      })
+      .addCase(VnPay.pending, (state) => {
+        state.statusVnPay = "loading";
+      })
+      .addCase(VnPay.fulfilled, (state, action) => {
+        state.statusVnPay = "success";
+        state.data = action.payload;
+      })
+      .addCase(VnPay.rejected, (state, action) => {
+        state.statusVnPay = "failed";
+        state.error = action.payload;
+      })
+      .addCase(deleteOrder.pending, (state) => {
+        state.statusDelete = "loading";
+      })
+      .addCase(deleteOrder.fulfilled, (state, action) => {
+        state.statusDelete = "success";
+        state.data = action.payload;
+      })
+      .addCase(deleteOrder.rejected, (state, action) => {
+        state.statusDelete = "failed";
         state.error = action.payload;
       });
   },

@@ -14,7 +14,7 @@ import ImageCarousel from "./ImageCarousel";
 import { useDispatch } from "react-redux";
 import { handleToast } from "./../../../utils/toast";
 
-const ProductSection = ({ products }) => {
+const ProductSection = ({ products, onDelete }) => {
   const [activeIndex, setActiveIndex] = useState(null);
   const [activeValueIndex, setActiveValueIndex] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -36,7 +36,9 @@ const ProductSection = ({ products }) => {
       attributeId: selectedValue?.id ?? null,
       quantity: quantity,
       price: selectedValue?.price ?? selectedVariant?.price,
+      total: quantity * (selectedValue?.price ?? selectedVariant?.price),
     };
+    onDelete();
     localStorage.setItem("cart", JSON.stringify(data));
     handleToast("success", "Thêm vào giỏ hàng thành công");
   };

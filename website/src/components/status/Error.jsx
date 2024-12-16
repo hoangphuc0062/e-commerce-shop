@@ -1,5 +1,5 @@
 import CANCEL from "../../assets/cancel.gif";
-export default function Error(error) {
+export default function Error({ error }) {
   return (
     <>
       <div className=" w-full max-w-md mx-auto flex justify-center items-center flex-col p-4 m-2 ">
