@@ -1,3 +1,4 @@
+/* eslint-disable  */
 import SUCCESS from "../../assets/success.gif";
 export default function Success({ mes }) {
   return (

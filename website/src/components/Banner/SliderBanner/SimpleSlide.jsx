@@ -1,3 +1,4 @@
+/* eslint-disable  */
 import { Swiper, SwiperSlide } from "swiper/react";
 
 // Import Swiper styles

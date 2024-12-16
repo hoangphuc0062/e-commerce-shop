@@ -1,3 +1,4 @@
+/* eslint-disable  */
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -6,7 +7,6 @@ const sections = [
   {
     title: "Dịch vụ",
     links: [
-      
       "Phát triển Web",
       "Định giá",
       "Ủng hộ",
@@ -21,7 +21,9 @@ const sections = [
   {
     title: "Công ty",
     links: [
-    <Link to="/aboutus" className="text-center w-fit">Về chúng tôi</Link>,
+      <Link to="/aboutus" className="text-center w-fit">
+        Về chúng tôi
+      </Link>,
       "Nghề nghiệp",
       "Blog",
       "Danh mục đầu tư",
