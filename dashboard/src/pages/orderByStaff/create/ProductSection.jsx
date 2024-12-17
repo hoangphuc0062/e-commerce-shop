@@ -220,7 +220,7 @@ const ProductSection = ({ products, onDelete }) => {
               sx={{ flex: 1 }}
             >
               <Icon icon="solar:cart-plus-outline" fontSize="2rem" />
-              <Typography variant="body2">Thêm vào giỏ</Typography>
+              <Typography variant="body2">Mua ngay</Typography>
             </Button>
           </Box>
         </Grid>
