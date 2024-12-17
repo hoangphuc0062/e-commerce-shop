@@ -184,18 +184,12 @@ export default function CreateOrderByStaff() {
               textAlign: "center",
               p: 2,
             }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              Không có sản phẩm này
-            </Typography>
-          </Paper>
+          ></Paper>
         )}
         {/* Selected Products */}
         <Box sx={{ mt: 2 }}>
           {selectedProducts.length === 0 ? (
-            <Typography variant="body2" color="text.secondary">
-              Không có sản phẩm nào được chọn
-            </Typography>
+            <Typography variant="body2" color="text.secondary"></Typography>
           ) : (
             <ProductSection
               products={selectedProducts}
