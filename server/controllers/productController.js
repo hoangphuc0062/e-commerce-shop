@@ -262,6 +262,10 @@ const updateManyProduct = asyncHandler(async (req, res) => {
   //   mongoose.Types.ObjectId.isValid(id)
   // );
 
+  // const cpu = "Intel Core i3, Intel Core i5, Intel Core i7, Intel Core i9"
+  // const ram = "8GB, 16GB";
+  // const storage = "512GB";
+  // const screenSizes = ["HD"]
   // Dữ liệu muốn cập nhật
   const refreshRates = "120Hz";
   const storages = "256GB, 512GB, 1TB";

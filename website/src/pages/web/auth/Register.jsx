@@ -73,7 +73,7 @@ const Register = () => {
               Bạn đã có tài khoản đăng nhập?
             </span>
             <span>
-              <Link to={"/login"} className="text-main hover:underline">
+              <Link to={"/auth/login"} className="text-main hover:underline">
                 Đăng nhập ngay
               </Link>
             </span>

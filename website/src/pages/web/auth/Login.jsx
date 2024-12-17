@@ -82,7 +82,7 @@ export default function Login() {
             <span className="mr-1 text-gray-400">
               Bạn đã có tài khoản đăng nhập.
             </span>
-            <Link to="/register" className="text-main hover:underline">
+            <Link to="/auth/register" className="text-main hover:underline">
               Đăng Ký
             </Link>
           </div>
@@ -116,7 +116,7 @@ export default function Login() {
                 />
               </div>
             </div>
-            <Link className="underline py-4" to="/forget-password">
+            <Link className="underline py-4" to="/auth/forget-password">
               Bạn quên mật khẩu?
             </Link>
             <ReCAPTCHA

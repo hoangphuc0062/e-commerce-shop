@@ -8,7 +8,7 @@ export const ProtectedRoute = ({ children }) => {
   const { loginAuth } = useContext(UserContext);
 
   if (!loginAuth) {
-    return <Navigate to="/login" />;
+    return <Navigate to="auth/login" />;
   }
 
   return children;
