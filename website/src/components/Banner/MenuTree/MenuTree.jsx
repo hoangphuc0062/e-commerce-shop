@@ -10,7 +10,6 @@ const MenuTree = ({ dataCategory }) => {
   const handleMouseEnter = (categoryId) => {
     setActiveCategory(categoryId);
   };
-
   return (
     <div className="flex bg-white" id="menu-tree__parent">
       <div className="label-menu-tree">

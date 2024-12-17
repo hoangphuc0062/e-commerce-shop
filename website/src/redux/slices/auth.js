@@ -122,9 +122,15 @@ export const forgotPassword = createAsyncThunk(
   }
 );
 
+export const resetPassword = createAsyncThunk(
+  "auth/reset-password",
+  (data, thunkAPI) => {
+    return handleAsyncThunk(AuthService.resetPassword, [data], thunkAPI);
+  }
+);
+
 const auth = createSlice({
   name: "auth",
-
   initialState: {
     isLogin: false,
     data: [],
@@ -142,6 +148,7 @@ const auth = createSlice({
     statusFinalRegister: "idle",
     statusUpdateCustomer: "idle",
     statusChangePassword: "idle",
+    statusResetPassword: "idle",
     statusUpdateAddress: "idle",
     statusDeleteAddress: "idle",
     statusAddAddress: "idle",
@@ -202,7 +209,17 @@ const auth = createSlice({
       .addCase(changePassword.rejected, (state) => {
         state.statusChangePassword = "failed";
       });
-
+    builder
+      .addCase(resetPassword.pending, (state) => {
+        state.statusResetPassword = "loading";
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.statusResetPassword = "success";
+        state.data = action.payload;
+      })
+      .addCase(resetPassword.rejected, (state) => {
+        state.statusResetPassword = "failed";
+      });
     builder
       .addCase(getMe.pending, (state) => {
         state.statusGetMe = "loading";

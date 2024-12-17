@@ -44,7 +44,6 @@ const deleteCustomer = asyncHandler(async (req, res) => {
   });
 });
 
-
 const getCustomer = asyncHandler(async (req, res) => {
   const sortBy = req.query.sort;
   const order = req.query.order === "asc" ? 1 : -1;
@@ -366,7 +365,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   await customer.save();
 
   const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ. 
-  <a href=${process.env.WEB_URL}/reset-password/${resetToken}>Click here</a>`;
+  <a href=${process.env.WEB_URL}/auth/reset-password/${resetToken}>Click here</a>`;
   const subject = `Quên mật khẩu`;
   const rs = await sendMail(email, html, subject);
   return res.status(200).json({
@@ -387,9 +386,9 @@ const resetPassword = asyncHandler(async (req, res) => {
     .digest("hex");
 
   // Find the customer with matching reset token and ensure token is not expired
-  const customer = await Customer.findOne({
+  const customer = await Customer.find({
     passwordResetToken,
-    passwordResetExprires: { $gt: Date.now() }, // Check if token is still valid
+    passwordResetExprires: { $gt: Date.now() },
   });
 
   // If no customer is found or the token is expired
@@ -755,7 +754,6 @@ module.exports = {
   updateCart,
   deleteCartItem,
   deleteManyCart,
-
   createAddress,
   updateAddress,
   deleteAddress,
