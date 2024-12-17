@@ -40,7 +40,8 @@ export const ResetPassword = () => {
 
       try {
         const response = await dispatch(resetPassword(data));
-        if (response.success) {
+        console.log(response);
+        if (response.type === "auth/reset-password/fulfilled") {
           handleToast("success", "Mật khẩu đã được cập nhật thành công.");
           resetForm();
           setCaptchaValue(null);

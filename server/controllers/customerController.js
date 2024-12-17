@@ -386,7 +386,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     .digest("hex");
 
   // Find the customer with matching reset token and ensure token is not expired
-  const customer = await Customer.find({
+  const customer = await Customer.findOne({
     passwordResetToken,
     passwordResetExprires: { $gt: Date.now() },
   });

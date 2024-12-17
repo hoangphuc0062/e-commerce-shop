@@ -30,7 +30,7 @@ export const UserMenu = ({ data }) => {
         handleToast("success", "Đăng xuất thành công");
         setLoginAuth(false);
         setDropdownOpen(false);
-        navigate("/login");
+        navigate("/auth/login");
         dispatch(resetState({ key: "statusLogout", value: "idle" }));
         dispatch(resetState({ key: "statusGetMe", value: "idle" }));
         dispatch(resetState({ key: "data", value: [] }));
