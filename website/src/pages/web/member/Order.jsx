@@ -1,3 +1,4 @@
+/* eslint-disable  */
 import React, { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import Person from "../../../components/Person";

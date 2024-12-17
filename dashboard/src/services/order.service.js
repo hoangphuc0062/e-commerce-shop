@@ -7,6 +7,8 @@ const OrderService = {
   VnPay: (data) =>
     sendRequest("post", "/orders/create-payment-url-By-Order-Staff", data),
   delete: (id) => sendRequest("delete", `/orders/${id}`),
+  analyst: () => sendRequest("get", "/orders/get-analytics"),
+
 };
 
 export default OrderService;

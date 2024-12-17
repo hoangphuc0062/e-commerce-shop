@@ -1,271 +1,277 @@
-import React from "react";
-
-// react-bootstrap
-import { Row, Col, Card } from "react-bootstrap";
-
-// third party
+import React, { useEffect, useState } from "react";
+import { Row, Col, Card, Table } from "react-bootstrap";
 import Chart from "react-apexcharts";
-// import PerfectScrollbar from "react-perfect-scrollbar";
+import { useSelector, useDispatch } from "react-redux";
 
-// project import
-// import OrderCard from "../../components/Widgets/Statistic/OrderCard";
-// import SocialCard from "../../components/Widgets/Statistic/SocialCard";
-import uniqueVisitorChart from "./chart/analytics-unique-visitor-chart";
-import customerChart from "./chart/analytics-cuatomer-chart";
-import customerChart1 from "./chart/analytics-cuatomer-chart-1";
-
-// assets
 import OrderCard from "@/components/Widgets/OrderCard";
-import SocialCard from "@/components/Widgets/SocialCard";
-import barChartData from "./chart/barChartData";
-import comboChartData from "./chart/comboChartData";
-import candlestickChartData from "./chart/candlestickChartData";
-
-// ==============================|| DASHBOARD ANALYTICS ||============================== //
+import { analyst } from "../../../redux/slices/orders";
+import { formatCurrency } from "../../../utils/formatCurrency";
+import { DataGrid } from "@mui/x-data-grid";
+import { Avatar } from "@mui/material";
 
 const DashAnalytics = () => {
+  const dispatch = useDispatch();
+  const { analyst: analyticsData } = useSelector((state) => state.orders);
+
+  const [currentMonthRevenue, setCurrentMonthRevenue] = useState(0);
+  const [chartType, setChartType] = useState("daily");
+  const [data, setData] = useState(analyticsData.bestSelling);
+  // Fetch dữ liệu khi component được mount
+  useEffect(() => {
+    dispatch(analyst());
+  }, [dispatch]);
+
+  // Tính doanh thu của tháng hiện tại
+  useEffect(() => {
+    const currentMonth = new Date().getMonth() + 1;
+    const revenue =
+      analyticsData?.monthlyRevenue?.find((item) => item.month === currentMonth)
+        ?.revenue || 0;
+    setCurrentMonthRevenue(revenue);
+  }, [analyticsData]);
+
+  // Xử lý dữ liệu biểu đồ
+  let chartData = [];
+  if (chartType === "daily") {
+    chartData =
+      analyticsData?.dailyRevenue?.map((item) => ({
+        label: item.date,
+        total: item.revenue.total || 0,
+        count: item.revenue.count || 0,
+      })) || [];
+  } else if (chartType === "monthly") {
+    chartData =
+      analyticsData?.monthlyRevenue?.map((item) => ({
+        label: `Tháng ${item.month}`,
+        total: item.revenue || 0,
+        count: (item.revenue / 1000000).toFixed(2), // Giả sử count từ doanh thu
+      })) || [];
+  } else if (chartType === "yearly") {
+    chartData =
+      analyticsData?.annualRevenue?.map((item) => ({
+        label: `Năm ${item.year}`,
+        total: item.revenue || 0,
+        count: (item.revenue / 1000000).toFixed(2), // Giả sử count từ doanh thu
+      })) || [];
+  }
+
+  const labels = chartData.map((item) => item.label);
+  const revenueDataTotal = chartData.map((item) => item.total);
+  const revenueData = chartData.map((item) => item.count);
+
+  // Cấu hình dữ liệu cho biểu đồ
+  const updatedChartData = {
+    height: 350,
+    type: "line",
+    options: {
+      chart: {
+        toolbar: { show: false },
+      },
+      stroke: {
+        width: [0, 4],
+      },
+      plotOptions: {
+        bar: {
+          columnWidth: "50%",
+        },
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: (value, { seriesIndex }) => {
+          // Kiểm tra loại series: 0 là doanh thu, 1 là số đơn hàng
+          return seriesIndex === 0
+            ? new Intl.NumberFormat("vi-VN").format(value) + " đ" // Format tiền tệ
+            : value.toLocaleString(); // Hiển thị số đơn hàng
+        },
+        style: {
+          fontSize: "12px",
+          colors: ["#73b4ff"], // Màu chữ
+        },
+      },
+      labels, // Nhãn cho biểu đồ
+      yaxis: [
+        {
+          title: { text: "Doanh thu" },
+          labels: {
+            formatter: (value) => new Intl.NumberFormat("vi-VN").format(value), // Doanh thu
+          },
+        },
+        {
+          opposite: true,
+          title: { text: "Số đơn hàng" },
+          labels: {
+            formatter: (value) => value.toLocaleString(), // Số đơn hàng
+          },
+        },
+      ],
+      colors: ["#73b4ff", "#59e0c5"],
+    },
+    series: [
+      {
+        name: "Doanh thu",
+        type: "column",
+        data: revenueDataTotal, // Dữ liệu doanh thu
+      },
+      {
+        name: "Số đơn hàng",
+        type: "line",
+        data: revenueData, // Dữ liệu số đơn hàng
+      },
+    ],
+  };
+
+  const handleChartTypeChange = (type) => {
+    setChartType(type);
+  };
+
+  const columns = [
+    // { field: "_id", headerName: "Mã đơn hàng", width: 200, hide: true },
+    {
+      field: "name",
+      headerName: "Tên sản phẩm",
+      width: 450,
+      renderCell: (params) => {
+        return (
+          <div className="d-flex align-items-center">
+            <Avatar
+              src={params.row.thumbnail}
+              alt={params.row.name}
+              sx={{ width: 50, height: 50 }}
+              variant="square"
+            />
+            <span className="ms-2">{params.row.name}</span>
+          </div>
+        );
+      },
+    },
+    {
+      field: "price",
+      headerName: "Giá bán",
+      width: 150,
+      renderCell: (params) => {
+        return formatCurrency(params.row.price);
+      },
+    },
+    { field: "hasSold", headerName: "Đã bán", width: 100 },
+    { field: "inventory", headerName: "Tồn kho", width: 100 },
+    { field: "onStock", headerName: "Có sẵn", width: 100 },
+    { field: "view", headerName: "Lượt xem", width: 120 },
+  ];
+
   return (
     <React.Fragment>
       <Row>
-        {/* order cards */}
-        <Col md={6} xl={3}>
-          <OrderCard
-            params={{
-              title: "Đơn hàng đã nhận",
-              class: "bg-c-blue",
-              icon: "feather icon-shopping-cart",
-              primaryText: "486",
-              secondaryText: "Đơn hàng đã hoàn thành",
-              extraText: "351",
-            }}
-          />
-        </Col>
-        <Col md={6} xl={3}>
+        <Col md={6} xl={4}>
           <OrderCard
             params={{
               title: "Tổng doanh thu",
               class: "bg-c-green",
               icon: "feather icon-tag",
-              primaryText: "1641",
+              primaryText: formatCurrency(analyticsData?.totalRevenue),
               secondaryText: "Tháng này",
-              extraText: "213",
+              extraText: formatCurrency(currentMonthRevenue),
             }}
           />
         </Col>
-        <Col md={6} xl={3}>
+        <Col md={6} xl={4}>
           <OrderCard
             params={{
-              title: "Doanh thu",
+              title: "Tổng đơn hàng",
               class: "bg-c-yellow",
-              icon: "feather icon-repeat",
-              primaryText: "$42,562",
-              secondaryText: "Tháng này",
-              extraText: "$5,032",
+              icon: "feather icon-tag",
+              primaryText: analyticsData?.totalOrder || 0,
+              secondaryText: "Tổng",
+              extraText: analyticsData?.totalOrder || 0,
             }}
           />
         </Col>
-        <Col md={6} xl={3}>
+        <Col md={6} xl={4}>
           <OrderCard
             params={{
-              title: "Tổng lợi nhuận",
+              title: "Số Người dùng",
               class: "bg-c-red",
-              icon: "feather icon-award",
-              primaryText: "$9,562",
-              secondaryText: "Tháng này",
-              extraText: "$542",
+              icon: "feather icon-user",
+              primaryText: analyticsData?.countUser,
+              secondaryText: "Tổng số",
+              extraText: analyticsData?.countUser,
             }}
           />
         </Col>
+      </Row>
 
-        <Col md={12} xl={6}>
-          <Card>
-            <Card.Header>
-              <h5>Khách truy cập duy nhất</h5>
-            </Card.Header>
-            <Card.Body className="ps-4 pt-4 pb-0">
-              <Chart {...uniqueVisitorChart} />
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={12} xl={6}>
-          <Row>
-            <Col sm={6}>
-              <Card>
-                <Card.Body>
-                  <Row>
-                    <Col sm="auto">
-                      <span>Khách hàng</span>
-                    </Col>
-                    <Col className="text-end">
-                      <h2 className="mb-0">826</h2>
-                      <span className="text-c-green">
-                        8.2%
-                        <i className="feather icon-trending-up ms-1" />
-                      </span>
-                    </Col>
-                  </Row>
-                  <Chart {...customerChart} />
-                  <Row className="mt-3 text-center">
-                    <Col>
-                      <h3 className="m-0">
-                        <i className="fas fa-circle f-10 mx-2 text-success" />
-                        674
-                      </h3>
-                      <span className="ms-3">Mới</span>
-                    </Col>
-                    <Col>
-                      <h3 className="m-0">
-                        <i className="fas fa-circle text-primary f-10 mx-2" />
-                        182
-                      </h3>
-                      <span className="ms-3">Trở lại</span>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col sm={6}>
-              <Card className="bg-primary text-white">
-                <Card.Body>
-                  <Row>
-                    <Col sm="auto">
-                      <span>Khách hàng</span>
-                    </Col>
-                    <Col className="text-end">
-                      <h2 className="mb-0 text-white">826</h2>
-                      <span className="text-white">
-                        8.2%
-                        <i className="feather icon-trending-up ms-1" />
-                      </span>
-                    </Col>
-                  </Row>
-                  <Chart {...customerChart1} />
-                  <Row className="mt-3 text-center">
-                    <Col>
-                      <h3 className="m-0 text-white">
-                        <i className="fas fa-circle f-10 mx-2 text-success" />
-                        674
-                      </h3>
-                      <span className="ms-3">Mới</span>
-                    </Col>
-                    <Col>
-                      <h3 className="m-0 text-white">
-                        <i className="fas fa-circle f-10 mx-2 text-white" />
-                        182
-                      </h3>
-                      <span className="ms-3">Trở lại</span>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-        </Col>
-
-        <Col lg={4} md={6}>
-          <SocialCard
-            params={{
-              icon: "fa fa-envelope-open",
-              class: "blue",
-              variant: "primary",
-              primaryTitle: "8.62k",
-              primaryText: "Người đăng ký",
-              secondaryText: "Danh sách chính của bạn đang phát triển",
-              label: "Quản lý danh sách",
-            }}
-          />
-          <SocialCard
-            params={{
-              icon: "fab fa-twitter",
-              class: "green",
-              variant: "success",
-              primaryTitle: "+40",
-              primaryText: "Người theo dõi",
-              secondaryText: "Danh sách chính của bạn đang phát triển",
-              label: "Kiểm tra chúng",
-            }}
-          />
-        </Col>
-        <Col lg={4} md={6}>
-          <SocialCard
-            params={{
-              icon: "fa fa-comment",
-              class: "red",
-              variant: "danger",
-              primaryTitle: "1.25k",
-              primaryText: "Bình luận",
-              secondaryText: "Danh sách chính của bạn đang phát triển",
-              label: "Xem tất cả bình luận",
-            }}
-          />
-          <SocialCard
-            params={{
-              icon: "fa fa-thumbs-up",
-              class: "yellow",
-              variant: "warning",
-              primaryTitle: "1.25k",
-              primaryText: "Thích",
-              secondaryText: "Danh sách chính của bạn đang phát triển",
-              label: "Xem tất cả thích",
-            }}
-          />
-        </Col>
-        <Col lg={4} md={12}>
-          <SocialCard
-            params={{
-              icon: "fa fa-share-alt",
-              class: "blue",
-              variant: "primary",
-              primaryTitle: "1.25k",
-              primaryText: "Chia sẻ",
-              secondaryText: "Danh sách chính của bạn đang phát triển",
-              label: "Xem tất cả chia sẻ",
-            }}
-          />
-          <SocialCard
-            params={{
-              icon: "fa fa-users",
-              class: "green",
-              variant: "success",
-              primaryTitle: "1.25k",
-              primaryText: "Người dùng",
-              secondaryText: "Danh sách chính của bạn đang phát triển",
-              label: "Xem tất cả người dùng",
-            }}
-          />
-        </Col>
-
+      <Row>
         <Col md={12} xl={12}>
           <Card>
-            <Card.Header>
-              <h5>Khách truy cập duy nhất</h5>
-            </Card.Header>
-            <Card.Body className="ps-4 pt-4 pb-0">
-              <Chart {...barChartData} />
-            </Card.Body>
+            <div className="fs-4 p-4">
+              <h5>Thống kê doanh thu</h5>
+            </div>
+            <div className="px-4">
+              <div className="mb-3">
+                <button
+                  className={`btn btn-sm me-2 ${
+                    chartType === "daily"
+                      ? "btn-primary"
+                      : "btn-outline-primary"
+                  }`}
+                  onClick={() => handleChartTypeChange("daily")}
+                >
+                  Ngày
+                </button>
+                <button
+                  className={`btn btn-sm  me-2 ${
+                    chartType === "monthly"
+                      ? "btn-primary"
+                      : "btn-outline-primary"
+                  }`}
+                  onClick={() => handleChartTypeChange("monthly")}
+                >
+                  Tháng
+                </button>
+                <button
+                  className={`btn btn-sm  me-2 ${
+                    chartType === "yearly"
+                      ? "btn-primary"
+                      : "btn-outline-primary"
+                  }`}
+                  onClick={() => handleChartTypeChange("yearly")}
+                >
+                  Năm
+                </button>
+              </div>
+              <Chart {...updatedChartData} />
+            </div>
           </Card>
         </Col>
       </Row>
-      <Col md={12} xl={12}>
-        <Card>
-          <Card.Header>
-            <h5>Khách truy cập duy nhất</h5>
-          </Card.Header>
-          <Card.Body className="ps-4 pt-4 pb-0">
-            <Chart {...comboChartData} />
-          </Card.Body>
-        </Card>
-      </Col>
-      <Col md={12} xl={12}>
-        <Card>
-          <Card.Header>
-            <h5>Khách truy cập duy nhất</h5>
-          </Card.Header>
-          <Card.Body className="ps-4 pt-4 pb-0">
-            <Chart {...candlestickChartData} />
-          </Card.Body>
-        </Card>
-      </Col>
+      <Row>
+        <Col md={12} xl={12}>
+          <Card className="p-4">
+            <h5 className="mb-4">Sản phẩm bán chạy</h5>
+            <DataGrid
+              rows={data}
+              columns={columns}
+              loading={status === "loading"}
+              getRowId={(row) => row._id}
+              localeText={{
+                noRowsLabel: "Không có dữ liệu",
+                MuiTablePagination: {
+                  labelRowsPerPage: "Số dòng mỗi trang",
+                },
+              }}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 10,
+                  },
+                },
+              }}
+              experimentalFeatures={{ newEditingApi: true }}
+              pageSizeOptions={[5, 10, 20, 50, 100]}
+              disableRowSelectionOnClick
+            />
+          </Card>
+        </Col>
+      </Row>
     </React.Fragment>
   );
 };

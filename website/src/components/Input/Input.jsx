@@ -1,8 +1,7 @@
-/* eslint-disable react/prop-types */
+/* eslint-disable  */
 import { useState, useRef, forwardRef, useEffect } from "react";
 import { Icon } from "@iconify/react";
 
-// eslint-disable-next-line react/display-name
 export const Input = forwardRef(
   (
     {

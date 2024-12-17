@@ -3,3 +3,5 @@ npm-debug.log
 .env
 
 serviceAccountKey.json
+dist
+dist-ssr
