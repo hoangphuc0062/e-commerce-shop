@@ -41,13 +41,14 @@ export function fToNowVN(date) {
     : "";
 }
 // tiền tệ và % //
-export function formatCurrency(value, locale = "vi-VN", currency = "VND") {
-  if (!value) return "";
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency: currency,
-    minimumFractionDigits: 0, // No decimal points for VND
-  }).format(value);
+export function formatCurrency(value, locale = "vi-VN") {
+  if (value === null || value === undefined) return "0 VND"; // Giá trị mặc định khi không có số
+  return (
+    new Intl.NumberFormat(locale, {
+      style: "decimal", // Chỉ định kiểu số, không sử dụng style: "currency"
+      minimumFractionDigits: 0,
+    }).format(value) + " VND"
+  ); // Thêm hậu tố "VND"
 }
 
 // Format percentage

@@ -66,9 +66,10 @@ const getAllProduct = asyncHandler(async (req, res) => {
       }
       delete formattedQueries.slug;
     }
-
+    if (queries.multiFilter === "") delete formattedQueries.multiFilter;
     if (queries.multiFilter) {
       const filterString = decodeURIComponent(queries.multiFilter);
+
       const filterConditions = filterString.split("&");
 
       filterConditions.forEach((condition) => {
@@ -88,13 +89,16 @@ const getAllProduct = asyncHandler(async (req, res) => {
         } else {
           const values = value.split(",");
 
-          if (values.length > 0) {
-            if (!formattedQueries.$or) formattedQueries.$or = [];
-            formattedQueries.$or.push(
-              ...values.map((val) => ({
-                [`attributes.${key}`]: { $regex: val, $options: "i" },
-              }))
-            );
+          if (values && values.length > 0) {
+            // Khởi tạo $or nếu chưa tồn tại
+            formattedQueries.$or = formattedQueries.$or || [];
+
+            // Thêm các điều kiện vào $or
+            const conditions = values.map((val) => ({
+              [`filterable.${key}`]: { $regex: val, $options: "i" }, // Điều kiện regex (case-insensitive)
+            }));
+
+            formattedQueries.$or.push(...conditions);
           }
         }
       });
@@ -187,14 +191,15 @@ const addManyProduct = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
   const { pid } = req.params;
+  const data = req.body;
 
-  if (!pid || Object.keys(req.body).length === 0) {
+  if (!pid || Object.keys(data).length === 0) {
     return res.status(400).json({
       mes: "Missing inputs",
     });
   }
 
-  const product = await Product.findByIdAndUpdate(pid, req.body.data, {
+  const product = await Product.findByIdAndUpdate(pid, data, {
     new: true,
   });
 
@@ -242,6 +247,82 @@ const getProductBySlug = asyncHandler(async (req, res) => {
 //   if (!product) throw new Error("Product is not found in database");
 //   return res.status(200).json(product);
 // });
+
+const updateManyProduct = asyncHandler(async (req, res) => {
+  const { brandIds } = req.body; // Nhận mảng brandIds từ body
+
+  if (!Array.isArray(brandIds) || brandIds.length === 0) {
+    return res
+      .status(400)
+      .json({ message: "brandIds phải là một mảng hợp lệ." });
+  }
+
+  // Validate ObjectId
+  // const validBrandIds = brandIds.filter((id) =>
+  //   mongoose.Types.ObjectId.isValid(id)
+  // );
+
+  // const cpu = "Intel Core i3, Intel Core i5, Intel Core i7, Intel Core i9"
+  // const ram = "8GB, 16GB";
+  // const storage = "512GB";
+  // const screenSizes = ["HD"]
+  // Dữ liệu muốn cập nhật
+  const refreshRates = "120Hz";
+  const storages = "256GB, 512GB, 1TB";
+  const rams = "8GB";
+  const chips = "Apple-A-series";
+
+  const filterable = {
+    refreshRate: refreshRates,
+    storage: storages,
+    ram: rams,
+    chip: chips,
+  };
+
+  // Cập nhật sản phẩm với tất cả brandId trong danh sách
+  const result = await Product.updateMany(
+    { brand: { $in: brandIds } }, // Lọc theo danh sách brandIds
+    { $set: { filterable } }, // Dữ liệu cần cập nhật
+    { new: true }
+  );
+
+  // Kiểm tra kết quả
+  if (result.matchedCount === 0) {
+    return res.status(404).json({
+      message: "Không tìm thấy sản phẩm nào với các brandId được cung cấp.",
+    });
+  }
+
+  res.status(200).json({
+    message: "Cập nhật sản phẩm thành công!",
+    matchedCount: result.matchedCount, // Số lượng sản phẩm được tìm thấy
+    modifiedCount: result.modifiedCount, // Số lượng sản phẩm thực sự được cập nhật
+  });
+});
+
+const compareProduct = asyncHandler(async (req, res) => {
+  const { slugs } = req.body;
+
+  if (slugs.length === 0) {
+    return res.status(400).json({ mes: "Missing inputs" });
+  }
+
+  const products = await Product.find({ slug: { $in: slugs } }).select(
+    "name thumbnail price attributes"
+  );
+
+  if (products.length === 0) {
+    return res.status(404).json({ mes: "Products not found" });
+  }
+
+  return res.status(200).json({
+    mes: products
+      ? "Compare product is successed"
+      : "Compare products is failed",
+    products,
+  });
+});
+
 module.exports = {
   getAllProduct,
   addProduct,
@@ -249,4 +330,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getProductBySlug,
+  compareProduct,
+  updateManyProduct,
 };

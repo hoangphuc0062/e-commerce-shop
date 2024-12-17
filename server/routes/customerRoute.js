@@ -19,8 +19,8 @@ router.delete(
 
 router.post("/checkOTP", ctrl.checkOTP);
 router.get("/logout", ctrl.logout);
-router.post("/forgotpassword", ctrl.forgotPassword);
-router.put("/resetpassword", ctrl.resetPassword);
+router.post("/forgot-password", ctrl.forgotPassword);
+router.put("/reset-password", ctrl.resetPassword);
 router.post("/change-password", verifyAccessToken, ctrl.changePassword);
 router.post("/refreshtoken", ctrl.refreshAccessToken);
 router.post("/add-cart", verifyAccessToken, ctrl.addCart);

@@ -61,6 +61,7 @@ export const transformAttributes = (attributes) => {
   return Object.entries(attributes).map(([title, details]) => {
     const detailArray = details.split(", ").map((item) => {
       const [key, ...valueParts] = item.split(": ");
+      // console.log(key, valueParts);
       return { key: key.trim(), value: valueParts.join(": ").trim() };
     });
     return { title, details: detailArray };

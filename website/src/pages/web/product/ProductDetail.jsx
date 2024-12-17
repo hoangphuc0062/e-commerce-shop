@@ -1,3 +1,4 @@
+/* eslint-disable  */
 import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,8 +17,12 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import SingleProduct from "../../../components/FeatureBlockProduct/SingleProduct";
-import { getProductBySlug, getProducts } from "./../../../redux/slices/product";
-import { extractTextFromHtml } from "./../../../../../dashboard/src/utils/extractTextFromHtml";
+import {
+  addSlug,
+  removeSlug,
+  getProductBySlug,
+  getProducts,
+} from "./../../../redux/slices/product";
 import { addCart, getCart } from "../../../redux/slices/auth";
 import { handleToast } from "../../../ultils/toast";
 import Drawer from "@mui/material/Drawer";
@@ -26,7 +31,7 @@ import { UserContext } from "../../../context/AuthContext";
 
 import BreadcrumbsCustom from "../../../components/Breadcrumbs/Breadcrumbs";
 import { formatCurrency, transformAttributes } from "../../../utils/helper";
-
+// import { addSlug, removeSlug } from "../redux/slices/productSlice";
 const ProductDetail = () => {
   const { category, brand, product } = useParams();
   const { loginAuth } = useContext(UserContext);
@@ -161,6 +166,12 @@ const ProductDetail = () => {
     // ...(data?.attributes?.map((attr) => attr.images) ?? []),
   ];
 
+  // const handleCompareProduct = () => {
+  //   setIsDrawerOpen(true);
+
+  //   dispatch(addSlug(DataProduct.slug));
+  // };
+
   return (
     <div className="container p-2 sm:p-4 lg:p-8 w-full flex flex-col gap-4">
       <div>
@@ -176,46 +187,6 @@ const ProductDetail = () => {
             <Icon icon="ic:outline-star" />
             <Icon icon="ic:outline-star" />
           </span>
-          <span>9 đánh giá</span>
-          <button className=" border-main text-main p-1 border-2 text-lg rounded-lg">
-            <Icon
-              icon="ic:round-plus"
-              width="1rem"
-              height="1rem"
-              className="inline"
-            />
-            <span className="inline" onClick={() => setIsDrawerOpen(true)}>
-              So sánh
-            </span>
-            <Drawer
-              anchor="bottom"
-              open={isDrawerOpen}
-              onClose={() => {
-                setIsDrawerOpen(false);
-              }}
-            >
-              <div className="h-[200px] grid grid-cols-4 p-4">
-                <div className="flex flex-col items-center justify-center border-r-2">
-                  <Icon icon="ph:plus-square-thin" width="3rem" height="3rem" />
-                  <div>Thêm sản phẩm</div>
-                </div>
-                <div className="flex flex-col items-center justify-center border-r-2">
-                  <Icon icon="ph:plus-square-thin" width="3rem" height="3rem" />
-                  <div>Thêm sản phẩm</div>
-                </div>
-                <div className="flex flex-col items-center justify-center border-r-2">
-                  <Icon icon="ph:plus-square-thin" width="3rem" height="3rem" />
-                  <div>Thêm sản phẩm</div>
-                </div>
-                <div className="flex flex-col items-center justify-center border-r-2 gap-2">
-                  <div>Đã chọn 1 sản phẩm</div>
-                  <Link className="bg-main text-white p-2 rounded-lg">
-                    So sánh ngay
-                  </Link>
-                </div>
-              </div>
-            </Drawer>
-          </button>
         </div>
         <div className="flex flex-col md:flex md:flex-row  gap-4">
           <div className="block__header--left flex flex-col gap-3  md:w-1/2 min-h-[400px] ">
@@ -318,7 +289,7 @@ const ProductDetail = () => {
             {values && values.length > 0 && (
               <div>
                 <span className="text-[20px] font-semibold">Chọn màu sắc</span>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
                   {values?.map((value, index) => (
                     <button
                       key={index}
@@ -329,7 +300,11 @@ const ProductDetail = () => {
                           : "border-gray-300"
                       }`}
                     >
-                      <img src={value?.thumbnail} alt="" />
+                      <img
+                        src={value?.thumbnail}
+                        alt=""
+                        className="h-[40px] w-[40px]"
+                      />
                       <div>
                         <div className="text-left text-[14px]">
                           {value?.name}

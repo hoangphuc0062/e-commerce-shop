@@ -1,4 +1,5 @@
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable  */
+
 import React, { useState } from "react";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -110,7 +111,7 @@ export default function SliderBanner({ data }) {
                 <img
                   src={img.src}
                   alt={img.title}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-fit lg:object-contain aspect-video"
                 />
               </Link>
             </SwiperSlide>

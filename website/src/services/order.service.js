@@ -14,6 +14,7 @@ const OrderServices = {
   },
 
   getOrderByUser: () => sendRequest("get", "/orders/user"),
+  update: (id, data) => sendRequest("put", `/orders/${id}`, data),
 };
 
 export default OrderServices;

@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+/* eslint-disable  */
+import React, { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import Person from "../../../components/Person";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
-import { userOrder } from "../../../redux/slices/order";
+import { update, userOrder } from "../../../redux/slices/order";
+import { FiCloudLightning } from "react-icons/fi";
+import { handleToast } from "../../../ultils/toast";
 
 export default function Order() {
   const [activeTab, setActiveTab] = useState("all");
@@ -15,9 +18,11 @@ export default function Order() {
   const data = useSelector((state) => state.auth.data.rs);
   const satusOrder = useSelector((state) => state.order.statusUserOrder);
   const dataOrder = useSelector((state) => state.order.data);
+
   useEffect(() => {
     dispatch(userOrder());
   }, [dispatch]);
+
   useEffect(() => {
     if (status === "success") {
       setCustomerData(data);
@@ -25,10 +30,11 @@ export default function Order() {
   }, [status, data]);
 
   useEffect(() => {
-    if (satusOrder === "success") {
+    if (satusOrder === "success" && Array.isArray(dataOrder)) {
       setOrderData(
-        dataOrder.map((item) => ({
-          id: item.SKU,
+        dataOrder?.map((item) => ({
+          _id: item?._id,
+          id: item?.SKU,
           date: new Date(item?.date).toLocaleDateString("vi-VN"),
           total: `${item.total.toLocaleString()} VND`,
           status: item?.status,
@@ -47,10 +53,11 @@ export default function Order() {
 
   const tabs = [
     { id: "all", name: "Tất cả" },
-    { id: "Đang chờ xử lý", name: "Đang chờ xử lý" },
+    { id: "Processing", name: "Đang chờ xử lý" },
     { id: "Đã giao hàng", name: "Đã giao hàng" },
     { id: "Đã nhận hàng", name: "Đã nhận hàng" },
-    { id: "Đã hủy", name: "Đã hủy" },
+    { id: "Canceled", name: "Đã hủy" },
+    { id: "Success", name: "Thành công" },
   ];
 
   const getStatusClass = (status) => {
@@ -71,6 +78,7 @@ export default function Order() {
         return "";
     }
   };
+
   const getStatusText = (status) => {
     switch (status) {
       case "Pending":
@@ -89,14 +97,33 @@ export default function Order() {
         return status;
     }
   };
+
   const renderContent = () => {
     const filteredData =
       activeTab === "all"
         ? orderData
         : orderData.filter((item) => item.status === activeTab);
+
     if (filteredData.length === 0) {
       return <p className="text-center py-4">Đơn hàng trống</p>;
     }
+
+    const hanldeDelete = (index) => {
+      dispatch(
+        update({
+          orderId: index._id,
+          data: {
+            status: "Cancelled",
+          },
+        })
+      ).then((i) => {
+        if (i.type === "orders/updateStatus/fulfilled") {
+          handleToast("success", "Hủy đơn thành công");
+          dispatch(userOrder());
+        }
+      });
+    };
+
     return (
       <table className="min-w-full divide-y divide-gray-200 text-center">
         <thead className="bg-gray-50">
@@ -135,8 +162,8 @@ export default function Order() {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200 overflow-x-scroll">
           {filteredData.map((item) => (
-            <>
-              <tr key={item.id}>
+            <React.Fragment key={item.id}>
+              <tr>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {item.id}
                 </td>
@@ -190,7 +217,7 @@ export default function Order() {
                     <td colSpan="5" className="px-6 py-4 text-left">
                       <div className="space-y-4">
                         {item.products.map((product, index) => (
-                          <div key={index} className="flex  space-x-4">
+                          <div key={index} className="flex space-x-4">
                             <img
                               src={product.image}
                               alt={product.name}
@@ -215,12 +242,20 @@ export default function Order() {
                             </div>
                           </div>
                         ))}
+                        <div className="mt-4">
+                          <button
+                            onClick={() => hanldeDelete(item)}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg"
+                          >
+                            Hủy đơn hàng
+                          </button>
+                        </div>
                       </div>
                     </td>
                   </motion.tr>
                 )}
               </AnimatePresence>
-            </>
+            </React.Fragment>
           ))}
         </tbody>
       </table>

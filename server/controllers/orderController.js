@@ -10,6 +10,7 @@ const Order = require("../models/orderModel");
 const Customer = require("../models/customerModel");
 const Coupon = require("../models/couponModel");
 const sendMail = require("../ultils/sendMail");
+const Staff = require("../models/staffModel");
 
 const generateSKU = (length) => {
   const characters =
@@ -40,7 +41,9 @@ const generateUniqueSKU = async () => {
 const getAllOrder = asyncHandler(async (req, res) => {
   const orders = await Order.find()
     .populate("orderBy", "name email")
+    .populate("staff", "name")
     .sort({ date: -1 });
+
   return res.status(200).json(orders);
 });
 
@@ -123,8 +126,6 @@ const createOrder = asyncHandler(async (req, res) => {
     ...addr.toObject(),
     isDefault: false,
   }));
-
-  // Add the new address with isDefault set to true
   updatedAddresses.push(formattedAddress);
 
   await Customer.findByIdAndUpdate(
@@ -196,70 +197,114 @@ const deleteOrder = asyncHandler(async (req, res) => {
 // thanh toán tiền mặt
 
 const createInStoreOrder = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  // Check if staff exists
+  const staff = await Staff.findById(userId);
+  if (!staff) {
+    return res.status(404).json({ message: "Staff not found" });
+  }
+
+  // Extract request body
   const {
-    customerId,
-    total,
-    shippingFee,
-    name,
+    productId,
+    attributeId,
+    quantity,
+    key,
+    totalPrice,
+    paymentMethod,
+    statusPayment,
+    address,
+    city,
+    district,
+    ward,
     email,
+    fullName,
+    gender,
     phone,
-    sex,
-    products,
-    coupon,
+    notes,
   } = req.body;
-  let customer;
 
-  if (customerId) {
-    customer = await Customer.findById(customerId);
+  // Validate required fields
+  if (!productId || !quantity) {
+    return res
+      .status(400)
+      .json({ message: "Missing required fields: productId and quantity" });
+  }
+
+  // Find product
+  const product = await Product.findById(productId);
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
+
+  // Check stock availability
+  if (quantity > product.onStock) {
+    return res.status(400).json({ message: "Out of stock" });
+  }
+
+  // Handle customer creation or update
+  let customer = null;
+  if (email) {
+    customer = await Customer.findOne({ email });
+    const dataAddress = {
+      street: address,
+      wards: ward,
+      districts: district,
+      provinces: city,
+      isDefault: true,
+    };
+
     if (!customer) {
-      return res.status(404).json({ message: "Customer not found" });
+      // Create new customer
+      customer = new Customer({
+        email,
+        name: fullName,
+        phone,
+        address: [dataAddress],
+        sex: gender,
+        cart: [],
+        password: "123456",
+      });
+      await customer.save();
+    } else {
+      // Update customer address if not already exists
+      const addressExists = customer.address.some(
+        (addr) =>
+          addr.street === address &&
+          addr.wards === ward &&
+          addr.districts === district &&
+          addr.provinces === city
+      );
+      if (!addressExists) {
+        customer.address.push(dataAddress);
+      }
+      await customer.save();
     }
-  } else {
-    // Create a new customer if customerId is not provided
-    if (!name || !email || !phone) {
-      return res
-        .status(400)
-        .json({ message: "Customer information is required" });
-    }
-
-    customer = new Customer({
-      name,
-      email,
-      phone,
-      sex,
-    });
-    await customer.save();
   }
 
-  let orderTotal = total || 0;
-  if (coupon) {
-    const couponDoc = await Coupon.findOne({ code: coupon });
-    if (couponDoc) {
-      orderTotal -= (orderTotal * couponDoc.discount) / 100;
-    }
-  }
-  orderTotal += shippingFee || 0;
-
-  if (!products || !Array.isArray(products) || products.length === 0) {
-    return res.status(400).json({ message: "Product information is required" });
-  }
-
-  const orderProducts = products.map((product) => ({
-    pid: product.productsId,
-    attributeId: product.attributeId,
-    quantity: product.quantity,
-    price: product.price,
-  }));
-
+  // Create order
   const order = new Order({
-    products: orderProducts,
-    orderBy: customer._id,
-    total: orderTotal,
-    paymentMethod: "Cash",
-    shippingFee: shippingFee || 0,
+    products: [
+      {
+        pid: productId,
+        attributeId,
+        quantity,
+        key,
+      },
+    ],
+    staff: userId,
+    orderBy: customer ? customer._id : null,
+    status: "Pending",
+    total: totalPrice,
+    paymentMethod,
+    statusPayment,
+    SKU: await generateUniqueSKU(),
+    note: notes,
   });
 
   await order.save();
+
   return res.status(201).json(order);
 });
 
@@ -336,6 +381,63 @@ const create_payment_url = async (req, res) => {
   res.set("Content-Type", "text/html");
   res.send(JSON.stringify(vnpUrl));
 };
+
+const create_payment_url_By_Order_Staff = asyncHandler(async (req, res) => {
+  // #swagger.tags = ['vnpay']
+  // #swagger.summary = 'add'
+  process.env.TZ = "Asia/Ho_Chi_Minh";
+
+  let date = new Date();
+  let createDate = moment(date).format("YYYYMMDDHHmmss");
+
+  let ipAddr =
+    req.headers["x-forwarded-for"] ||
+    req.connection.remoteAddress ||
+    req.socket.remoteAddress ||
+    req.connection.socket.remoteAddress;
+
+  let tmnCode = process.env.VNP_TMNCODE;
+  let secretKey = process.env.VNP_HASHSECRET;
+  let vnpUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+  let returnUrl = process.env.VNP_RETURN_URL_ORDER_STAFF;
+
+  let orderId = req.body.orderId;
+  let amount = req.body.amount;
+
+  let bankCode = "";
+
+  let locale = "";
+  if (locale === null || locale === "") {
+    locale = "vn";
+  }
+  let currCode = "VND";
+  let vnp_Params = {};
+  vnp_Params["vnp_Version"] = "2.1.0";
+  vnp_Params["vnp_Command"] = "pay";
+  vnp_Params["vnp_TmnCode"] = tmnCode;
+  vnp_Params["vnp_Locale"] = locale;
+  vnp_Params["vnp_CurrCode"] = currCode;
+  vnp_Params["vnp_TxnRef"] = orderId;
+  vnp_Params["vnp_OrderInfo"] = "Thanh toan maGD:" + orderId;
+  vnp_Params["vnp_OrderType"] = "Update Pro";
+  vnp_Params["vnp_Amount"] = amount * 100;
+  vnp_Params["vnp_ReturnUrl"] = returnUrl;
+  vnp_Params["vnp_IpAddr"] = ipAddr;
+  vnp_Params["vnp_CreateDate"] = createDate;
+  if (bankCode !== null && bankCode !== "") {
+    vnp_Params["vnp_BankCode"] = bankCode;
+  }
+  vnp_Params = sortObject(vnp_Params);
+  let querystring = require("qs");
+  let signData = querystring.stringify(vnp_Params, { encode: false });
+  let crypto = require("crypto");
+  let hmac = crypto.createHmac("sha512", secretKey);
+  let signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+  vnp_Params["vnp_SecureHash"] = signed;
+  vnpUrl += "?" + querystring.stringify(vnp_Params, { encode: false });
+  res.set("Content-Type", "text/html");
+  res.send(JSON.stringify(vnpUrl));
+});
 
 const vnpay_return = async (req, res) => {
   // #swagger.tags = ['vnpay']
@@ -449,57 +551,57 @@ const generateEmailTemplate = ({
         <div style="padding: 16px;">
             <h2 style="font-size: 24px; color: #333333; margin-bottom: 8px;">Cảm ơn bạn đã đặt hàng!</h2>
             <img src="https://firebasestorage.googleapis.com/v0/b/e-commerce-shop-443f6.appspot.com/o/status%2Fsuccess.gif?alt=media&token=4b3eb1f3-abea-43a2-96a6-0e0c71b6d4b5" alt="Xác nhận đơn hàng thành công">
-            <div style="color: #555555; margin-bottom: 16px;">
-                <div style="style="text-align: center;">
-                <p style="font-size:" >Mã đơn hàng:</p>
-                <p style="border:none; color: #007bff; font-weight: 700; background: #ffffff; font-size: 16px;text-align: center;">
-                    ${SKU}
-                </p>
-               </div>
+            <p style="font-weight:bold;">${SKU}</p>
+            <p style="color: #555555; margin-bottom: 16px;">
                 Đơn hàng của bạn sẽ được xử lý ít phút. Chúng tôi sẽ thông báo cho bạn qua email khi đơn hàng của bạn đã được chuyển đi.
-                </div>
             </p>
-            <div
-                style="background-color: #f8f9fa; border: 1px solid #e1e1e1; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <dt style="color: #888888;">Ngày</dt>
-                    <dd style="color: #333333; font-weight: bold;">${new Date(
-                      date
-                    ).toLocaleDateString("vi-VN")}</dd>
-                </dl>
-                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <dt style="color: #888888;">Phương thức thanh toán</dt>
-                    <dd style="color: #333333; font-weight: bold;">${
-                      paymentMethod === "cash"
-                        ? "Thanh toán khi nhận hàng"
-                        : "Thanh toán online"
-                    }</dd>
-                </dl>
-                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <dt style="color: #888888;">Tên</dt>
-                    <dd style="color: #333333; font-weight: bold;">${
-                      orderBy.name
-                    }</dd>
-                </dl>
-                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <dt style="color: #888888;">Địa chỉ</dt>
-                    <dd style="color: #333333; font-weight: bold;">${
-                      orderBy.address.find((addr) => addr.isDefault).street +
-                      ", " +
-                      orderBy.address.find((addr) => addr.isDefault).wards +
-                      ", " +
-                      orderBy.address.find((addr) => addr.isDefault).districts +
-                      ", " +
-                      orderBy.address.find((addr) => addr.isDefault).provinces
-                    }</dd>
-                </dl>
-                <dl style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <dt style="color: #888888;">Điện thoại</dt>
-                    <dd style="color: #333333; font-weight: bold;">${
-                      orderBy.phone
-                    }</dd>
-                </dl>
-            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px; background-color: #f8f9fa; border: 1px solid #e1e1e1; border-radius: 8px; padding: 16px;">
+                <tbody>
+                    <tr>
+                        <th style="text-align: left; color: #888888; padding: 8px;">Ngày</th>
+                        <td style="text-align: right; color: #333333; font-weight: bold; padding: 8px;">${new Date(
+                          date
+                        ).toLocaleDateString("vi-VN")}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left; color: #888888; padding: 8px;">Phương thức thanh toán</th>
+                        <td style="text-align: right; color: #333333; font-weight: bold; padding: 8px;">${
+                          paymentMethod === "cash"
+                            ? "Thanh toán khi nhận hàng"
+                            : "Thanh toán online"
+                        }</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left; color: #888888; padding: 8px;">Tên</th>
+                        <td style="text-align: right; color: #333333; font-weight: bold; padding: 8px;">${
+                          orderBy.name
+                        }</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left; color: #888888; padding: 8px;">Địa chỉ</th>
+                        <td style="text-align: right; color: #333333; font-weight: bold; padding: 8px;">${
+                          orderBy.address.find((addr) => addr.isDefault)
+                            .street +
+                          ", " +
+                          orderBy.address.find((addr) => addr.isDefault).wards +
+                          ", " +
+                          orderBy.address.find((addr) => addr.isDefault)
+                            .districts +
+                          ", " +
+                          orderBy.address.find((addr) => addr.isDefault)
+                            .provinces
+                        }</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align: left; color: #888888; padding: 8px;">Điện thoại</th>
+                        <td style="text-align: right; color: #333333; font-weight: bold; padding: 8px;">${
+                          orderBy.phone
+                        }</td>
+                    </tr>
+                </tbody>
+            </table>
+
             <div style="text-align: center; margin-top: 16px;">
                 <a href="${baseUrl}/look-up-order"
                     style="background-color: #007bff; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; display: inline-block; margin-right: 8px;">Theo
@@ -513,6 +615,7 @@ const generateEmailTemplate = ({
 </body>
 
 </html>
+
   `;
 };
 
@@ -563,18 +666,226 @@ const getOrderBySKU = async (req, res) => {
   if (!sku) {
     return res.status(400).json({ message: "SKU is required" });
   }
+
   const order = await Order.findOne({ SKU: sku })
-    .populate(
-      "products.pid",
-      "-SKU -slug -historicalPrice -priceInMarket -category -brand -inStock -onStock -inComing -minInventory -maxInventory"
-    )
-    .populate("orderBy", "name email phone address");
+
+    .populate({
+      path: "products.pid",
+      select: "name thumbnail price slug variants",
+    })
+    .populate({
+      path: "orderBy",
+      select: "name email address phone",
+    });
 
   if (!order) {
     return res.status(404).json({ message: "Order not found" });
   }
-  return res.status(200).json(order);
+  const cart = order.products.map((item) => {
+    const product = item.pid;
+
+    const variant = product.variants?.find((v) => {
+      if (v instanceof Map) {
+        return v.get("key") === item.key;
+      } else {
+        return v.key === item.key;
+      }
+    });
+    let variantValue;
+    if (variant instanceof Map) {
+      const values = variant.get("values");
+      if (values) {
+        variantValue = values.find((v) => v.id === item.attributeId);
+      }
+    } else {
+      variantValue = variant?.values?.find((v) => v.id === item.attributeId);
+    }
+
+    return {
+      productId: product._id,
+      name: product.name,
+      thumbnail: variantValue?.thumbnail || product.thumbnail,
+      price: variantValue?.price || variant?.price || product.price,
+      slug: product.slug,
+      attributeValue: variantValue,
+      quantity: item.quantity,
+      key: item.key,
+    };
+  });
+  const data = {
+    order,
+    cart,
+  };
+  return res.status(200).json(data);
 };
+
+const getDailyRevenue = (orders) => {
+  const dailyRevenue = orders.reduce((acc, order) => {
+    const orderDate = new Date(order.date);
+    const day = orderDate.getDate();
+    const month = orderDate.getMonth() + 1; // Months are zero-based
+    const year = orderDate.getFullYear();
+    const dateKey = `${year}-${month}-${day}`;
+
+    if (!acc[dateKey]) {
+      acc[dateKey] = { total: 0, count: 0 };
+    }
+    acc[dateKey].total += order.total;
+    acc[dateKey].count += 1;
+
+    return acc;
+  }, {});
+
+  // Convert the dailyRevenue object to an array
+  const dailyRevenueArray = Object.keys(dailyRevenue).map((date) => ({
+    date,
+    revenue: dailyRevenue[date],
+  }));
+
+  return dailyRevenueArray;
+};
+
+const getMonthlyRevenue = (orders) => {
+  const currentYear = new Date().getFullYear();
+  const monthlyRevenue = orders.reduce((acc, order) => {
+    const orderDate = new Date(order.date);
+    const orderMonth = orderDate.getMonth();
+    const orderYear = orderDate.getFullYear();
+
+    if (orderYear === currentYear) {
+      if (!acc[orderMonth]) {
+        acc[orderMonth] = 0;
+      }
+      acc[orderMonth] += order.total;
+    }
+    return acc;
+  }, {});
+
+  // Convert the monthlyRevenue object to an array with 12 elements (one for each month)
+  const monthlyRevenueArray = Array.from({ length: 12 }, (_, index) => ({
+    month: index + 1,
+    revenue: monthlyRevenue[index] || 0,
+  }));
+
+  return monthlyRevenueArray;
+};
+
+const getAnnualRevenue = (orders) => {
+  const annualRevenue = orders.reduce((acc, order) => {
+    const orderYear = new Date(order.date).getFullYear();
+
+    if (!acc[orderYear]) {
+      acc[orderYear] = 0;
+    }
+    acc[orderYear] += order.total;
+
+    return acc;
+  }, {});
+
+  // Convert the annualRevenue object to an array
+  const annualRevenueArray = Object.keys(annualRevenue).map((year) => ({
+    year: Number(year),
+    revenue: annualRevenue[year],
+  }));
+
+  return annualRevenueArray;
+};
+
+const analystOrder = asyncHandler(async (req, res) => {
+  const orders = await Order.find().populate("orderBy", "name email");
+  const totalOrder = orders.length;
+  const totalRevenue = orders.reduce((acc, order) => {
+    return acc + order.total;
+  }, 0);
+  const totalSuccessOrder = orders.filter(
+    (order) => order.status === "Success"
+  ).length;
+  const totalPendingOrder = orders.filter(
+    (order) => order.status === "Pending"
+  ).length;
+
+  const totalProcessingOrder = orders.filter(
+    (order) => order.status === "Processing"
+  ).length;
+
+  const totalShippingOrder = orders.filter(
+    (order) => order.status === "Shipping"
+  ).length;
+  const totalCancelOrder = orders.filter(
+    (order) => order.status === "Cancelled"
+  ).length;
+  const totalReturnOrder = orders.filter(
+    (order) => order.status === "Return"
+  ).length;
+
+  const monthlyRevenue = getMonthlyRevenue(orders);
+  const annualRevenue = getAnnualRevenue(orders);
+  const dailyRevenue = getDailyRevenue(orders);
+
+  const totalUserMonthly = orders.reduce((acc, order) => {
+    const date = new Date(order.date);
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    const now = new Date();
+    const nowMonth = now.getMonth();
+    const nowYear = now.getFullYear();
+    if (month === nowMonth && year === nowYear) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
+
+  const bestSellingProducts = orders.reduce((acc, order) => {
+    order.products.forEach((product) => {
+      if (!acc[product.pid]) {
+        acc[product.pid] = {
+          pid: product.pid,
+          hasSold: product.quantity,
+        };
+      } else {
+        acc[product.pid].hasSold += product.quantity;
+      }
+    });
+    return acc;
+  }, {});
+
+  const bestSellingProductsArray = Object.values(bestSellingProducts).sort(
+    (a, b) => b.hasSold - a.hasSold
+  );
+
+  // Populate with product details
+  const populatedBestSellingProducts = await Product.find({
+    _id: { $in: bestSellingProductsArray.map((item) => item.pid) },
+  })
+    .select("onStock inventory price name view thumbnail")
+    .lean();
+
+  const finalBestSellingProducts = bestSellingProductsArray.map((item) => ({
+    ...item,
+    ...populatedBestSellingProducts.find(
+      (product) => product._id.toString() === item.pid.toString()
+    ),
+  }));
+
+  const countUser = await Customer.countDocuments();
+
+  return res.status(200).json({
+    totalOrder,
+    totalRevenue,
+    totalSuccessOrder,
+    totalPendingOrder,
+    totalProcessingOrder,
+    totalShippingOrder,
+    totalCancelOrder,
+    totalReturnOrder,
+    totalUserMonthly,
+    dailyRevenue,
+    monthlyRevenue,
+    annualRevenue,
+    bestSelling: finalBestSellingProducts,
+    countUser,
+  });
+});
 
 module.exports = {
   getAllOrder,
@@ -587,4 +898,6 @@ module.exports = {
   getOrderByUser,
   createInStoreOrder,
   getOrderBySKU,
+  create_payment_url_By_Order_Staff,
+  analystOrder,
 };

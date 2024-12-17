@@ -182,20 +182,12 @@ const HomePage = () => {
               children: [
                 ...(brandQueries.length > 0
                   ? [
-                    {
-                      title: "Hãng sản xuất",
-                      queries: brandQueries,
-                    },
-                  ]
+                      {
+                        title: "Hãng sản xuất",
+                        queries: brandQueries,
+                      },
+                    ]
                   : []),
-                {
-                  title: "Mức giá",
-                  queries: [
-                    { url: "/scanner/price/2m", name: "Trên 2 triệu" },
-                    { url: "/scanner/price/5m", name: "Trên 5 triệu" },
-                    { url: "/scanner/price/7m", name: "Trên 7 triệu" },
-                  ],
-                },
               ],
             };
           })
@@ -210,52 +202,54 @@ const HomePage = () => {
     if (statusBanner === "success" && Array.isArray(Banner)) {
       const now = new Date(); // Get the current time
 
-      const filteredBanners = Banner.filter((item) => item.title === "Home-banner")
-        .map((item) => ({
-          banner: item.banner
-            .filter((child) => {
-              const startDate = new Date(child.startDate);
-              const endDate = new Date(child.endDate);
-              return startDate <= now && endDate >= now; // Filter if current time is within the range
-            })
-            .map((child) => ({
-              id: item._id,
-              title: child.name,
-              description: child.shotDescription,
-              src: child.urlImage,
-              link: child.refUrl,
-              position: child.position,
-              startDate: child.startDate,
-              endDate: child.endDate,
-            })),
-        }));
+      const filteredBanners = Banner.filter(
+        (item) => item.title === "Home-banner"
+      ).map((item) => ({
+        banner: item.banner
+          .filter((child) => {
+            const startDate = new Date(child.startDate);
+            const endDate = new Date(child.endDate);
+            return startDate <= now && endDate >= now; // Filter if current time is within the range
+          })
+          .map((child) => ({
+            id: item._id,
+            title: child.name,
+            description: child.shotDescription,
+            src: child.urlImage,
+            link: child.refUrl,
+            position: child.position,
+            startDate: child.startDate,
+            endDate: child.endDate,
+          })),
+      }));
 
       setDataBanner(filteredBanners); // Update the state with the filtered banners
     }
   }, [statusBanner, Banner]);
 
-
   useEffect(() => {
     if (statusBanner === "success" && Array.isArray(Banner)) {
       const now = new Date(); // Lấy thời gian hiện tại
       setVerticalBanner(
-        Banner.filter((item) => item.title === "Vertical-banner").map((item) => ({
-          banner: item.banner
-            .filter((child) => {
-              const startDate = new Date(child.startDate);
-              const endDate = new Date(child.endDate);
-              return startDate <= now && endDate >= now;
-              // Kiểm tra nếu banner nằm trong khoảng thời gian
-            })
-            .map((child) => ({
-              id: item._id,
-              image: child.urlImage,
-              ref: child.refUrl,
-              position: child.position,
-              startDate: child.startDate,
-              endDate: child.endDate,
-            })),
-        }))
+        Banner.filter((item) => item.title === "Vertical-banner").map(
+          (item) => ({
+            banner: item.banner
+              .filter((child) => {
+                const startDate = new Date(child.startDate);
+                const endDate = new Date(child.endDate);
+                return startDate <= now && endDate >= now;
+                // Kiểm tra nếu banner nằm trong khoảng thời gian
+              })
+              .map((child) => ({
+                id: item._id,
+                image: child.urlImage,
+                ref: child.refUrl,
+                position: child.position,
+                startDate: child.startDate,
+                endDate: child.endDate,
+              })),
+          })
+        )
       );
     }
   }, [statusBanner, Banner]);
@@ -318,11 +312,9 @@ const HomePage = () => {
         <div className="hidden w-1/6 lg:block shadow-lg">
           {dataCategory.length > 0 && <MenuTree dataCategory={dataCategory} />}
         </div>
-
         <div className="w-full  lg:w-4/6 bg-whiteColor shadow-custom">
           {dataBanner.length > 0 && <SliderBanner data={dataBanner} />}
         </div>
-
         <div className="hidden w-1/6 lg:block ">
           {VerticalBanner.length > 0 && <SingleBanner data={VerticalBanner} />}
         </div>
@@ -336,10 +328,9 @@ const HomePage = () => {
       <section className="bg-white h-full ">
         {products2.length > 0 && <GridProduct data={products2} cat={slug2} />}
       </section>
-      <section className="">
+      <section className="mb-2">
         <Accessories datas={datas} title="Phụ kiện" />
       </section>
-      <section>Blogs</section>
     </div>
   );
 };

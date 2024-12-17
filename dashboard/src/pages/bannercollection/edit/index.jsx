@@ -160,7 +160,7 @@ function EditBannerCollection() {
   });
 
   const handleUploadComplete = (url, index) => {
-    formik.setFieldValue(`banner[${index}].urlImage`, url);
+    formik.setFieldValue(`banner[${index}].urlImage`, url[0]);
   };
 
   const handleDelete = (index) => {

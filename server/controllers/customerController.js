@@ -44,41 +44,6 @@ const deleteCustomer = asyncHandler(async (req, res) => {
   });
 });
 
-const forgotPassword = asyncHandler(async (req, res) => {
-  const { phone } = req.body;
-
-  const customer = await Customer.findOne({ phone });
-  if (!customer) {
-    res.status(400);
-    throw new Error("Phone number not found");
-  }
-
-  const resetToken = customer.createPasswordChangeToken();
-
-  await customer.save(); // Save the customer with the token
-
-  // Generate an OTP
-  const otp = Math.floor(Math.random() * (999999 - 100000) + 100000).toString();
-
-  // Update the code field with the generated OTP
-  await customer.updateCode(otp);
-
-  // Message content with OTP
-  const messages = `Mã OTP: ${otp}. Vui lòng không chia sẻ mã này với ai. Mã sẽ hết hạn trong 15 phút`;
-
-  try {
-    // Send the OTP via SMS
-    await sendSMS(phone, messages);
-    console.log(`OTP sent to ${phone}: ${otp}`);
-  } catch (error) {
-    console.error("Error sending OTP:", error);
-    return res.status(500).json({ message: "Error sending OTP" });
-  }
-
-  // Send the response with resetToken and customer
-  res.status(200).json({ resetToken, customer });
-});
-
 const getCustomer = asyncHandler(async (req, res) => {
   const sortBy = req.query.sort;
   const order = req.query.order === "asc" ? 1 : -1;
@@ -247,8 +212,85 @@ const registerCustomer = asyncHandler(async (req, res) => {
       }
     );
 
-    const html = `Xin vui lòng click vào link dưới đây để hoàn tất quá trình đăng ký của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ.
-      <a href=${process.env.URL_SERVER}/api/customers/finalregister/${token}>Xác nhận tài khoản</a>`;
+    const html = `<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Confirmation</title>
+    <style>
+        .body-mail {
+            font-family: Arial, sans-serif;
+            background-color: #f3f6fc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        .confirmation-container {
+            background-color: #ffffff;
+            text-align: center;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .confirmation-container img {
+            width: 80px;
+            margin-bottom: 16px;
+        }
+
+        .confirmation-container h1 {
+            font-size: 24px;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+
+        .confirmation-container p {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .confirmation-container a {
+            display: inline-block;
+            background-color: #2563eb;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+            transition: background-color 0.3s ease;
+        }
+
+        .confirmation-container a:hover {
+            background-color: #1d4ed8;
+        }
+    </style>
+</head>
+
+<body>
+     <div class="body-mail">
+        <div class="confirmation-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/10678/10678045.png" alt="Success Icon">
+            <h1>Xác thực tài khoản email</h1>
+            <p>Xin vui lòng click vào link dưới đây để hoàn tất quá trình đăng ký của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ</p>
+             <a href=${process.env.URL_SERVER}/api/customers/finalregister/${token}>Xác nhận tài khoản</a>
+        </div>
+    </div>
+</body>
+
+</html>
+     `;
     const subject = `Hoàn tất đăng ký Voi Tây Nguyên Account`;
 
     const rs = await sendMail(email, html, subject);
@@ -280,6 +322,56 @@ const finalRegister = asyncHandler(async (req, res) => {
     return res.redirect(`${process.env.WEB_URL}/finalregister/failed`);
   }
 });
+// const forgotPassword = asyncHandler(async (req, res) => {
+//   const { phone } = req.body;
+
+//   const customer = await Customer.findOne({ phone });
+//   if (!customer) {
+//     res.status(400);
+//     throw new Error("Phone number not found");
+//   }
+
+//   const resetToken = customer.createPasswordChangeToken();
+
+//   await customer.save(); // Save the customer with the token
+
+//   // Generate an OTP
+//   const otp = Math.floor(Math.random() * (999999 - 100000) + 100000).toString();
+
+//   // Update the code field with the generated OTP
+//   await customer.updateCode(otp);
+
+//   // Message content with OTP
+//   const messages = `Mã OTP: ${otp}. Vui lòng không chia sẻ mã này với ai. Mã sẽ hết hạn trong 15 phút`;
+
+//   try {
+//     // Send the OTP via SMS
+//     await sendSMS(phone, messages);
+//     console.log(`OTP sent to ${phone}: ${otp}`);
+//   } catch (error) {
+//     console.error("Error sending OTP:", error);
+//     return res.status(500).json({ message: "Error sending OTP" });
+//   }
+
+//   // Send the response with resetToken and customer
+//   res.status(200).json({ resetToken, customer });
+// });
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) throw new Error("Missing email");
+  const customer = await Customer.findOne({ email });
+  if (!customer) throw new Error("User not found");
+  const resetToken = customer.createPasswordChangeToken();
+  await customer.save();
+
+  const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn link này sẽ hết hạn sau 15 phút kể từ bây giờ. 
+  <a href=${process.env.WEB_URL}/auth/reset-password/${resetToken}>Click here</a>`;
+  const subject = `Quên mật khẩu`;
+  const rs = await sendMail(email, html, subject);
+  return res.status(200).json({
+    rs,
+  });
+});
 
 const resetPassword = asyncHandler(async (req, res) => {
   const { password, token } = req.body;
@@ -296,7 +388,7 @@ const resetPassword = asyncHandler(async (req, res) => {
   // Find the customer with matching reset token and ensure token is not expired
   const customer = await Customer.findOne({
     passwordResetToken,
-    passwordResetExprires: { $gt: Date.now() }, // Check if token is still valid
+    passwordResetExprires: { $gt: Date.now() },
   });
 
   // If no customer is found or the token is expired
@@ -320,7 +412,12 @@ const resetPassword = asyncHandler(async (req, res) => {
 const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
-  const customer = await Customer.findById(req.user._id).select("password");
+  const userId = req.user._id;
+
+  if (!currentPassword && !newPassword)
+    return res.status(400).json({ mes: "Missing Input" });
+
+  const customer = await Customer.findById(userId).select("password");
   // Check if the current password is correct
   if (!(await customer.isCorrectPassword(currentPassword))) {
     return res.status(400).json({ mes: "Current password is incorrect" });
@@ -385,11 +482,12 @@ const addCart = asyncHandler(async (req, res) => {
 const getCart = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
-  const customer = await Customer.findById(userId).populate({
-    path: "cart.pid",
-    select: "name thumbnail price slug variants",
-  });
-
+  const customer = await Customer.findById(userId)
+    .populate({
+      path: "cart.pid",
+      select: "name thumbnail price slug variants",
+    })
+    .populate();
   if (!customer) {
     return res.status(404).json({ message: "Customer not found" });
   }
@@ -656,7 +754,6 @@ module.exports = {
   updateCart,
   deleteCartItem,
   deleteManyCart,
-
   createAddress,
   updateAddress,
   deleteAddress,

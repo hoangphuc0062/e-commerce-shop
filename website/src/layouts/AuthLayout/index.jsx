@@ -1,8 +1,7 @@
 import { Header } from "./Header/Header";
-import { Footer } from "./Footer/Footer";
 import { Outlet } from "react-router-dom";
 
-export const PublicLayout = () => {
+export const AuthLayout = () => {
   return (
     <>
       <div className="">
@@ -11,7 +10,6 @@ export const PublicLayout = () => {
       <div className="container p-0 font-roboto lg:mt-[95px]">
         <Outlet />
       </div>
-      <Footer />
     </>
   );
 };

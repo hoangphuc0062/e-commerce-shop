@@ -1,3 +1,4 @@
+/* eslint-disable  */
 import { useEffect, useState, useCallback, act, useRef } from "react";
 import {
   Link,
@@ -60,6 +61,7 @@ const Product = () => {
   const [maxPrice, setMaxPrice] = useState();
   const [userMinPrice, setUserMinPrice] = useState();
   const [userMaxPrice, setUserMaxPrice] = useState();
+  const [filtersApplied, setFiltersApplied] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState({});
   const [queryFilter, setQueryFilter] = useState();
 
@@ -74,12 +76,13 @@ const Product = () => {
     dispatch(
       getProducts({
         limit: productPerPage,
-        fields: "name,price,thumbnail,view,category,brand,discount,slug,attributes",
+        fields:
+          "name,price,thumbnail,view,category,brand,discount,slug,filterable",
         slug,
       })
     );
   }, [brand, category, dispatch, productPerPage]);
-  useEffect(() => { }, [category]);
+  useEffect(() => {}, [category]);
   useEffect(() => {
     loadInitialProducts();
     if (category) {
@@ -116,9 +119,10 @@ const Product = () => {
         setSortedProducts(productsData);
         setHasMoreProducts(productsData.length >= productPerPage);
       }
-    } else if (statusProduct === "failed") {
-      navigate("/404");
     }
+    // else if (statusProduct === "failed") {
+    //   navigate("/404");
+    // }
     dispatch(resetState({ key: "error", value: "null" }));
   }, [statusProduct, productsData, dispatch, navigate, productPerPage]);
   useEffect(() => {
@@ -128,19 +132,21 @@ const Product = () => {
       // lọc theo các khoảng thời gian theo điều kiện (startDate <= now <= endDate)
       const filteredData = Banner.filter((item) => item.title === category).map(
         (item) => ({
-          banner: item.banner?.filter((child) => {
-            const startDate = new Date(child.startDate);
-            const endDate = new Date(child.endDate);
-            return startDate <= now && endDate >= now; // Hiển thị banner theo khoảng thời gian này
-          }).map((child) => ({
-            id: item._id,
-            title: child.name,
-            description: child.shotDescription,
-            src: child.urlImage,
-            link: child.refUrl,
-            startDate: child.startDate,
-            endDate: child.endDate,
-          })),
+          banner: item.banner
+            ?.filter((child) => {
+              const startDate = new Date(child.startDate);
+              const endDate = new Date(child.endDate);
+              return startDate <= now && endDate >= now; // Hiển thị banner theo khoảng thời gian này
+            })
+            .map((child) => ({
+              id: item._id,
+              title: child.name,
+              description: child.shotDescription,
+              src: child.urlImage,
+              link: child.refUrl,
+              startDate: child.startDate,
+              endDate: child.endDate,
+            })),
         })
       );
 
@@ -157,7 +163,6 @@ const Product = () => {
       }
     }
   }, [statusBanner, Banner, category]);
-
 
   const loading = () => (
     <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
@@ -358,11 +363,10 @@ const Product = () => {
     setActive,
     setHidden
   ) => {
-    // Kiểm tra nếu người dùng thực sự áp dụng bộ lọc giá
     let updatedFilters = { ...selectedFilters };
 
     if (
-      userMinPrice !== Number(minPrice) || // Nếu giá trị người dùng khác giá trị mặc định
+      userMinPrice !== Number(minPrice) ||
       userMaxPrice !== Number(maxPrice)
     ) {
       updatedFilters = {
@@ -383,6 +387,9 @@ const Product = () => {
       ...prev,
       [index]: true,
     }));
+
+    // Đặt cờ trạng thái để hiển thị kết quả lọc
+    setFiltersApplied(Object.keys(updatedFilters).length > 0);
 
     // Ẩn modal sau khi áp dụng
     handleToggleHidden(index, setHidden);
@@ -405,17 +412,31 @@ const Product = () => {
     });
     setActiveChild({});
     setQueryFilter();
+    setSearchParams("");
   };
 
   useEffect(() => {
-    const query = objectToQueryString(selectedFilters);
-    setQueryFilter(query);
-    setSearchParams(decodeURIComponent(query));
-    console.log("Query Filter:", query);
+    setQueryFilter(updateSelectedFiltersWithKeys(filters, selectedFilters));
+    if (queryFilter) {
+      let query = objectToQueryString(queryFilter);
+
+      setSearchParams(query);
+      const slug = brand ? `${category},${brand}` : category;
+      const multiFilter = query ? `${query}` : "";
+      dispatch(
+        getProducts({
+          limit: productPerPage,
+          fields:
+            "name,price,thumbnail,view,category,brand,discount,slug,filterable",
+          slug,
+          multiFilter: multiFilter ? multiFilter : "",
+        })
+      );
+    }
   }, [filters, selectedFilters]);
 
   return (
-    <div className="container sm:p-4 lg:p-8 w-full flex flex-col gap-4">
+    <div className="container w-full flex flex-col gap-4">
       <div>
         <BreadcrumbsCustom />
       </div>
@@ -446,7 +467,7 @@ const Product = () => {
               }
             >
               <img
-                className="aspect-video w-full h-full"
+                className="aspect-video object-contain w-full h-full"
                 src={_.image}
                 alt={_.slug}
               />
@@ -485,7 +506,7 @@ const Product = () => {
                   {active?.[index] && (
                     <div
                       ref={(el) => (dialogRefs.current[index] = el)}
-                      className={`absolute z-10 bg-white mt-1 p-2 rounded-lg shadow-custom
+                      className={`absolute z-30 bg-white mt-1 p-2 rounded-lg shadow-custom
                          ${hidden[index] === false ? "block" : "hidden"}
                          
                       `}
@@ -505,8 +526,9 @@ const Product = () => {
                                     setActiveChild
                                   )
                                 }
-                                className={`relative bg-gray-200 w-max p-3 rounded-lg ${activeChild[index]?.[inx] ? "active" : ""
-                                  }
+                                className={`relative bg-gray-200 w-max p-3 rounded-lg ${
+                                  activeChild[index]?.[inx] ? "active" : ""
+                                }
                                 `}
                               >
                                 {value}
@@ -580,13 +602,13 @@ const Product = () => {
                                     ...(selectedFilters || {}),
                                     Giá: isDefaultRange
                                       ? {
-                                        minPrice: minPrice,
-                                        maxPrice: maxPrice,
-                                      } // Dùng giá trị mặc định
+                                          minPrice: minPrice,
+                                          maxPrice: maxPrice,
+                                        } // Dùng giá trị mặc định
                                       : {
-                                        minPrice: userMinPrice,
-                                        maxPrice: userMaxPrice,
-                                      }, // Dùng giá trị tùy chỉnh
+                                          minPrice: userMinPrice,
+                                          maxPrice: userMaxPrice,
+                                        }, // Dùng giá trị tùy chỉnh
                                   };
 
                                   setSelectedFilters(updatedFilters);
@@ -600,10 +622,6 @@ const Product = () => {
                                   // Ẩn modal sau khi áp dụng
                                   handleToggleHidden(index, setHidden);
                                   handleToggleActive(index, setActive);
-                                  console.log(
-                                    "Kết quả bộ lọc:",
-                                    updatedFilters
-                                  );
                                 }}
                               >
                                 Xem kết quả
@@ -674,8 +692,8 @@ const Product = () => {
                       {Array.isArray(value)
                         ? value.join(", ")
                         : `${formatCurrency(value.minPrice)} - ${formatCurrency(
-                          value.maxPrice
-                        )}`}
+                            value.maxPrice
+                          )}`}
                     </span>
                   </span>
                 </button>
@@ -692,25 +710,27 @@ const Product = () => {
         )}
       </section>
       <section>
-        <div>
+        <div className="w-full ">
           <h1 className="text-[20px] font-semibold">Sắp xếp theo</h1>
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-auto p-1">
             <button
               onClick={() => handleSort("price-high-low")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${activeButton === "price-high-low"
-                ? "bg-blue-200 outline outline-main text-main"
-                : ""
-                }`}
+              className={`flex flex-row gap-2 items-center bg-gray-200 p-2 min-w-[160px] h-fit rounded-lg ${
+                activeButton === "price-high-low"
+                  ? "bg-blue-200 outline outline-main text-main"
+                  : ""
+              }`}
             >
               <Icon icon="proicons:filter" width="1rem" height="1rem" />
-              Giá Cao - Thấp
+              <span>Giá Cao - Thấp</span>
             </button>
             <button
               onClick={() => handleSort("price-low-high")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${activeButton === "price-low-high"
-                ? "bg-blue-200 outline outline-main text-main"
-                : ""
-                }`}
+              className={`flex items-center  min-w-[160px] h-fit bg-gray-200 p-2 rounded-lg ${
+                activeButton === "price-low-high"
+                  ? "bg-blue-200 outline outline-main text-main"
+                  : ""
+              }`}
             >
               <Icon
                 icon="proicons:filter"
@@ -722,10 +742,11 @@ const Product = () => {
             </button>
             <button
               onClick={() => handleSort("discount")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${activeButton === "discount"
-                ? "bg-blue-200 outline outline-main text-main"
-                : ""
-                }`}
+              className={`flex items-center  min-w-[160px] h-fit bg-gray-200 p-2 rounded-lg ${
+                activeButton === "discount"
+                  ? "bg-blue-200 outline outline-main text-main"
+                  : ""
+              }`}
             >
               <Icon
                 icon="material-symbols-light:percent"
@@ -736,10 +757,11 @@ const Product = () => {
             </button>
             <button
               onClick={() => handleSort("views")}
-              className={`flex items-center bg-gray-200 p-2 rounded-lg ${activeButton === "views"
-                ? "bg-blue-200 outline outline-main text-main"
-                : ""
-                }`}
+              className={`flex items-center justify-center  min-w-[160px] h-fit bg-gray-200 p-2 rounded-lg ${
+                activeButton === "views"
+                  ? "bg-blue-200 outline outline-main text-main"
+                  : ""
+              }`}
             >
               <Icon icon="iconoir:eye" width="1rem" height="1rem" />
               Xem nhiều

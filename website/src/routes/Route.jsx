@@ -22,6 +22,9 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { Cart } from "../pages/web/cart";
 import Finalregister from "../pages/web/auth/finalregister";
 import { ViewOrder } from "../pages/web/order/ViewOrder";
+import AboutUs from "../pages/web/aboutUs";
+import { AuthLayout } from "../layouts/AuthLayout";
+import { ResetPassword } from "../pages/web/auth/ResetPassword";
 
 export default function RootRouter() {
   const routes = useRoutes([
@@ -30,9 +33,7 @@ export default function RootRouter() {
       element: <PublicLayout />,
       children: [
         { path: "/", element: <HomePage /> },
-        { path: "/login", element: <Login /> },
-        { path: "/forget-password", element: <ForgetPassoword /> },
-        { path: "register", element: <Register /> },
+
         {
           path: "/cart",
           element: (
@@ -54,11 +55,11 @@ export default function RootRouter() {
           path: "/:category/:brand/:product",
           element: <ProductDetail />,
         },
-        {
-          path: "finalregister/:token",
-          element: <Finalregister />,
-        },
 
+        {
+          path: "/ve-chung-toi",
+          element: <AboutUs />,
+        },
         {
           path: "/profile",
           element: <ProfileLayout />,
@@ -96,7 +97,7 @@ export default function RootRouter() {
               ),
             },
             {
-              path: "change-password",  
+              path: "change-password",
               element: (
                 <ProtectedRoute>
                   <Password />
@@ -110,6 +111,25 @@ export default function RootRouter() {
                   <Order />
                 </ProtectedRoute>
               ),
+            },
+          ],
+        },
+        {
+          path: "/auth",
+          element: <AuthLayout />,
+          children: [
+            { path: "", element: <Login /> },
+            { path: "login", element: <Login /> },
+            { path: "forget-password", element: <ForgetPassoword /> },
+            { path: "register", element: <Register /> },
+            { path: "reset-password/:token", element: <ResetPassword /> },
+            {
+              path: "finalregister/:token",
+              element: <Finalregister />,
+            },
+            {
+              path: "*",
+              element: <Error />,
             },
           ],
         },

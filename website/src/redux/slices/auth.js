@@ -115,9 +115,22 @@ export const getAddresses = createAsyncThunk(
   (_, thunkAPI) => handleAsyncThunk(AuthService.getAddresses, [null], thunkAPI)
 );
 
+export const forgotPassword = createAsyncThunk(
+  "auth/forgot-password",
+  (data, thunkAPI) => {
+    return handleAsyncThunk(AuthService.forgetPassword, [data], thunkAPI);
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  "auth/reset-password",
+  (data, thunkAPI) => {
+    return handleAsyncThunk(AuthService.resetPassword, [data], thunkAPI);
+  }
+);
+
 const auth = createSlice({
   name: "auth",
-
   initialState: {
     isLogin: false,
     data: [],
@@ -135,10 +148,12 @@ const auth = createSlice({
     statusFinalRegister: "idle",
     statusUpdateCustomer: "idle",
     statusChangePassword: "idle",
+    statusResetPassword: "idle",
     statusUpdateAddress: "idle",
     statusDeleteAddress: "idle",
     statusAddAddress: "idle",
     statusGetAddress: "idle",
+    statusForgotPassword: "idle",
   },
   extraReducers: (builder) => {
     builder.addCase(resetState.fulfilled, (state, action) => {
@@ -194,7 +209,17 @@ const auth = createSlice({
       .addCase(changePassword.rejected, (state) => {
         state.statusChangePassword = "failed";
       });
-
+    builder
+      .addCase(resetPassword.pending, (state) => {
+        state.statusResetPassword = "loading";
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.statusResetPassword = "success";
+        state.data = action.payload;
+      })
+      .addCase(resetPassword.rejected, (state) => {
+        state.statusResetPassword = "failed";
+      });
     builder
       .addCase(getMe.pending, (state) => {
         state.statusGetMe = "loading";
@@ -310,54 +335,16 @@ const auth = createSlice({
       .addCase(getAddresses.rejected, (state) => {
         state.statusGetAddress = "failed";
       });
-  },
-});
-
-// Async Thunk: Đổi mật khẩu
-export const updatePassword = createAsyncThunk(
-  "auth/updatePassword",
-  async ({ currentPassword, newPassword }, { rejectWithValue }) => {
-    try {
-      const response = await AuthService.updatePassword({
-        currentPassword,
-        newPassword,
-      });
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || "Đổi mật khẩu thất bại!");
-    }
-  }
-);
-
-// Slice Auth
-const authSlice = createSlice({
-  name: "auth",
-  initialState: {
-    user: null,
-    status: "idle", // idle | loading | success | failed
-    error: null,
-  },
-  reducers: {
-    resetAuthState: (state) => {
-      state.status = "idle";
-      state.error = null;
-    },
-  },
-  extraReducers: (builder) => {
     builder
-      // Update Password
-      .addCase(updatePassword.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+      .addCase(forgotPassword.pending, (state) => {
+        state.statusForgotPassword = "loading";
       })
-      .addCase(updatePassword.fulfilled, (state, action) => {
-        state.status = "success";
-        state.user = action.payload;
-        state.error = null;
+      .addCase(forgotPassword.fulfilled, (state, action) => {
+        state.statusForgotPassword = "success";
+        state.dataAddress = action.payload;
       })
-      .addCase(updatePassword.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload || "Có lỗi xảy ra!";
+      .addCase(forgotPassword.rejected, (state) => {
+        state.statusForgotPassword = "failed";
       });
   },
 });

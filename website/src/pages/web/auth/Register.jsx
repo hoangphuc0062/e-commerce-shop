@@ -1,3 +1,4 @@
+/* eslint-disable  */
 import { Link, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useContext, useState } from "react";
@@ -72,7 +73,7 @@ const Register = () => {
               Bạn đã có tài khoản đăng nhập?
             </span>
             <span>
-              <Link to={"/login"} className="text-main hover:underline">
+              <Link to={"/auth/login"} className="text-main hover:underline">
                 Đăng nhập ngay
               </Link>
             </span>

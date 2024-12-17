@@ -2,7 +2,11 @@ import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { trackingOrder } from "../../../redux/slices/order";
 import "ldrs/ring";
-import { formatCurrency, translate } from "../../../utils/helper";
+import {
+  formatCurrency,
+  replaceGBInName,
+  translate,
+} from "../../../utils/helper";
 import ReCAPTCHA from "react-google-recaptcha";
 import { handleToast } from "../../../ultils/toast";
 import BreadcrumbsCustom from "../../../components/Breadcrumbs/Breadcrumbs";
@@ -32,24 +36,22 @@ export const ViewOrder = () => {
   };
 
   useEffect(() => {
-    if (trackingData?.products) {
-      const total = trackingData.products.reduce((acc, product) => {
+    if (trackingData?.cart) {
+      const total = trackingData.cart.reduce((acc, product) => {
         const productTotal =
-          Number(product?.pid?.price) *
-          Number(product?.quantity) *
-          (product?.pid?.discount
-            ? 1 - Number(product?.pid?.discount) / 100
-            : 1);
+          product?.attributeValue?.price * product?.quantity
+            ? product?.attributeValue?.price * product?.quantity
+            : product?.price * product?.quantity;
         return acc + productTotal;
       }, 0);
 
       setSubTotal(total); // Cập nhật subTotal
     }
   }, [trackingData]);
-  const defaultAddress = trackingData?.orderBy?.address.find(
+  const defaultAddress = trackingData?.order?.orderBy?.address.find(
     (addr) => addr.isDefault
   );
-
+  console.log(trackingData?.order?.orderBy);
   return (
     <>
       <div className="mt-6">
@@ -103,39 +105,49 @@ export const ViewOrder = () => {
                 </h2>
 
                 <div>
-                  {trackingData?.products?.map((product, index) => (
+                  {trackingData?.cart?.map((product, index) => (
                     <div className="flex items-center border-b" key={index}>
                       {/* Hình ảnh sản phẩm */}
                       <img
-                        src={product?.pid?.thumbnail}
-                        alt={product?.pid?.name}
+                        src={
+                          product?.attributeValue?.thumbnail ||
+                          product?.thumbnail
+                        }
+                        alt={product?.name}
                         className="w-24 h-24 object-cover mr-4"
                       />
 
                       <div>
                         {/* Tên sản phẩm */}
-                        <p className="font-semibold">{product?.pid?.name}</p>
+                        <p className="font-semibold">
+                          {" "}
+                          {product?.key && product?.attributeValue?.name
+                            ? replaceGBInName(
+                                product?.name,
+                                product?.key,
+                                product?.attributeValue?.name
+                              )
+                            : product?.name}
+                        </p>
 
                         {/* Giá sản phẩm */}
                         <p>
                           Giá:{" "}
-                          {formatCurrency(
-                            Number(product?.pid?.price) // Ép kiểu số
-                          )}
+                          {product?.attributeValue?.price.toLocaleString() ||
+                            product?.price.toLocaleString()}
+                          VND
                         </p>
 
                         {/* Số lượng */}
                         <p>
-                          Số lượng: {Number(product?.quantity)}{" "}
-                          {product?.pid?.unit} {/* Ép kiểu số */}
+                          Số lượng: {Number(product?.quantity)} {product?.unit}{" "}
+                          {/* Ép kiểu số */}
                         </p>
 
                         {/* Giảm giá */}
                         <p>
                           Giảm:{" "}
-                          {Number(
-                            product?.pid?.discount ? product?.pid?.discount : 0
-                          )}
+                          {Number(product?.discount ? product?.discount : 0)}
                           {"%"}
                           {/* Ép kiểu số */}
                         </p>
@@ -144,13 +156,10 @@ export const ViewOrder = () => {
                         <p className="text-left font-bold">
                           Thành tiền:{" "}
                           {formatCurrency(
-                            Number(product?.pid?.price) *
-                              Number(product?.quantity) *
-                              Number(
-                                product?.pid?.discount
-                                  ? 1 - product?.pid?.discount / 100
-                                  : 1
-                              ) // Ép kiểu số
+                            product?.attributeValue?.price * product?.quantity
+                              ? product?.attributeValue?.price *
+                                  product?.quantity
+                              : product?.price * product?.quantity
                           )}
                         </p>
                       </div>
@@ -164,11 +173,11 @@ export const ViewOrder = () => {
                 <h2 className="text-lg font-bold border-b pb-2 mb-4">
                   THÔNG TIN GIAO NHẬN
                 </h2>
-                {trackingData?.orderBy && (
+                {trackingData?.order?.orderBy && (
                   <div>
-                    <p>Họ tên: {trackingData?.orderBy?.name}</p>
-                    <p>Điện thoại: {trackingData?.orderBy.phone}</p>
-                    <p>Email: {trackingData?.orderBy.email}</p>
+                    <p>Họ tên: {trackingData?.order?.orderBy?.name}</p>
+                    <p>Điện thoại: {trackingData?.order?.orderBy?.phone}</p>
+                    <p>Email: {trackingData?.order?.orderBy?.email}</p>
                     <p>
                       Địa chỉ:
                       {defaultAddress
@@ -189,11 +198,11 @@ export const ViewOrder = () => {
                   </div>
                   <div className="flex justify-between">
                     <p>Phương thức thanh toán:</p>
-                    <p>{translate(trackingData?.paymentMethod)}</p>
+                    <p>{translate(trackingData?.order?.paymentMethod)}</p>
                   </div>
                   <div className="flex justify-between">
                     <p>Trạng thái đơn hàng:</p>
-                    <p>{translate(trackingData?.status)}</p>
+                    <p>{translate(trackingData?.order?.status)}</p>
                   </div>
                   <div className="flex justify-between">
                     <p>Giảm giá:</p>
@@ -201,13 +210,13 @@ export const ViewOrder = () => {
                   </div>
                   <div className="flex justify-between">
                     <p>Phí giao hàng:</p>
-                    <p>{formatCurrency(trackingData?.shippingFee)}</p>
+                    <p>{formatCurrency(trackingData?.order?.shippingFee)}</p>
                   </div>
 
                   <div className="border-t my-2"></div>
                   <div className="flex justify-between font-bold py-2">
                     <p>Tổng thanh toán:</p>
-                    <p>{formatCurrency(trackingData?.total)}</p>
+                    <p>{formatCurrency(trackingData?.order?.total)}</p>
                   </div>
                 </div>
               )}
