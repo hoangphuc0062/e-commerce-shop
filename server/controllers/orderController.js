@@ -857,7 +857,7 @@ const analystOrder = asyncHandler(async (req, res) => {
   const populatedBestSellingProducts = await Product.find({
     _id: { $in: bestSellingProductsArray.map((item) => item.pid) },
   })
-    .select("onStock inventory price name view")
+    .select("onStock inventory price name view thumbnail")
     .lean();
 
   const finalBestSellingProducts = bestSellingProductsArray.map((item) => ({

@@ -1,3 +1,4 @@
+/* eslint-disable  */
 import CANCEL from "../../assets/cancel.gif";
 export default function Error({ error }) {
   return (

@@ -60,7 +60,7 @@ export default function RootRouter() {
           element: <Finalregister />,
         },
         {
-          path: "/aboutUs",
+          path: "/ve-chung-toi",
           element: <AboutUs />,
         },
         {
