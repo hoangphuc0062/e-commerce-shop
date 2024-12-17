@@ -622,10 +622,6 @@ const Product = () => {
                                   // Ẩn modal sau khi áp dụng
                                   handleToggleHidden(index, setHidden);
                                   handleToggleActive(index, setActive);
-                                  console.log(
-                                    "Kết quả bộ lọc:",
-                                    updatedFilters
-                                  );
                                 }}
                               >
                                 Xem kết quả

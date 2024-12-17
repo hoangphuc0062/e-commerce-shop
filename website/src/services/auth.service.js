@@ -25,6 +25,8 @@ const AuthServices = {
   //  Forget Password
   forgetPassword: (data) =>
     sendRequest("post", "/customers/forgot-password", data),
+  resetPassword: (data) =>
+    sendRequest("put", "/customers/reset-password", data),
 };
 
 export default AuthServices;
