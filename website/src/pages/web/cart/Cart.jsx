@@ -283,7 +283,7 @@ export default function Cart() {
     setProducts((prevProducts) =>
       prevProducts.map((product) =>
         product.productId === productId &&
-        product.attributeValue?.id === attributeId
+          product.attributeValue?.id === attributeId
           ? { ...product, quantity: newQuantity }
           : product
       )
@@ -291,9 +291,8 @@ export default function Cart() {
   };
 
   const total = products.reduce((acc, product) => {
-    const uniqueId = `${product.productId}-${
-      product.attributeValue?.id || "null"
-    }`;
+    const uniqueId = `${product.productId}-${product.attributeValue?.id || "null"
+      }`;
     return selectedProducts.includes(uniqueId)
       ? acc + product.price * product.quantity
       : acc;
@@ -346,9 +345,8 @@ export default function Cart() {
   const handleRemoveSelected = () => {
     const updatedProducts = products
       .map((product) => {
-        const uniqueId = `${product.productId}-${
-          product.attributeValue?.id || "null"
-        }`;
+        const uniqueId = `${product.productId}-${product.attributeValue?.id || "null"
+          }`;
         if (selectedProducts.includes(uniqueId)) {
           return {
             productId: product.productId,
@@ -376,9 +374,8 @@ export default function Cart() {
   const handleUpdateSelected = () => {
     const updatedProducts = products
       .map((product) => {
-        const uniqueId = `${product.productId}-${
-          product.attributeValue?.id || "null"
-        }`;
+        const uniqueId = `${product.productId}-${product.attributeValue?.id || "null"
+          }`;
         if (selectedProducts.includes(uniqueId)) {
           return {
             productId: product.productId,
@@ -541,11 +538,10 @@ export default function Cart() {
             />
             <button
               onClick={handleNextStep}
-              className={`w-full py-3 font-semibold rounded text-center ${
-                formik.isValid
+              className={`w-full py-3 font-semibold rounded text-center ${formik.isValid
                   ? "bg-indigo-600 text-white"
                   : "bg-gray-300 cursor-not-allowed"
-              }`}
+                }`}
             >
               ĐẶT HÀNG NGAY
             </button>
@@ -560,11 +556,10 @@ export default function Cart() {
             />
             <button
               type="submit"
-              className={`w-full py-3 font-semibold rounded text-center ${
-                formik.isValid
+              className={`w-full py-3 font-semibold rounded text-center ${formik.isValid
                   ? "bg-indigo-600 text-white"
                   : "bg-gray-300 cursor-not-allowed"
-              }`}
+                }`}
             >
               ĐẶT HÀNG NGAY
             </button>
@@ -582,7 +577,7 @@ export default function Cart() {
 
           {statusPayment === "vnpay" && <Success mes="Thanh toán thành công" />}
 
-          {statusPayment !== "cash" && statusPayment !== "vnpay" && (
+          {statusPayment === "cash" && statusPayment === "vnpay" && (
             <Error error="Thanh toán thất bại" />
           )}
         </>
